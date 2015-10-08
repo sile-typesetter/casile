@@ -43,13 +43,18 @@ sync_pre sync_post:
 		-V fontsize="13pt" \
 		-V linkcolor="black" \
 		-V documentclass="scrbook" \
-		-V geometry="paperheight=195mm" \
-		-V geometry="paperwidth=135mm" \
+		-V geometry="paperheight=210mm" \
+		-V geometry="paperwidth=148mm" \
+		-V geometry="layoutheight=195mm" \
+		-V geometry="layoutwidth=135mm" \
+		-V geometry="layouthoffset=7.5mm" \
+		-V geometry="layoutvoffset=6.5mm" \
 		-V geometry="outer=14mm" \
 		-V geometry="inner=26mm" \
 		-V geometry="top=20mm" \
-		-V geometry="bottom=30mm" \
+		-V geometry="bottom=26mm" \
 		-V geometry="headsep=14pt" \
+		-V geometry="showcrop" \
 		--latex-engine=xelatex \
 		--template=$(TOOLS)/template.tex \
 		$< -o $(basename $<)-kitap.pdf
