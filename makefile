@@ -31,7 +31,7 @@ sync_pre sync_post:
 	pgrep -u $$USER -x owncloud ||\
 		owncloudcmd -n -s $(OUTPUT) $(OWNCLOUD) 2>/dev/null
 
-%.pdf: %.md
+%-kitap.pdf: %.md
 	pandoc \
 		--chapters \
 		-V links-as-notes \
@@ -58,6 +58,8 @@ sync_pre sync_post:
 		--latex-engine=xelatex \
 		--template=$(TOOLS)/template.tex \
 		$< -o $(basename $<)-kitap.pdf
+
+%.pdf: %.md
 	pandoc \
 		-V links-as-notes \
 		-V toc \
