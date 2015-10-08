@@ -31,3 +31,19 @@ sync_pre sync_post:
 	pgrep -u $$USER -x owncloud ||\
 		owncloudcmd -n -s $(OUTPUT) $(OWNCLOUD) 2>/dev/null
 
+%.pdf: %.md
+	pandoc \
+		--chapters \
+		-V links-as-notes \
+		-V toc \
+		-V lang=turkish \
+		--latex-engine=xelatex \
+		$< -o $(basename $<).pdf
+
+%.epub: %.md
+	pandoc \
+		$< -o $(basename $<).epub
+
+%.mobi: %.md
+	pandoc \
+		$< -o $(basename $<).mobi
