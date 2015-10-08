@@ -11,7 +11,9 @@ export PATH := $(TOOLS)/bin:$(PATH)
 .ONESHELL:
 .PHONY: all
 
-all: init sync_pre $(TARGETS) push sync_post
+all: $(TARGETS)
+
+ci: init sync_pre all push sync_post
 
 init:
 	mkdir -p $(OUTPUT)
