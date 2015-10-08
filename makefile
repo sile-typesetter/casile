@@ -47,3 +47,11 @@ sync_pre sync_post:
 %.mobi: %.md
 	pandoc \
 		$< -o $(basename $<).mobi
+
+%.odt: %.md
+	pandoc \
+		$< -o $(basename $<).odt
+
+%.docx: %.md
+	pandoc \
+		$< -o $(basename $<).docx
