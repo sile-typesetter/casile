@@ -42,6 +42,7 @@ sync_pre sync_post:
 		-V monofont="Hack" \
 		-V fontsize="12pt" \
 		-V documentclass="scrbook" \
+		-V papersize="digest" \
 		--latex-engine=xelatex \
 		--template=$(TOOLS)/template.tex \
 		$< -o $(basename $<).pdf
