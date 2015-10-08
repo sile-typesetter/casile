@@ -38,6 +38,7 @@ sync_pre sync_post:
 		-V toc \
 		-V lang=turkish \
 		--latex-engine=xelatex \
+		--template=$(TOOLS)/template.tex \
 		$< -o $(basename $<).pdf
 
 %.epub: %.md
