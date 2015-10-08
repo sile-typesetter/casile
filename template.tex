@@ -1,4 +1,5 @@
 \documentclass[$if(fontsize)$$fontsize$,$endif$$if(lang)$$lang$,$endif$$if(papersize)$$papersize$,$endif$$for(classoption)$$classoption$$sep$,$endfor$]{$documentclass$}
+\usepackage[]{titlesec}
 $if(fontfamily)$
 \usepackage{$fontfamily$}
 $else$
@@ -162,6 +163,9 @@ $endfor$
 \fi
 
 \usepackage[automark,headsepline]{scrpage2}
+\setkomafont{section}{\normalsize\normalfont\rmfamily\bfseries\uppercase}
+\titlespacing*{\section}{0pt}{*3}{0pt}
+
 $if(scrheadings)$
 \makeatletter
 \AtBeginDocument{%
