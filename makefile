@@ -40,9 +40,23 @@ sync_pre sync_post:
 		-V mainfont="Crimson" \
 		-V sansfont="Libertine Sans" \
 		-V monofont="Hack" \
-		-V fontsize="12pt" \
+		-V fontsize="13pt" \
+		-V linkcolor="black" \
 		-V documentclass="scrbook" \
-		-V papersize="digest" \
+		-V papersize="a5paper" \
+		--latex-engine=xelatex \
+		--template=$(TOOLS)/template.tex \
+		$< -o $(basename $<)-kitap.pdf
+	pandoc \
+		-V links-as-notes \
+		-V toc \
+		-V lang="turkish" \
+		-V mainfont="Crimson" \
+		-V sansfont="Libertine Sans" \
+		-V monofont="Hack" \
+		-V fontsize="13pt" \
+		-V documentclass="scrbook" \
+		-V papersize="a4paper" \
 		--latex-engine=xelatex \
 		--template=$(TOOLS)/template.tex \
 		$< -o $(basename $<).pdf
