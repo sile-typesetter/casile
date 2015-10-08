@@ -161,6 +161,20 @@ $endfor$
 \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
 
+\makeatletter
+\usepackage[automark,headsepline]{scrpage2}
+\AtBeginDocument{%
+	\pagestyle{scrheadings}
+	\ihead{}
+	\rehead{$title$}
+	\lohead{\leftmark}
+	\ohead{\pagemark{}}
+	\ifoot{}
+	\cfoot{}
+	\ofoot{}
+}{}
+\makeatother
+
 \begin{document}
 $if(title)$
 \maketitle

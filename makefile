@@ -52,9 +52,9 @@ sync_pre sync_post:
 		-V geometry="outer=14mm" \
 		-V geometry="inner=26mm" \
 		-V geometry="top=20mm" \
-		-V geometry="bottom=18mm" \
-		-V geometry="footskip=26pt" \
-		-V geometry="headsep=14pt" \
+		-V geometry="bottom=12mm" \
+		-V geometry="footskip=0pt" \
+		-V geometry="headsep=12pt" \
 		-V geometry="showcrop" \
 		--latex-engine=xelatex \
 		--template=$(TOOLS)/template.tex \
