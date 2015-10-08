@@ -42,6 +42,7 @@ sync_pre sync_post:
 		-V monofont="Hack" \
 		-V fontsize="13pt" \
 		-V linkcolor="black" \
+		-V scrheadings \
 		-V documentclass="scrbook" \
 		-V geometry="paperheight=210mm" \
 		-V geometry="paperwidth=148mm" \
