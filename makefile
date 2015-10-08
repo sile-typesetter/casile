@@ -37,6 +37,9 @@ sync_pre sync_post:
 		-V links-as-notes \
 		-V toc \
 		-V lang=turkish \
+		-V mainfont="Crimson" \
+		-V sansfont="Libertine Sans" \
+		-V monofont="Hack" \
 		--latex-engine=xelatex \
 		--template=$(TOOLS)/template.tex \
 		$< -o $(basename $<).pdf
