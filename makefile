@@ -78,10 +78,11 @@ sync_pre sync_post:
 
 %.epub: %.md
 	pandoc \
+		$(shell test -f "$(EBOOKCOVER)" && echo "--epub-cover-image=$(BASE)/$(EBOOKCOVER)") \
 		$< -o $(basename $<).epub
 
 %.mobi: %.epub
-	kindlegen $<
+	-kindlegen $<
 
 %.odt: %.md
 	pandoc \
