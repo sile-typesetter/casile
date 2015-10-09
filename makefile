@@ -80,9 +80,8 @@ sync_pre sync_post:
 	pandoc \
 		$< -o $(basename $<).epub
 
-%.mobi: %.md
-	pandoc \
-		$< -o $(basename $<).mobi
+%.mobi: %.epub
+	kindlegen $<
 
 %.odt: %.md
 	pandoc \
