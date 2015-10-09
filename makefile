@@ -54,7 +54,7 @@ sync_pre sync_post:
 		-V geometry="inner=26mm" \
 		-V geometry="top=20mm" \
 		-V geometry="bottom=12mm" \
-		-V geometry="footskip=0pt" \
+		-V geometry="footskip=18pt" \
 		-V geometry="headsep=12pt" \
 		-V geometry="showcrop" \
 		--latex-engine=xelatex \
