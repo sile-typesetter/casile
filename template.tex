@@ -171,6 +171,12 @@ $endfor$
 	[]
 \titlespacing*{\section}{0pt}{*3}{0pt}
 
+\AtBeginEnvironment{quote}{%
+	%\fontfamily{Libertine Serif}
+	\setmainfont{Libertine Serif}
+	\addfontfeature{Style=Alternate}%
+	\addfontfeature{StylisticSet=2}%
+}
 \titleformat{\subparagraph}
 	[block]
 	{\normalfont\normalsize\scshape}
