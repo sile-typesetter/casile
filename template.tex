@@ -45,6 +45,8 @@ $if(CJKmainfont)$
     \setCJKmainfont[$CJKoptions$]{$CJKmainfont$}
 $endif$
 \fi
+\newfontfamily\versefont{Libertine Serif}[Language=Turkish,Style=Alternate,StylisticSet=2]
+\newfontfamily\versereffont{Libertine Serif}[Language=Turkish,Letters=SmallCaps]
 % use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 % use microtype if available
@@ -77,7 +79,7 @@ $if(lang)$
 \ifxetex
   \usepackage{polyglossia}
   \setmainlanguage{$mainlang$}
-  \setotherlanguages{$for(otherlang)$$otherlang$$sep$,$endfor$}
+  %\setotherlanguages{$for(otherlang)$$otherlang$$sep$,$endfor$}
 \else
   \usepackage[shorthands=off,$lang$]{babel}
 \fi
@@ -171,15 +173,10 @@ $endfor$
 	[]
 \titlespacing*{\section}{0pt}{*3}{0pt}
 
-\AtBeginEnvironment{quote}{%
-	%\fontfamily{Libertine Serif}
-	\setmainfont{Libertine Serif}
-	\addfontfeature{Style=Alternate}%
-	\addfontfeature{StylisticSet=2}%
-}
+\AtBeginEnvironment{quote}{\versefont}
 \titleformat{\subparagraph}
 	[block]
-	{\normalfont\normalsize\scshape}
+	{\versereffont}
 	{}
 	{\wordsep}
 	{\hfill}
