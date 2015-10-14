@@ -40,7 +40,7 @@ sync_pre sync_post:
 		-V mainfont="Crimson" \
 		-V sansfont="Montserrat" \
 		-V monofont="Hack" \
-		-V fontsize="13pt" \
+		-V fontsize="12pt" \
 		-V linkcolor="black" \
 		-V scrheadings \
 		-V documentclass="scrbook" \
@@ -72,7 +72,7 @@ sync_pre sync_post:
 		-V mainfont="Crimson" \
 		-V sansfont="Libertine Sans" \
 		-V monofont="Hack" \
-		-V fontsize="13pt" \
+		-V fontsize="12pt" \
 		-V documentclass="scrbook" \
 		-V papersize="a4paper" \
 		--latex-engine=xelatex \
