@@ -38,7 +38,7 @@ sync_pre sync_post:
 		-V toc \
 		-V lang="turkish" \
 		-V mainfont="Crimson" \
-		-V sansfont="Libertine Sans" \
+		-V sansfont="Montserrat" \
 		-V monofont="Hack" \
 		-V fontsize="13pt" \
 		-V linkcolor="black" \
