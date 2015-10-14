@@ -3,8 +3,6 @@
 \usepackage{adforn}
 $if(fontfamily)$
 \usepackage{$fontfamily$}
-$else$
-\usepackage{lmodern}
 $endif$
 $if(linestretch)$
 \usepackage{setspace}
@@ -27,7 +25,6 @@ $endif$
     \usepackage{fontspec}
   \fi
   \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
-  \newcommand{\euro}{€}
 $if(mainfont)$
     \setmainfont{$mainfont$}
 $endif$
@@ -74,7 +71,6 @@ $endif$
             urlcolor=$if(urlcolor)$$urlcolor$$else$blue$endif$,
             linkcolor=$if(linkcolor)$$linkcolor$$else$magenta$endif$,
             pdfborder={0 0 0}}
-\urlstyle{same}  % don't use monospace font for urls
 $if(lang)$
 \ifxetex
   \usepackage{polyglossia}
