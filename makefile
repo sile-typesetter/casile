@@ -61,6 +61,9 @@ sync_pre sync_post:
 		--template=$(TOOLS)/template.tex \
 		$< -o $(basename $<)-kitap.pdf
 
+%-2up.pdf: %.pdf
+	pdfbook --short-edge --suffix 2up --noautoscale true -- $<
+
 %.pdf: %.md
 	pandoc \
 		-V links-as-notes \
