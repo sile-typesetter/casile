@@ -51,7 +51,7 @@ sync_pre sync_post:
 		-V geometry="layouthoffset=7.5mm" \
 		-V geometry="layoutvoffset=6.5mm" \
 		-V geometry="outer=14mm" \
-		-V geometry="inner=26mm" \
+		-V geometry="inner=24mm" \
 		-V geometry="top=20mm" \
 		-V geometry="bottom=12mm" \
 		-V geometry="footskip=18pt" \
