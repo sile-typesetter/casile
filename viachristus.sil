@@ -1,0 +1,64 @@
+\begin{document}
+\define[command=title]{Başlık yok!}
+\define[command=subtitle]{}
+\define[command=author]{}
+\define[command=wm:pubdetails]{}
+\define[command=halftitlepage]{\nofolios\center{\book:sectionfont{\title}}\bigskip\subtitle}
+\define[command=titlepage]{\open-double-page\center{\book:chapterfont{\title}\skip[height=5ex]\book:sectionfont{\author}}\eject}
+\define[command=publicationpage]{\nofolios
+\font[weight=800]{\title}
+\author
+
+\font[wegiht=800]{Yayın Koordinatörü:} Kerem Koç\break
+\font[wegiht=800]{Editör:} Alper Gunay\break
+\font[wegiht=800]{Çeviri:} Yeşim Mısırcı\break
+\font[wegiht=800]{Redaksiyon:} Hakan Güven\break
+\font[wegiht=800]{Düzelti:} Ferah Yagnaliyeva\break
+%\font[wegiht=800]{Kapak Tasarım:}\break
+%\font[wegiht=800]{Kapak Fotoğrafı:}\break
+\font[wegiht=800]{Sayfa Düzeni (Dizgi):Caleb Maclennan\break
+
+
+Via Christus Yayınları\break
+Web: \url{www.viachristus.com}\break
+Email: \url{viachristusyayinlari@gmail.com}\break
+
+© Paul Washer, The Gospel’s Power and Message\break
+Tüm yayın hakları Via Christus Yayınları’na aittir.
+
+İzmir Protestan Kilisesi’nin yardımlarıyla türkçeye kazandırılmıştır.
+
+\font[weight=800]{Matbaa}\break
+Baskı: Anadolu Ofset\break
+Telefon:
+
+Ekim 2015 | İstanbul
+
+\font[weight=800]{ISBN:} NNNNNNNNNNNNNNNNN-N
+%\font[weight=800]{Yayın No:} 01
+\eject
+}
+
+%\begin{center}
+
+%Copyright © \date \author
+
+%Published in 2015 by Wide Margin, \break
+%90 Sandyleaze, Gloucester, GL2 0PX, UK \break
+%\font[family=Monaco]{http://www.wide-margin.co.uk/}
+%
+%\wm:pubdetails
+%
+%The right of \author to be identified as the Author of this Work has been asserted by him in accordance with the Copyright, Designs and Patents Act 1988.
+%\bigskip
+%\em{All rights reserved. No part of this publication may be reproduced, stored in a retrieval system, or transmitted in any form or by any means electronic, or mechanical, photocopying, recording or otherwise, without the prior permission of the publisher or a licence permitting restricted copying.}
+%\bigskip
+%ISBN \wm:isbn
+%\bigskip
+%Printed and bound in Great Britain by\break Lightning Source, Milton Keynes
+%\end{center}
+%\eject
+}%
+%\define[command=book:chapterfont]{\font[family=Optima,weight=800, size=22pt]{\process}}
+%\define[command=book:sectionfont]{\font[family=Optima,weight=800, size=12pt]{\process}}
+\end{document}

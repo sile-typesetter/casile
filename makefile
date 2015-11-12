@@ -84,8 +84,13 @@ sync_pre sync_post:
 	/home/caleb/projects/pandoc/dist/build/pandoc/pandoc \
 		--standalone \
 		--parse-raw \
+		-V include=book_tools/viachristus \
 		-V language="tr" \
-		-V papersize="a4" \
+		-V mainfont="Crimson" \
+		-V sansfont="Libertine Sans" \
+		-V monofont="Hack" \
+		-V fontsize="12pt" \
+		-V papersize="a5" \
 		-V documentclass="book" \
 		$< -o $(basename $<).sil
 		#--template=$(TOOLS)/template.sil \
