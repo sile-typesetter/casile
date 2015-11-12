@@ -64,8 +64,9 @@ sync_pre sync_post:
 %-2up.pdf: %.pdf
 	pdfbook --short-edge --suffix 2up --noautoscale true -- $<
 
-%.pdf: %.md
+%.tex: %.md
 	pandoc \
+		--standalone \
 		-V links-as-notes \
 		-V toc \
 		-V lang="turkish" \
@@ -77,7 +78,25 @@ sync_pre sync_post:
 		-V papersize="a4paper" \
 		--latex-engine=xelatex \
 		--template=$(TOOLS)/template.tex \
-		$< -o $(basename $<).pdf
+		$< -o $(basename $<).tex
+
+%.sil: %.md
+	/home/caleb/projects/pandoc/dist/build/pandoc/pandoc \
+		--standalone \
+		--parse-raw \
+		-V language="tr" \
+		-V papersize="a4" \
+		-V documentclass="book" \
+		$< -o $(basename $<).sil
+		#--template=$(TOOLS)/template.sil \
+
+#%.pdf: %.tex
+	#pandoc \
+		#--latex-engine=xelatex \
+		#$< -o $(basename $<).pdf
+
+%.pdf: %.sil
+	sile $< -o $(basename $<).pdf
 
 %.epub: %.md
 	pandoc \
