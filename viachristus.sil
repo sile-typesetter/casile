@@ -4,11 +4,11 @@
 \define[command=author]{}
 \define[command=wm:pubdetails]{}
 \define[command=book:chapter:post]{ \font[filename=book_tools/fonts/FeFlow2.otf]{\break{}a\break}}%
-\define[command=halftitlepage]{\nofolios\center{\book:sectionfont{\title}}\bigskip\subtitle}
-\define[command=titlepage]{\open-double-page\center{\book:chapterfont{\title}\skip[height=5ex]\book:sectionfont{\author}}\eject}
+\define[command=halftitlepage]{\nofolios\center{\book:chapterfont{\title}}\bigskip\book:sectionfont{\subtitle}}
+\define[command=titlepage]{\open-double-page\center{\book:chapterfont{\title}\skip[height=5ex]\book:sectionfont{\author}\vfill{}Via Christus Yayınları}\eject}
 \define[command=verbatim:font]{\font[family=Hack]}
-\define[command=book:chapterfont]{\font[family=Montserrat,weight=800,size=20pt]{\process}}
-\define[command=book:sectionfont]{\font[family=Montserrat,weight=800,size=9pt]{\uppercase{\process}}}
+\define[command=book:chapterfont]{\font[family=Montserrat,weight=600,size=16pt]{\process}}
+\define[command=book:sectionfont]{\font[family=Montserrat,weight=600,size=9pt]{\uppercase{\process}}}
 \font[family=Crimson,size=12pt]
 \define[command=publicationpage]{\nofolios\begin{raggedright}
 \font[family=Libertine Serif]
@@ -31,7 +31,7 @@ Tüm yayın hakları Via Christus Yayınları’na aittir.
 \bigskip
 \begin{center}
 Via Christus Yayınları\break
-\url{www.viachristus.com}\break
+\url{https://www.viachristus.com}\break
 \url{viachristusyayinlari@gmail.com}
 \end{center}
 \bigskip
@@ -61,3 +61,4 @@ Ekim 2015 | İstanbul
 %\define[command=book:chapterfont]{\font[family=Optima,weight=800, size=22pt]{\process}}
 %\define[command=book:sectionfont]{\font[family=Optima,weight=800, size=12pt]{\process}}
 \end{document}
+

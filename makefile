@@ -86,6 +86,7 @@ sync_pre sync_post:
 		--parse-raw \
 		-V language="tr" \
 		-V include=book_tools/viachristus \
+		-V script=book_tools/viachristus \
 		-V papersize="148mm x 210mm" \
 		-V documentclass="book" \
 		$< -o $(basename $<).sil
