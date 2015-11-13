@@ -84,16 +84,12 @@ sync_pre sync_post:
 	/home/caleb/projects/pandoc/dist/build/pandoc/pandoc \
 		--standalone \
 		--parse-raw \
-		-V include=book_tools/viachristus \
 		-V language="tr" \
-		-V mainfont="Crimson" \
-		-V sansfont="Libertine Sans" \
-		-V monofont="Hack" \
-		-V fontsize="12pt" \
-		-V papersize="a5" \
+		-V include=book_tools/viachristus \
+		-V papersize="148mm x 210mm" \
 		-V documentclass="book" \
 		$< -o $(basename $<).sil
-		#--template=$(TOOLS)/template.sil \
+		#-V include=book_tools/a5kesme \
 
 #%.pdf: %.tex
 	#pandoc \
@@ -101,7 +97,8 @@ sync_pre sync_post:
 		#$< -o $(basename $<).pdf
 
 %.pdf: %.sil
-	sile $< -o $(basename $<).pdf
+	sile $< -o $(basename $<).pdf # Generate TOC
+	#sile $< -o $(basename $<).pdf # Final
 
 %.epub: %.md
 	pandoc \
