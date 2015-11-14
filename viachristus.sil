@@ -3,11 +3,12 @@
 \define[command=title]{}
 \define[command=subtitle]{}
 \define[command=author]{}
+\define[command=rights]{}
 \define[command=wm:pubdetails]{}
 \define[command=book:chapter:post]{ \font[filename=book_tools/fonts/FeFlow2.otf]{\break{}a\break}}%
 \define[command=halftitlepage]{\nofolios\center{\book:chapterfont{\title}}\bigskip\book:sectionfont{\subtitle}}
 \define[command=titlepage]{\open-double-page\center{\book:chapterfont{\title}\skip[height=5ex]\book:sectionfont{\author}\vfill{}Via Christus Yayınları}\eject}
-\define[command=verbatim:font]{\font[family=Hack]}
+\define[command=verbatim:font]{\font[family=Hack]{\process}}
 \define[command=book:sansfont]{\font[family=Montserrat]{\process}}
 \define[command=book:chapterfont]{\book:sansfont{\font[weight=600,size=16pt]{\process}}}
 \define[command=book:sectionfont]{\book:sansfont{\font[weight=600,size=8pt]{\process}}}
@@ -26,7 +27,9 @@
 \font[weight=800]{Dizgi:} Caleb Maclennan\break
 \font[weight=800]{Yayın Koordinatörü:} Kerem Koç\break
 \bigskip
-© Paul Washer, The Gospel’s Power and Message\break
+\font[weight=800]{Orijinal adı: The Gospel’s Power and Message}\break
+\rights\break
+\bigskip
 Tüm yayın hakları Via Christus Yayınları’na aittir.
 \bigskip
 İzmir Protestan Kilisesi’nin yardımlarıyla türkçeye kazandırılmıştır.

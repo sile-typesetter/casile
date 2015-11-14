@@ -84,11 +84,11 @@ sync_pre sync_post:
 	/home/caleb/projects/pandoc/dist/build/pandoc/pandoc \
 		--standalone \
 		--parse-raw \
+		-V documentclass="book" \
+		-V papersize="148mm x 210mm" \
 		-V language="tr" \
 		-V include=book_tools/viachristus \
 		-V script=book_tools/viachristus \
-		-V papersize="148mm x 210mm" \
-		-V documentclass="book" \
 		$< -o $(basename $<).sil
 		#-V include=book_tools/a5kesme \
 
