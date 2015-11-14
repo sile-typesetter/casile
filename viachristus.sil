@@ -1,4 +1,5 @@
 \begin{document}
+\language[main=tr]
 \define[command=title]{}
 \define[command=subtitle]{}
 \define[command=author]{}
@@ -7,8 +8,9 @@
 \define[command=halftitlepage]{\nofolios\center{\book:chapterfont{\title}}\bigskip\book:sectionfont{\subtitle}}
 \define[command=titlepage]{\open-double-page\center{\book:chapterfont{\title}\skip[height=5ex]\book:sectionfont{\author}\vfill{}Via Christus Yayınları}\eject}
 \define[command=verbatim:font]{\font[family=Hack]}
-\define[command=book:chapterfont]{\font[family=Montserrat,weight=600,size=16pt]{\process}}
-\define[command=book:sectionfont]{\font[family=Montserrat,weight=600,size=9pt]{\uppercase{\process}}}
+\define[command=book:sansfont]{\font[family=Montserrat]{\process}}
+\define[command=book:chapterfont]{\book:sansfont{\font[weight=600,size=16pt]{\process}}}
+\define[command=book:sectionfont]{\book:sansfont{\font[weight=600,size=8pt]{\process}}}
 \font[family=Crimson,size=12pt]
 \define[command=publicationpage]{\nofolios\begin{raggedright}
 \font[family=Libertine Serif]

@@ -39,7 +39,8 @@ SILE.registerCommand("section", function (options, content)
       level = 2,
       postnumber = "book:section:post"
     }, content)
-    SILE.process(content)
+    --SILE.process(content)
+	SILE.call("uppercase", {}, content)
   end)
   SILE.call("novbreak")
 end, "Begin a new section")
