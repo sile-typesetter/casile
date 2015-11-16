@@ -1,17 +1,21 @@
 \begin{document}
 \language[main=tr]
+\script[src=packages/rules]
+\define[command=book:monofont]{\font[family=Hack]{\process}}
+\define[command=book:sansfont]{\font[family=Montserrat]{\process}}
+\define[command=book:seriffont]{\font[family=Crimson]{\process}}
+\define[command=book:chapterfont]{\book:sansfont{\font[weight=600,size=10pt]{\process}}}
+\define[command=book:sectionfont]{\book:sansfont{\font[weight=600,size=8pt]{\process}}}
+\define[command=verbatim:font]{\book:monofont{\font[size=10pt]{\process}}}
+%\define[command=book:chapter:pre:tr]{\book:seriffont}
+\define[command=book:chapter:post]{ \font[filename=book_tools/fonts/FeFlow2.otf]{\break{}\bigskip{}a\break\bigskip}}
 \define[command=title]{}
 \define[command=subtitle]{}
 \define[command=author]{}
 \define[command=rights]{}
 \define[command=wm:pubdetails]{}
-\define[command=book:chapter:post]{ \font[filename=book_tools/fonts/FeFlow2.otf]{\break{}a\break}}%
 \define[command=halftitlepage]{\nofolios\center{\book:chapterfont{\title}}\bigskip\book:sectionfont{\subtitle}}
 \define[command=titlepage]{\open-double-page\center{\book:chapterfont{\title}\skip[height=5ex]\book:sectionfont{\author}\vfill{}Via Christus Yayınları}\eject}
-\define[command=verbatim:font]{\font[family=Hack]{\process}}
-\define[command=book:sansfont]{\font[family=Montserrat]{\process}}
-\define[command=book:chapterfont]{\book:sansfont{\font[weight=600,size=16pt]{\process}}}
-\define[command=book:sectionfont]{\book:sansfont{\font[weight=600,size=8pt]{\process}}}
 \font[family=Crimson,size=12pt]
 \define[command=publicationpage]{\nofolios\begin{raggedright}
 \font[family=Libertine Serif]
