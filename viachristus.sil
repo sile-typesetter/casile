@@ -1,6 +1,8 @@
 \begin{document}
 \language[main=tr]
 \script[src=packages/rules]
+%\script[src=packages/frametricks]
+%\showframe[id=all]
 \define[command=book:monofont]{\font[family=Hack]{\process}}
 \define[command=book:sansfont]{\font[family=Montserrat]{\process}}
 \define[command=book:seriffont]{\font[family=Crimson]{\process}}
@@ -70,4 +72,3 @@ Ekim 2015 | İstanbul
 %\define[command=book:chapterfont]{\font[family=Optima,weight=800, size=22pt]{\process}}
 %\define[command=book:sectionfont]{\font[family=Optima,weight=800, size=12pt]{\process}}
 \end{document}
-
