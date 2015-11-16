@@ -31,8 +31,8 @@ sync_pre sync_post:
 	pgrep -u $$USER -x owncloud ||\
 		owncloudcmd -n -s $(OUTPUT) $(OWNCLOUD) 2>/dev/null
 
-%-kitap.pdf: %.md
-	pandoc \
+%-latex.pdf: %.md
+	/home/caleb/projects/pandoc/dist/build/pandoc/pandoc \
 		--chapters \
 		-V links-as-notes \
 		-V toc \
@@ -44,12 +44,8 @@ sync_pre sync_post:
 		-V linkcolor="black" \
 		-V scrheadings \
 		-V documentclass="scrbook" \
-		-V geometry="paperheight=210mm" \
-		-V geometry="paperwidth=148mm" \
-		-V geometry="layoutheight=195mm" \
-		-V geometry="layoutwidth=135mm" \
-		-V geometry="layouthoffset=7.5mm" \
-		-V geometry="layoutvoffset=6.5mm" \
+		-V geometry="paperheight=195mm" \
+		-V geometry="paperwidth=135mm" \
 		-V geometry="outer=14mm" \
 		-V geometry="inner=24mm" \
 		-V geometry="top=20mm" \
@@ -59,47 +55,28 @@ sync_pre sync_post:
 		-V geometry="showcrop" \
 		--latex-engine=xelatex \
 		--template=$(TOOLS)/template.tex \
-		$< -o $(basename $<)-kitap.pdf
+		$< -o $(basename $<)-latex.pdf
 
 %-2up.pdf: %.pdf
 	pdfbook --short-edge --suffix 2up --noautoscale true -- $<
-
-%.tex: %.md
-	pandoc \
-		--standalone \
-		-V links-as-notes \
-		-V toc \
-		-V lang="turkish" \
-		-V mainfont="Crimson" \
-		-V sansfont="Libertine Sans" \
-		-V monofont="Hack" \
-		-V fontsize="12pt" \
-		-V documentclass="scrbook" \
-		-V papersize="a4paper" \
-		--latex-engine=xelatex \
-		--template=$(TOOLS)/template.tex \
-		$< -o $(basename $<).tex
 
 %.sil: %.md
 	/home/caleb/projects/pandoc/dist/build/pandoc/pandoc \
 		--standalone \
 		--parse-raw \
 		-V documentclass="book" \
-		-V papersize="148mm x 210mm" \
+		-V papersize="135mm x 195mm" \
 		-V language="tr" \
 		-V include=book_tools/viachristus \
 		-V script=book_tools/viachristus \
 		$< -o $(basename $<).sil
-		#-V include=book_tools/a5kesme \
 
-#%.pdf: %.tex
-	#pandoc \
-		#--latex-engine=xelatex \
-		#$< -o $(basename $<).pdf
-
-%.pdf: %.sil
-	sile $< -o $(basename $<).pdf # Generate TOC
+%-sile.pdf: %.sil
+	sile $< -o $(basename $<)-sile.pdf # Generate TOC
 	#sile $< -o $(basename $<).pdf # Final
+
+%-kesme.pdf: %.pdf
+	xelatex -jobname=$(basename $<)-kesme '\documentclass{scrbook}\usepackage[paperheight=210mm,paperwidth=148mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.5mm,showcrop]{geometry}\usepackage{pdfpages}\begin{document}\includepdf[pages=-,noautoscale,fitpaper=false]{$<}\end{document}'
 
 %.epub: %.md
 	pandoc \
