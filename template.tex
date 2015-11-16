@@ -10,22 +10,10 @@ $if(linestretch)$
 \setstretch{$linestretch$}
 $endif$
 \usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
 \usepackage{fixltx2e} % provides \textsubscript
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
-  \usepackage[T1]{fontenc}
-  \usepackage[utf8]{inputenc}
-$if(euro)$
-  \usepackage{eurosym}
-$endif$
-\else % if luatex or xelatex
-  \ifxetex
-    \usepackage{mathspec}
-    \usepackage{xltxtra,xunicode}
-  \else
-    \usepackage{fontspec}
-  \fi
-  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+\usepackage{mathspec}
+\usepackage{xltxtra,xunicode}
+\defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
 $if(mainfont)$
     \setmainfont{$mainfont$}
 $endif$
@@ -42,7 +30,6 @@ $if(CJKmainfont)$
     \usepackage{xeCJK}
     \setCJKmainfont[$CJKoptions$]{$CJKmainfont$}
 $endif$
-\fi
 \newfontfamily\versefont{Libertine Serif}[Language=Turkish,Style=Alternate,StylisticSet=2]
 \newfontfamily\versereffont{Libertine Serif}[Language=Turkish,Letters=SmallCaps]
 % use upquote if available, for straight quotes in verbatim environments
@@ -55,13 +42,9 @@ $endif$
 $if(geometry)$
 \usepackage[$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
 $endif$
-\ifxetex
-  \usepackage[setpagesize=false, % page size defined by xetex
-              unicode=false, % unicode breaks when used with xetex
-              xetex]{hyperref}
-\else
-  \usepackage[unicode=true]{hyperref}
-\fi
+\usepackage[setpagesize=false, % page size defined by xetex
+            unicode=false, % unicode breaks when used with xetex
+            xetex]{hyperref}
 \usepackage[usenames,dvipsnames]{color}
 \hypersetup{breaklinks=true,
             bookmarks=true,
@@ -73,13 +56,9 @@ $endif$
             linkcolor=$if(linkcolor)$$linkcolor$$else$magenta$endif$,
             pdfborder={0 0 0}}
 $if(lang)$
-\ifxetex
-  \usepackage{polyglossia}
-  \setmainlanguage{$mainlang$}
-  %\setotherlanguages{$for(otherlang)$$otherlang$$sep$,$endfor$}
-\else
-  \usepackage[shorthands=off,$lang$]{babel}
-\fi
+\usepackage{polyglossia}
+\setmainlanguage{$mainlang$}
+%\setotherlanguages{$for(otherlang)$$otherlang$$sep$,$endfor$}
 $endif$
 $if(natbib)$
 \usepackage{natbib}
