@@ -81,7 +81,7 @@ SILE.registerCommand("book:partfont", function (options, content)
 end)
 SILE.registerCommand("book:subparagraphfont", function (options, content)
   SILE.settings.temporarily(function()
-    SILE.Commands["font"]({weight=800, size="10pt"}, content)
+    SILE.Commands["font"]({family="Libertine Serif", features="+smcp", weight=400, size="12pt"}, content)
   end)
 end)
 
@@ -111,20 +111,23 @@ end, "Begin a new part");
 
 SILE.registerCommand("subparagraph", function (options, content)
   SILE.typesetter:leaveHmode()
-  SILE.call("goodbreak")
-  SILE.call("noindent")
-  SILE.call("medskip")
+  SILE.call("novbreak")
+  SILE.call("smallskip")
+  SILE.call("novbreak")
   SILE.Commands["book:subparagraphfont"]({}, function()
-    SILE.call("book:sectioning", {
-          numbering = options.numbering,
-          level = 3,
-          postnumber = "book:subparagraph:post"
-        }, content)
-    SILE.process(content)
+    SILE.call("raggedleft", {}, function()
+      SILE.settings.set("document.rskip", SILE.nodefactory.newGlue("20pt"))
+      SILE.call("book:sectioning", {
+        numbering = options.numbering,
+        level = 3,
+        postnumber = "book:subparagraph:post"
+      }, content)
+      SILE.process(content)
+    end)
   end)
   SILE.typesetter:leaveHmode()
   SILE.call("novbreak")
-  SILE.call("medskip")
+  SILE.call("bigskip")
   SILE.call("novbreak")
 end, "Begin a new subparagraph")
 
@@ -134,3 +137,41 @@ SILE.registerCommand("uppercase", function(options, content)
   content[1] = content[1]:gsub("i", "İ")
   SILE.process(inputfilter.transformContent(content, utf8.upper))
 end, "Typeset the enclosed text as uppercase")
+
+SILE.require("packages/color")
+SILE.require("packages/raiselower")
+SILE.require("packages/rebox")
+SILE.registerCommand("pullquote:font", function(options, content)
+end, "The font chosen for the pullquote environment")
+SILE.registerCommand("pullquote:author-font", function(options, content)
+  SILE.settings.set("font.style", "italic")
+end, "The font style with which to typeset the author attribution.")
+SILE.registerCommand("pullquote:mark-font", function(options, content)
+  SILE.settings.set("font.family", "Libertine Serif")
+end, "The font from which to pull the quotation marks.")
+
+SILE.registerCommand("quote", function(options, content)
+  local author = options.author or nil
+  local setback = options.setback or "20pt"
+  local color = options.color or "#999999"
+  SILE.settings.temporarily(function()
+    SILE.settings.set("document.rskip", SILE.nodefactory.newGlue(setback))
+    SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(setback))
+
+    SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
+    SILE.call("pullquote:font")
+    SILE.process(content)
+    SILE.typesetter:pushGlue(SILE.nodefactory.hfillGlue)
+    if author then
+      SILE.settings.temporarily(function()
+        SILE.typesetter:leaveHmode()
+        SILE.call("pullquote:author-font")
+        SILE.call("raggedleft", {}, function ()
+          SILE.typesetter:typeset("— " .. author)
+        end)
+      end)
+    else
+      SILE.call("par")
+    end
+  end)
+end, "Typeset verse blocks")
