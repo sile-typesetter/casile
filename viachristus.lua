@@ -1,5 +1,5 @@
 SILE.doTexlike([[%
-\define[command=book:part:pre]{Part }%
+\define[command=book:part:pre]{Kısım }%
 \define[command=book:part:post]{\par}%
 \define[command=book:subparagraph:post]{ }%
 ]])
