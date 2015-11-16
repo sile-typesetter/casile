@@ -44,15 +44,14 @@ sync_pre sync_post:
 		-V linkcolor="black" \
 		-V scrheadings \
 		-V documentclass="scrbook" \
-		-V geometry="paperheight=195mm" \
 		-V geometry="paperwidth=135mm" \
-		-V geometry="outer=14mm" \
-		-V geometry="inner=24mm" \
+		-V geometry="paperheight=195mm" \
+		-V geometry="outer=15mm" \
+		-V geometry="inner=25mm" \
 		-V geometry="top=20mm" \
-		-V geometry="bottom=12mm" \
+		-V geometry="bottom=15mm" \
 		-V geometry="footskip=18pt" \
-		-V geometry="headsep=12pt" \
-		-V geometry="showcrop" \
+		-V geometry="headsep=14pt" \
 		--latex-engine=xelatex \
 		--template=$(TOOLS)/template.tex \
 		$< -o $(basename $<)-latex.pdf
