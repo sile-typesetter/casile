@@ -36,7 +36,7 @@ sync_pre sync_post:
 		--chapters \
 		-V links-as-notes \
 		-V toc \
-		-V lang="turkish" \
+		-V mainlang="turkish" \
 		-V mainfont="Crimson" \
 		-V sansfont="Montserrat" \
 		-V monofont="Hack" \
@@ -64,11 +64,12 @@ sync_pre sync_post:
 	/home/caleb/projects/pandoc/dist/build/pandoc/pandoc \
 		--standalone \
 		--parse-raw \
+		-V mainlang="tr" \
 		-V documentclass="book" \
 		-V papersize="135mm x 195mm" \
-		-V language="tr" \
-		-V include=book_tools/viachristus \
-		-V script=book_tools/viachristus \
+		-V include=$(TOOLS)/viachristus \
+		-V script=$(TOOLS)/viachristus \
+		--template=$(TOOLS)/template.sil \
 		$< -o $(basename $<).sil
 
 %-sile.pdf: %.sil
