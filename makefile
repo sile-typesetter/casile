@@ -32,7 +32,7 @@ sync_pre sync_post:
 		owncloudcmd -n -s $(OUTPUT) $(OWNCLOUD) 2>/dev/null
 
 %-latex.pdf: %.md
-	/home/caleb/projects/pandoc/dist/build/pandoc/pandoc \
+	pandoc \
 		--chapters \
 		-V links-as-notes \
 		-V toc \
@@ -60,21 +60,19 @@ sync_pre sync_post:
 	pdfbook --short-edge --suffix 2up --noautoscale true -- $<
 
 %.sil: %.md
-	/home/caleb/projects/pandoc/dist/build/pandoc/pandoc \
+	pandoc \
 		--standalone \
-		--parse-raw \
 		-V mainlang="tr" \
 		-V documentclass="book" \
 		-V papersize="135mm x 195mm" \
 		-V include=$(TOOLS)/viachristus \
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
-		-f markdown+raw_tex -t sile+raw_tex \
 		$< -o $(basename $<).sil
 
 %-sile.pdf: %.sil
 	sile $< -o $(basename $<)-sile.pdf # Generate TOC
-	#sile $< -o $(basename $<).pdf # Final
+	sile $< -o $(basename $<)-sile.pdf # Final
 
 %-kesme.pdf: %.pdf
 	xelatex -jobname=$(basename $<)-kesme '\documentclass{scrbook}\usepackage[paperheight=210mm,paperwidth=148mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.5mm,showcrop]{geometry}\usepackage{pdfpages}\begin{document}\includepdf[pages=-,noautoscale,fitpaper=false]{$<}\end{document}'
