@@ -70,6 +70,7 @@ sync_pre sync_post:
 		-V include=$(TOOLS)/viachristus \
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
+		-f markdown+raw_tex -t sile+raw_tex \
 		$< -o $(basename $<).sil
 
 %-sile.pdf: %.sil
