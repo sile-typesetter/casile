@@ -6,6 +6,7 @@
 \define[command=book:monofont]{\font[family=Hack]{\process}}
 \define[command=book:sansfont]{\font[family=Montserrat]{\process}}
 \define[command=book:seriffont]{\font[family=Crimson]{\process}}
+\define[command=book:partfont]{\book:sansfont{\font[weight=600,size=20pt]{\process}}}
 \define[command=book:chapterfont]{\book:sansfont{\font[weight=600,size=10pt]{\process}}}
 \define[command=book:sectionfont]{\book:sansfont{\font[weight=600,size=9pt]{\process}}}
 \define[command=verbatim:font]{\book:monofont{\font[size=10pt]{\process}}}
