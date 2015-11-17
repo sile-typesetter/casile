@@ -24,3 +24,27 @@ SILE.registerCommand("quote", function(options, content)
     SILE.call("par")
   end)
 end, "Typeset verse blocks")
+
+function tr_num2text (num)
+  local ones = { "bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz" }
+  local tens = { "on", "yirmi", "otuz", "kırk", "eli", "altmış", "yetmiş", "seksen", "dokuz" }
+  local places = { "yüz", "bin", "milyon", "milyar" }
+  local num = string.reverse(num)
+  local str = ""
+  for i = 1, #num do
+    local val = tonumber(string.sub(num, i, i))
+    if val >= 1 then
+      if i == 1 then
+        str = ones[val] .. " " .. str
+      elseif i == 2 then
+        str = tens[val] .. " " .. str
+      elseif i >= 3 then
+        str = places[i-2] .. " " .. str
+        if val >= 2 then
+          str = ones[val] .. " " .. str
+        end
+      end
+    end
+  end
+  return str
+end
