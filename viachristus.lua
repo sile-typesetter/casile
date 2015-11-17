@@ -67,6 +67,39 @@ SILE.formatCounter = function(options)
   return tostring(options.value);
 end
 
+local _initml = function (c)
+  if not(SILE.scratch.counters[c]) then
+    SILE.scratch.counters[c] = { value= {0}, display= {"arabic"} };
+  end
+end
+
+SILE.registerCommand("increment-multilevel-counter", function (options, content)
+  local c = options.id; _initml(c)
+  local this = SILE.scratch.counters[c]
+
+  local currentLevel = #this.value
+  local level = tonumber(options.level) or currentLevel
+  local prev = this.value[currentLevel]
+  print("\nOut: ", this.value, level, currentLevel, prev)
+  if level == currentLevel then
+    this.value[level] = this.value[level] + 1
+  elseif level > currentLevel then
+    while level > currentLevel do
+      currentLevel = currentLevel + 1
+      this.value[currentLevel] = prev + 1
+      this.display[currentLevel] = this.display[currentLevel -1]
+    end
+  else -- level < currentLevel
+    this.value[level] = this.value[level] + 1
+    while currentLevel > level do
+      this.value[currentLevel] = nil
+      this.display[currentLevel] = nil
+      currentLevel = currentLevel - 1
+    end
+  end
+  if options.display then this.display[currentLevel] = options.display end
+end)
+
 SILE.registerCommand("tableofcontents:item", function (o,c)
   SILE.settings.temporarily(function ()
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
