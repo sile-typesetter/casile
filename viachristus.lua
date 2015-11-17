@@ -79,14 +79,18 @@ SILE.registerCommand("increment-multilevel-counter", function (options, content)
 
   local currentLevel = #this.value
   local level = tonumber(options.level) or currentLevel
-  local prev = this.value[currentLevel]
-  print("\nOut: ", this.value, level, currentLevel, prev)
+  local prev
   if level == currentLevel then
     this.value[level] = this.value[level] + 1
   elseif level > currentLevel then
     while level > currentLevel do
+      if not(options.reset == false) then
+        prev = 0
+      else
+        prev = this.value[currentLevel] + 1
+      end
       currentLevel = currentLevel + 1
-      this.value[currentLevel] = prev + 1
+      this.value[currentLevel] = prev
       this.display[currentLevel] = this.display[currentLevel -1]
     end
   else -- level < currentLevel
