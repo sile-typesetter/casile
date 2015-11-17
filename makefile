@@ -59,7 +59,7 @@ sync_pre sync_post:
 %-2up.pdf: %.pdf
 	pdfbook --short-edge --suffix 2up --noautoscale true -- $<
 
-%.sil: %.md
+%-kitap.sil: %.md
 	pandoc \
 		--standalone \
 		-V mainlang="tr" \
@@ -68,11 +68,11 @@ sync_pre sync_post:
 		-V include=$(TOOLS)/viachristus \
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
-		$< -o $(basename $<).sil
+		$< -o $(basename $<)-kitap.sil
 
-%-sile.pdf: %.sil
-	sile $< -o $(basename $<)-sile.pdf # Generate TOC
-	sile $< -o $(basename $<)-sile.pdf # Final
+%-kitap.pdf: %-kitap.sil
+	sile $< -o $(basename $<).pdf # Generate TOC
+	sile $< -o $(basename $<).pdf # Final
 
 %-kesme.pdf: %.pdf
 	xelatex -jobname=$(basename $<)-kesme '\documentclass{scrbook}\usepackage[paperheight=210mm,paperwidth=148mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.5mm,showcrop]{geometry}\usepackage{pdfpages}\begin{document}\includepdf[pages=-,noautoscale,fitpaper=false]{$<}\end{document}'
