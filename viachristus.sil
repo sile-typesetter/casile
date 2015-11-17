@@ -10,7 +10,7 @@
 \define[command=book:chapterfont]{\book:sansfont{\font[weight=600,size=10pt]{\process}}}
 \define[command=book:sectionfont]{\book:sansfont{\font[weight=600,size=9pt]{\process}}}
 \define[command=verbatim:font]{\book:monofont{\font[size=10pt]{\process}}}
-\define[command=book:chapter:pre:tr]{\font[family=Montserrat,size=10pt,weight=300]Bölüm }
+\define[command=book:chapter:pre:tr]{\font[family=Montserrat,size=10pt,weight=300]BÖLÜM }
 \define[command=book:chapter:post]{ \font[filename=book_tools/fonts/FeFlow2.otf,size=9pt]{\break{}\medskip{}a\break\medskip}}
 \define[command=title]{}
 \define[command=subtitle]{}

@@ -1,8 +1,11 @@
 local utf8 = require("lua-utf8")
 local inputfilter = SILE.require("packages/inputfilter").exports
+local function trupper (string)
+  string = string:gsub("i", "İ")
+  return utf8.upper(string)
+end
 SILE.registerCommand("uppercase", function(options, content)
-  content[1] = content[1]:gsub("i", "İ")
-  SILE.process(inputfilter.transformContent(content, utf8.upper))
+  SILE.process(inputfilter.transformContent(content, trupper))
 end, "Typeset the enclosed text as uppercase")
 
 SILE.require("packages/color")
@@ -25,10 +28,10 @@ SILE.registerCommand("quote", function(options, content)
   end)
 end, "Typeset verse blocks")
 
-function tr_num2text (num)
-  local ones = { "bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz" }
-  local tens = { "on", "yirmi", "otuz", "kırk", "eli", "altmış", "yetmiş", "seksen", "dokuz" }
-  local places = { "yüz", "bin", "milyon", "milyar" }
+local function tr_num2text (num)
+  local ones = { "Bir", "İki", "Üç", "Dört", "Beş", "Altı", "Yedi", "Sekiz", "Dokuz" }
+  local tens = { "On", "Yirmi", "Otuz", "Kırk", "Eli", "Altmış", "Yetmiş", "Seksen", "Dokuz" }
+  local places = { "Yüz", "Bin", "Milyon", "Milyar" }
   local num = string.reverse(num)
   local str = ""
   for i = 1, #num do
@@ -47,4 +50,15 @@ function tr_num2text (num)
     end
   end
   return str
+end
+
+SILE.formatCounter = function(options)
+  if (options.display == "roman") then return romanize(options.value):lower() end
+  if (options.display == "Roman") then return romanize(options.value) end
+  if (options.display == "alpha") then return alpha(options.value) end
+  --if (options.display == "Alpha") then return alpha(options.value):upper() end
+  if (options.display == "string") then return tr_num2text(options.value):lower() end
+  if (options.display == "String") then return tr_num2text(options.value) end
+  if (options.display == "STRING") then return trupper(tr_num2text(options.value)) end
+  return tostring(options.value);
 end
