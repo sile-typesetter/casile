@@ -33,23 +33,27 @@ local function tr_num2text (num)
   local tens = { "On", "Yirmi", "Otuz", "Kırk", "Eli", "Altmış", "Yetmiş", "Seksen", "Dokuz" }
   local places = { "Yüz", "Bin", "Milyon", "Milyar" }
   local num = string.reverse(num)
-  local str = ""
+  local parts = {}
   for i = 1, #num do
     local val = tonumber(string.sub(num, i, i))
     if val >= 1 then
       if i == 1 then
-        str = ones[val] .. " " .. str
+        parts[#parts+1] = ones[val]
       elseif i == 2 then
-        str = tens[val] .. " " .. str
+        parts[#parts+1] = tens[val]
       elseif i >= 3 then
-        str = places[i-2] .. " " .. str
+        parts[#parts+1] = places[i-2]
         if val >= 2 then
-          str = ones[val] .. " " .. str
+          parts[#parts+1] = ones[val]
         end
       end
     end
   end
-  return str
+  local words = {}
+  for i = 1, #parts do
+    words[#parts+1-i] = parts[i]
+  end
+  return table.concat( words, " " )
 end
 
 SILE.formatCounter = function(options)
