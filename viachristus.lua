@@ -122,9 +122,25 @@ SILE.registerCommand("fullrule", function (options, content)
   SILE.call("hrule", { height = ".5pt", width = SILE.typesetter.frame:lineWidth() })
 end)
 
-SILE.doTexlike([[%
-\define[command=tableofcontents:headerfont]{\center{\book:chapterfont{\font[size=14pt]{\process}}}}%
-\define[command=tableofcontents:header]{\par\noindent\tableofcontents:headerfont{\tableofcontents:title}\medskip\fullrule}%
-\define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600]{\process}}\smallskip}%
-\define[command=tableofcontents:level2item]{\noindent\glue[width=3ex]\font[size=12pt]{\process}\smallskip}%
-]])
+local insertions = SILE.require("packages/insertions")
+SILE.registerCommand("footnote", function(options, content)
+  SILE.call("footnotemark")
+  local opts = SILE.scratch.insertions.classes.footnote
+  local f = SILE.getFrame(opts["insertInto"])
+  local oldT = SILE.typesetter
+  SILE.typesetter = SILE.typesetter {}
+  SILE.typesetter:init(f)
+  SILE.typesetter.pageTarget = function () return 0xFFFFFF end
+  local material = SILE.Commands["vbox"]({}, function()
+    SILE.Commands["book:footnotefont"]({}, function()
+      SILE.call("noindent")
+      SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.footnote)..".")
+      SILE.call("qquad")
+      SILE.process(content)
+    end)
+  end
+  )
+  SILE.typesetter = oldT
+  insertions.exports:insert("footnote", material)
+  SILE.scratch.counters.footnote.value = SILE.scratch.counters.footnote.value + 1
+end)
