@@ -89,5 +89,5 @@ SILE.doTexlike([[%
 \define[command=tableofcontents:headerfont]{\center{\book:chapterfont{\font[size=14pt]{\process}}}}%
 \define[command=tableofcontents:header]{\par\noindent\tableofcontents:headerfont{\tableofcontents:title}\medskip\fullrule}%
 \define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600]{\process}}\smallskip}%
-\define[command=tableofcontents:level2item]{\glue[width=3ex]\font[size=12pt]{\process}\smallskip}%
+\define[command=tableofcontents:level2item]{\noindent\glue[width=3ex]\font[size=12pt]{\process}\smallskip}%
 ]])
