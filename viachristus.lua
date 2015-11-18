@@ -11,6 +11,7 @@ end, "Typeset the enclosed text as uppercase")
 SILE.require("packages/color")
 SILE.require("packages/raiselower")
 SILE.require("packages/rebox")
+SILE.require("packages/leaders")
 
 SILE.registerCommand("quote", function(options, content)
   local author = options.author or nil
@@ -109,9 +110,12 @@ SILE.registerCommand("tableofcontents:item", function (o,c)
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
     SILE.call("tableofcontents:level"..o.level.."item", {}, function()
       SILE.process({c})
-      -- Ideally, leaders
-      SILE.call("hss")
-      if o.level == 2 then
+      if o.level == 1 then
+        SILE.call("hss")
+      elseif o.level == 2 then
+        SILE.call("glue", { width = "1ex" })
+        SILE.call("dotfill")
+        SILE.call("glue", { width = "1ex" })
         SILE.typesetter:typeset(o.pageno)
       end
     end)
