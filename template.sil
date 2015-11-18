@@ -54,6 +54,8 @@ $if(rights-meta)$
 \define[command=rights]{$title-rights$}
 $endif$
 \halftitlepage
+\define[command=listarea]{\set[parameter=document.rskip,value=1em]\set[parameter=document.lskip,value=1.5em]\process\set[parameter=document.lskip]\set[parameter=document.rskip]}%
+\define[command=listitem]{\smallskip{}\glue[width=-1em]• \glue[width=0.3em]\process\smallskip}%
 \titlepage
 \publicationpage
 \tableofcontents
