@@ -1,3 +1,211 @@
+local plain = SILE.require("classes/plain");
+local book = SILE.require("classes/book");
+book:loadPackage("masters")
+book:defineMaster({ id = "right", firstContentFrame = "content", frames = {
+  content = {left = "22.5mm", right = "100%-15mm", top = "20mm", bottom = "top(footnotes)" },
+  folio = {left = "left(content)", right = "right(content)", top = "bottom(footnotes)+5mm",bottom = "100%-5mm" },
+  runningHead = {left = "left(content)", right = "right(content)", top = "top(content)-10mm", bottom = "top(content)-2mm" },
+  footnotes = { left="left(content)", right = "right(content)", height = "0", bottom="100%-15mm"}
+}})
+
+book.endPage = function(self)
+  book:moveTocNodes()
+
+  if (not SILE.scratch.headers.skipthispage) then
+    if (book:oddPage() and SILE.scratch.headers.right) then
+      SILE.typesetNaturally(SILE.getFrame("runningHead"), function()
+        SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
+        SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
+        SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
+        SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
+        SILE.process(SILE.scratch.headers.right)
+        SILE.call("hfill")
+        SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
+        SILE.call("skip", {height="-10pt"})
+        SILE.call("fullrule")
+        SILE.call("par")
+      end)
+      elseif (not(book:oddPage()) and SILE.scratch.headers.left) then
+        SILE.typesetNaturally(SILE.getFrame("runningHead"), function()
+          SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
+          SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
+          SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
+          SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
+          SILE.call("book:left-running-head-font")
+          SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
+          SILE.call("hfill")
+          SILE.call("title")
+          SILE.call("skip", {height="-10pt"})
+          SILE.call("fullrule")
+          SILE.call("par")
+        end)
+      end
+    else
+      SILE.scratch.headers.skipthispage = false
+    end
+  return plain.endPage(book);
+end;
+
+SILE.registerCommand("left-running-head", function(options, content)
+  local closure = SILE.settings.wrap()
+  SILE.scratch.headers.left = function () closure(content) end
+end, "Text to appear on the top of the left page");
+
+SILE.registerCommand("right-running-head", function(options, content)
+  local closure = SILE.settings.wrap()
+  SILE.scratch.headers.right = function () closure(content) end
+end, "Text to appear on the top of the right page");
+
+SILE.registerCommand("book:sectioning", function (options, content)
+  local level = SU.required(options, "level", "book:sectioning")
+  SILE.call("increment-multilevel-counter", {id = "sectioning", level = options.level, display = options.display, reset = options.reset})
+  local lang = SILE.settings.get("document.language")
+  local counters = SILE.scratch.counters["sectioning"]
+  local toc_content = {}
+  for k, v in pairs(content) do
+    toc_content[k] = v
+  end
+  if level == 1 then
+    local val = SILE.formatCounter({display = "STRING", value = counters.value[level]})
+    toc_content[1] = "KISIM " .. val .. ": " .. content[1]
+  elseif level == 2 then
+    local val = SILE.formatCounter({display = "arabic", value = counters.value[level]})
+    toc_content[1] = val .. ". " .. content[1]
+  elseif level >= 3 then
+	  return
+  end
+  SILE.call("tocentry", {level = options.level}, toc_content)
+  if options.numbering == nil or options.numbering == "yes" then
+    if options.prenumber then
+      if SILE.Commands[options.prenumber..":"..lang] then options.prenumber = options.prenumber..":"..lang end
+	  if SILE.Commands["book:chapter:precounter"] then SILE.call("book:chapter:precounter") end
+      SILE.call(options.prenumber)
+    end
+    SILE.call("show-multilevel-counter", {id="sectioning", display = options.display, minlevel = options.level})
+    if options.postnumber then
+      if SILE.Commands[options.postnumber..":"..lang] then options.postnumber = options.postnumber..":"..lang end
+      SILE.call(options.postnumber)
+    end
+  end
+end)
+
+SILE.registerCommand("chapternumber", function (o,c)
+  SILE.call("typeset:chapternumber", o, c)
+  SILE.call("save-chapter-number", o, c) 
+end)
+
+SILE.registerCommand("chapter", function (options, content)
+  SILE.call("open-double-page")
+  SILE.call("noindent")
+  SILE.call("set-counter", {id = "footnote", value = 1})  
+  SILE.scratch.theChapter = content
+  SILE.call("center", {}, function()
+    SILE.settings.temporarily(function()
+      SILE.typesetter:typeset(" ")
+      SILE.call("skip", {height="2ex"})
+      SILE.call("book:sectioning", {
+        numbering = options.numbering, 
+        level = 2,
+        reset = false,
+        display = "STRING",
+        prenumber = "book:chapter:pre",
+        postnumber = "book:chapter:post"
+      }, content)
+      SILE.call("book:chapterfont", {}, content)
+      SILE.call("bigskip")
+      SILE.call("hrule", { height = ".5pt", width = SILE.typesetter.frame:lineWidth() })
+    end)
+  end)
+  SILE.call("left-running-head")
+  SILE.Commands["right-running-head"]({}, function()
+    SILE.settings.temporarily(function()
+      SILE.call("book:right-running-head-font")
+      SILE.process(content)
+    end)
+  end)
+  SILE.scratch.headers.skipthispage = true
+  SILE.call("bigskip")
+  --SILE.call("nofoliosthispage")
+end, "Begin a new chapter");
+
+SILE.registerCommand("section", function (options, content)
+  SILE.typesetter:leaveHmode()
+  SILE.call("goodbreak")  
+  SILE.call("bigskip")
+  SILE.call("noindent")
+  SILE.settings.temporarily(function()
+    SILE.call("book:sectionfont", {}, function()
+      SILE.call("book:sectioning", {
+        numbering = options.numbering, 
+        level = 3,
+        postnumber = "book:section:post"
+      }, content)
+      SILE.call("uppercase", {}, content)
+      --SILE.process(content)
+    end)
+  end)
+  SILE.call("novbreak")
+end, "Begin a new section")
+
+SILE.registerCommand("part", function (options, content)
+  SILE.call("open-double-page")
+  SILE.call("noindent")
+  SILE.call("set-counter", {id = "footnote", value = 1})
+  SILE.call("center", {}, function()
+    SILE.call("book:partnumfont", {}, function()
+      SILE.typesetter:typeset(" ")
+      SILE.call("skip", {height="8ex"})
+      SILE.call("book:sectioning", {
+        numbering = options.numbering,
+        level = 1,
+        display = "STRING",
+        prenumber = "book:part:pre",
+        postnumber = "book:part:post"
+      }, content)
+    end)
+    SILE.call("bigskip")
+    SILE.Commands["book:partfont"]({}, content);
+    SILE.call("bigskip")
+    SILE.call("font", { filename = "book_tools/fonts/FeFlow2.otf", size = "9pt"}, {"a"})
+    SILE.call("bigskip")
+  end)
+  SILE.scratch.headers.skipthispage = true
+end, "Begin a new part");
+
+SILE.registerCommand("open-double-page", function()
+  SILE.typesetter:leaveHmode();
+  SILE.Commands["supereject"]();
+  if SILE.documentState.documentClass:oddPage() then
+    SILE.typesetter:typeset("")
+    SILE.typesetter:leaveHmode();
+    SILE.Commands["supereject"]();
+    SILE.scratch.headers.skipthispage = true
+  end
+  SILE.typesetter:leaveHmode();
+end)
+
+SILE.registerCommand("subparagraph", function (options, content)
+  SILE.typesetter:leaveHmode()
+  SILE.call("novbreak")
+  SILE.call("smallskip")
+  SILE.call("novbreak")
+  SILE.Commands["book:subparagraphfont"]({}, function()
+    SILE.call("raggedleft", {}, function()
+      SILE.settings.set("document.rskip", SILE.nodefactory.newGlue("20pt"))
+      SILE.call("book:sectioning", {
+        numbering = options.numbering,
+        level = 3,
+        postnumber = "book:subparagraph:post"
+      }, content)
+      SILE.process(content)
+    end)
+  end)
+  SILE.typesetter:leaveHmode()
+  SILE.call("novbreak")
+  SILE.call("bigskip")
+  SILE.call("novbreak")
+end, "Begin a new subparagraph")
+
 local utf8 = require("lua-utf8")
 local inputfilter = SILE.require("packages/inputfilter").exports
 local function trupper (string)
