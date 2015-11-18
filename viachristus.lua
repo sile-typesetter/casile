@@ -139,7 +139,7 @@ SILE.registerCommand("footnote", function(options, content)
     SILE.Commands["book:footnotefont"]({}, function()
       SILE.call("noindent")
       SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.footnote)..".")
-      SILE.call("qquad")
+      SILE.call("quad")
       SILE.process(content)
     end)
   end
@@ -148,3 +148,6 @@ SILE.registerCommand("footnote", function(options, content)
   insertions.exports:insert("footnote", material)
   SILE.scratch.counters.footnote.value = SILE.scratch.counters.footnote.value + 1
 end)
+
+SILE.scratch.insertions.classes.footnote.topSkip = SILE.length.parse("3ex plus 0 minus 0")
+SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse("1ex plus 0 minus 0")
