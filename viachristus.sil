@@ -18,8 +18,8 @@
 \define[command=book:part:pre]{KISIM }%
 \define[command=book:part:post]{\par}%
 \define[command=book:subparagraph:post]{ }%
-\define[command=book:left-running-head-font]{\font[size=12pt]}%
-\define[command=book:right-running-head-font]{\font[size=12pt,style=italic]}%
+\define[command=book:left-running-head-font]{\font[family=Libertine Serif,style=Regular,size=12pt]}%
+\define[command=book:right-running-head-font]{\font[family=Libertine Serif,style=italic,size=12pt]}%
 \define[command=tableofcontents:headerfont]{\book:partfont{\process}}%
 \define[command=tableofcontents:header]{\center{ \skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\medskip\fullrule}%
 \define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600,style=Bold]{\process}}\smallskip}%
