@@ -7,6 +7,8 @@ book:defineMaster({ id = "right", firstContentFrame = "content", frames = {
   runningHead = {left = "left(content)", right = "right(content)", top = "top(content)-10mm", bottom = "top(content)-2mm" },
   footnotes = { left="left(content)", right = "right(content)", height = "0", bottom="100%-15mm"}
 }})
+book:loadPackage("twoside", { oddPageMaster = "right", evenPageMaster = "left" });
+book:mirrorMaster("right", "left")
 
 book.endPage = function(self)
   book:moveTocNodes()
