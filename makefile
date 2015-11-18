@@ -75,7 +75,7 @@ sync_pre sync_post:
 	sile $< -o $(basename $<).pdf # Final
 
 %-kesme.pdf: %.pdf
-	xelatex -jobname=$(basename $<)-kesme '\documentclass{scrbook}\usepackage[paperheight=210mm,paperwidth=148mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.5mm,showcrop]{geometry}\usepackage{pdfpages}\begin{document}\includepdf[pages=-,noautoscale,fitpaper=false]{$<}\end{document}'
+	xelatex -jobname=$(basename $<)-kesme '\documentclass{scrbook}\usepackage[paperheight=210mm,paperwidth=148.5mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.75mm,showcrop]{geometry}\usepackage{pdfpages}\begin{document}\includepdf[pages=-,noautoscale,fitpaper=false]{$<}\end{document}'
 
 %.epub: %.md
 	pandoc \
