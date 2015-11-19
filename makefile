@@ -62,13 +62,12 @@ sync_pre sync_post:
 %-kitap.sil: %.md
 	pandoc \
 		--standalone \
-		-V mainlang="tr" \
 		-V documentclass="book" \
 		-V papersize="135mm x 195mm" \
 		-V script=$(basename $<) \
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
-		$< -o $(basename $<)-kitap.sil
+		$(basename $<).yaml $< -o $(basename $<)-kitap.sil
 
 %-kitap.pdf: %-kitap.sil
 	sile $< -o $(basename $<).pdf # Generate TOC
@@ -80,15 +79,15 @@ sync_pre sync_post:
 %.epub: %.md
 	pandoc \
 		$(shell test -f "$(EBOOKCOVER)" && echo "--epub-cover-image=$(BASE)/$(EBOOKCOVER)") \
-		$< -o $(basename $<).epub
+		$(basename $<).yaml $< -o $(basename $<).epub
 
 %.mobi: %.epub
 	-kindlegen $<
 
 %.odt: %.md
 	pandoc \
-		$< -o $(basename $<).odt
+		$(basename $<).yaml $< -o $(basename $<).odt
 
 %.docx: %.md
 	pandoc \
-		$< -o $(basename $<).docx
+		$(basename $<).yaml $< -o $(basename $<).docx

@@ -24,67 +24,39 @@ SILE.doTexlike([[
 \define[command=tableofcontents:header]{\center{ \skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\medskip\fullrule}%
 \define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600,style=Bold]{\process}}\smallskip}%
 \define[command=tableofcontents:level2item]{\noindent\glue[width=2ex]\font[size=11pt]{\process}\smallskip}%
-\define[command=title]{}
-\define[command=wraptitle]{\title}
-\define[command=subtitle]{}
-\define[command=author]{}
-\define[command=rights]{}
-\define[command=wm:pubdetails]{}
-\define[command=halftitlepage]{\nofolios\center{{ }\skip[height=3em]\book:chapterfont{\wraptitle}\bigskip\book:sectionfont{\subtitle}}}
-\define[command=titlepage]{\open-double-page\center{{ }\skip[height=3em]\book:partnumfont{\wraptitle}\bigskip\book:chapterfont{\subtitle}\bigskip\book:partfont{\font[weight=300,style=Thin]\author}\vfill{}<logo>\bigskip{}Via Christus Yayınları}\eject}
+\define[command=wraptitle]{\meta:title}
+\define[command=halftitlepage]{\nofolios\center{{ }\skip[height=3em]\book:chapterfont{\wraptitle}\bigskip\book:sectionfont{\meta:subtitle}}}
+\define[command=titlepage]{\open-double-page\center{{ }\skip[height=3em]\book:partnumfont{\wraptitle}\bigskip\book:chapterfont{\meta:subtitle}\bigskip\book:partfont{\font[weight=300,style=Thin]\meta:author}\vfill{}<logo>\bigskip{}Via Christus Yayınları}\eject}
 \font[family=Crimson,style=Roman,size=12pt]
 \define[command=publicationpage]{\nofolios\begin{raggedright}
+\vfill
 \font[family=Libertine Serif,style=Regular,size=9pt]
-\font[weight=800,style=Bold]{\title}\break
-\author
-\bigskip
-\font[weight=800,style=Bold]{Çeviri:} Yeşim Mısırcı\break
-\font[weight=800,style=Bold]{Editör:} Alper Gunay\break
-%\font[weight=800,style=Bold]{Redaksiyon:} Hakan Güven\break
-\font[weight=800,style=Bold]{Düzelti:} Ferah Yagnaliyeva, Hakan Güven\break
-%\font[weight=800,style=Bold]{Kapak Tasarım:}\break
-%\font[weight=800,style=Bold]{Kapak Fotoğrafı:}\break
-\font[weight=800,style=Bold]{Dizgi:} Caleb Maclennan\break
-\font[weight=800,style=Bold]{Yayın Koordinatörü:} Kerem Koç\break
-\bigskip
-\font[weight=800,style=Bold]{Orijinal adı: The Gospel’s Power and Message}\break
-\rights\break
-\bigskip
-Tüm yayın hakları Via Christus Yayınları’na aittir.
-\bigskip
-İzmir Protestan Kilisesi’nin yardımlarıyla türkçeye kazandırılmıştır.
-\bigskip
-\begin{center}
-Via Christus Yayınları\break
-\url{https://www.viachristus.com}\break
-\url{viachristusyayinlari@gmail.com}
-\end{center}
-\bigskip
-\font[weight=800]{Matbaa}\break
-Baskı: Anadolu Ofset\break
-Telefon:
-\bigskip
-Ekim 2015 | İstanbul
-\bigskip
-\font[weight=800]{ISBN:} NNNNNNNNNNNNNNNNN-N
-%\font[weight=800]{Yayın No:} 01
+\font[weight=600,style=Bold]{\meta:title}\break
+\meta:creators{}
+\meta:info{}
+\medskip
+\meta:rights{}
+\medskip
+\meta:identifiers{}
+\medskip
+\meta:date{}
+\medskip
+\meta:contributors{}
+\medskip
+\meta:extracredits{}
+\medskip
+\meta:manufacturer{}
+\medskip
+\meta:versecredits{}
+\medskip
+%\begin{center}
+\font[weight=600,style=Bold]{Via Christus Yayınları}\break
+\book:monofont{\font[size=8pt]https://www.viachristus.com}\break
+\book:monofont{\font[size=8pt]viachristusyayinlari@gmail.com}
+%\end{center}
 \end{raggedright}
 \eject
 }
-%Copyright © \date \author
-%Published in 2015 by Wide Margin, \break
-%90 Sandyleaze, Gloucester, GL2 0PX, UK \break
-%\font[family=Monaco]{http://www.wide-margin.co.uk/}
-%\wm:pubdetails
-%The right of \author to be identified as the Author of this Work has been asserted by him in accordance with the Copyright, Designs and Patents Act 1988.
-%\bigskip
-%\em{All rights reserved. No part of this publication may be reproduced, stored in a retrieval system, or transmitted in any form or by any means electronic, or mechanical, photocopying, recording or otherwise, without the prior permission of the publisher or a licence permitting restricted copying.}
-%\bigskip
-%ISBN \wm:isbn
-%\bigskip
-%Printed and bound in Great Britain by\break Lightning Source, Milton Keynes
-%\define[command=book:chapterfont]{\font[family=Optima,weight=800, size=22pt]{\process}}
-%\define[command=book:sectionfont]{\font[family=Optima,weight=800, size=12pt]{\process}}
 ]])
 local plain = SILE.require("classes/plain");
 local book = SILE.require("classes/book");
@@ -124,7 +96,7 @@ book.endPage = function(self)
           SILE.call("book:left-running-head-font")
           SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
           SILE.call("hfill")
-          SILE.call("title")
+          SILE.call("meta:title")
           SILE.call("skip", {height="-10pt"})
           SILE.call("fullrule")
           SILE.call("par")
