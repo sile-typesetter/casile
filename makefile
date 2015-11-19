@@ -31,12 +31,12 @@ sync_pre sync_post:
 	pgrep -u $$USER -x owncloud ||\
 		owncloudcmd -n -s $(OUTPUT) $(OWNCLOUD) 2>/dev/null
 
-%-kitap.pdf: %.md
+%-latex.pdf: %.md
 	pandoc \
 		--chapters \
 		-V links-as-notes \
 		-V toc \
-		-V lang="turkish" \
+		-V mainlang="turkish" \
 		-V mainfont="Crimson" \
 		-V sansfont="Montserrat" \
 		-V monofont="Hack" \
@@ -44,53 +44,50 @@ sync_pre sync_post:
 		-V linkcolor="black" \
 		-V scrheadings \
 		-V documentclass="scrbook" \
-		-V geometry="paperheight=210mm" \
-		-V geometry="paperwidth=148mm" \
-		-V geometry="layoutheight=195mm" \
-		-V geometry="layoutwidth=135mm" \
-		-V geometry="layouthoffset=7.5mm" \
-		-V geometry="layoutvoffset=6.5mm" \
-		-V geometry="outer=14mm" \
-		-V geometry="inner=24mm" \
+		-V geometry="paperwidth=135mm" \
+		-V geometry="paperheight=195mm" \
+		-V geometry="outer=15mm" \
+		-V geometry="inner=25mm" \
 		-V geometry="top=20mm" \
-		-V geometry="bottom=12mm" \
+		-V geometry="bottom=15mm" \
 		-V geometry="footskip=18pt" \
-		-V geometry="headsep=12pt" \
-		-V geometry="showcrop" \
+		-V geometry="headsep=14pt" \
 		--latex-engine=xelatex \
 		--template=$(TOOLS)/template.tex \
-		$< -o $(basename $<)-kitap.pdf
+		$< -o $(basename $<)-latex.pdf
 
 %-2up.pdf: %.pdf
 	pdfbook --short-edge --suffix 2up --noautoscale true -- $<
 
-%.pdf: %.md
+%-kitap.sil: %.md
 	pandoc \
-		-V links-as-notes \
-		-V toc \
-		-V lang="turkish" \
-		-V mainfont="Crimson" \
-		-V sansfont="Libertine Sans" \
-		-V monofont="Hack" \
-		-V fontsize="12pt" \
-		-V documentclass="scrbook" \
-		-V papersize="a4paper" \
-		--latex-engine=xelatex \
-		--template=$(TOOLS)/template.tex \
-		$< -o $(basename $<).pdf
+		--standalone \
+		-V documentclass="book" \
+		-V papersize="135mm x 195mm" \
+		-V script=$(basename $<) \
+		-V script=$(TOOLS)/viachristus \
+		--template=$(TOOLS)/template.sil \
+		$(basename $<).yaml $< -o $(basename $<)-kitap.sil
+
+%-kitap.pdf: %-kitap.sil
+	sile $< -o $(basename $<).pdf # Generate TOC
+	sile $< -o $(basename $<).pdf # Final
+
+%-kesme.pdf: %.pdf
+	xelatex -jobname=$(basename $<)-kesme '\documentclass{scrbook}\usepackage[paperheight=210mm,paperwidth=148.5mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.75mm,showcrop]{geometry}\usepackage{pdfpages}\begin{document}\includepdf[pages=-,noautoscale,fitpaper=false]{$<}\end{document}'
 
 %.epub: %.md
 	pandoc \
 		$(shell test -f "$(EBOOKCOVER)" && echo "--epub-cover-image=$(BASE)/$(EBOOKCOVER)") \
-		$< -o $(basename $<).epub
+		$(basename $<).yaml $< -o $(basename $<).epub
 
 %.mobi: %.epub
 	-kindlegen $<
 
 %.odt: %.md
 	pandoc \
-		$< -o $(basename $<).odt
+		$(basename $<).yaml $< -o $(basename $<).odt
 
 %.docx: %.md
 	pandoc \
-		$< -o $(basename $<).docx
+		$(basename $<).yaml $< -o $(basename $<).docx
