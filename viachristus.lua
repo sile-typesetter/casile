@@ -156,7 +156,7 @@ SILE.registerCommand("part", function (options, content)
   SILE.call("center", {}, function()
     SILE.call("book:partnumfont", {}, function()
       SILE.typesetter:typeset(" ")
-      SILE.call("skip", {height="8ex"})
+      SILE.call("skip", {height="6ex"})
       SILE.call("book:sectioning", {
         numbering = options.numbering,
         level = 1,
@@ -165,9 +165,9 @@ SILE.registerCommand("part", function (options, content)
         postnumber = "book:part:post"
       }, content)
     end)
-    SILE.call("bigskip")
+    SILE.call("medskip")
     SILE.Commands["book:partfont"]({}, content);
-    SILE.call("bigskip")
+    SILE.call("medskip")
     SILE.call("font", { filename = "book_tools/fonts/FeFlow2.otf", size = "9pt"}, {"a"})
     SILE.call("bigskip")
   end)

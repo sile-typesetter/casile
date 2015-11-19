@@ -67,6 +67,7 @@ sync_pre sync_post:
 		-V papersize="135mm x 195mm" \
 		-V include=$(TOOLS)/viachristus \
 		-V script=$(TOOLS)/viachristus \
+		-V script=$(basename $<) \
 		--template=$(TOOLS)/template.sil \
 		$< -o $(basename $<)-kitap.sil
 
