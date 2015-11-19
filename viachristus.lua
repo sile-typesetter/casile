@@ -333,7 +333,7 @@ SILE.registerCommand("tableofcontents:item", function (o,c)
 end)
 
 SILE.registerCommand("fullrule", function (options, content)
-  SILE.call("hrule", { height = ".5pt", width = SILE.typesetter.frame:lineWidth() })
+  SILE.call("hrule", { height = "0.5pt", width = SILE.typesetter.frame:lineWidth() })
 end)
 
 local insertions = SILE.require("packages/insertions")
@@ -345,6 +345,10 @@ SILE.registerCommand("footnote", function(options, content)
   SILE.typesetter = SILE.typesetter {}
   SILE.typesetter:init(f)
   SILE.typesetter.pageTarget = function () return 0xFFFFFF end
+  SILE.settings.pushState()
+  SILE.settings.reset()
+  SILE.settings.set("linespacing.method", "fit-font")
+  SILE.settings.set("linespacing.fit-font.extra-space", "0.3ex")
   local material = SILE.Commands["vbox"]({}, function()
     SILE.Commands["book:footnotefont"]({}, function()
       SILE.call("noindent")
@@ -352,12 +356,12 @@ SILE.registerCommand("footnote", function(options, content)
       SILE.call("quad")
       SILE.process(content)
     end)
-  end
-  )
+  end)
+  SILE.settings.popState()
   SILE.typesetter = oldT
   insertions.exports:insert("footnote", material)
   SILE.scratch.counters.footnote.value = SILE.scratch.counters.footnote.value + 1
 end)
 
 SILE.scratch.insertions.classes.footnote.topSkip = SILE.length.parse("3ex plus 0 minus 0")
-SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse("1ex plus 0 minus 0")
+SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse("0.5ex plus 0 minus 0")
