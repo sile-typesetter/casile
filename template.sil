@@ -8,6 +8,7 @@ $endif$
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
 \set[parameter=linespacing.fit-font.extra-space,value=1.05ex]
+\set[parameter=linebreak.emergencyStretch,value=1em]
 $for(include)$
 \include[src=$include$]
 $endfor$
@@ -35,8 +36,6 @@ $endif$
 $if(fontsize)$
 \font[size=$fontsize$]
 $endif$
-\set[parameter=linebreak.emergencyStretch,value=1em]
-\set[parameter=document.baselineskip,value=2.75ex]
 $if(sansfont)$
 \define[command=book:chapterfont]{\font[family=$sansfont$,weight=800,size=20pt]{\process}}
 \define[command=book:sectionfont]{\font[family=$sansfont$,weight=800]{\process}}

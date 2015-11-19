@@ -104,7 +104,7 @@ SILE.registerCommand("chapter", function (options, content)
   SILE.call("center", {}, function()
     SILE.settings.temporarily(function()
       SILE.typesetter:typeset(" ")
-      SILE.call("skip", {height="2ex"})
+      SILE.call("skip", {height="1ex"})
       SILE.call("book:sectioning", {
         numbering = options.numbering, 
         level = 2,
@@ -126,7 +126,7 @@ SILE.registerCommand("chapter", function (options, content)
     end)
   end)
   SILE.scratch.headers.skipthispage = true
-  SILE.call("bigskip")
+  SILE.call("medskip")
   --SILE.call("nofoliosthispage")
 end, "Begin a new chapter");
 
@@ -349,6 +349,7 @@ SILE.registerCommand("footnote", function(options, content)
   SILE.settings.reset()
   SILE.settings.set("linespacing.method", "fit-font")
   SILE.settings.set("linespacing.fit-font.extra-space", "0.3ex")
+  SILE.settings.set("linebreak.emergencyStretch", SILE.length.parse("1em"))
   local material = SILE.Commands["vbox"]({}, function()
     SILE.Commands["book:footnotefont"]({}, function()
       SILE.call("noindent")
@@ -363,5 +364,5 @@ SILE.registerCommand("footnote", function(options, content)
   SILE.scratch.counters.footnote.value = SILE.scratch.counters.footnote.value + 1
 end)
 
-SILE.scratch.insertions.classes.footnote.topSkip = SILE.length.parse("3ex plus 0 minus 0")
-SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse("0.5ex plus 0 minus 0")
+SILE.scratch.insertions.classes.footnote.topSkip = SILE.length.parse("3ex plus 1ex minus 0.5ex")
+SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse("0.5ex plus 0.5ex minus 0.O5ex")
