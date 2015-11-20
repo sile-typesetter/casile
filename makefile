@@ -19,13 +19,8 @@ init:
 	mkdir -p $(OUTPUT)
 
 push:
-	rsync -av --prune-empty-dirs \
-		--include '*/' \
-		--include='*.pdf' \
-		--include='*.epub' \
-		--include='*.mobi' \
-		--exclude='*' \
-		$(BASE)/ $(OUTPUT)/
+	rsync -v \
+		$(TARGETS) $(OUTPUT)/
 
 sync_pre sync_post:
 	pgrep -u $$USER -x owncloud ||\
