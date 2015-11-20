@@ -49,7 +49,7 @@ sync_pre sync_post:
 		-V geometry="headsep=14pt" \
 		--latex-engine=xelatex \
 		--template=$(TOOLS)/template.tex \
-		$< -o $(basename $<)-latex.pdf
+		$< -o $@
 
 %-2up.pdf: %.pdf
 	pdfbook --short-edge --suffix 2up --noautoscale true -- $<
@@ -62,27 +62,17 @@ sync_pre sync_post:
 		-V script=$(basename $<) \
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
-		$(basename $<).yaml $< -o $(basename $<)-kitap.sil
+		$(basename $<).yaml $< -o $@
 
 %-kitap.pdf: %-kitap.sil
-	sile $< -o $(basename $<).pdf # Generate TOC
-	sile $< -o $(basename $<).pdf # Final
+	sile $< -o $@ # Generate TOC
+	sile $< -o $@ # Final
 
 %-kesme.pdf: %.pdf
-	xelatex -jobname=$(basename $<)-kesme '\documentclass{scrbook}\usepackage[paperheight=210mm,paperwidth=148.5mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.75mm,showcrop]{geometry}\usepackage{pdfpages}\begin{document}\includepdf[pages=-,noautoscale,fitpaper=false]{$<}\end{document}'
+	xelatex -jobname=$(basename $@) '\documentclass{scrbook}\usepackage[paperheight=210mm,paperwidth=148.5mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.75mm,showcrop]{geometry}\usepackage{pdfpages}\begin{document}\includepdf[pages=-,noautoscale,fitpaper=false]{$<}\end{document}'
 
-%.epub: %.md
-	pandoc \
-		$(shell test -f "$(EBOOKCOVER)" && echo "--epub-cover-image=$(BASE)/$(EBOOKCOVER)") \
-		$(basename $<).yaml $< -o $(basename $<).epub
+%.epub %.odt %.docx: %.md
+	pandoc $(basename $<).yaml $< -o $@
 
 %.mobi: %.epub
 	-kindlegen $<
-
-%.odt: %.md
-	pandoc \
-		$(basename $<).yaml $< -o $(basename $<).odt
-
-%.docx: %.md
-	pandoc \
-		$(basename $<).yaml $< -o $(basename $<).docx
