@@ -292,7 +292,7 @@ SILE.registerCommand("quote", function(options, content)
     SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(setback))
 
     SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
-    SILE.Commands["font"]({family="Libertine Serif", features="+salt,+ss02,+onum,+liga,+dlig,+clig", weight=400, size="12pt"}, content)
+    SILE.Commands["font"]({family="Libertine Serif", weight=400, size="12pt"}, content)
     --SILE.process(content)
     SILE.typesetter:pushGlue(SILE.nodefactory.hfillGlue)
     SILE.call("par")
