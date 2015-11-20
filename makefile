@@ -9,11 +9,14 @@ export TEXMFHOME := $(TOOLS)/texmf
 export PATH := $(TOOLS)/bin:$(PATH)
 
 .ONESHELL:
-.PHONY: all
+.PHONY: all ci clean init push sync_pre sync_post
 
 all: $(TARGETS)
 
 ci: init sync_pre all push sync_post
+
+clean:
+	git clean -xf
 
 init:
 	mkdir -p $(OUTPUT)
