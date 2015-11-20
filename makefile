@@ -67,7 +67,17 @@ sync_pre sync_post:
 		--template=$(TOOLS)/template.sil \
 		$(basename $<).yaml $< -o $@
 
-%-kitap.pdf: %-kitap.sil
+%.sil: %.md
+	pandoc \
+		--standalone \
+		-V documentclass="book" \
+		-V papersize="a4" \
+		-V script=$(basename $<) \
+		-V script=$(TOOLS)/viachristus \
+		--template=$(TOOLS)/template.sil \
+		$(basename $<).yaml $< -o $@
+
+%.pdf: %.sil
 	sile $< -o $@ # Generate TOC
 	sile $< -o $@ # Final
 
