@@ -120,7 +120,19 @@ end, "Text to appear on the top of the right page");
 
 SILE.registerCommand("book:sectioning", function (options, content)
   local level = SU.required(options, "level", "book:sectioning")
-  SILE.call("increment-multilevel-counter", {id = "sectioning", level = options.level, display = options.display, reset = options.reset})
+  if options.numbering == nil or options.numbering == "yes" then
+    numbering = true
+  else
+    numbering = false
+  end
+  --if numbering then
+    SILE.call("increment-multilevel-counter", {
+      id = "sectioning",
+      level = options.level,
+      display = options.display,
+      reset = options.reset
+    })
+  --end
   local lang = SILE.settings.get("document.language")
   local counters = SILE.scratch.counters["sectioning"]
   local toc_content = {}
@@ -129,15 +141,17 @@ SILE.registerCommand("book:sectioning", function (options, content)
   end
   if level == 1 then
     local val = SILE.formatCounter({display = "STRING", value = counters.value[level]})
-    toc_content[1] = "KISIM " .. val .. ": " .. content[1]
+    if numbering then toc_content[1] = "KISIM " .. val .. ": " end
+    toc_content[1] = toc_content[1] .. content[1]
   elseif level == 2 then
     local val = SILE.formatCounter({display = "arabic", value = counters.value[level]})
-    toc_content[1] = val .. ". " .. content[1]
+    if numbering then toc_content[1] = val .. ". " end
+    toc_content[1] = toc_content[1] .. content[1]
   elseif level >= 3 then
 	  return
   end
   SILE.call("tocentry", {level = options.level}, toc_content)
-  if options.numbering == nil or options.numbering == "yes" then
+  if numbering then
     if options.prenumber then
       if SILE.Commands[options.prenumber..":"..lang] then options.prenumber = options.prenumber..":"..lang end
 	  if SILE.Commands["book:chapter:precounter"] then SILE.call("book:chapter:precounter") end
