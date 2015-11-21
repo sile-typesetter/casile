@@ -52,7 +52,7 @@ SILE.doTexlike([[
 %\begin{center}
 \font[weight=600,style=Bold]{Via Christus Yayınları}\break
 \book:monofont{\font[size=8pt]https://www.viachristus.com}\break
-\book:monofont{\font[size=8pt]viachristusyayinlari@gmail.com}
+\book:monofont{\font[size=8pt]viachristushizmetleri@gmail.com}
 %\end{center}
 \end{raggedright}
 \eject
