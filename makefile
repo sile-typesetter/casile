@@ -65,7 +65,7 @@ sync_pre sync_post:
 		$(shell test -f "$(basename $<).lua" && echo "-V script=$(basename $<)") \
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
-		$(shell test -f "$(basename $<).yaml" && echo "$(basename $<).yaml") \
+		$(shell test -f "$(basename $<).yml" && echo "$(basename $<).yml") \
 		$< -o $@
 
 %.sil: %.md
@@ -76,7 +76,7 @@ sync_pre sync_post:
 		$(shell test -f "$(basename $<).lua" && echo "-V script=$(basename $<)") \
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
-		$(shell test -f "$(basename $<).yaml" && echo "$(basename $<).yaml") \
+		$(shell test -f "$(basename $<).yml" && echo "$(basename $<).yml") \
 		$< -o $@
 
 %.pdf: %.sil
@@ -88,7 +88,7 @@ sync_pre sync_post:
 
 %.epub %.odt %.docx: %.md
 	pandoc \
-		$(shell test -f "$(basename $<).yaml" && echo "$(basename $<).yaml") \
+		$(shell test -f "$(basename $<).yml" && echo "$(basename $<).yml") \
 		$< -o $@
 
 %.mobi: %.epub
