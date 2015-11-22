@@ -440,3 +440,7 @@ end)
 
 SILE.scratch.insertions.classes.footnote.topSkip = SILE.length.parse("3ex plus 1ex minus 0.5ex")
 SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse("0.5ex plus 0.5ex minus 0.O5ex")
+
+SILE.registerCommand("verse", function()
+    SILE.call("font", {features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
+end)
