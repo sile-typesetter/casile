@@ -21,7 +21,7 @@ SILE.doTexlike([[
 \define[command=book:left-running-head-font]{\font[family=Libertine Serif,style=Regular,size=12pt]}%
 \define[command=book:right-running-head-font]{\font[family=Libertine Serif,style=italic,size=12pt]}%
 \define[command=tableofcontents:headerfont]{\book:partfont{\process}}%
-\define[command=tableofcontents:header]{\center{ \skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\medskip\fullrule}%
+\define[command=tableofcontents:header]{\center{ \skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\medskip\fullrule\medskip}%
 \define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600,style=Bold]{\process}}\smallskip}%
 \define[command=tableofcontents:level2item]{\noindent\glue[width=2ex]\font[size=11pt]{\process}\smallskip}%
 \define[command=wraptitle]{\meta:title}
