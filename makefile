@@ -62,20 +62,22 @@ sync_pre sync_post:
 		--standalone \
 		-V documentclass="book" \
 		-V papersize="135mm x 195mm" \
-		-V script=$(basename $<) \
+		$(shell test -f "$(basename $<).lua" && echo "-V script=$(basename $<)") \
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
-		$(basename $<).yaml $< -o $@
+		$(shell test -f "$(basename $<).yaml" && echo "$(basename $<).yaml") \
+		$< -o $@
 
 %.sil: %.md
 	pandoc \
 		--standalone \
 		-V documentclass="book" \
 		-V papersize="a4" \
-		-V script=$(basename $<) \
+		$(shell test -f "$(basename $<).lua" && echo "-V script=$(basename $<)") \
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
-		$(basename $<).yaml $< -o $@
+		$(shell test -f "$(basename $<).yaml" && echo "$(basename $<).yaml") \
+		$< -o $@
 
 %.pdf: %.sil
 	sile $< -o $@ # Generate TOC
@@ -85,7 +87,9 @@ sync_pre sync_post:
 	xelatex -jobname=$(basename $@) '\documentclass{scrbook}\usepackage[paperheight=210mm,paperwidth=148.5mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.75mm,showcrop]{geometry}\usepackage{pdfpages}\begin{document}\includepdf[pages=-,noautoscale,fitpaper=false]{$<}\end{document}'
 
 %.epub %.odt %.docx: %.md
-	pandoc $(basename $<).yaml $< -o $@
+	pandoc \
+		$(shell test -f "$(basename $<).yaml" && echo "$(basename $<).yaml") \
+		$< -o $@
 
 %.mobi: %.epub
 	-kindlegen $<
