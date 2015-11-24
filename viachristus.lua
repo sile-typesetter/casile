@@ -14,7 +14,7 @@ SILE.doTexlike([[
 \define[command=book:sectionfont]{\book:sansfont{\font[weight=600,style=Bold,size=8.5pt]{\process}}}
 \define[command=verbatim:font]{\book:monofont{\font[size=10pt]{\process}}}
 \define[command=book:chapter:pre:tr]{\font[family=Libertine Serif Display,size=11pt,weight=400,style=Regular]BÖLÜM }
-\define[command=book:chapter:post]{\font[filename=book_tools/fonts/FeFlow2.otf,size=9pt]{\skip[height=-3pt]a\medskip}}
+\define[command=book:chapter:post]{\font[filename=avadanlik/fonts/FeFlow2.otf,size=9pt]{\skip[height=-3pt]a\medskip}}
 \define[command=book:part:pre]{KISIM }%
 \define[command=book:part:post]{\par}%
 \define[command=book:subparagraph:post]{ }%
@@ -242,7 +242,7 @@ SILE.registerCommand("part", function (options, content)
     SILE.call("medskip")
     SILE.Commands["book:partfont"]({}, content);
     SILE.call("medskip")
-    SILE.call("font", { filename = "book_tools/fonts/FeFlow2.otf", size = "9pt"}, {"a"})
+    SILE.call("font", { filename = "avadanlik/fonts/FeFlow2.otf", size = "9pt"}, {"a"})
     SILE.call("bigskip")
   end)
   SILE.scratch.headers.skipthispage = true
