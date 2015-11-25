@@ -80,8 +80,7 @@ sync_pre sync_post:
 		$< -o $@
 
 %.pdf: %.sil
-	sile $< -o $@ # Generate TOC
-	sile $< -o $@ # Final
+	sile $< -o $@ && sile $< -o $@ # Once for TOC, again for final
 
 %-kesme.pdf: %.pdf
 	xelatex -jobname=$(basename $@) '\documentclass{scrbook}\usepackage[paperheight=210mm,paperwidth=148.5mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.75mm,showcrop]{geometry}\usepackage{pdfpages}\begin{document}\includepdf[pages=-,noautoscale,fitpaper=false]{$<}\end{document}'
