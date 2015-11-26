@@ -443,3 +443,13 @@ SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse(
 SILE.registerCommand("verse", function()
     SILE.call("font", {features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
 end)
+
+function table.append(t1, t2)
+  if type(t2) == "nil" then
+    t1[#t1+1] = nil
+    return
+  end
+  for i=1,#t2 do
+      t1[#t1+1] = t2[i]
+  end
+end
