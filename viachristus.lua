@@ -397,9 +397,7 @@ SILE.registerCommand("tableofcontents:item", function (o,c)
       if o.level == 1 then
         SILE.call("hss")
       elseif o.level == 2 then
-        SILE.typesetter:typeset(" ")
         SILE.call("dotfill")
-        SILE.typesetter:typeset(" ")
         SILE.typesetter:typeset(o.pageno)
       end
     end)
