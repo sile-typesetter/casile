@@ -143,7 +143,7 @@ SILE.registerCommand("book:sectioning", function (options, content)
   if level == 1 then
     local val = SILE.formatCounter({display = "STRING", value = counters.value[level]})
     if numbering then toc_content[1] = "KISIM " .. val .. ": " end
-    toc_content[1] = toc_content[1] .. content[1]
+    toc_content[1] = toc_content[1] .. trupper(content[1])
   elseif level == 2 then
     local val = SILE.formatCounter({display = "arabic", value = counters.value[level]})
     if numbering then toc_content[1] = val .. ". " end
@@ -285,7 +285,7 @@ end, "Begin a new subparagraph")
 
 local utf8 = require("lua-utf8")
 local inputfilter = SILE.require("packages/inputfilter").exports
-local function trupper (string)
+function trupper (string)
   string = string:gsub("i", "İ")
   return utf8.upper(string)
 end
