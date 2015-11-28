@@ -1,6 +1,7 @@
 SILE.doTexlike([[
 \language[main=tr]
 \script[src=packages/rules]
+\script[src=packages/image]
 %\script[src=packages/frametricks]
 %\showframe[id=all]
 \define[command=book:monofont]{\font[family=Hack]{\process}}
@@ -26,7 +27,7 @@ SILE.doTexlike([[
 \define[command=tableofcontents:level2item]{\noindent\glue[width=2ex]\font[size=11pt]{\process}\smallskip}%
 \define[command=wraptitle]{\meta:title}
 \define[command=halftitlepage]{\nofolios\center{{ }\skip[height=3em]\book:chapterfont{\wraptitle}\bigskip\book:sectionfont{\meta:subtitle}}}
-\define[command=titlepage]{\open-double-page\center{{ }\skip[height=3em]\book:partnumfont{\wraptitle}\bigskip\book:chapterfont{\meta:subtitle}\bigskip\book:partfont{\font[weight=300,style=Thin]\meta:author}\vfill{}<logo>\bigskip{}Via Christus Yayınları}\eject}
+\define[command=titlepage]{\open-double-page\center{{ }\skip[height=3em]\book:partnumfont{\wraptitle}\bigskip\book:chapterfont{\meta:subtitle}\bigskip\book:partfont{\font[weight=300,style=Light]\meta:author}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=36mm]}\eject}
 \font[family=Crimson,style=Roman,size=12pt]
 \define[command=publicationpage]{\nofolios\begin{raggedright}
 \vfill
@@ -397,9 +398,7 @@ SILE.registerCommand("tableofcontents:item", function (o,c)
       if o.level == 1 then
         SILE.call("hss")
       elseif o.level == 2 then
-        SILE.typesetter:typeset(" ")
         SILE.call("dotfill")
-        SILE.typesetter:typeset(" ")
         SILE.typesetter:typeset(o.pageno)
       end
     end)
