@@ -141,13 +141,15 @@ SILE.registerCommand("book:sectioning", function (options, content)
     toc_content[k] = v
   end
   if level == 1 then
-    local val = SILE.formatCounter({display = "STRING", value = counters.value[level]})
-    if numbering then toc_content[1] = "KISIM " .. val .. ": " end
-    toc_content[1] = toc_content[1] .. trupper(content[1])
+    if numbering then
+		local val = SILE.formatCounter({display = "STRING", value = counters.value[level]})
+		toc_content[1] = "KISIM " .. val .. ": " .. trupper(content[1])
+	end
   elseif level == 2 then
-    local val = SILE.formatCounter({display = "arabic", value = counters.value[level]})
-    if numbering then toc_content[1] = val .. ". " end
-    toc_content[1] = toc_content[1] .. content[1]
+    if numbering then
+		local val = SILE.formatCounter({display = "arabic", value = counters.value[level]})
+		toc_content[1] = val .. ". " .. content[1]
+	end
   elseif level >= 3 then
 	  return
   end
