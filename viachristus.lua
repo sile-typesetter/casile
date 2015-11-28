@@ -119,6 +119,40 @@ SILE.registerCommand("right-running-head", function(options, content)
   SILE.scratch.headers.right = function () closure(content) end
 end, "Text to appear on the top of the right page");
 
+local _initml = function (c)
+  if not(SILE.scratch.counters[c]) then
+    SILE.scratch.counters[c] = { value= {0}, display= {"arabic"} };
+  end
+end
+
+SILE.registerCommand("my-increment-multilevel-counter", function (options, content)
+  local c = options.id; _initml(c)
+  local this = SILE.scratch.counters[c]
+  local currentLevel = #this.value
+  local level = tonumber(options.level) or currentLevel
+  if level == currentLevel then
+    this.value[level] = this.value[level] + 1
+  elseif level > currentLevel then
+    while level > currentLevel do
+      currentLevel = currentLevel + 1
+      if options.reset == false then
+        this.value[currentLevel] = this.value[currentLevel-1]
+      else
+        this.value[currentLevel] = 1
+      end
+      this.display[currentLevel] = this.display[currentLevel -1]
+    end
+  else -- level < currentLevel
+    this.value[level] = this.value[level] + 1
+    while currentLevel > level do
+      if not options.rest == false then this.value[currentLevel] = nil end
+      this.display[currentLevel] = nil
+      currentLevel = currentLevel - 1
+    end
+  end
+  if options.display then this.display[currentLevel] = options.display end
+end)
+
 SILE.registerCommand("book:sectioning", function (options, content)
   local level = SU.required(options, "level", "book:sectioning")
   if options.numbering == nil or options.numbering == "yes" then
@@ -126,14 +160,14 @@ SILE.registerCommand("book:sectioning", function (options, content)
   else
     numbering = false
   end
-  --if numbering then
-    SILE.call("increment-multilevel-counter", {
+  if numbering then
+    SILE.call("my-increment-multilevel-counter", {
       id = "sectioning",
       level = options.level,
       display = options.display,
-      reset = options.reset
+      reset = false
     })
-  --end
+  end
   local lang = SILE.settings.get("document.language")
   local counters = SILE.scratch.counters["sectioning"]
   local toc_content = {}
@@ -142,25 +176,25 @@ SILE.registerCommand("book:sectioning", function (options, content)
   end
   if level == 1 then
     if numbering then
-		local val = SILE.formatCounter({display = "STRING", value = counters.value[level]})
-		toc_content[1] = "KISIM " .. val .. ": " .. trupper(content[1])
-	end
+      local val = SILE.formatCounter({display = "STRING", value = counters.value[level]})
+      toc_content[1] = "KISIM " .. val .. ": " .. trupper(content[1])
+    end
   elseif level == 2 then
-    if numbering then
-		local val = SILE.formatCounter({display = "arabic", value = counters.value[level]})
-		toc_content[1] = val .. ". " .. content[1]
-	end
+      if numbering then
+        local val = SILE.formatCounter({display = "arabic", value = counters.value[level]})
+        toc_content[1] = val .. ". " .. content[1]
+      end
   elseif level >= 3 then
-	  return
+    return
   end
   SILE.call("tocentry", {level = options.level}, toc_content)
   if numbering then
     if options.prenumber then
       if SILE.Commands[options.prenumber..":"..lang] then options.prenumber = options.prenumber..":"..lang end
-	  if SILE.Commands["book:chapter:precounter"] then SILE.call("book:chapter:precounter") end
+      if SILE.Commands["book:chapter:precounter"] then SILE.call("book:chapter:precounter") end
       SILE.call(options.prenumber)
     end
-    SILE.call("show-multilevel-counter", {id="sectioning", display = options.display, minlevel = options.level})
+    SILE.call("show-multilevel-counter", {id="sectioning", display = options.display, minlevel = 2})
     if options.postnumber then
       if SILE.Commands[options.postnumber..":"..lang] then options.postnumber = options.postnumber..":"..lang end
       SILE.call(options.postnumber)
