@@ -11,6 +11,7 @@ SILE.doTexlike([[
 \define[command=book:partfont]{\book:sansfont{\font[weight=600,style=Bold,size=16pt]{\process}}}
 \define[command=book:subparagraphfont]{\font[family=Libertine Serif,style=Regular,weight=400,size=12pt,features=+smcp]{\process}}
 \define[command=book:footnotefont]{\font[family=Libertine Serif,style=Regular,weight=400,size=8pt]{\process}}
+\footnote:separator{\hrule[width=5em,height=0.2pt]\smallskip}
 \define[command=book:chapterfont]{\book:sansfont{\font[weight=600,style=Bold,size=10pt]{\process}}}
 \define[command=book:sectionfont]{\book:sansfont{\font[weight=600,style=Bold,size=8.5pt]{\process}}}
 \define[command=verbatim:font]{\book:monofont{\font[size=10pt]{\process}}}
