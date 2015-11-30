@@ -29,8 +29,9 @@ sync_pre sync_post:
 	pgrep -u $$USER -x owncloud ||\
 		owncloudcmd -n -s $(OUTPUT) $(OWNCLOUD) 2>/dev/null
 
-%-latex.pdf: %.md
+%-kitap.tex: %.md
 	pandoc \
+		--standalone \
 		--chapters \
 		-V links-as-notes \
 		-V toc \
@@ -50,9 +51,12 @@ sync_pre sync_post:
 		-V geometry="bottom=15mm" \
 		-V geometry="footskip=18pt" \
 		-V geometry="headsep=14pt" \
-		--latex-engine=xelatex \
 		--template=$(TOOLS)/template.tex \
 		$< -o $@
+
+%-latex.pdf: %.tex
+	xelatex -jobname=$(basename $@) -interaction=batchmode $< && \
+	xelatex -jobname=$(basename $@) -interaction=batchmode $<
 
 %-2up.pdf: %.pdf
 	pdfbook --short-edge --suffix 2up --noautoscale true -- $<
