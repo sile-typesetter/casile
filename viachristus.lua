@@ -155,50 +155,40 @@ end)
 
 SILE.registerCommand("book:sectioning", function (options, content)
   local level = SU.required(options, "level", "book:sectioning")
-  if options.numbering == nil or options.numbering == "yes" then
-    numbering = true
-  else
-    numbering = false
-  end
-  if numbering then
+  if not (options.numbering == false or options.numbering == "false") then
+    if not options.reset == true or options.reset == "true" then reset = false end
     SILE.call("my-increment-multilevel-counter", {
       id = "sectioning",
       level = options.level,
       display = options.display,
-      reset = false
+      reset = options.reset
     })
-  end
-  local lang = SILE.settings.get("document.language")
-  local counters = SILE.scratch.counters["sectioning"]
-  local toc_content = {}
-  for k, v in pairs(content) do
-    toc_content[k] = v
-  end
-  if level == 1 then
-    if numbering then
+    local toc_content = {}
+    for k, v in pairs(content) do
+      toc_content[k] = v
+    end
+    local lang = SILE.settings.get("document.language")
+    local counters = SILE.scratch.counters["sectioning"]
+    if level == 1 then
       local val = SILE.formatCounter({display = "STRING", value = counters.value[level]})
       toc_content[1] = "KISIM " .. val .. ": " .. trupper(content[1])
+    elseif level == 2 then
+      local val = SILE.formatCounter({display = "arabic", value = counters.value[level]})
+      toc_content[1] = val .. ". " .. content[1]
     end
-  elseif level == 2 then
-      if numbering then
-        local val = SILE.formatCounter({display = "arabic", value = counters.value[level]})
-        toc_content[1] = val .. ". " .. content[1]
-      end
-  elseif level >= 3 then
-    return
-  end
-  SILE.call("tocentry", {level = options.level}, toc_content)
-  if numbering then
     if options.prenumber then
       if SILE.Commands[options.prenumber..":"..lang] then options.prenumber = options.prenumber..":"..lang end
       if SILE.Commands["book:chapter:precounter"] then SILE.call("book:chapter:precounter") end
       SILE.call(options.prenumber)
     end
-    SILE.call("show-multilevel-counter", {id="sectioning", display = options.display, minlevel = 2})
+    SILE.call("show-multilevel-counter", {id="sectioning", display = options.display, minlevel = level, level = level})
     if options.postnumber then
       if SILE.Commands[options.postnumber..":"..lang] then options.postnumber = options.postnumber..":"..lang end
       SILE.call(options.postnumber)
     end
+    SILE.call("tocentry", {level = options.level}, toc_content)
+  else
+    SILE.call("tocentry", {level = options.level}, content)
   end
 end)
 
@@ -248,11 +238,6 @@ SILE.registerCommand("section", function (options, content)
   SILE.call("noindent")
   SILE.settings.temporarily(function()
     SILE.call("book:sectionfont", {}, function()
-      SILE.call("book:sectioning", {
-        numbering = options.numbering, 
-        level = 3,
-        postnumber = "book:section:post"
-      }, content)
       SILE.call("uppercase", {}, content)
       --SILE.process(content)
     end)
@@ -271,6 +256,7 @@ SILE.registerCommand("part", function (options, content)
       SILE.call("book:sectioning", {
         numbering = options.numbering,
         level = 1,
+        reset = false,
         display = "STRING",
         prenumber = "book:part:pre",
         postnumber = "book:part:post"
@@ -305,11 +291,6 @@ SILE.registerCommand("subparagraph", function (options, content)
   SILE.Commands["book:subparagraphfont"]({}, function()
     SILE.call("raggedleft", {}, function()
       SILE.settings.set("document.rskip", SILE.nodefactory.newGlue("20pt"))
-      SILE.call("book:sectioning", {
-        numbering = options.numbering,
-        level = 3,
-        postnumber = "book:subparagraph:post"
-      }, content)
       SILE.process(content)
     end)
   end)
