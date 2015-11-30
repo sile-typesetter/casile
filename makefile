@@ -77,10 +77,14 @@ sync_pre sync_post:
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
 		$(shell test -f "$(basename $<).yml" && echo "$(basename $<).yml") \
+		-t sile+raw_tex \
 		$< -o $@
 
 %.pdf: %.sil
-	sile $< -o $@ && sile $< -o $@ # Once for TOC, again for final
+	# Once for TOC, again for real page numbers, again again for final
+	sile $< -o $@ && \
+	sile $< -o $@ && \
+	sile $< -o $@
 
 %-kesme.pdf: %.pdf
 	xelatex -jobname=$(basename $@) '\documentclass{scrbook}\usepackage[paperheight=210mm,paperwidth=148.5mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.75mm,showcrop]{geometry}\usepackage{pdfpages}\begin{document}\includepdf[pages=-,noautoscale,fitpaper=false]{$<}\end{document}'
