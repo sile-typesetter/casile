@@ -325,8 +325,7 @@ SILE.registerCommand("quote", function(options, content)
     SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(setback))
 
     SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
-    SILE.Commands["font"]({family="Libertine Serif", weight=400, size="12pt"}, content)
-    --SILE.process(content)
+	SILE.process(content)
     SILE.typesetter:pushGlue(SILE.nodefactory.hfillGlue)
     SILE.call("par")
   end)
@@ -459,5 +458,5 @@ SILE.scratch.insertions.classes.footnote.topSkip = SILE.length.parse("3ex plus 1
 SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse("0.5ex plus 0.5ex minus 0.O5ex")
 
 SILE.registerCommand("verse", function()
-    SILE.call("font", {features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
+    SILE.call("font", {family="Libertine Serif", weight=400, size="12pt", style="Italic", features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
 end)
