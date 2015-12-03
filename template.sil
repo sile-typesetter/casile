@@ -5,9 +5,6 @@ $endif$
 \script[src=packages/url]
 \script[src=packages/pdf]
 \script[src=packages/footnotes]
-\script[src=packages/linespacing]
-\set[parameter=linespacing.method,value=fit-font]
-\set[parameter=linespacing.fit-font.extra-space,value=1.05ex]
 \set[parameter=linebreak.emergencyStretch,value=1em]
 $for(include)$
 \include[src=$include$]
