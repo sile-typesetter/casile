@@ -9,6 +9,7 @@ TARGETS := ${SOURCES:.md=}
 FORMATS := pdf epub mobi odt docx
 LAYOUTS := a4 a5trim octavo halfletter
 PRINTS := kesme kesme-ciftyonlu
+DRAFT := false
 
 export TEXMFHOME := $(TOOLS)/texmf
 export PATH := $(TOOLS)/bin:$(PATH)
@@ -44,9 +45,11 @@ sync_pre sync_post:
 %.pdf: %.sil
 	@$(shell test -f "$<" || echo exit 0)
 	# Once for TOC, again for real page numbers, again again for final
-	sile $< -o $@ && \
-	sile $< -o $@ && \
-	sile $< -o $@
+	if $(DRAFT); then \
+		sile $< -o $@ ;\
+	else \
+		sile $< -o $@ && sile $< -o $@ && sile $< -o $@ ;\
+	fi
 
 %-kesme.pdf: %.pdf
 	@if [ ! "" = "$(findstring octavo,$@)$(findstring halfletter,$@)" ]; then\
