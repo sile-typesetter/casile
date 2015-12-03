@@ -5,7 +5,6 @@ $endif$
 \script[src=packages/url]
 \script[src=packages/pdf]
 \script[src=packages/footnotes]
-\set[parameter=linebreak.emergencyStretch,value=1em]
 $for(include)$
 \include[src=$include$]
 $endfor$
@@ -33,6 +32,8 @@ $endif$
 $if(fontsize)$
 \font[size=$fontsize$]
 $endif$
+\set[parameter=linebreak.emergencyStretch,value=3em]
+\set[parameter=document.baselineskip,value=3ex]
 $if(sansfont)$
 $endif$
 $if(monofont)$

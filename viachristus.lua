@@ -207,7 +207,7 @@ SILE.registerCommand("chapter", function (options, content)
   SILE.call("center", {}, function()
     SILE.settings.temporarily(function()
       SILE.typesetter:typeset(" ")
-      SILE.call("skip", {height="1ex"})
+      SILE.call("skip", {height="2ex"})
       SILE.call("book:sectioning", {
         numbering = options.numbering, 
         level = 2,
@@ -229,7 +229,7 @@ SILE.registerCommand("chapter", function (options, content)
     end)
   end)
   SILE.scratch.headers.skipthispage = true
-  SILE.call("medskip")
+  SILE.call("bigskip")
   --SILE.call("nofoliosthispage")
 end, "Begin a new chapter");
 
