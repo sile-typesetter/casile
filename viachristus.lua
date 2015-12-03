@@ -264,9 +264,9 @@ SILE.registerCommand("part", function (options, content)
         postnumber = "book:part:post"
       }, content)
     end)
-    SILE.call("medskip")
+    SILE.call("bigskip")
     SILE.Commands["book:partfont"]({}, content);
-    SILE.call("medskip")
+    SILE.call("bigskip")
     SILE.call("font", { filename = "avadanlik/fonts/FeFlow2.otf", size = "9pt"}, {"a"})
     SILE.call("bigskip")
   end)
