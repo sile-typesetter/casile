@@ -33,8 +33,8 @@ init:
 	mkdir -p $(OUTPUT)
 
 push:
-	rsync -v \
-		$(foreach TARGET,$(TARGETS),$(foreach FORMAT,$(FORMATS),$(TARGET){,-*}.$(FORMAT))) $(OUTPUT)/
+	-rsync -v \
+		$(foreach TARGET,$(TARGETS),$(foreach FORMAT,$(FORMATS),$(TARGET)*.$(FORMAT))) $(OUTPUT)/
 
 sync_pre sync_post:
 	pgrep -u $$USER -x owncloud ||\
