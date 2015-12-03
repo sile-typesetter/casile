@@ -16,13 +16,13 @@ export PATH := $(TOOLS)/bin:$(PATH)
 
 .ONESHELL:
 .SECONDEXPANSION:
-.PHONY: all ci clean init push sync_pre sync_post $(TARGETS)
+.PHONY: all ci clean init pull push sync_pre sync_post $(TARGETS)
 .SECONDARY:
 .PRECIOUS: %.pdf %.sil
 
 all: $(TARGETS)
 
-ci: init sync_pre all push sync_post
+ci: init clean pull all sync_post
 
 clean:
 	git clean -xf
@@ -32,13 +32,24 @@ $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
 init:
 	mkdir -p $(OUTPUT)
 
-push:
-	-rsync -v \
-		$(foreach TARGET,$(TARGETS),$(foreach FORMAT,$(FORMATS),$(TARGET)*.$(FORMAT))) $(OUTPUT)/
+pull: sync_pre
+	-rsync -cv \
+		$(foreach FORMAT,$(FORMATS),$(OUTPUT)/*.$(FORMAT)) $(BASE)/
 
-sync_pre sync_post:
+push:
+	-rsync -cv \
+		$(foreach FORMAT,$(FORMATS),*.$(FORMAT)) $(OUTPUT)/
+
+sync_pre:
+	$(call sync_owncloud)
+
+sync_post: push
+	$(call sync_owncloud)
+
+define sync_owncloud
 	pgrep -u $$USER -x owncloud ||\
 		owncloudcmd -n -s $(OUTPUT) $(OWNCLOUD) 2>/dev/null
+endef
 
 %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) ;
 
