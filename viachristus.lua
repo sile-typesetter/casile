@@ -29,8 +29,8 @@ SILE.doTexlike([[
 \define[command=wraptitle]{\meta:title}
 \define[command=halftitlepage]{\nofolios\center{{ }\skip[height=3em]\book:chapterfont{\wraptitle}\bigskip\book:sectionfont{\meta:subtitle}}}
 \define[command=titlepage]{\open-double-page\center{{ }\skip[height=3em]\book:partnumfont{\wraptitle}\bigskip\book:chapterfont{\meta:subtitle}\bigskip\book:partfont{\font[weight=300,style=Light]\meta:author}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=36mm]}\eject}
-\font[family=Crimson,style=Roman,size=12pt]
-\set[parameter=document.baselineskip,value=2.5ex]
+\font[family=Crimson,style=Roman,size=11.5pt]
+\set[parameter=document.baselineskip,value=3ex]
 \define[command=publicationpage]{\nofolios\begin{raggedright}
 \vfill
 \font[family=Libertine Serif,style=Regular,size=9pt]
