@@ -11,7 +11,7 @@ SILE.doTexlike([[
 \define[command=book:partfont]{\book:sansfont{\font[weight=600,style=Bold,size=16pt]{\process}}}
 \define[command=book:subparagraphfont]{\font[family=Libertine Serif,style=Regular,weight=400,size=12pt,features=+smcp]{\process}}
 \define[command=book:footnotefont]{\font[family=Libertine Serif,style=Regular,weight=400,size=8pt]{\process}}
-\footnote:separator{\hrule[width=5em,height=0.2pt]\smallskip}
+\footnote:separator{{ }\break\hrule[width=5em,height=0.2pt]\smallskip}
 \define[command=book:chapterfont]{\book:sansfont{\font[weight=600,style=Bold,size=10pt]{\process}}}
 \define[command=book:sectionfont]{\book:sansfont{\font[weight=600,style=Bold,size=8.5pt]{\process}}}
 \define[command=verbatim:font]{\book:monofont{\font[size=10pt]{\process}}}
@@ -330,7 +330,7 @@ SILE.registerCommand("quote", function(options, content)
     SILE.typesetter:pushGlue(SILE.nodefactory.hfillGlue)
     SILE.call("par")
   end)
-end, "Typeset verse blocks")
+end, "Typeset quototion blocks")
 
 local function tr_num2text (num)
   local ones = { "Bir", "İki", "Üç", "Dört", "Beş", "Altı", "Yedi", "Sekiz", "Dokuz" }
@@ -453,9 +453,4 @@ SILE.registerCommand("footnote", function(options, content)
   SILE.scratch.counters.footnote.value = SILE.scratch.counters.footnote.value + 1
 end)
 
-SILE.scratch.insertions.classes.footnote.topSkip = SILE.length.parse("3ex plus 1ex minus 0.5ex")
 SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse("0.5ex plus 0.5ex minus 0.O5ex")
-
-SILE.registerCommand("verse", function()
-    SILE.call("font", {family="Libertine Serif", weight=400, size="12pt", style="Italic", features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
-end)
