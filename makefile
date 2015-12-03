@@ -32,31 +32,30 @@ init:
 	mkdir -p $(OUTPUT)
 
 push:
-	echo rsync -v \
+	rsync -v \
 		$(foreach TARGET,$(TARGETS),$(foreach FORMAT,$(FORMATS),$(TARGET){,-*}.$(FORMAT))) $(OUTPUT)/
 
 sync_pre sync_post:
 	pgrep -u $$USER -x owncloud ||\
 		owncloudcmd -n -s $(OUTPUT) $(OWNCLOUD) 2>/dev/null
 
-%.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) ;
+%.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) ;
 
 %.pdf: %.sil
-	@echo SYNC TARGETS SO FAR $(SYNC_TARGETS)
 	@$(shell test -f "$<" || echo exit 0)
-	(SYNC_TARGETS += $@)
 	# Once for TOC, again for real page numbers, again again for final
 	sile $< -o $@ && \
 	sile $< -o $@ && \
 	sile $< -o $@
-	@echo SYNC TARGETS SO FAR $(SYNC_TARGETS)
 
 %-kesme.pdf: %.pdf
 	@if [ ! "" = "$(findstring octavo,$@)$(findstring halfletter,$@)" ]; then\
 		export PAPER_OPTS="paperwidth=210mm,paperheight=297mm" ;\
-	fi
-	@if [ ! "" = "$(findstring a5trim,$@)" ]; then\
+	elif [ ! "" = "$(findstring a5trim,$@)" ]; then\
 		export PAPER_OPTS="paperheight=210mm,paperwidth=148.5mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.75mm" ;\
+	else \
+		cp $< $@
+		exit 0 ;\
 	fi
 	xelatex -jobname=$(basename $@) -interaction=batchmode \
 		"\documentclass{scrbook}\usepackage[$$PAPER_OPTS,showcrop]{geometry}\usepackage{pdfpages}\begin{document}\includepdf[pages=-,noautoscale,fitpaper=false]{$<}\end{document}"
@@ -88,7 +87,7 @@ endef
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),halfletter)
 
 %.epub %.odt %.docx: %.md %.yml
-	echo pandoc $(basename $<).yml $< -o $@
+	pandoc $(basename $<).yml $< -o $@
 
 %.mobi: %.epub
 	-kindlegen $<
