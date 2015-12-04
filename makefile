@@ -22,7 +22,7 @@ export PATH := $(TOOLS)/bin:$(PATH)
 
 all: $(TARGETS)
 
-ci: init clean pull all sync_post
+ci: init clean pull all sync_post stats
 
 clean:
 	git clean -xf
@@ -71,11 +71,11 @@ endef
 		cp $< $@
 		exit 0 ;\
 	fi
-	xelatex -jobname=$(basename $@) -interaction=batchmode \
+	-xelatex -jobname=$(basename $@) -interaction=batchmode \
 		"\documentclass{scrbook}\usepackage[$$PAPER_OPTS,showcrop]{geometry}\usepackage{pdfpages}\begin{document}\includepdf[pages=-,noautoscale,fitpaper=false]{$<}\end{document}"
 
 %-ciftyonlu.pdf: %.pdf
-	pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $<
+	-pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $<
 
 define build_sile
 	pandoc --standalone \
@@ -105,3 +105,8 @@ endef
 
 %.mobi: %.epub
 	-kindlegen $<
+
+stats: $(foreach SOURCE,$(SOURCES),$(SOURCE)-stats)
+
+%-stats:
+	@$(TOOLS)/stats.zsh $(@:-stats=)
