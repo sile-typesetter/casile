@@ -33,6 +33,11 @@ $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
 init:
 	mkdir -p $(OUTPUT)
 
+define sync_owncloud
+	pgrep -u $$USER -x owncloud ||\
+		owncloudcmd -n -s $(OUTPUT) $(OWNCLOUD) 2>/dev/null
+endef
+
 sync_pre:
 	$(call sync_owncloud)
 	-rsync -cv \
@@ -42,11 +47,6 @@ sync_post:
 	-rsync -cv \
 		$(foreach FORMAT,$(FORMATS),*.$(FORMAT)) $(OUTPUT)/
 	$(call sync_owncloud)
-
-define sync_owncloud
-	pgrep -u $$USER -x owncloud ||\
-		owncloudcmd -n -s $(OUTPUT) $(OWNCLOUD) 2>/dev/null
-endef
 
 %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) ;
 
@@ -65,7 +65,6 @@ endef
 	elif [ ! "" = "$(findstring a5trim,$@)" ]; then\
 		export PAPER_OPTS="paperheight=210mm,paperwidth=148.5mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.75mm" ;\
 	else \
-		cp $< $@
 		exit 0 ;\
 	fi
 	-xelatex -jobname=$(basename $@) -interaction=batchmode \
