@@ -19,6 +19,7 @@ git log --format=%aN --follow -- "$file" |
         echo "========================================================================"
         let user=0
         for i in $(seq 0 6); do
+            file=$1
             let month=0
             since=$(date --date "$cyclestart - $i months" "+%F")
             until=$(date --date "$since + 1 month" "+%s")
@@ -37,12 +38,12 @@ git log --format=%aN --follow -- "$file" |
 						perl -pne 's/ (.*) => (.*) \| .*/\1|\2/g;s/"//g' |
 						IFS="|" read oldname newname
 					[[ $newname == $file ]] && file="$oldname"
-					[[ $at -le $until ]] || continue
-					[[ $at -ge $since ]] || continue
+                    [[ $at -le $until ]] || continue
+                    [[ $at -ge $since ]] || continue
 					[[ $aut == $author ]] || continue
                     before=$(git show "$sha1"^:"$file" 2>&- | countchars)
                     change=$(($after-$before))
-                    [[ $change -le 0 ]] && continue
+					[[ $change -le 0 ]] && continue
                     let month=$month+$change
                     echo "$sha1  $(printf %10d $change) $msg"
                 done
