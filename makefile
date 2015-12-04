@@ -6,23 +6,23 @@ SHELL = bash
 OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)
 SOURCES := $(wildcard *.md)
 TARGETS := ${SOURCES:.md=}
-FORMATS := pdf epub mobi odt docx
-LAYOUTS := a4 a5trim octavo halfletter
-PRINTS := kesme kesme-ciftyonlu
-DRAFT := false
+FORMATS ?= pdf epub mobi odt docx
+LAYOUTS ?= a4 a5trim octavo halfletter
+PRINTS ?= kesme kesme-ciftyonlu
+DRAFT ?= false
 
 export TEXMFHOME := $(TOOLS)/texmf
 export PATH := $(TOOLS)/bin:$(PATH)
 
 .ONESHELL:
 .SECONDEXPANSION:
-.PHONY: all ci clean init pull push sync_pre sync_post $(TARGETS)
+.PHONY: all ci clean init sync_pre sync_post $(TARGETS)
 .SECONDARY:
 .PRECIOUS: %.pdf %.sil
 
 all: $(TARGETS)
 
-ci: init clean pull all sync_post stats
+ci: init sync_pre all sync_post stats
 
 clean:
 	git clean -xf
@@ -32,18 +32,14 @@ $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
 init:
 	mkdir -p $(OUTPUT)
 
-pull: sync_pre
+sync_pre:
+	$(call sync_owncloud)
 	-rsync -cv \
 		$(foreach FORMAT,$(FORMATS),$(OUTPUT)/*.$(FORMAT)) $(BASE)/
 
-push:
+sync_post:
 	-rsync -cv \
 		$(foreach FORMAT,$(FORMATS),*.$(FORMAT)) $(OUTPUT)/
-
-sync_pre:
-	$(call sync_owncloud)
-
-sync_post: push
 	$(call sync_owncloud)
 
 define sync_owncloud
