@@ -23,21 +23,22 @@ git log --format=%aN --follow -- "$file" |
             since=$(date --date "$cyclestart - $i months" "+%F")
             until=$(date --date "$since + 1 month" "+%s")
             [[ $until -le $rootstart ]] && break
-            start=$(date --date "$since" "+%Y-%m")
+            start=$(date --date "$cyclestart - $i months" "+%Y-%m")
+            since=$(date --date "$since" "+%s")
             echo
             echo "Month $start"
             echo "-------------"
             git log --format='%at|%h|%s|%an' \
-                --since="$since" \
                 --follow --find-renames -- "$1" |
-                while IFS='|' read ts sha1 msg aut; do
+                while IFS='|' read at sha1 msg aut; do
                     after=$(git show "$sha1":"$file" 2>&- | countchars)
 					git -c core.quotepath=off log -1 $sha1 --stat --find-renames |
 						grep ' => ' |
 						perl -pne 's/ (.*) => (.*) \| .*/\1|\2/g;s/"//g' |
 						IFS="|" read oldname newname
 					[[ $newname == $file ]] && file="$oldname"
-					[[ $ts -le $until ]] || continue
+					[[ $at -le $until ]] || continue
+					[[ $at -ge $since ]] || continue
 					[[ $aut == $author ]] || continue
                     before=$(git show "$sha1"^:"$file" 2>&- | countchars)
                     change=$(($after-$before))
