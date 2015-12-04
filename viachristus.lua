@@ -456,7 +456,6 @@ end)
 SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse("0.5ex plus 0.5ex minus 0.O5ex")
 
 SILE.doTexlike([[
-\define[command=wraptitle]{\uppercase{Müjdenin\break{}\glue[width=-0.5en]Gücü ve Mesajı}}
 \define[command=langel]{\font[language=el,style=Italic]{\process}}
 \define[command=langhe]{\font[language=he,style=Italic]{\process}}
 \define[command=langxx]{\font[language=xx,style=Italic]{\process}}
