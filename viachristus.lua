@@ -454,3 +454,16 @@ SILE.registerCommand("footnote", function(options, content)
 end)
 
 SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse("0.5ex plus 0.5ex minus 0.O5ex")
+
+SILE.doTexlike([[
+\define[command=wraptitle]{\uppercase{Müjdenin\break{}\glue[width=-0.5en]Gücü ve Mesajı}}
+\define[command=langel]{\font[language=el,style=Italic]{\process}}
+\define[command=langhe]{\font[language=he,style=Italic]{\process}}
+\define[command=langxx]{\font[language=xx,style=Italic]{\process}}
+\define[command=langla]{\font[language=la,style=Italic]{\process}}
+\define[command=langen]{\font[language=en,style=Italic]{\process}}
+]])
+
+SILE.registerCommand("verse", function()
+    SILE.call("font", {family="Libertine Serif", weight=400, size="12pt", style="Italic", features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
+end)
