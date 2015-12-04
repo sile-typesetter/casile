@@ -34,7 +34,7 @@ init:
 	mkdir -p $(OUTPUT)
 
 define sync_owncloud
-	pgrep -u $$USER -x owncloud ||\
+	-pgrep -u $(USER) -x owncloud || \
 		owncloudcmd -n -s $(OUTPUT) $(OWNCLOUD) 2>/dev/null
 endef
 
