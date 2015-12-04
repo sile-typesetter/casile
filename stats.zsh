@@ -9,7 +9,7 @@ function countchars () {
 }
 
 cyclestart=$(date "+%Y-%m-1")
-rootstart=$(git log --max-parents=0 -1 --format=%at)
+rootstart=$(git log --format=%at | sort -n | head -n1)
 git log --format=%aN --follow -- "$file" |
     sort -u |
     while read author; do
