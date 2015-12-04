@@ -1,6 +1,7 @@
 #!/bin/zsh
 
-echo "TRANSLATION PROGRESS REPORT: $1"
+file="$1"
+echo "TRANSLATION PROGRESS REPORT: $file"
 echo "(Non-whitespace characters added)"
 
 function countchars () {
@@ -9,8 +10,7 @@ function countchars () {
 
 cyclestart=$(date "+%Y-%m-1")
 rootstart=$(git log --max-parents=0 -1 --format=%at)
-
-git log --format=%aN -- "$1" |
+git log --format=%aN --follow -- "$file" |
     sort -u |
     while read author; do
         echo
@@ -29,10 +29,16 @@ git log --format=%aN -- "$1" |
             echo "-------------"
             git log --format='%h %s' --author="$author" \
                 --since="$since" --until="$until" \
-                --follow -- "$1" |
+                --follow --find-renames -- "$1" |
+				tee /dev/stderr |
                 while read sha1 msg; do
-                    before=$(git show "$sha1"^:"$1" 2>&- | countchars)
-                    after=$(git show "$sha1":"$1" 2>&- | countchars)
+                    after=$(git show "$sha1":"$file" 2>&- | countchars)
+					git -c core.quotepath=off log -1 $sha1 --stat --find-renames |
+						grep ' => ' |
+						perl -pne 's/ (.*) => (.*) \| .*/\1|\2/g;s/"//g' |
+						IFS="|" read oldname newname
+					[[ $newname == $file ]] && file="$oldname"
+                    before=$(git show "$sha1"^:"$file" 2>&- | countchars)
                     change=$(($after-$before))
                     [[ $change -le 0 ]] && continue
                     let month=$month+$change
