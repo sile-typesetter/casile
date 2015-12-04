@@ -8,7 +8,8 @@ SOURCES := $(wildcard *.md)
 TARGETS := ${SOURCES:.md=}
 FORMATS ?= pdf epub mobi odt docx
 LAYOUTS ?= a4 a5trim octavo halfletter
-PRINTS ?= kesme kesme-ciftyonlu
+PRINTS ?=
+#PRINTS ?= kesme kesme-ciftyonlu
 DRAFT ?= false
 
 export TEXMFHOME := $(TOOLS)/texmf
@@ -22,7 +23,7 @@ export PATH := $(TOOLS)/bin:$(PATH)
 
 all: $(TARGETS)
 
-ci: init sync_pre all sync_post stats
+ci: init clean sync_pre all sync_post stats
 
 clean:
 	git clean -xf
