@@ -41,11 +41,11 @@ endef
 
 sync_pre:
 	$(call sync_owncloud)
-	-rsync -cv \
+	-rsync -ctv \
 		$(foreach FORMAT,$(FORMATS),$(OUTPUT)/*.$(FORMAT)) $(BASE)/
 
 sync_post:
-	-rsync -cv \
+	-rsync -ctv \
 		$(foreach FORMAT,$(FORMATS),*.$(FORMAT)) $(OUTPUT)/
 	$(call sync_owncloud)
 
