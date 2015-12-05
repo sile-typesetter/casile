@@ -229,6 +229,10 @@ SILE.registerCommand("chapter", function (options, content)
         prenumber = "book:chapter:pre",
         postnumber = "book:chapter:post"
       }, content)
+      -- If Sectioning doesn't output numbering, the chapter starts too high on the page
+      if (options.numbering == false or options.numbering == "false") then
+        SILE.call("skip", { height = "9ex" })
+      end
       SILE.call("book:chapterfont", {}, content)
       SILE.call("bigskip")
       SILE.call("fullrule")
