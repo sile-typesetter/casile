@@ -243,7 +243,7 @@ end, "Begin a new chapter");
 SILE.registerCommand("section", function (options, content)
   SILE.typesetter:leaveHmode()
   SILE.call("goodbreak")  
-  SILE.call("bigskip")
+  SILE.call("skip", {height="12pt plus 12pt minus 8pt"})
   SILE.call("noindent")
   SILE.settings.temporarily(function()
     SILE.call("book:sectionfont", {}, function()
