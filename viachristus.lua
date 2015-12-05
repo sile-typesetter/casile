@@ -33,6 +33,7 @@ SILE.doTexlike([[
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
 \set[parameter=linespacing.fit-font.extra-space,value=1.20ex]
+\set[parameter=linebreak.hyphenPenalty,value=1000]
 \define[command=publicationpage]{\nofolios\begin{raggedright}
 \vfill
 \font[family=Libertine Serif,style=Regular,size=9pt]
