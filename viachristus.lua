@@ -37,6 +37,7 @@ SILE.doTexlike([[
 \define[command=publicationpage]{\nofolios\begin{raggedright}
 \vfill
 \font[family=Libertine Serif,style=Regular,size=9pt]
+\set[parameter=linespacing.fit-font.extra-space,value=0.85ex]
 \font[weight=600,style=Bold]{\meta:title}\break
 \meta:creators{}
 \meta:info{}
@@ -55,11 +56,9 @@ SILE.doTexlike([[
 \medskip
 \meta:versecredits{}
 \medskip
-%\begin{center}
 \font[weight=600,style=Bold]{Via Christus Yayınları}\break
-\book:monofont{\font[size=8pt]https://www.viachristus.com}\break
-\book:monofont{\font[size=8pt]viachristushizmetleri@gmail.com}
-%\end{center}
+\book:monofont{\font[size=7pt]https://www.viachristus.com}\break
+\book:monofont{\font[size=7pt]viachristushizmetleri@gmail.com}
 \end{raggedright}
 \eject
 }
