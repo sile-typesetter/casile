@@ -32,7 +32,7 @@ git log --format=%aN --follow -- "$file" |
             git log --format='%at|%h|%s|%an' \
                 --follow --find-renames -- "$1" |
                 while IFS='|' read at sha1 msg aut; do
-                    after=$(git show "$sha1":"$file" 2>&- | countchars)
+					afterfile="$file"
 					git -c core.quotepath=off log -1 $sha1 --stat --find-renames |
 						grep ' => ' |
 						perl -pne 's/ (.*) => (.*) \| .*/\1|\2/g;s/"//g' |
@@ -40,7 +40,8 @@ git log --format=%aN --follow -- "$file" |
 					[[ $newname == $file ]] && file="$oldname"
                     [[ $at -le $until ]] || continue
                     [[ $at -ge $since ]] || continue
-					[[ $aut == $author ]] || continue
+                    [[ $aut == $author ]] || continue
+                    after=$(git show "$sha1":"$afterfile" 2>&- | countchars)
                     before=$(git show "$sha1"^:"$file" 2>&- | countchars)
                     change=$(($after-$before))
 					[[ $change -le 0 ]] && continue
