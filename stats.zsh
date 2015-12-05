@@ -1,8 +1,10 @@
 #!/bin/zsh
 
 file="$1"
+: ${2:=2}
+let months=$2-1
 echo "TRANSLATION PROGRESS REPORT: $file"
-echo "(Non-whitespace characters added)"
+echo "(Non-whitespace characters added in last $months months)"
 
 function countchars () {
     perl -pne 's/\s//g' | wc -c
@@ -18,7 +20,7 @@ git log --format=%aN --follow -- "$file" |
         echo "$author"
         echo "========================================================================"
         let user=0
-        for i in $(seq 0 6); do
+        for i in $(seq 0 $months); do
             file=$1
             let month=0
             since=$(date --date "$cyclestart - $i months" "+%F")

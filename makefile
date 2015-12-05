@@ -11,6 +11,7 @@ LAYOUTS ?= a4 a5trim octavo halfletter
 PRINTS ?=
 #PRINTS ?= kesme kesme-ciftyonlu
 DRAFT ?= false
+STATS_MONTHS ?= 2
 
 export TEXMFHOME := $(TOOLS)/texmf
 export PATH := $(TOOLS)/bin:$(PATH)
@@ -105,4 +106,4 @@ endef
 stats: $(foreach SOURCE,$(SOURCES),$(SOURCE)-stats)
 
 %-stats:
-	@$(TOOLS)/stats.zsh $(@:-stats=)
+	@$(TOOLS)/stats.zsh $(@:-stats=) $(STATS_MONTHS)
