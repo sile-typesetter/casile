@@ -21,7 +21,7 @@ SILE.doTexlike([[
 \define[command=book:part:post]{\par}%
 \define[command=book:subparagraph:post]{ }%
 \define[command=book:left-running-head-font]{\font[family=Libertine Serif,style=Regular,size=12pt]}%
-\define[command=book:right-running-head-font]{\font[family=Libertine Serif,style=italic,size=12pt]}%
+\define[command=book:right-running-head-font]{\font[family=Libertine Serif,style=Italic,size=12pt]}%
 \define[command=tableofcontents:headerfont]{\book:partfont{\process}}%
 \define[command=tableofcontents:header]{\center{ \skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\medskip\fullrule\medskip}%
 \define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600,style=Bold]{\process}}\smallskip}%
@@ -30,7 +30,10 @@ SILE.doTexlike([[
 \define[command=halftitlepage]{\nofolios\center{{ }\skip[height=3em]\book:chapterfont{\wraptitle}\bigskip\book:sectionfont{\meta:subtitle}}}
 \define[command=titlepage]{\open-double-page\center{{ }\skip[height=3em]\book:partnumfont{\wraptitle}\bigskip\book:chapterfont{\meta:subtitle}\bigskip\book:partfont{\font[weight=300,style=Light]\meta:author}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=36mm]}\eject}
 \font[family=Crimson,style=Roman,size=11.5pt]
-\set[parameter=document.baselineskip,value=3ex]
+\script[src=packages/linespacing]
+\set[parameter=linespacing.method,value=fit-font]
+\set[parameter=linespacing.fit-font.extra-space,value=1.20ex]
+\set[parameter=linebreak.hyphenPenalty,value=1000]
 \define[command=publicationpage]{\nofolios\begin{raggedright}
 \vfill
 \font[family=Libertine Serif,style=Regular,size=9pt]
@@ -85,7 +88,9 @@ book.endPage = function(self)
         SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
         SILE.process(SILE.scratch.headers.right)
         SILE.call("hfill")
-        SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
+        SILE.call("font", {size="13pt"}, function()
+          SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
+        end)
         SILE.call("skip", {height="-8pt"})
         SILE.call("fullrule")
         SILE.call("par")
@@ -97,7 +102,9 @@ book.endPage = function(self)
           SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
           SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
           SILE.call("book:left-running-head-font")
-          SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
+          SILE.call("font", {size="13pt"}, function()
+            SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
+          end)
           SILE.call("hfill")
           SILE.call("meta:title")
           SILE.call("skip", {height="-8pt"})
@@ -207,7 +214,7 @@ SILE.registerCommand("chapter", function (options, content)
   SILE.call("center", {}, function()
     SILE.settings.temporarily(function()
       SILE.typesetter:typeset(" ")
-      SILE.call("skip", {height="2ex"})
+      SILE.call("skip", {height="1ex"})
       SILE.call("book:sectioning", {
         numbering = options.numbering, 
         level = 2,
@@ -229,14 +236,14 @@ SILE.registerCommand("chapter", function (options, content)
     end)
   end)
   SILE.scratch.headers.skipthispage = true
-  SILE.call("bigskip")
+  SILE.call("medskip")
   --SILE.call("nofoliosthispage")
 end, "Begin a new chapter");
 
 SILE.registerCommand("section", function (options, content)
   SILE.typesetter:leaveHmode()
   SILE.call("goodbreak")  
-  SILE.call("bigskip")
+  SILE.call("skip", {height="12pt plus 12pt minus 8pt"})
   SILE.call("noindent")
   SILE.settings.temporarily(function()
     SILE.call("book:sectionfont", {}, function()
@@ -264,9 +271,9 @@ SILE.registerCommand("part", function (options, content)
         postnumber = "book:part:post"
       }, content)
     end)
-    SILE.call("bigskip")
+    SILE.call("medskip")
     SILE.Commands["book:partfont"]({}, content);
-    SILE.call("bigskip")
+    SILE.call("medskip")
     SILE.call("font", { filename = "avadanlik/fonts/FeFlow2.otf", size = "9pt"}, {"a"})
     SILE.call("bigskip")
   end)
@@ -321,15 +328,16 @@ SILE.registerCommand("quote", function(options, content)
   local author = options.author or nil
   local setback = options.setback or "20pt"
   local color = options.color or "#999999"
+  SILE.settings.pushState()
   SILE.settings.temporarily(function()
     SILE.settings.set("document.rskip", SILE.nodefactory.newGlue(setback))
     SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(setback))
-
     SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
-	SILE.process(content)
+    SILE.process(content)
     SILE.typesetter:pushGlue(SILE.nodefactory.hfillGlue)
     SILE.call("par")
   end)
+  SILE.settings.popState()
 end, "Typeset quototion blocks")
 
 local function tr_num2text (num)
@@ -424,9 +432,11 @@ SILE.registerCommand("tableofcontents:item", function (o,c)
 end)
 
 SILE.registerCommand("fullrule", function (options, content)
-  SILE.call("hrule", { height = "0.5pt", width = SILE.typesetter.frame:lineWidth() })
+  local height = options.height or "0.2pt"
+  SILE.call("hrule", { height = height, width = SILE.typesetter.frame:lineWidth() })
 end)
 
+SILE.require("packages/rebox");
 local insertions = SILE.require("packages/insertions")
 SILE.registerCommand("footnote", function(options, content)
   SILE.call("footnotemark")
@@ -438,12 +448,17 @@ SILE.registerCommand("footnote", function(options, content)
   SILE.typesetter.pageTarget = function () return 0xFFFFFF end
   SILE.settings.pushState()
   SILE.settings.reset()
-  SILE.settings.set("document.baselineskip", SILE.nodefactory.newVglue("1ex"))
+  SILE.settings.set("linespacing.method", "fit-font")
+  SILE.settings.set("linespacing.fit-font.extra-space", "0.3ex")
+  SILE.settings.set("linebreak.emergencyStretch", SILE.length.parse("1em"))
+  SILE.settings.set("document.lskip", SILE.nodefactory.newGlue("20pt"))
   local material = SILE.Commands["vbox"]({}, function()
     SILE.Commands["book:footnotefont"]({}, function()
       SILE.call("noindent")
-      SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.footnote)..".")
-      SILE.call("quad")
+      SILE.typesetter:pushGlue({ width = 0 - SILE.length.parse("20pt") })
+      SILE.Commands["rebox"]({ width = "20pt" }, function()
+        SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.footnote)..".")
+      end)
       SILE.process(content)
     end)
   end)
@@ -465,4 +480,5 @@ SILE.doTexlike([[
 
 SILE.registerCommand("verse", function()
     SILE.call("font", {family="Libertine Serif", weight=400, size="12pt", style="Italic", features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
+    SILE.settings.set("linespacing.fit-font.extra-space", "0.9ex")
 end)
