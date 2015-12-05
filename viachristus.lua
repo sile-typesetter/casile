@@ -328,15 +328,16 @@ SILE.registerCommand("quote", function(options, content)
   local author = options.author or nil
   local setback = options.setback or "20pt"
   local color = options.color or "#999999"
+  SILE.settings.pushState()
   SILE.settings.temporarily(function()
     SILE.settings.set("document.rskip", SILE.nodefactory.newGlue(setback))
     SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(setback))
-
     SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
-	SILE.process(content)
+    SILE.process(content)
     SILE.typesetter:pushGlue(SILE.nodefactory.hfillGlue)
     SILE.call("par")
   end)
+  SILE.settings.popState()
 end, "Typeset quototion blocks")
 
 local function tr_num2text (num)
@@ -479,4 +480,5 @@ SILE.doTexlike([[
 
 SILE.registerCommand("verse", function()
     SILE.call("font", {family="Libertine Serif", weight=400, size="12pt", style="Italic", features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
+    SILE.settings.set("linespacing.fit-font.extra-space", "0.9ex")
 end)
