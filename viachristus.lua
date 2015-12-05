@@ -21,7 +21,7 @@ SILE.doTexlike([[
 \define[command=book:part:post]{\par}%
 \define[command=book:subparagraph:post]{ }%
 \define[command=book:left-running-head-font]{\font[family=Libertine Serif,style=Regular,size=12pt]}%
-\define[command=book:right-running-head-font]{\font[family=Libertine Serif,style=italic,size=12pt]}%
+\define[command=book:right-running-head-font]{\font[family=Libertine Serif,style=Italic,size=12pt]}%
 \define[command=tableofcontents:headerfont]{\book:partfont{\process}}%
 \define[command=tableofcontents:header]{\center{ \skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\medskip\fullrule\medskip}%
 \define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600,style=Bold]{\process}}\smallskip}%
@@ -88,7 +88,9 @@ book.endPage = function(self)
         SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
         SILE.process(SILE.scratch.headers.right)
         SILE.call("hfill")
-        SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
+        SILE.call("font", {size="13pt"}, function()
+          SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
+        end)
         SILE.call("skip", {height="-8pt"})
         SILE.call("fullrule")
         SILE.call("par")
@@ -100,7 +102,9 @@ book.endPage = function(self)
           SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
           SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
           SILE.call("book:left-running-head-font")
-          SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
+          SILE.call("font", {size="13pt"}, function()
+            SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
+          end)
           SILE.call("hfill")
           SILE.call("meta:title")
           SILE.call("skip", {height="-8pt"})
@@ -427,7 +431,8 @@ SILE.registerCommand("tableofcontents:item", function (o,c)
 end)
 
 SILE.registerCommand("fullrule", function (options, content)
-  SILE.call("hrule", { height = "0.5pt", width = SILE.typesetter.frame:lineWidth() })
+  local height = options.height or "0.2pt"
+  SILE.call("hrule", { height = height, width = SILE.typesetter.frame:lineWidth() })
 end)
 
 SILE.require("packages/rebox");
