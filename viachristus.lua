@@ -74,6 +74,7 @@ book:defineMaster({ id = "right", firstContentFrame = "content", frames = {
 book:defineMaster({ id = "left", firstContentFrame = "content", frames = {}})
 book:loadPackage("twoside", { oddPageMaster = "right", evenPageMaster = "left" });
 book:mirrorMaster("right", "left")
+SILE.call("switch-master-one-page", {id="right"})
 
 book.endPage = function(self)
   book:moveTocNodes()
