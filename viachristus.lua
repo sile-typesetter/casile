@@ -23,9 +23,9 @@ SILE.doTexlike([[
 \define[command=book:left-running-head-font]{\font[family=Libertine Serif,style=Regular,size=12pt]}%
 \define[command=book:right-running-head-font]{\font[family=Libertine Serif,style=Italic,size=12pt]}%
 \define[command=tableofcontents:headerfont]{\book:partfont{\process}}%
-\define[command=tableofcontents:header]{\center{ \skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\medskip\fullrule\medskip}%
-\define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600,style=Bold]{\process}}\smallskip}%
-\define[command=tableofcontents:level2item]{\noindent\glue[width=2ex]\font[size=11pt]{\process}\smallskip}%
+\define[command=tableofcontents:header]{\center{ \skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\bigskip\fullrule\bigskip}%
+\define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600,style=Bold]{\process\break}}}%
+\define[command=tableofcontents:level2item]{\skip[height=4pt]\noindent\glue[width=2ex]\font[size=11pt]{\process\break}}%
 \define[command=wraptitle]{\meta:title}
 \define[command=halftitlepage]{\nofolios\center{{ }\skip[height=3em]\book:chapterfont{\wraptitle}\bigskip\book:sectionfont{\meta:subtitle}}}
 \define[command=titlepage]{\open-double-page\center{{ }\skip[height=3em]\book:partnumfont{\wraptitle}\bigskip\book:chapterfont{\meta:subtitle}\bigskip\book:partfont{\font[weight=300,style=Light]\meta:author}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=36mm]}\eject}
