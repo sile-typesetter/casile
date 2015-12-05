@@ -51,7 +51,7 @@ sync_post:
 
 %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) ;
 
-%.pdf: %.sil
+%.pdf: %.sil $(TOOLS)/viachristus.lua
 	@$(shell test -f "$<" || echo exit 0)
 	# Once for TOC, again for real page numbers, again again for final
 	if $(DRAFT); then \
@@ -85,16 +85,16 @@ define build_sile
 		$1 -o $2-$3.sil
 endef
 
-%-a4.sil: %.md %.yml $(TOOLS)/template.sil $(TOOLS)/viachristus.lua
+%-a4.sil: %.md %.yml $(TOOLS)/template.sil
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4)
 
-%-a5trim.sil: %.md %.yml $(TOOLS)/template.sil $(TOOLS)/viachristus.lua
+%-a5trim.sil: %.md %.yml $(TOOLS)/template.sil
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),133mm x 195mm)
 
-%-octavo.sil: %.md %.yml $(TOOLS)/template.sil $(TOOLS)/viachristus.lua
+%-octavo.sil: %.md %.yml $(TOOLS)/template.sil
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),432pt x 648pt)
 
-%-halfletter.sil: %.md %.yml $(TOOLS)/template.sil $(TOOLS)/viachristus.lua
+%-halfletter.sil: %.md %.yml $(TOOLS)/template.sil
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),halfletter)
 
 %.epub %.odt %.docx: %.md %.yml
