@@ -30,7 +30,9 @@ SILE.doTexlike([[
 \define[command=halftitlepage]{\nofolios\center{{ }\skip[height=3em]\book:chapterfont{\wraptitle}\bigskip\book:sectionfont{\meta:subtitle}}}
 \define[command=titlepage]{\open-double-page\center{{ }\skip[height=3em]\book:partnumfont{\wraptitle}\bigskip\book:chapterfont{\meta:subtitle}\bigskip\book:partfont{\font[weight=300,style=Light]\meta:author}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=36mm]}\eject}
 \font[family=Crimson,style=Roman,size=11.5pt]
-\set[parameter=document.baselineskip,value=3ex]
+\script[src=packages/linespacing]
+\set[parameter=linespacing.method,value=fit-font]
+\set[parameter=linespacing.fit-font.extra-space,value=1.20ex]
 \define[command=publicationpage]{\nofolios\begin{raggedright}
 \vfill
 \font[family=Libertine Serif,style=Regular,size=9pt]
@@ -207,7 +209,7 @@ SILE.registerCommand("chapter", function (options, content)
   SILE.call("center", {}, function()
     SILE.settings.temporarily(function()
       SILE.typesetter:typeset(" ")
-      SILE.call("skip", {height="2ex"})
+      SILE.call("skip", {height="1ex"})
       SILE.call("book:sectioning", {
         numbering = options.numbering, 
         level = 2,
@@ -229,7 +231,7 @@ SILE.registerCommand("chapter", function (options, content)
     end)
   end)
   SILE.scratch.headers.skipthispage = true
-  SILE.call("bigskip")
+  SILE.call("medskip")
   --SILE.call("nofoliosthispage")
 end, "Begin a new chapter");
 
@@ -264,9 +266,9 @@ SILE.registerCommand("part", function (options, content)
         postnumber = "book:part:post"
       }, content)
     end)
-    SILE.call("bigskip")
+    SILE.call("medskip")
     SILE.Commands["book:partfont"]({}, content);
-    SILE.call("bigskip")
+    SILE.call("medskip")
     SILE.call("font", { filename = "avadanlik/fonts/FeFlow2.otf", size = "9pt"}, {"a"})
     SILE.call("bigskip")
   end)
@@ -438,7 +440,9 @@ SILE.registerCommand("footnote", function(options, content)
   SILE.typesetter.pageTarget = function () return 0xFFFFFF end
   SILE.settings.pushState()
   SILE.settings.reset()
-  SILE.settings.set("document.baselineskip", SILE.nodefactory.newVglue("1ex"))
+  SILE.settings.set("linespacing.method", "fit-font")
+  SILE.settings.set("linespacing.fit-font.extra-space", "0.3ex")
+  SILE.settings.set("linebreak.emergencyStretch", SILE.length.parse("1em"))
   local material = SILE.Commands["vbox"]({}, function()
     SILE.Commands["book:footnotefont"]({}, function()
       SILE.call("noindent")
