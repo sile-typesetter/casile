@@ -85,16 +85,16 @@ define build_sile
 		$1 -o $2-$3.sil
 endef
 
-%-a4.sil: %.md %.yml $(TOOLS)/template.sil
+%-a4.sil: %.md %.yml $(TOOLS)/template.sil $$(wildcard $$*.lua)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4)
 
-%-a5trim.sil: %.md %.yml $(TOOLS)/template.sil
+%-a5trim.sil: %.md %.yml $(TOOLS)/template.sil $$(wildcard $$*.lua)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),133mm x 195mm)
 
-%-octavo.sil: %.md %.yml $(TOOLS)/template.sil
+%-octavo.sil: %.md %.yml $(TOOLS)/template.sil $$(wildcard $$*.lua)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),432pt x 648pt)
 
-%-halfletter.sil: %.md %.yml $(TOOLS)/template.sil
+%-halfletter.sil: %.md %.yml $(TOOLS)/template.sil $$(wildcard $$*.lua)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),halfletter)
 
 %.epub %.odt %.docx: %.md %.yml
