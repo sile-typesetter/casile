@@ -119,6 +119,12 @@ book.endPage = function(self)
   return plain.endPage(book);
 end;
 
+book.finish = function ()
+  book.endPage()
+  book:writeToc()
+  return plain:finish()
+end
+
 SILE.registerCommand("left-running-head", function(options, content)
   local closure = SILE.settings.wrap()
   SILE.scratch.headers.left = function () closure(content) end
