@@ -330,27 +330,29 @@ SILE.registerCommand("uppercase", function(options, content)
   SILE.process(inputfilter.transformContent(content, trupper))
 end, "Typeset the enclosed text as uppercase")
 
-SILE.require("packages/color")
 SILE.require("packages/raiselower")
 SILE.require("packages/rebox")
 SILE.require("packages/leaders")
 
 SILE.registerCommand("quote", function(options, content)
-  local author = options.author or nil
   local setback = options.setback or "20pt"
-  local color = options.color or "#999999"
+  SILE.call("medskip")
   SILE.settings.pushState()
   SILE.settings.temporarily(function()
     SILE.settings.set("document.rskip", SILE.nodefactory.newGlue(setback))
     SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(setback))
     SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
+    SILE.settings.set("document.parindent", SILE.nodefactory.zeroGlue)
+    SILE.settings.set("document.parskip", SILE.nodefactory.newVglue("1.5ex"))
     SILE.process(content)
+    SILE.settings.set("document.parskip", SILE.nodefactory.zeroVglue)
     SILE.typesetter:pushGlue(SILE.nodefactory.hfillGlue)
     SILE.call("novbreak")
     SILE.call("par")
     SILE.call("novbreak")
   end)
   SILE.settings.popState()
+  SILE.call("medskip")
   SILE.call("novbreak")
 end, "Typeset quototion blocks")
 
