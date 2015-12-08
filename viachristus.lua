@@ -384,6 +384,11 @@ local function tr_num2text (num)
   return table.concat( words, " " )
 end
 
+local function tr_num2ordinal (num)
+  local ordinals = { "Birinci", "İkinci", "Üçüncü", "Dördüncü", "Beşinci", "Altıncı", "Yedinci", "Sekizinci", "Dokuzuncu", "Onuncu" }
+  return ordinals[tonumber(num)]
+end
+
 SILE.formatCounter = function(options)
   if (options.display == "roman") then return romanize(options.value):lower() end
   if (options.display == "Roman") then return romanize(options.value) end
