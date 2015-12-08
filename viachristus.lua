@@ -17,8 +17,8 @@ SILE.doTexlike([[
 \define[command=verbatim:font]{\book:monofont{\font[size=10pt]{\process}}}
 \define[command=book:chapter:pre:tr]{\font[family=Libertine Serif Display,size=11pt,weight=400,style=Regular]BÖLÜM }
 \define[command=book:chapter:post]{\font[filename=avadanlik/fonts/FeFlow2.otf,size=9pt]{\skip[height=-3pt]a\medskip}}
-\define[command=book:part:pre]{KISIM }%
-\define[command=book:part:post]{\par}%
+\define[command=book:part:pre]{}%
+\define[command=book:part:post]{ KISIM\par}%
 \define[command=book:subparagraph:post]{ }%
 \define[command=book:left-running-head-font]{\font[family=Libertine Serif,style=Regular,size=12pt]}%
 \define[command=book:right-running-head-font]{\font[family=Libertine Serif,style=Italic,size=12pt]}%
@@ -186,8 +186,8 @@ SILE.registerCommand("book:sectioning", function (options, content)
     local lang = SILE.settings.get("document.language")
     local counters = SILE.scratch.counters["sectioning"]
     if level == 1 then
-      local val = SILE.formatCounter({display = "STRING", value = counters.value[level]})
-      toc_content[1] = "KISIM " .. val .. ": " .. trupper(content[1])
+      local val = SILE.formatCounter({display = "ORDINAL", value = counters.value[level]})
+      toc_content[1] = val .. " KISIM: " .. trupper(content[1])
     elseif level == 2 then
       local val = SILE.formatCounter({display = "arabic", value = counters.value[level]})
       toc_content[1] = val .. ". " .. content[1]
@@ -277,7 +277,7 @@ SILE.registerCommand("part", function (options, content)
         numbering = options.numbering,
         level = 1,
         reset = false,
-        display = "STRING",
+        display = "ORDINAL",
         prenumber = "book:part:pre",
         postnumber = "book:part:post"
       }, content)
