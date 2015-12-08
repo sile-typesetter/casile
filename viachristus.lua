@@ -402,6 +402,8 @@ SILE.formatCounter = function(options)
   if (options.display == "string") then return tr_num2text(options.value):lower() end
   if (options.display == "String") then return tr_num2text(options.value) end
   if (options.display == "STRING") then return trupper(tr_num2text(options.value)) end
+  if (options.display == "Ordinal") then return tr_num2text(options.value, true) end
+  if (options.display == "ORDINAL") then return trupper(tr_num2text(options.value, true)) end
   return tostring(options.value);
 end
 
