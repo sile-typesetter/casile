@@ -513,7 +513,7 @@ SILE.registerCommand("verse", function()
 end)
 
 SILE.registerCommand("poetry", function()
-    SILE.settings.set("document.lskip", SILE.nodefactory.newGlue("40pt"))
+    SILE.settings.set("document.lskip", SILE.nodefactory.newGlue("30pt"))
     SILE.settings.set("document.rskip", SILE.nodefactory.hfillGlue)
     SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
