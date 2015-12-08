@@ -356,23 +356,33 @@ SILE.registerCommand("quote", function(options, content)
   SILE.call("novbreak")
 end, "Typeset quototion blocks")
 
-local function tr_num2text (num)
+local function tr_num2text (num, ordinal)
+  local ord = ordinal or false
   local ones = { "Bir", "İki", "Üç", "Dört", "Beş", "Altı", "Yedi", "Sekiz", "Dokuz" }
   local tens = { "On", "Yirmi", "Otuz", "Kırk", "Eli", "Altmış", "Yetmiş", "Seksen", "Dokuz" }
   local places = { "Yüz", "Bin", "Milyon", "Milyar" }
+  local ordinals = { "Birinci", "İkinci", "Üçüncü", "Dördüncü", "Beşinci", "Altıncı", "Yedinci", "Sekizinci", "Dokuzuncu", "Onuncu" }
   local num = string.reverse(num)
   local parts = {}
   for i = 1, #num do
     local val = tonumber(string.sub(num, i, i))
     if val >= 1 then
       if i == 1 then
-        parts[#parts+1] = ones[val]
+        if ord then
+          parts[#parts+1] = ordinals[val]
+        else
+          parts[#parts+1] = ones[val]
+        end
       elseif i == 2 then
         parts[#parts+1] = tens[val]
       elseif i >= 3 then
         parts[#parts+1] = places[i-2]
         if val >= 2 then
-          parts[#parts+1] = ones[val]
+          if ord then
+            parts[#parts+1] = ordinals[val]
+          else
+            parts[#parts+1] = ones[val]
+          end
         end
       end
     end
@@ -382,11 +392,6 @@ local function tr_num2text (num)
     words[#parts+1-i] = parts[i]
   end
   return table.concat( words, " " )
-end
-
-local function tr_num2ordinal (num)
-  local ordinals = { "Birinci", "İkinci", "Üçüncü", "Dördüncü", "Beşinci", "Altıncı", "Yedinci", "Sekizinci", "Dokuzuncu", "Onuncu" }
-  return ordinals[tonumber(num)]
 end
 
 SILE.formatCounter = function(options)
