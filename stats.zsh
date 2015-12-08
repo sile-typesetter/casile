@@ -28,7 +28,6 @@ git log --format=%aN --follow -- "$file" |
             [[ $until -lt $rootstart ]] && break
             start=$(date --date "$cyclestart - $i months" "+%Y-%m")
             since=$(date --date "$since" "+%s")
-            [[ $since -lt $rootstart ]] && break
             echo
             echo "Month $start"
             echo "-------------"
