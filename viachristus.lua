@@ -120,6 +120,7 @@ book.endPage = function(self)
 end;
 
 book.finish = function ()
+  SILE.typesetter:chuck()
   book.endPage()
   book:writeToc()
   return plain:finish()
