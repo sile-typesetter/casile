@@ -489,10 +489,12 @@ SILE.registerCommand("footnote", function(options, content)
       SILE.Commands["rebox"]({ width = "18pt" }, function()
         SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.footnote)..".")
       end)
-      --inhibit hyphenation in footnotes
-      SILE.Commands["font"]({language = "xx"}, function()
-        SILE.settings.set("document.rskip", SILE.nodefactory.hfillGlue)
-        SILE.process(content)
+      -- don't justify footnotes
+      SILE.call("raggedright", {}, function()
+        --inhibit hyphenation in footnotes
+        SILE.Commands["font"]({language = "xx"}, function()
+          SILE.process(content)
+        end)
       end)
     end)
   end)
