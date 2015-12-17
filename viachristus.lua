@@ -10,7 +10,7 @@ SILE.doTexlike([[
 \define[command=book:partnumfont]{\book:sansfont{\font[weight=600,style=Bold,size=20pt]{\process}}}
 \define[command=book:partfont]{\book:sansfont{\font[weight=600,style=Bold,size=16pt]{\process}}}
 \define[command=book:subparagraphfont]{\font[family=Libertine Serif,style=Regular,weight=400,size=12pt,features=+smcp]{\process}}
-\define[command=book:footnotefont]{\font[family=Libertine Serif,style=Regular,weight=400,size=8pt]{\process}}
+\define[command=book:footnotefont]{\font[family=Libertine Serif,style=Regular,weight=400,size=8.5pt]{\process}}
 \footnote:separator{{ }\break\hrule[width=5em,height=0.2pt]\smallskip}
 \define[command=book:chapterfont]{\book:sansfont{\font[weight=600,style=Bold,size=10pt]{\process}}}
 \define[command=book:sectionfont]{\book:sansfont{\font[weight=600,style=Bold,size=8.5pt]{\process}}}
@@ -120,6 +120,7 @@ book.endPage = function(self)
 end;
 
 book.finish = function ()
+  SILE.typesetter:chuck()
   book.endPage()
   book:writeToc()
   return plain:finish()
@@ -467,9 +468,10 @@ end)
 SILE.require("packages/rebox");
 local insertions = SILE.require("packages/insertions")
 SILE.registerCommand("footnote", function(options, content)
+  local indent = "14pt"
   SILE.call("footnotemark")
   local opts = SILE.scratch.insertions.classes.footnote
-  local f = SILE.getFrame(opts["insertInto"])
+  local f = SILE.getFrame(opts["insertInto"].frame)
   local oldT = SILE.typesetter
   SILE.typesetter = SILE.typesetter {}
   SILE.typesetter:init(f)
@@ -477,18 +479,24 @@ SILE.registerCommand("footnote", function(options, content)
   SILE.settings.pushState()
   SILE.settings.reset()
   SILE.settings.set("linespacing.method", "fit-font")
-  SILE.settings.set("linespacing.fit-font.extra-space", "0.3ex")
+  SILE.settings.set("linespacing.fit-font.extra-space", "0.4ex")
   SILE.settings.set("linebreak.emergencyStretch", SILE.length.parse("3em"))
   SILE.settings.set("linebreak.hyphenPenalty", 1000)
-  SILE.settings.set("document.lskip", SILE.nodefactory.newGlue("18pt"))
+  SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(indent))
   local material = SILE.Commands["vbox"]({}, function()
     SILE.Commands["book:footnotefont"]({}, function()
       SILE.call("noindent")
-      SILE.typesetter:pushGlue({ width = 0 - SILE.length.parse("18pt") })
-      SILE.Commands["rebox"]({ width = "18pt" }, function()
+      SILE.typesetter:pushGlue({ width = 0 - SILE.length.parse(indent) })
+      SILE.Commands["rebox"]({ width = indent }, function()
         SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.footnote)..".")
       end)
-      SILE.process(content)
+      -- don't justify footnotes
+      SILE.call("raggedright", {}, function()
+        --inhibit hyphenation in footnotes
+        SILE.Commands["font"]({language = "xx"}, function()
+          SILE.process(content)
+        end)
+      end)
     end)
   end)
   SILE.settings.popState()
@@ -497,7 +505,7 @@ SILE.registerCommand("footnote", function(options, content)
   SILE.scratch.counters.footnote.value = SILE.scratch.counters.footnote.value + 1
 end)
 
-SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse("0.5ex plus 0.5ex minus 0.O5ex")
+SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse("0.7ex plus 0 minus 0")
 
 SILE.doTexlike([[
 \define[command=langel]{\font[language=el,style=Italic]{\process}}
