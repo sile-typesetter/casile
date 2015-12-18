@@ -38,25 +38,26 @@ SILE.doTexlike([[
 { }\vfill
 \begin{raggedright}
 \font[family=Libertine Serif,style=Regular,size=9pt]
-\set[parameter=linespacing.fit-font.extra-space,value=0.75ex]
+\set[parameter=linespacing.fit-font.extra-space,value=0.8ex]
+\set[parameter=document.parskip,value=1.2ex]
 \font[weight=600,style=Bold]{\meta:title}\break
 \meta:creators{}
 \meta:info{}
-\medskip
+
 \meta:rights{}
-\medskip
+
 \meta:identifiers{}
-\medskip
+
 \meta:date{}
-\medskip
+
 \meta:contributors{}
-\medskip
+
 \meta:extracredits{}
-\medskip
+
 \meta:manufacturer{}
-\medskip
+
 \meta:versecredits{}
-\medskip
+
 \font[weight=600,style=Bold]{Via Christus Yayınları}\break
 \book:monofont{\font[size=7pt]https://www.viachristus.com}\break
 \book:monofont{\font[size=7pt]viachristushizmetleri@gmail.com}
