@@ -27,8 +27,8 @@ SILE.doTexlike([[
 \define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600,style=Bold]{\process}\break}}%
 \define[command=tableofcontents:level2item]{\skip[height=4pt]\noindent\glue[width=2ex]\font[size=11pt]{\process}\break\skip[height=0]}%
 \define[command=wraptitle]{\meta:title}
-\define[command=halftitlepage]{\nofolios\center{{ }\skip[height=3em]\book:chapterfont{\wraptitle}\bigskip\book:sectionfont{\meta:subtitle}}}
-\define[command=titlepage]{\open-double-page\center{{ }\skip[height=3em]\book:partnumfont{\wraptitle}\bigskip\book:chapterfont{\meta:subtitle}\bigskip\book:partfont{\font[weight=300,style=Light]\meta:author}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=36mm]}\eject}
+\define[command=halftitlepage]{\nofolios\center{{ }\skip[height=8em]\book:chapterfont{\font[size=16pt]{\wraptitle}}\bigskip\book:sectionfont{\meta:subtitle}}}
+\define[command=titlepage]{\open-double-page\center{{ }\skip[height=8em]\book:partnumfont{\font[size=26pt]{\wraptitle}}\skip[height=3em]\book:chapterfont{\meta:subtitle}\bigskip\book:partfont{\font[weight=300,style=Light]\meta:author}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=36mm]}\eject}
 \font[family=Crimson,style=Roman,size=11.5pt]
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
