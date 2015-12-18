@@ -37,7 +37,7 @@ SILE.doTexlike([[
 \define[command=publicationpage]{\nofolios
 { }\vfill
 \begin{raggedright}
-\font[family=Libertine Serif,style=Regular,size=9pt]
+\font[family=Libertine Serif,style=Regular,size=9pt,lang=xx]
 \set[parameter=linespacing.fit-font.extra-space,value=0.8ex]
 \set[parameter=document.parskip,value=1.2ex]
 \font[weight=600,style=Bold]{\meta:title}\break
