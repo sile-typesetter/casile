@@ -22,6 +22,7 @@ SILE.doTexlike([[
 \define[command=book:subparagraph:post]{ }%
 \define[command=book:left-running-head-font]{\font[family=Libertine Serif,style=Regular,size=12pt]}%
 \define[command=book:right-running-head-font]{\font[family=Libertine Serif,style=Italic,size=12pt]}%
+\define[command=book:page-number-font]{\font[family=Libertine Serif,style=Regular,size=13pt]{\process}}%
 \define[command=tableofcontents:headerfont]{\book:partfont{\process}}%
 \define[command=tableofcontents:header]{\center{ \skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\bigskip\fullrule\bigskip}%
 \define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600,style=Bold]{\process}\break}}%
@@ -88,9 +89,10 @@ book.endPage = function(self)
         SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
         SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
         SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
+        SILE.call("book:right-running-head-font")
         SILE.process(SILE.scratch.headers.right)
         SILE.call("hfill")
-        SILE.call("font", {size="13pt"}, function()
+        SILE.call("book:page-number-font", {}, function()
           SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
         end)
         SILE.call("skip", {height="-8pt"})
@@ -104,7 +106,7 @@ book.endPage = function(self)
           SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
           SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
           SILE.call("book:left-running-head-font")
-          SILE.call("font", {size="13pt"}, function()
+          SILE.call("book:page-number-font", {}, function()
             SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
           end)
           SILE.call("hfill")
