@@ -80,4 +80,15 @@ $endfor$
 \publicationpage
 \tableofcontents
 $body$
+\novbreak\medskip\novbreak\center{\novbreak\book:chapter:post{}}
+$if(seriestitle)$
+\open-double-page
+\script{SILE.scratch.headers.skipthispage = true}
+\nofolios
+\center{\book:chapterfont{$seriestitle$ serisindeki kitaplar}\book:chapter:post{}}
+$for(seriestitles)$
+\font[style=italic]{$seriestitles.text$}
+
+$endfor$
+$endif$
 \end{document}
