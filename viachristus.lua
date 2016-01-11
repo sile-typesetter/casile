@@ -11,7 +11,7 @@ SILE.doTexlike([[
 \define[command=book:partfont]{\book:sansfont{\font[weight=600,style=Bold,size=16pt]{\process}}}
 \define[command=book:subparagraphfont]{\font[family=Libertine Serif,style=Regular,weight=400,size=12pt,features=+smcp]{\process}}
 \define[command=book:footnotefont]{\font[family=Libertine Serif,style=Regular,weight=400,size=8.5pt]{\process}}
-\footnote:separator{{ }\break\hrule[width=5em,height=0.2pt]\smallskip}
+\footnote:separator{\hbox\smallskip\hrule[width=5em,height=0.2pt]\smallskip}
 \define[command=book:chapterfont]{\book:sansfont{\font[weight=600,style=Bold,size=10pt]{\process}}}
 \define[command=book:sectionfont]{\book:sansfont{\font[weight=600,style=Bold,size=8.5pt]{\process}}}
 \define[command=verbatim:font]{\book:monofont{\font[size=10pt]{\process}}}
@@ -28,15 +28,15 @@ SILE.doTexlike([[
 \define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600,style=Bold]{\process}\break}}%
 \define[command=tableofcontents:level2item]{\skip[height=4pt]\noindent\glue[width=2ex]\font[size=11pt]{\process}\break\skip[height=0]}%
 \define[command=wraptitle]{\meta:title}
-\define[command=halftitlepage]{\nofolios\center{{ }\skip[height=8em]\book:chapterfont{\font[size=16pt]{\wraptitle}}\bigskip\book:sectionfont{\meta:subtitle}}}
-\define[command=titlepage]{\open-double-page\center{{ }\skip[height=8em]\book:partnumfont{\font[size=26pt]{\wraptitle}}\skip[height=3em]\book:chapterfont{\meta:subtitle}\bigskip\book:partfont{\font[weight=300,style=Light]\meta:author}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=36mm]}\eject}
+\define[command=halftitlepage]{\nofolios\center{\hbox\skip[height=8em]\book:chapterfont{\font[size=16pt]{\wraptitle}}\bigskip\book:sectionfont{\meta:subtitle}}}
+\define[command=titlepage]{\open-double-page\center{\hbox\skip[height=8em]\book:partnumfont{\font[size=26pt]{\wraptitle}}\skip[height=3em]\book:chapterfont{\meta:subtitle}\bigskip\book:partfont{\font[weight=300,style=Light]\meta:author}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=36mm]}\eject}
 \font[family=Crimson,style=Roman,size=11.5pt]
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
 \set[parameter=linespacing.fit-font.extra-space,value=1.20ex]
 \set[parameter=linebreak.hyphenPenalty,value=1000]
 \define[command=publicationpage]{\nofolios
-{ }\vfill
+\hbox\vfill
 \begin{raggedright}
 \font[family=Libertine Serif,style=Regular,size=9pt,lang=xx]
 \set[parameter=linespacing.fit-font.extra-space,value=0.8ex]
