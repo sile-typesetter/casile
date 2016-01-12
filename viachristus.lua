@@ -2,6 +2,7 @@ SILE.doTexlike([[
 \language[main=tr]
 \script[src=packages/rules]
 \script[src=packages/image]
+\script[src=packages/rebox]
 %\script[src=packages/frametricks]
 %\showframe[id=all]
 \define[command=book:monofont]{\font[family=Hack]{\process}}
@@ -11,7 +12,7 @@ SILE.doTexlike([[
 \define[command=book:partfont]{\book:sansfont{\font[weight=600,style=Bold,size=16pt]{\process}}}
 \define[command=book:subparagraphfont]{\font[family=Libertine Serif,style=Regular,weight=400,size=12pt,features=+smcp]{\process}}
 \define[command=book:footnotefont]{\font[family=Libertine Serif,style=Regular,weight=400,size=8.5pt]{\process}}
-\footnote:separator{\hbox\smallskip\hrule[width=5em,height=0.2pt]\smallskip}
+\footnote:separator{\rebox[width=6em,height=5pt]{\hrule[width=5em,height=0.2pt]}\smallskip}
 \define[command=book:chapterfont]{\book:sansfont{\font[weight=600,style=Bold,size=10pt]{\process}}}
 \define[command=book:sectionfont]{\book:sansfont{\font[weight=600,style=Bold,size=8.5pt]{\process}}}
 \define[command=verbatim:font]{\book:monofont{\font[size=10pt]{\process}}}
