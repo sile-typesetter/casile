@@ -34,13 +34,13 @@ SILE.doTexlike([[
 \font[family=Crimson,style=Roman,size=11.5pt]
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
-\set[parameter=linespacing.fit-font.extra-space,value=1.20ex]
+\set[parameter=linespacing.fit-font.extra-space,value=1.20ex minus 0.6pt]
 \set[parameter=linebreak.hyphenPenalty,value=1000]
 \define[command=publicationpage]{\nofolios
 \hbox\vfill
 \begin{raggedright}
-\font[family=Libertine Serif,style=Regular,size=9pt,lang=xx]
-\set[parameter=linespacing.fit-font.extra-space,value=0.8ex]
+\font[family=Libertine Serif,style=Regular,size=9pt,language=xx]
+\set[parameter=linespacing.fit-font.extra-space,value=0.8ex minus 0.6pt]
 \set[parameter=document.parskip,value=1.2ex]
 \font[weight=600,style=Bold]{\meta:title}\break
 \meta:creators{}
@@ -252,7 +252,7 @@ end, "Begin a new chapter");
 SILE.registerCommand("section", function (options, content)
   SILE.typesetter:leaveHmode()
   SILE.call("goodbreak")  
-  SILE.call("skip", {height="12pt plus 12pt minus 8pt"})
+  SILE.call("skip", {height="12pt plus 6pt minus 4pt"})
   SILE.call("noindent")
   SILE.settings.temporarily(function()
     SILE.call("book:sectionfont", {}, function()
@@ -477,7 +477,7 @@ SILE.registerCommand("footnote", function(options, content)
   SILE.settings.pushState()
   SILE.settings.reset()
   SILE.settings.set("linespacing.method", "fit-font")
-  SILE.settings.set("linespacing.fit-font.extra-space", "0.4ex")
+  SILE.settings.set("linespacing.fit-font.extra-space", "0.4ex minus 0.1pt")
   SILE.settings.set("linebreak.emergencyStretch", SILE.length.parse("3em"))
   SILE.settings.set("linebreak.hyphenPenalty", 1000)
   SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(indent))
@@ -515,7 +515,7 @@ SILE.doTexlike([[
 
 SILE.registerCommand("verse", function()
     SILE.call("font", {family="Libertine Serif", weight=400, size="11.5pt", style="Italic", features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
-    SILE.settings.set("linespacing.fit-font.extra-space", "0.9ex")
+    SILE.settings.set("linespacing.fit-font.extra-space", "0.9ex minus 0.6pt")
 end)
 
 SILE.registerCommand("poetry", function()
