@@ -25,7 +25,7 @@ SILE.doTexlike([[
 \define[command=book:right-running-head-font]{\font[family=Libertine Serif,style=Italic,size=12pt]}%
 \define[command=book:page-number-font]{\font[family=Libertine Serif,style=Regular,size=13pt]{\process}}%
 \define[command=tableofcontents:headerfont]{\book:partfont{\process}}%
-\define[command=tableofcontents:header]{\center{ \skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\bigskip\fullrule\bigskip}%
+\define[command=tableofcontents:header]{\center{\hbox\skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\bigskip\fullrule\bigskip}%
 \define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600,style=Bold]{\process}\break}}%
 \define[command=tableofcontents:level2item]{\skip[height=4pt]\noindent\glue[width=2ex]\font[size=11pt]{\process}\break\skip[height=0]}%
 \define[command=wraptitle]{\meta:title}
@@ -219,7 +219,7 @@ SILE.registerCommand("chapter", function (options, content)
   SILE.call("center", {}, function()
     SILE.settings.temporarily(function()
       SILE.typesetter:typeset(" ")
-      SILE.call("skip", {height="1ex"})
+      SILE.call("skip", {height="2ex"})
       SILE.call("book:sectioning", {
         numbering = options.numbering, 
         level = 2,
@@ -230,7 +230,7 @@ SILE.registerCommand("chapter", function (options, content)
       }, content)
       -- If Sectioning doesn't output numbering, the chapter starts too high on the page
       if (options.numbering == false or options.numbering == "false") then
-        SILE.call("skip", { height = "9ex" })
+        SILE.call("skip", { height = "8ex" })
       end
       SILE.call("book:chapterfont", {}, content)
       SILE.call("bigskip")
