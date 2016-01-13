@@ -10,6 +10,10 @@ function countchars () {
     perl -pne 's/\s//g' | wc -c
 }
 
+function countwords () {
+    perl -pne 's/[^\s\w]//g' | wc -w
+}
+
 cyclestart=$(date "+%Y-%m-1")
 rootstart=$(git log --format=%at | sort -n | head -n1)
 git log --format=%aN --follow -- "$file" |
@@ -44,11 +48,14 @@ git log --format=%aN --follow -- "$file" |
                     [[ $at -ge $since ]] || continue
                     [[ $aut == $author ]] || continue
                     after=$(git show "$sha1":"$afterfile" 2>&- | countchars)
+                    afterw=$(git show "$sha1":"$afterfile" 2>&- | countwords)
                     before=$(git show "$sha1"^:"$file" 2>&- | countchars)
+                    beforew=$(git show "$sha1"^:"$file" 2>&- | countwords)
                     change=$(($after-$before))
+                    changew=$(($afterw-$beforew))
 					[[ $change -le 0 ]] && continue
                     let month=$month+$change
-                    echo "$sha1  $(printf %10d $change) $msg"
+                    echo "$sha1  Chars: $(printf %8d $after) [$(printf %8d $change)], Words: $(printf %8d $afterw) [$(printf %6d $changew)] $msg"
                 done
 				echo
                 echo "Total:   $(printf %10d $month)"
