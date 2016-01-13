@@ -353,6 +353,7 @@ SILE.registerCommand("quote", function(options, content)
   SILE.settings.popState()
   SILE.call("medskip")
   SILE.call("novbreak")
+  SILE.call("noindent")
 end, "Typeset quototion blocks")
 
 local function tr_num2text (num, ordinal)

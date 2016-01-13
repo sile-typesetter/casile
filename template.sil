@@ -74,7 +74,7 @@ $endfor$
 \define[command=meta:extracredits]{$extracredits$}
 \define[command=meta:versecredits]{$versecredits$}
 \halftitlepage
-\define[command=listarea]{\set[parameter=document.rskip,value=10pt]\set[parameter=document.lskip,value=20pt]\process\set[parameter=document.lskip]\set[parameter=document.rskip]}%
+\define[command=listarea]{\set[parameter=document.rskip,value=10pt]\set[parameter=document.lskip,value=20pt]\process\set[parameter=document.lskip]\set[parameter=document.rskip]\noindent}%
 \define[command=listitem]{\smallskip{}\glue[width=-1em]• \glue[width=0.3em]\process\smallskip}%
 \titlepage
 \publicationpage
