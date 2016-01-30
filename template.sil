@@ -32,8 +32,6 @@ $endif$
 $if(fontsize)$
 \font[size=$fontsize$]
 $endif$
-\set[parameter=linebreak.emergencyStretch,value=3em]
-\set[parameter=document.baselineskip,value=3ex]
 $if(sansfont)$
 $endif$
 $if(monofont)$

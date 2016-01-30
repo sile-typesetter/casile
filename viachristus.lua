@@ -35,7 +35,8 @@ SILE.doTexlike([[
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
 \set[parameter=linespacing.fit-font.extra-space,value=1.20ex minus 0.6pt]
-\set[parameter=linebreak.hyphenPenalty,value=1000]
+\set[parameter=linebreak.hyphenPenalty,value=200]
+\set[parameter=document.spaceskip,value=2.5pt plus 2.5pt minus 1pt]
 \define[command=publicationpage]{\nofolios
 \hbox\vfill
 \begin{raggedright}
@@ -479,8 +480,6 @@ SILE.registerCommand("footnote", function(options, content)
   SILE.settings.reset()
   SILE.settings.set("linespacing.method", "fit-font")
   SILE.settings.set("linespacing.fit-font.extra-space", "0.4ex minus 0.1pt")
-  SILE.settings.set("linebreak.emergencyStretch", SILE.length.parse("3em"))
-  SILE.settings.set("linebreak.hyphenPenalty", 1000)
   SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(indent))
   local material = SILE.Commands["vbox"]({}, function()
     SILE.Commands["book:footnotefont"]({}, function()
@@ -524,5 +523,4 @@ SILE.registerCommand("poetry", function()
     SILE.settings.set("document.rskip", SILE.nodefactory.hfillGlue)
     SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
-    SILE.settings.set("document.spaceskip", SILE.length.new({ length = SILE.shaper:measureDim(" ") }))
 end)
