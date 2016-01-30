@@ -10,7 +10,7 @@ SILE.doTexlike([[
 \define[command=book:seriffont]{\font[family=Crimson,style=Roman]{\process}}
 \define[command=book:partnumfont]{\book:sansfont{\font[weight=600,style=Bold,size=20pt]{\process}}}
 \define[command=book:partfont]{\book:sansfont{\font[weight=600,style=Bold,size=16pt]{\process}}}
-\define[command=book:subparagraphfont]{\font[family=Libertinus Serif,style=Regular,weight=400,size=12pt,features=+smcp]{\process}}
+\define[command=book:subparagraphfont]{\font[family=Libertinus Serif,style=Regular,weight=400,size=11pt,features=+smcp]{\process}}
 \define[command=book:footnotefont]{\font[family=Libertinus Serif,style=Regular,weight=400,size=8.5pt]{\process}}
 \footnote:separator{\rebox[width=6em,height=5pt]{\hrule[width=5em,height=0.2pt]}\smallskip}
 \define[command=book:chapterfont]{\book:sansfont{\font[weight=600,style=Bold,size=10pt]{\process}}}
@@ -306,7 +306,7 @@ SILE.registerCommand("subparagraph", function (options, content)
   SILE.typesetter:leaveHmode()
   SILE.call("novbreak")
   -- Backtracking 6pt approximates the \medskip after quotations
-  SILE.Commands["skip"]({ height = "-6pt" })
+  SILE.Commands["skip"]({ height = "-8pt" })
   SILE.call("novbreak")
   SILE.Commands["book:subparagraphfont"]({}, function()
     SILE.call("raggedleft", {}, function()
@@ -517,7 +517,7 @@ SILE.doTexlike([[
 
 SILE.registerCommand("verse", function()
     SILE.call("font", {family="Libertinus Serif", weight=400, size="11.5pt", style="Italic", features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
-    SILE.settings.set("linespacing.fit-font.extra-space", "0.9ex plus 0.5pt minus 0.5pt")
+    SILE.settings.set("linespacing.fit-font.extra-space", "0.8ex plus 0.5pt minus 0.5pt")
 end)
 
 SILE.registerCommand("poetry", function()
