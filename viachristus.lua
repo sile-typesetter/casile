@@ -10,20 +10,20 @@ SILE.doTexlike([[
 \define[command=book:seriffont]{\font[family=Crimson,style=Roman]{\process}}
 \define[command=book:partnumfont]{\book:sansfont{\font[weight=600,style=Bold,size=20pt]{\process}}}
 \define[command=book:partfont]{\book:sansfont{\font[weight=600,style=Bold,size=16pt]{\process}}}
-\define[command=book:subparagraphfont]{\font[family=Libertine Serif,style=Regular,weight=400,size=12pt,features=+smcp]{\process}}
-\define[command=book:footnotefont]{\font[family=Libertine Serif,style=Regular,weight=400,size=8.5pt]{\process}}
+\define[command=book:subparagraphfont]{\font[family=Libertinus Serif,style=Regular,weight=400,size=12pt,features=+smcp]{\process}}
+\define[command=book:footnotefont]{\font[family=Libertinus Serif,style=Regular,weight=400,size=8.5pt]{\process}}
 \footnote:separator{\rebox[width=6em,height=5pt]{\hrule[width=5em,height=0.2pt]}\smallskip}
 \define[command=book:chapterfont]{\book:sansfont{\font[weight=600,style=Bold,size=10pt]{\process}}}
 \define[command=book:sectionfont]{\book:sansfont{\font[weight=600,style=Bold,size=8.5pt]{\process}}}
 \define[command=verbatim:font]{\book:monofont{\font[size=10pt]{\process}}}
-\define[command=book:chapter:pre:tr]{\font[family=Libertine Serif Display,size=11pt,weight=400,style=Regular]BÖLÜM }
+\define[command=book:chapter:pre:tr]{\font[family=Libertinus Serif Display,size=11pt,weight=400,style=Regular]BÖLÜM }
 \define[command=book:chapter:post]{\font[filename=avadanlik/fonts/FeFlow2.otf,size=9pt]{\skip[height=-3pt]a\medskip}}
 \define[command=book:part:pre]{}%
 \define[command=book:part:post]{ KISIM\par}%
 \define[command=book:subparagraph:post]{ }%
-\define[command=book:left-running-head-font]{\font[family=Libertine Serif,style=Regular,size=12pt]}%
-\define[command=book:right-running-head-font]{\font[family=Libertine Serif,style=Italic,size=12pt]}%
-\define[command=book:page-number-font]{\font[family=Libertine Serif,style=Regular,size=13pt]{\process}}%
+\define[command=book:left-running-head-font]{\font[family=Libertinus Serif,style=Regular,size=12pt]}%
+\define[command=book:right-running-head-font]{\font[family=Libertinus Serif,style=Italic,size=12pt]}%
+\define[command=book:page-number-font]{\font[family=Libertinus Serif,style=Regular,size=13pt]{\process}}%
 \define[command=tableofcontents:headerfont]{\book:partfont{\process}}%
 \define[command=tableofcontents:header]{\center{\hbox\skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\bigskip\fullrule\bigskip}%
 \define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600,style=Bold]{\process}\break}}%
@@ -39,7 +39,7 @@ SILE.doTexlike([[
 \define[command=publicationpage]{\nofolios
 \hbox\vfill
 \begin{raggedright}
-\font[family=Libertine Serif,style=Regular,size=9pt,language=xx]
+\font[family=Libertinus Serif,style=Regular,size=9pt,language=xx]
 \set[parameter=linespacing.fit-font.extra-space,value=0.8ex minus 0.6pt]
 \set[parameter=document.parskip,value=1.2ex]
 \font[weight=600,style=Bold]{\meta:title}\break
@@ -515,7 +515,7 @@ SILE.doTexlike([[
 ]])
 
 SILE.registerCommand("verse", function()
-    SILE.call("font", {family="Libertine Serif", weight=400, size="11.5pt", style="Italic", features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
+    SILE.call("font", {family="Libertinus Serif", weight=400, size="11.5pt", style="Italic", features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
     SILE.settings.set("linespacing.fit-font.extra-space", "0.9ex minus 0.6pt")
 end)
 
