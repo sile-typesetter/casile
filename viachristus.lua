@@ -231,7 +231,7 @@ SILE.registerCommand("chapter", function (options, content)
       }, content)
       -- If Sectioning doesn't output numbering, the chapter starts too high on the page
       if (options.numbering == false or options.numbering == "false") then
-        SILE.call("skip", { height = "8ex" })
+        SILE.call("skip", { height = "10ex" })
       end
       SILE.call("book:chapterfont", {}, content)
       SILE.call("bigskip")
