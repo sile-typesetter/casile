@@ -34,14 +34,14 @@ SILE.doTexlike([[
 \font[family=Crimson,style=Roman,size=11.5pt]
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
-\set[parameter=linespacing.fit-font.extra-space,value=1.20ex minus 0.6pt]
+\set[parameter=linespacing.fit-font.extra-space,value=1.15ex plus 0.5pt minus 0.5pt]
 \set[parameter=linebreak.hyphenPenalty,value=200]
 \set[parameter=document.spaceskip,value=2.5pt plus 2.5pt minus 1pt]
 \define[command=publicationpage]{\nofolios
 \hbox\vfill
 \begin{raggedright}
 \font[family=Libertinus Serif,style=Regular,size=9pt,language=xx]
-\set[parameter=linespacing.fit-font.extra-space,value=0.8ex minus 0.6pt]
+\set[parameter=linespacing.fit-font.extra-space,value=0.8ex plus 0.5pt minus 0.5pt]
 \set[parameter=document.parskip,value=1.2ex]
 \font[weight=600,style=Bold]{\meta:title}\break
 \meta:creators{}
@@ -479,7 +479,7 @@ SILE.registerCommand("footnote", function(options, content)
   SILE.settings.pushState()
   SILE.settings.reset()
   SILE.settings.set("linespacing.method", "fit-font")
-  SILE.settings.set("linespacing.fit-font.extra-space", "0.4ex minus 0.1pt")
+  SILE.settings.set("linespacing.fit-font.extra-space", "0.4ex plus 0.1pt minus 0.1pt")
   SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(indent))
   local material = SILE.Commands["vbox"]({}, function()
     SILE.Commands["book:footnotefont"]({}, function()
@@ -515,7 +515,7 @@ SILE.doTexlike([[
 
 SILE.registerCommand("verse", function()
     SILE.call("font", {family="Libertinus Serif", weight=400, size="11.5pt", style="Italic", features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
-    SILE.settings.set("linespacing.fit-font.extra-space", "0.9ex minus 0.6pt")
+    SILE.settings.set("linespacing.fit-font.extra-space", "0.9ex plus 0.5pt minus 0.5pt")
 end)
 
 SILE.registerCommand("poetry", function()
