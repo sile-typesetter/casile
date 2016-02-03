@@ -35,8 +35,8 @@ SILE.doTexlike([[
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
 \set[parameter=linespacing.fit-font.extra-space,value=1.15ex plus 0.5pt minus 0.5pt]
-\set[parameter=linebreak.hyphenPenalty,value=200]
-\set[parameter=document.spaceskip,value=2.5pt plus 2.5pt minus 1pt]
+\set[parameter=linebreak.hyphenPenalty,value=300]
+\set[parameter=document.spaceskip,value=0.5en plus 0.5en minus 0.2en]
 \define[command=publicationpage]{\nofolios
 \hbox\vfill
 \begin{raggedright}
