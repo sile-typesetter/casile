@@ -40,7 +40,7 @@ SILE.doTexlike([[
 \define[command=publicationpage]{\nofolios
 \hbox\vfill
 \begin{raggedright}
-\font[family=Libertinus Serif,style=Regular,size=9pt,language=xx]
+\font[family=Libertinus Serif,style=Regular,size=9pt,language=und]
 \set[parameter=linespacing.fit-font.extra-space,value=0.8ex plus 0.5pt minus 0.5pt]
 \set[parameter=document.parskip,value=1.2ex]
 \font[weight=600,style=Bold]{\meta:title}\break
@@ -493,7 +493,7 @@ SILE.registerCommand("footnote", function(options, content)
       -- don't justify footnotes
       SILE.call("raggedright", {}, function()
         --inhibit hyphenation in footnotes
-        SILE.Commands["font"]({language = "xx"}, function()
+        SILE.Commands["font"]({language = "und"}, function()
           SILE.process(content)
         end)
       end)
@@ -510,7 +510,7 @@ SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse(
 SILE.doTexlike([[
 \define[command=langel]{\font[language=el,style=Italic]{\process}}
 \define[command=langhe]{\font[language=he,style=Italic]{\process}}
-\define[command=langxx]{\font[language=xx,style=Italic]{\process}}
+\define[command=langund]{\font[language=und,style=Italic]{\process}}
 \define[command=langla]{\font[language=la,style=Italic]{\process}}
 \define[command=langen]{\font[language=en,style=Italic]{\process}}
 ]])
