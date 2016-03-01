@@ -66,7 +66,7 @@ sync_post:
 	elif [ ! "" = "$(findstring a5trim,$@)" ]; then\
 		export PAPER_OPTS="paperheight=210mm,paperwidth=148.5mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.75mm" ;\
 	elif [ ! "" = "$(findstring cep,$@)" ]; then\
-		export PAPER_OPTS="paperheight=210mm,paperwidth=148.5mm,layoutheight=170mm,layoutwidth=115mm,layouthoffset=7.5mm,layoutvoffset=6.75mm" ;\
+		export PAPER_OPTS="paperheight=210mm,paperwidth=148.5mm,layoutheight=170mm,layoutwidth=115mm,layouthoffset=16.5mm,layoutvoffset=20mm" ;\
 	else \
 		exit 0 ;\
 	fi
