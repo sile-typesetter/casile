@@ -7,7 +7,7 @@ OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)
 SOURCES := $(wildcard *.md)
 TARGETS := ${SOURCES:.md=}
 FORMATS ?= pdf epub mobi odt docx
-LAYOUTS ?= a4 a5trim octavo halfletter
+LAYOUTS ?= a4 a5trim octavo halfletter cep
 PRINTS ?=
 #PRINTS ?= kesme kesme-ciftyonlu
 DRAFT ?= false
@@ -65,6 +65,8 @@ sync_post:
 		export PAPER_OPTS="paperwidth=210mm,paperheight=297mm" ;\
 	elif [ ! "" = "$(findstring a5trim,$@)" ]; then\
 		export PAPER_OPTS="paperheight=210mm,paperwidth=148.5mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.75mm" ;\
+	elif [ ! "" = "$(findstring cep,$@)" ]; then\
+		export PAPER_OPTS="paperheight=210mm,paperwidth=148.5mm,layoutheight=170mm,layoutwidth=115mm,layouthoffset=7.5mm,layoutvoffset=6.75mm" ;\
 	else \
 		exit 0 ;\
 	fi
@@ -96,6 +98,9 @@ endef
 
 %-halfletter.sil: %.md %.yml $(TOOLS)/template.sil $$(wildcard $$*.lua)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),halfletter)
+
+%-cep.sil: %.md %.yml $(TOOLS)/template.sil $$(wildcard $$*.lua)
+	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),115mm x 170mm)
 
 %.epub %.odt %.docx: %.md %.yml
 	pandoc $(basename $<).yml $< -o $@
