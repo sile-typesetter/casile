@@ -84,11 +84,17 @@ $if(seriestitle)$
 \open-double-page
 \script{SILE.scratch.headers.skipthispage = true}
 \nofolios
-\hbox\bigskip
-\center{\book:chapterfont{$seriestitle$ serisindeki kitaplar}\book:chapter:post{}}
+\hbox\vfill
+\center{\book:chapterfont{$seriestitle$ Serisi’ndeki kitaplar}\book:chapter:post{}}
 $for(seriestitles)$
+$if(seriestitles.text)$
 \font[style=italic]{$seriestitles.text$}\medskip
+$else$
+\noindent\font[style=Bold]{$seriestitles.title$}\hfill\break
+\hbox\qquad{}— \font[style=italic]{$seriestitles.author$}\smallskip
+$endif$
 
 $endfor$
+\vfill
 $endif$
 \end{document}
