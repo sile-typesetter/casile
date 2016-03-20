@@ -6,7 +6,7 @@ SHELL = bash
 OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)
 SOURCES := $(wildcard *.md)
 TARGETS := ${SOURCES:.md=}
-FORMATS ?= pdf epub mobi odt docx
+FORMATS ?= pdf epub mobi
 LAYOUTS ?= a4 a5trim octavo halfletter cep
 PRINTS ?=
 #PRINTS ?= kesme kesme-ciftyonlu
