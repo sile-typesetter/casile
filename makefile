@@ -12,6 +12,12 @@ PRINTS ?=
 #PRINTS ?= kesme kesme-ciftyonlu
 DRAFT ?= false
 STATS_MONTHS ?= 2
+BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
+
+ifneq ($(BRANCH),master)
+OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)/$(BRANCH)
+OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)/$(BRANCH)
+endif
 
 export TEXMFHOME := $(TOOLS)/texmf
 export PATH := $(TOOLS)/bin:$(PATH)
