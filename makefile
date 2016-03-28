@@ -46,7 +46,7 @@ init:
 
 define sync_owncloud
 	-pgrep -u $(USER) -x owncloud || \
-		owncloudcmd -n -s $(OUTPUT) $(OWNCLOUD) 2>/dev/null
+		owncloudcmd -n -s $(OUTPUT:/$(BRANCH)=) $(OWNCLOUD:/$(BRANCH)=) 2>/dev/null
 endef
 
 sync_pre:
