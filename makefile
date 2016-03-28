@@ -12,8 +12,12 @@ PRINTS ?=
 #PRINTS ?= kesme kesme-ciftyonlu
 DRAFT ?= false
 STATS_MONTHS ?= 2
-BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 
+# Local and CI builds calculate the branach differently
+BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
+ifeq ($(BRANCH),HEAD)
+BRANCH = $(CI_BUILD_REF_NAME)
+endif
 ifneq ($(BRANCH),master)
 OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)/$(BRANCH)
 OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)/$(BRANCH)
