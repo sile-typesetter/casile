@@ -91,28 +91,28 @@ book.endPage = function(self)
         SILE.call("fullrule")
         SILE.call("par")
       end)
-      elseif (not(book:oddPage()) and SILE.scratch.headers.left) then
-        SILE.typesetNaturally(SILE.getFrame("runningHead"), function()
-          SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
-          SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
-          SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
-          SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
-          SILE.call("book:left-running-head-font")
-          SILE.call("book:page-number-font", {}, function()
-            SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
-          end)
-          SILE.call("hfill")
-          SILE.call("meta:title")
-          SILE.call("skip", {height="-8pt"})
-          SILE.call("fullrule")
-          SILE.call("par")
+    elseif (not(book:oddPage()) and SILE.scratch.headers.left) then
+      SILE.typesetNaturally(SILE.getFrame("runningHead"), function()
+        SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
+        SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
+        SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
+        SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
+        SILE.call("book:left-running-head-font")
+        SILE.call("book:page-number-font", {}, function()
+          SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
         end)
-      end
-    else
-      SILE.scratch.headers.skipthispage = false
+        SILE.call("hfill")
+        SILE.call("meta:title")
+        SILE.call("skip", {height="-8pt"})
+        SILE.call("fullrule")
+        SILE.call("par")
+      end)
     end
-  return plain.endPage(book);
-end;
+  else
+    SILE.scratch.headers.skipthispage = false
+  end
+  return plain.endPage(book)
+end
 
 SILE.registerCommand("left-running-head", function(options, content)
   local closure = SILE.settings.wrap()
@@ -126,7 +126,7 @@ end, "Text to appear on the top of the right page");
 
 local _initml = function (c)
   if not(SILE.scratch.counters[c]) then
-    SILE.scratch.counters[c] = { value= {0}, display= {"arabic"} };
+    SILE.scratch.counters[c] = { value= {0}, display= {"arabic"} }
   end
 end
 
@@ -199,20 +199,20 @@ end)
 
 SILE.registerCommand("chapternumber", function (o,c)
   SILE.call("typeset:chapternumber", o, c)
-  SILE.call("save-chapter-number", o, c) 
+  SILE.call("save-chapter-number", o, c)
 end)
 
 SILE.registerCommand("chapter", function (options, content)
   SILE.call("open-double-page")
   SILE.call("noindent")
-  SILE.call("set-counter", {id = "footnote", value = 1})  
+  SILE.call("set-counter", {id = "footnote", value = 1})
   SILE.scratch.theChapter = content
   SILE.call("center", {}, function()
     SILE.settings.temporarily(function()
       SILE.typesetter:typeset(" ")
       SILE.call("skip", {height="2ex"})
       SILE.call("book:sectioning", {
-        numbering = options.numbering, 
+        numbering = options.numbering,
         level = 2,
         reset = false,
         display = "STRING",
@@ -242,7 +242,7 @@ end, "Begin a new chapter");
 
 SILE.registerCommand("section", function (options, content)
   SILE.typesetter:leaveHmode()
-  SILE.call("goodbreak")  
+  SILE.call("goodbreak")
   SILE.call("skip", {height="12pt plus 6pt minus 4pt"})
   SILE.call("noindent")
   SILE.settings.temporarily(function()
@@ -506,17 +506,17 @@ SILE.doTexlike([[
 ]])
 
 SILE.registerCommand("verse", function()
-    SILE.call("font", {family="Libertinus Serif", weight=400, size="11.5pt", style="Italic", features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
-    SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.8ex plus 0.5pt minus 0.5pt"))
+  SILE.call("font", {family="Libertinus Serif", weight=400, size="11.5pt", style="Italic", features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
+  SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.8ex plus 0.5pt minus 0.5pt"))
 end)
 
 SILE.registerCommand("poetry", function()
-    SILE.call("font", {size="11.5pt"})
-    SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("1.15ex plus 0.5pt minus 0.5pt"))
-    SILE.settings.set("document.lskip", SILE.nodefactory.newGlue("30pt"))
-    SILE.settings.set("document.rskip", SILE.nodefactory.hfillGlue)
-    SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
-    SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
+  SILE.call("font", {size="11.5pt"})
+  SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("1.15ex plus 0.5pt minus 0.5pt"))
+  SILE.settings.set("document.lskip", SILE.nodefactory.newGlue("30pt"))
+  SILE.settings.set("document.rskip", SILE.nodefactory.hfillGlue)
+  SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
+  SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
 end)
 
 SILE.registerCommand("dedication", function(options, content)
