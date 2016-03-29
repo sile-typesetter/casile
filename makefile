@@ -90,8 +90,8 @@ define build_sile
 	pandoc --standalone \
 		-V documentclass="book" \
 		-V papersize="$4" \
-		-V script=$(TOOLS)/layout-$3 \
 		$(shell test -f "$(basename $1).lua" && echo "-V script=$(basename $1)") \
+		-V script=$(TOOLS)/layout-$3 \
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
 		$(shell test -f "$(basename $1).yml" && echo "$(basename $1).yml") \
