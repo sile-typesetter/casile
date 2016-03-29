@@ -95,6 +95,8 @@ define build_sile
 		-V script=$(TOOLS)/layout-$3 \
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
+		$(TOOLS)/viachristus.yml \
+		$(shell test -f "$(PROJECT).yml" && echo "$(PROJECT).yml") \
 		$(shell test -f "$(basename $1).yml" && echo "$(basename $1).yml") \
 		$1 -o $2-$3.sil
 endef
