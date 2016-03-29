@@ -85,13 +85,12 @@ $if(seriestitle)$
 \script{SILE.scratch.headers.skipthispage = true}
 \nofolios
 \hbox\vfill
-\center{\book:chapterfont{$seriestitle$ Serisi’ndeki kitaplar}\book:chapter:post{}}
+\seriespage:series{$seriestitle$}
 $for(seriestitles)$
 $if(seriestitles.text)$
-\font[style=italic]{$seriestitles.text$}\medskip
+\seriespage:title{$seriestitles.text$}
 $else$
-\noindent\font[style=Bold]{$seriestitles.title$}\hfill\break
-\hbox\qquad{}— \font[style=italic]{$seriestitles.author$}\smallskip
+\seriespage:title[author=$seriestitles.author$]{$seriestitles.title$}
 $endif$
 
 $endfor$
