@@ -197,11 +197,6 @@ SILE.registerCommand("book:sectioning", function (options, content)
   end
 end)
 
-SILE.registerCommand("chapternumber", function (o,c)
-  SILE.call("typeset:chapternumber", o, c)
-  SILE.call("save-chapter-number", o, c)
-end)
-
 SILE.registerCommand("chapter", function (options, content)
   SILE.call("open-double-page")
   SILE.call("noindent")
