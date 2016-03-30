@@ -14,10 +14,13 @@ end)
 SILE.registerCommand("endnote:counter", function(options, content)
   SILE.call("noindent")
   SILE.typesetter:typeset(options.value..".")
-  SILE.call("qquad")
+  SILE.call("quad")
 end)
 
 SILE.registerCommand("endnotes", function(options, content)
+  SILE.typesetter:leaveHmode()
+  SILE.call("supereject")
+  SILE.call("chapter", { numbering=false }, { "Notlar" })
   for i=1, #SILE.scratch.endnotes do
     local counter, material = SILE.scratch.endnotes[i]()
     SILE.Commands["footnote:font"]({}, function()
@@ -29,6 +32,7 @@ SILE.registerCommand("endnotes", function(options, content)
   end
   SILE.scratch.endnotes = {}
   SILE.scratch.counters.footnote.value = 1
+  SILE.call("supereject")
 end)
 
 local class = SILE.documentState.documentClass
