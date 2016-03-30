@@ -37,10 +37,11 @@ SILE.doTexlike([[
 \set[parameter=linespacing.fit-font.extra-space,value=1.15ex plus 0.5pt minus 0.5pt]
 \set[parameter=linebreak.hyphenPenalty,value=300]
 \set[parameter=document.spaceskip,value=0.6ex plus 0.4ex minus 0.2ex]
+\define[command=publicationpage:font]{\font[family=Libertinus Serif,style=Regular,size=9pt,language=und]}
 \define[command=publicationpage]{\nofolios
 \hbox\vfill
 \begin{raggedright}
-\font[family=Libertinus Serif,style=Regular,size=8.5pt,language=und]
+\publicationpage:font
 \set[parameter=linespacing.fit-font.extra-space,value=0.8ex plus 0.5pt minus 0.5pt]
 \set[parameter=document.parskip,value=1.2ex]
 \font[weight=600,style=Bold]{\meta:title}\break
@@ -62,8 +63,10 @@ SILE.doTexlike([[
 \meta:versecredits{}
 
 \font[weight=600,style=Bold]{Via Christus Yayınları}\break
-\book:monofont{\font[size=6.5pt]https://www.viachristus.com}\break
-\book:monofont{\font[size=6.5pt]viachristushizmetleri@gmail.com}
+\font[size=1.8ex]{
+\book:monofont{https://www.viachristus.com}\break
+\book:monofont{viachristushizmetleri@gmail.com}
+}
 \end{raggedright}
 \par\break
 }
