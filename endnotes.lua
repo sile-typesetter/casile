@@ -18,18 +18,24 @@ SILE.registerCommand("endnote:counter", function(options, content)
 end)
 
 SILE.registerCommand("endnotes", function(options, content)
-  SILE.typesetter:leaveHmode()
   SILE.call("supereject")
   SILE.call("chapter", { numbering=false }, { "Notlar" })
-  for i=1, #SILE.scratch.endnotes do
-    local counter, material = SILE.scratch.endnotes[i]()
-    SILE.Commands["footnote:font"]({}, function()
-      SILE.call("footnote:atstart")
-      SILE.call("endnote:counter", { value=counter })
-      SILE.process(material)
-    end)
-    SILE.typesetter:leaveHmode()
-  end
+  local indent = "2em"
+  SILE.settings.temporarily(function()
+    SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(indent))
+    for i=1, #SILE.scratch.endnotes do
+      local counter, material = SILE.scratch.endnotes[i]()
+      SILE.Commands["footnote:font"]({}, function()
+        SILE.typesetter:pushGlue({ width = 0 - SILE.length.parse(indent) })
+        SILE.Commands["rebox"]({ width = indent }, function()
+          SILE.call("endnote:counter", { value=counter })
+        end)
+        SILE.call("raggedright", {}, function()
+          SILE.process(material)
+        end)
+      end)
+    end
+  end)
   SILE.scratch.endnotes = {}
   SILE.scratch.counters.footnote.value = 1
   SILE.call("supereject")
