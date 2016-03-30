@@ -115,6 +115,10 @@ book.endPage = function(self)
   return plain.endPage(book)
 end
 
+SILE.registerCommand("aki", function()
+  SILE.call("penalty", { penalty=-1 })
+end)
+
 SILE.registerCommand("left-running-head", function(options, content)
   local closure = SILE.settings.wrap()
   SILE.scratch.headers.left = function () closure(content) end
@@ -528,7 +532,7 @@ SILE.registerCommand("seriespage:series", function(options, content)
   SILE.call("center", {}, function()
     SILE.call("book:chapterfont", {}, function()
       SILE.process(content)
-      SILE.call("penalty", { penalty=-1 })
+      SILE.call("aki")
       SILE.typesetter:typeset(" Serisi’ndeki Kitaplar")
       SILE.call("book:chapter:post")
     end)
@@ -545,7 +549,7 @@ SILE.registerCommand("seriespage:title", function(options, content)
     else
       SILE.call("font", { style="Bold", language="und" }, content)
       SILE.typesetter:typeset(" ")
-      SILE.call("penalty", { penalty=-1 })
+      SILE.call("aki")
       SILE.typesetter:typeset("— ")
       SILE.call("font", { style="Italic", language="und" }, function()
         SILE.typesetter:typeset(options.author)
