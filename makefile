@@ -23,6 +23,13 @@ OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)/$(BRANCH)
 OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)/$(BRANCH)
 endif
 
+# If we are directly on a tagged commit, build it to a special directory
+TAG = $(shell git describe --tags)
+ifeq ($(shell git describe --long --tags | cut -d- -f2),0)
+OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)/$(TAG)
+OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)/$(TAG)
+endif
+
 export TEXMFHOME := $(TOOLS)/texmf
 export PATH := $(TOOLS)/bin:$(PATH)
 
