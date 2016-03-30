@@ -52,8 +52,6 @@ SILE.doTexlike([[
 
 \meta:identifiers{}
 
-\meta:date{}
-
 \meta:contributors{}
 
 \meta:extracredits{}

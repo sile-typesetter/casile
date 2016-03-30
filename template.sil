@@ -38,7 +38,6 @@ $if(monofont)$
 \define[command=verbatim:font]{\font[family=$monofont$]}
 $endif$
 \define[command=meta:title]{$title-meta$}
-\define[command=meta:date]{$date$}
 $for(creator)$
 \define[command=meta:$creator.role$]{$creator.text$}
 $endfor$
@@ -58,6 +57,7 @@ $endfor$
 $for(identifier)$
 \font[weight=600,style=Bold]{$identifier.file-as$}: $identifier.text$\break
 $endfor$
+\font[weight=600,style=Bold]{Yayın}: $versioninfo$\break
 }
 \define[command=meta:info]{
 $for(info)$

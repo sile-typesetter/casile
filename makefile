@@ -86,10 +86,18 @@ sync_post:
 %-ciftyonlu.pdf: %.pdf
 	-pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $<
 
+define versioninfo
+	echo -en "$(basename $1)@"
+    git describe --tags >/dev/null 2>/dev/null || echo -en "$(BRANCH)-"
+    git describe --long --tags --always --dirty=* | xargs echo -en
+	TZ=Turkey LC_ALL=en_US.UTF-8 date '+%d %b %Y, %R %Z' | xargs -iX echo -en ' (X)'
+endef
+
 define build_sile
 	pandoc --standalone \
 		-V documentclass="book" \
 		-V papersize="$4" \
+		-V versioninfo="$(shell $(call versioninfo,$1))" \
 		$(shell test -f "$(basename $1).lua" && echo "-V script=$(basename $1)") \
 		$(shell test -f "$(PROJECT).lua" && echo "-V script=$(PROJECT)") \
 		-V script=$(TOOLS)/layout-$3 \
