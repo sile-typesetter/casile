@@ -3,26 +3,32 @@ SILE.scratch.endnotes = {}
 
 SILE.registerCommand("endnote", function(options, content)
   SILE.call("footnotemark")
-  --local material = SILE.Commands["rebox"]({}, function()
-  local material = SILE.Commands["vbox"]({}, function()
-    SILE.Commands["footnote:font"]({}, function()
-      SILE.call("footnote:atstart")
-      SILE.call("footnote:counter")
-      --SILE.process(content)
-      --SU.debug("viachristus", content)
-      SILE.typesetter:typeset("this is a test")
-    end)
-  end)
-  --SU.debug("viachristus", material.height)
-  SILE.scratch.endnotes[#SILE.scratch.endnotes+1] = material
+  local material = content
+  local counter = SILE.formatCounter(SILE.scratch.counters.footnote)
+  SILE.scratch.endnotes[#SILE.scratch.endnotes+1] = function()
+    return counter, material
+  end
   SILE.scratch.counters.footnote.value = SILE.scratch.counters.footnote.value + 1
+end)
+
+SILE.registerCommand("endnote:counter", function(options, content)
+  SILE.call("noindent")
+  SILE.typesetter:typeset(options.value..".")
+  SILE.call("qquad")
 end)
 
 SILE.registerCommand("endnotes", function(options, content)
   for i=1, #SILE.scratch.endnotes do
-    SILE.typesetter:pushVbox(SILE.scratch.endnotes[i])
+    local counter, material = SILE.scratch.endnotes[i]()
+    SILE.Commands["footnote:font"]({}, function()
+      SILE.call("footnote:atstart")
+      SILE.call("endnote:counter", { value=counter })
+      SILE.process(material)
+    end)
+    SILE.typesetter:leaveHmode()
   end
   SILE.scratch.endnotes = {}
+  SILE.scratch.counters.footnote.value = 1
 end)
 
 local class = SILE.documentState.documentClass
@@ -33,4 +39,3 @@ class.finish = function()
   end
   return originalfinish(class)
 end
-
