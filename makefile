@@ -94,8 +94,14 @@ sync_post:
 
 define versioninfo
 	echo -en "$(basename $1)@"
-    git describe --tags >/dev/null 2>/dev/null || echo -en "$(BRANCH)-"
-    git describe --long --tags --always --dirty=* | xargs echo -en
+	if [[ $(BRANCH) == master ]]; then
+		git describe --tags >/dev/null 2>/dev/null || echo -en "$(BRANCH)-"
+		git describe --long --tags --always --dirty=* | xargs echo -en
+	else
+		echo -en "$(BRANCH)-"
+		git rev-list --boundary HEAD...master | grep -v - | wc -l | xargs -iX echo -en "X-"
+		git describe --always | xargs echo -en
+	fi
 	TZ=Turkey LC_ALL=en_US.UTF-8 date '+%d %b %Y, %R %Z' | xargs -iX echo -en ' (X)'
 endef
 
