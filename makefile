@@ -100,6 +100,16 @@ define versioninfo
 	TZ=Turkey LC_ALL=en_US.UTF-8 date '+%d %b %Y, %R %Z' | xargs -iX echo -en ' (X)'
 endef
 
+define process_criticmark
+	if [[ $(BRANCH) == master ]]; then
+		sed -e 's#{==##g;s#==}##g' $1 |
+			sed -e 's#{>>##g;s#<<}##g'
+	else
+		sed -e 's#{==#\\criticHighlight{#g;s#==}#}#g' $1 |
+			sed -e 's#{>>#\\criticComment{#g;s#<<}#}#g'
+	fi
+endef
+
 define build_sile
 	pandoc --standalone \
 		-V documentclass="book" \
@@ -113,7 +123,7 @@ define build_sile
 		$(TOOLS)/viachristus.yml \
 		$(shell test -f "$(PROJECT).yml" && echo "$(PROJECT).yml") \
 		$(shell test -f "$(basename $1).yml" && echo "$(basename $1).yml") \
-		$1 -o $2-$3.sil
+		<($(call process_criticmark,$1)) -o $2-$3.sil
 endef
 
 %-a4.sil: %.md %.yml $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-a4.lua

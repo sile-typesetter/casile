@@ -558,3 +558,23 @@ SILE.registerCommand("seriespage:title", function(options, content)
     end
   end)
 end)
+
+SILE.require("packages/color")
+
+SILE.registerCommand("criticHighlight", function(options, content)
+  SILE.settings.temporarily(function()
+    SILE.call("font", { style="Bold" })
+    SILE.call("color", { color="#b30086" }, content)
+  end)
+end)
+
+SILE.registerCommand("criticComment", function(options, content)
+  SILE.settings.temporarily(function()
+    SILE.call("font", { style="Italic" })
+    SILE.call("color", { color="#787878" }, function()
+      SILE.typesetter:typeset(" (")
+      SILE.process(content)
+      SILE.typesetter:typeset(")")
+    end)
+  end)
+end)
