@@ -2,6 +2,7 @@ BASE := $(shell cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/../" && pwd)
 TOOLS := $(shell cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/" && pwd)
 PROJECT != basename $(BASE)
 OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)
+INPUT  = ${HOME}/ownCloud/viachristus/$(PROJECT)
 SHELL = bash
 OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)
 SOURCES := $(wildcard *.md)
@@ -20,14 +21,12 @@ BRANCH = $(CI_BUILD_REF_NAME)
 endif
 ifneq ($(BRANCH),master)
 OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)/$(BRANCH)
-OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)/$(BRANCH)
 endif
 
 # If we are directly on a tagged commit, build it to a special directory
 TAG = $(shell git describe --tags)
 ifeq ($(shell git describe --long --tags | cut -d- -f2),0)
 OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)/$(TAG)
-OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)/$(TAG)
 endif
 
 export TEXMFHOME := $(TOOLS)/texmf
@@ -53,7 +52,7 @@ init:
 
 define sync_owncloud
 	-pgrep -u $(USER) -x owncloud || \
-		owncloudcmd -n -s $(OUTPUT:/$(BRANCH)=) $(OWNCLOUD:/$(BRANCH)=) 2>/dev/null
+		owncloudcmd -n -s $(INPUT) $(OWNCLOUD) 2>/dev/null
 endef
 
 sync_pre:
