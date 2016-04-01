@@ -115,6 +115,14 @@ book.endPage = function(self)
   return plain.endPage(book)
 end
 
+SILE.registerUnit("pw", { relative = true, definition = function (v, dimension)
+  return v / 100 * SILE.documentState.paperSize[1]
+end})
+
+SILE.registerUnit("ph", { relative = true, definition = function (v, dimension)
+  return v / 100 * SILE.documentState.paperSize[2]
+end})
+
 SILE.registerCommand("aki", function()
   SILE.call("penalty", { penalty=-1 })
 end)
@@ -210,7 +218,7 @@ SILE.registerCommand("chapter", function (options, content)
   SILE.call("center", {}, function()
     SILE.settings.temporarily(function()
       SILE.typesetter:typeset(" ")
-      SILE.call("skip", {height="2ex"})
+      SILE.call("skip", {height="5ex"})
       SILE.call("book:sectioning", {
         numbering = options.numbering,
         level = 2,
