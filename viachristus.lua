@@ -504,8 +504,8 @@ SILE.registerCommand("quote", function(options, content)
 end, "Typeset quototion blocks")
 
 SILE.registerCommand("excerpt", function()
-  SILE.call("font", { size="0.95em" })
-  SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.95ex plus 0.05ex minus 0.05ex"))
+  SILE.call("font", { size="0.975em" })
+  SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.975ex plus 0.05ex minus 0.05ex"))
 end)
 
 SILE.registerCommand("verse", function()
