@@ -255,9 +255,9 @@ SILE.registerCommand("chapter", function (options, content)
 end, "Begin a new chapter");
 
 SILE.registerCommand("section", function (options, content)
-  SILE.typesetter:pushVglue(SILE.nodefactory.newVglue("12pt plus 6pt minus 4pt"))
   SILE.typesetter:leaveHmode()
   SILE.call("goodbreak")
+  SILE.call("skip", {height="12pt plus 6pt minus 4pt"})
   SILE.call("noindent")
   SILE.settings.temporarily(function()
     SILE.call("book:sectionfont", {}, function()
