@@ -94,7 +94,7 @@ sync_post:
 
 define versioninfo
 	echo -en "$(basename $1)@"
-	if [[ $(BRANCH) == master ]]; then
+	if [[ "$(BRANCH)" == master ]]; then
 		git describe --tags >/dev/null 2>/dev/null || echo -en "$(BRANCH)-"
 		git describe --long --tags --always --dirty=* | xargs echo -en
 	else
@@ -106,7 +106,7 @@ define versioninfo
 endef
 
 define process_criticmark
-	if [[ $(BRANCH) == master ]]; then
+	if [[ "$(BRANCH)" == master ]]; then
 		sed -e 's#{==##g;s#==}##g' $1 |
 			sed -e 's#{>>##g;s#<<}##g'
 	else
