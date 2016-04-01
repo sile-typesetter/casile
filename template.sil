@@ -41,7 +41,7 @@ $endif$
 $for(creator)$
 \define[command=meta:$creator.role$]{$creator.text$}
 $endfor$
-\define[command=meta:subtitle]{$subtitle-meta$}
+\define[command=meta:subtitle]{$subtitle$}
 \define[command=meta:rights]{$rights$}
 \define[command=meta:creators]{
 $for(creator)$
