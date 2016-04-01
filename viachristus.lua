@@ -76,6 +76,8 @@ book.endPage = function(self)
   book:moveTocNodes()
 
   if (not SILE.scratch.headers.skipthispage) then
+    SILE.settings.pushState()
+    SILE.settings.reset()
     if (book:oddPage() and SILE.scratch.headers.right) then
       SILE.typesetNaturally(SILE.getFrame("runningHead"), function()
         SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
@@ -88,9 +90,9 @@ book.endPage = function(self)
         SILE.call("book:page-number-font", {}, function()
           SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
         end)
+        SILE.typesetter:leaveHmode()
         SILE.call("skip", {height="-8pt"})
         SILE.call("fullrule")
-        SILE.call("par")
       end)
     elseif (not(book:oddPage()) and SILE.scratch.headers.left) then
       SILE.typesetNaturally(SILE.getFrame("runningHead"), function()
@@ -104,11 +106,12 @@ book.endPage = function(self)
         end)
         SILE.call("hfill")
         SILE.call("meta:title")
+        SILE.typesetter:leaveHmode()
         SILE.call("skip", {height="-8pt"})
         SILE.call("fullrule")
-        SILE.call("par")
       end)
     end
+    SILE.settings.popState()
   else
     SILE.scratch.headers.skipthispage = false
   end
