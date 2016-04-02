@@ -118,11 +118,10 @@ book.endPage = function(self)
   return plain.endPage(book)
 end
 
-SILE.registerUnit("pw", { relative = true, definition = function (v, dimension)
+SILE.registerUnit("pw", { relative = true, definition = function (v)
   return v / 100 * SILE.documentState.paperSize[1]
 end})
-
-SILE.registerUnit("ph", { relative = true, definition = function (v, dimension)
+SILE.registerUnit("ph", { relative = true, definition = function (v)
   return v / 100 * SILE.documentState.paperSize[2]
 end})
 
