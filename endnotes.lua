@@ -14,13 +14,10 @@ end)
 SILE.registerCommand("endnote:counter", function(options, content)
   SILE.call("noindent")
   SILE.typesetter:typeset(options.value..".")
-  SILE.call("quad")
 end)
 
 SILE.registerCommand("endnotes", function(options, content)
-  SILE.call("supereject")
-  SILE.call("chapter", { numbering=false }, { "Notlar" })
-  local indent = "2em"
+  local indent = "1.5em"
   SILE.settings.temporarily(function()
     SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(indent))
     for i=1, #SILE.scratch.endnotes do
@@ -38,7 +35,6 @@ SILE.registerCommand("endnotes", function(options, content)
   end)
   SILE.scratch.endnotes = {}
   SILE.scratch.counters.footnote.value = 1
-  SILE.call("supereject")
 end)
 
 local class = SILE.documentState.documentClass
