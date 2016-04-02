@@ -5,6 +5,8 @@ $endif$
 \script[src=packages/url]
 \script[src=packages/pdf]
 \script[src=packages/footnotes]
+\define[command=listarea]{\set[parameter=document.rskip,value=10pt]\set[parameter=document.lskip,value=20pt]\process\set[parameter=document.lskip]\set[parameter=document.rskip]\noindent}%
+\define[command=listitem]{\smallskip{}\glue[width=-1em]• \glue[width=0.3em]\process\smallskip}%
 $for(include)$
 \include[src=$include$]
 $endfor$
@@ -72,8 +74,6 @@ $endfor$
 \define[command=meta:extracredits]{$extracredits$}
 \define[command=meta:versecredits]{$versecredits$}
 \halftitlepage
-\define[command=listarea]{\set[parameter=document.rskip,value=10pt]\set[parameter=document.lskip,value=20pt]\process\set[parameter=document.lskip]\set[parameter=document.rskip]\noindent}%
-\define[command=listitem]{\smallskip{}\glue[width=-1em]• \glue[width=0.3em]\process\smallskip}%
 \titlepage
 \publicationpage
 \tableofcontents
