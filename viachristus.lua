@@ -578,7 +578,7 @@ SILE.require("packages/color")
 SILE.registerCommand("criticHighlight", function(options, content)
   SILE.settings.temporarily(function()
     SILE.call("font", { weight=600 })
-    SILE.call("color", { color="#00E600" }, content)
+    SILE.call("color", { color="#0000E6" }, content)
   end)
 end)
 
