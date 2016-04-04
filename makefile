@@ -20,7 +20,7 @@ ifeq ($(BRANCH),HEAD)
 BRANCH = $(CI_BUILD_REF_NAME)
 endif
 ifneq ($(BRANCH),master)
-PARENT = $(shell git show-branch -a --current | awk -F'[]^~[]' '/\*/ && !/HEAD/ && !/'"$(BRANCH)"'/ {print $$2;exit}')
+PARENT = $(shell git show-branch -a --current | awk -F'[][]' '/\*/ && /\+.*\+/ {print $$2;exit}')
 OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)/$(BRANCH)
 endif
 
