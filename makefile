@@ -111,7 +111,7 @@ define process_criticmark
 		sed -e 's#{==##g;s#==}##g' $1 |
 			sed -e 's#{>>##g;s#<<}##g'
 	else
-		branch2criticmark.bash $(PARENT) $1 |
+		branch2criticmark.bash origin/master $1 |
 			sed -e 's#{==#\\criticHighlight{#g' -e 's#==}#}#g' \
 				-e 's#{>>#\\criticComment{#g'   -e 's#<<}#}#g' \
 				-e 's#{++#\\criticAdd{#g'       -e 's#++}#}#g' \
