@@ -7,5 +7,11 @@ if git diff --quiet -- $MARKED_PATH; then
 else
     cat - > /dev/null
     git diff --no-color --word-diff -U99999 -- $MARKED_PATH |
-        sed -e '1,5d;s/\\[A-Za-z0-9]*{\(.*\)}/\1/g;s/\\[A-Za-z0-9]* //g;s/ *{[-\.].*}$//g;s/\\[A-Za-z0-9]*{\(.*\)}/\1/g;s/\[-/{--/g;s/-\]/--}/g;s/{\+/{++/g;s/\+}/++}/g'
+        sed -e '1,5d' \
+            -e 's/\\[A-Za-z0-9]*{\(.*\)}/\1/g' \
+            -e 's/\\[A-Za-z0-9]* //g' \
+            -e 's/ *{[-\.].*}$//g' \
+            -e 's/\\[A-Za-z0-9]*{\(.*\)}/\1/g' \
+            -e 's/\[-/{--/g' -e 's/-\]/--}/g' \
+            -e 's/{+/{++/g' -e 's/+}/++}/g'
 fi
