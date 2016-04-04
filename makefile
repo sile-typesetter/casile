@@ -73,7 +73,7 @@ sync_post:
 	@$(shell test -f "$<" || echo exit 0)
 	# Once for TOC, again for real page numbers, again again for final
 	if $(DRAFT); then \
-		sile $< -o $@ ;\
+		sile -d viachristus $< -o $@ ;\
 	else \
 		sile $< -o $@ && sile $< -o $@ && sile $< -o $@ ;\
 	fi
