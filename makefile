@@ -20,7 +20,8 @@ ifeq ($(BRANCH),HEAD)
 BRANCH = $(CI_BUILD_REF_NAME)
 endif
 ifneq ($(BRANCH),master)
-PARENT = $(shell git show-branch -a --current | awk -F'[][]' '/\*/ && /\+.*\+/ {print $$2;exit}')
+#PARENT = $(shell git show-branch -a --current | awk -F'[][]' '/\*/ && /\+.*\+/ {print $$2;exit}')
+PARENT = $(shell $(TOOLS)/bin/findfirstnonunique.zsh)
 OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)/$(BRANCH)
 endif
 
@@ -111,7 +112,7 @@ define process_criticmark
 		sed -e 's#{==##g;s#==}##g' $1 |
 			sed -e 's#{>>##g;s#<<}##g'
 	else
-		branch2criticmark.bash origin/master $1 |
+		branch2criticmark.bash $(PARENT) $1 |
 			sed -e 's#{==#\\criticHighlight{#g' -e 's#==}#}#g' \
 				-e 's#{>>#\\criticComment{#g'   -e 's#<<}#}#g' \
 				-e 's#{++#\\criticAdd{#g'       -e 's#++}#}#g' \
