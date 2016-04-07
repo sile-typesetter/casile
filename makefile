@@ -125,6 +125,7 @@ endef
 
 define build_sile
 	pandoc --standalone \
+		--wrap=preserve \
 		-V documentclass="book" \
 		-V papersize="$4" \
 		-V versioninfo="$(shell $(call versioninfo,$1))" \
