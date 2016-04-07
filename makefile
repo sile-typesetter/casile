@@ -20,8 +20,7 @@ ifeq ($(BRANCH),HEAD)
 BRANCH = $(CI_BUILD_REF_NAME)
 endif
 ifneq ($(BRANCH),master)
-#PARENT = $(shell git show-branch -a --current | awk -F'[][]' '/\*/ && /\+.*\+/ {print $$2;exit}')
-PARENT = $(shell $(TOOLS)/bin/findfirstnonunique.zsh)
+PARENT ?= $(shell $(TOOLS)/bin/findfirstnonunique.zsh)
 OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)/$(BRANCH)
 endif
 
