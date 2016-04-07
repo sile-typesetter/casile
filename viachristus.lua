@@ -7,45 +7,45 @@ SILE.doTexlike([[
 %\showframe[id=all]
 \define[command=book:monofont]{\font[family=Hack]{\process}}
 \define[command=book:sansfont]{\font[family=Montserrat]{\process}}
-\define[command=book:seriffont]{\font[family=Crimson,style=Roman]{\process}}
-\define[command=book:partnumfont]{\book:sansfont{\font[weight=600,style=Bold,size=20pt]{\process}}}
-\define[command=book:partfont]{\book:sansfont{\font[weight=600,style=Bold,size=16pt]{\process}}}
-\define[command=book:subparagraphfont]{\font[family=Libertinus Serif,style=Regular,weight=400,size=11pt,features=+smcp]{\process}}
-\define[command=book:footnotefont]{\font[family=Libertinus Serif,style=Regular,weight=400,size=8.5pt]{\process}}
+\define[command=book:seriffont]{\font[family=Crimson]{\process}}
+\define[command=book:partnumfont]{\book:sansfont{\font[weight=600,size=20pt]{\process}}}
+\define[command=book:partfont]{\book:sansfont{\font[weight=600,size=16pt]{\process}}}
+\define[command=book:subparagraphfont]{\font[family=Libertinus Serif,weight=400,size=11pt,features=+smcp]{\process}}
+\define[command=book:footnotefont]{\font[family=Libertinus Serif,weight=400,size=8.5pt]{\process}}
 \footnote:separator{\rebox[width=6em,height=2ex]{\hrule[width=5em,height=0.2pt]}\smallskip}
-\define[command=book:chapterfont]{\book:sansfont{\font[weight=600,style=Bold,size=10pt]{\process}}}
-\define[command=book:sectionfont]{\book:sansfont{\font[weight=600,style=Bold,size=8.5pt]{\process}}}
+\define[command=book:chapterfont]{\book:sansfont{\font[weight=600,size=10pt]{\process}}}
+\define[command=book:sectionfont]{\book:sansfont{\font[weight=600,size=8.5pt]{\process}}}
 \define[command=verbatim:font]{\book:monofont{\font[size=10pt]{\process}}}
-\define[command=book:chapter:pre:tr]{\font[family=Libertinus Serif Display,size=11pt,weight=400,style=Regular]BÖLÜM }
+\define[command=book:chapter:pre:tr]{\font[family=Libertinus Serif Display,size=11pt,weight=400]BÖLÜM }
 \define[command=book:chapter:post]{\font[filename=avadanlik/fonts/FeFlow2.otf,size=9pt]{\skip[height=-3pt]a\medskip}}
 \define[command=book:part:pre]{}%
 \define[command=book:part:post]{ KISIM\par}%
 \define[command=book:subparagraph:post]{ }%
-\define[command=book:left-running-head-font]{\font[family=Libertinus Serif,style=Regular,size=12pt]}%
+\define[command=book:left-running-head-font]{\font[family=Libertinus Serif,size=12pt]}%
 \define[command=book:right-running-head-font]{\font[family=Libertinus Serif,style=Italic,size=12pt]}%
 \define[command=book:page-number-font]{\font[family=Libertinus Serif,style=Regular,size=13pt]{\process}}%
 \define[command=tableofcontents:headerfont]{\book:partfont{\process}}%
 \define[command=tableofcontents:header]{\center{\hbox\skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\bigskip\fullrule\bigskip}%
-\define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600,style=Bold]{\process}\break}}%
+\define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600]{\process}\break}}%
 \define[command=tableofcontents:level2item]{\skip[height=4pt]\noindent\glue[width=2ex]\font[size=11pt]{\process}\break\skip[height=0]}%
 \define[command=wraptitle]{\process}
 \define[command=wrapsubtitle]{\process}
 \define[command=halftitlepage]{\nofolios\center{\hbox\skip[height=20ph]\book:partnumfont[size=5pw]{\meta:title}\bigskip\book:partfont[size=4pw]{\meta:subtitle}}}
-\define[command=titlepage]{\open-double-page\center{\hbox\skip[height=15ph]\book:partnumfont[size=9pw]{\wraptitle{\meta:title}}\bigskip\book:partfont[size=6pw]{\wrapsubtitle{\meta:subtitle}}\skip[height=10ph]\book:partfont[weight=300,style=Light,size=5pw]{\meta:author}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=25pw]}\par\break}
-\font[family=Crimson,style=Roman,size=11.5pt]
+\define[command=titlepage]{\open-double-page\center{\hbox\skip[height=15ph]\book:partnumfont[size=9pw]{\wraptitle{\meta:title}}\bigskip\book:partfont[size=6pw]{\wrapsubtitle{\meta:subtitle}}\skip[height=10ph]\book:partfont[weight=300,size=5pw]{\meta:author}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=25pw]}\par\break}
+\font[family=Crimson,size=11.5pt]
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
 \set[parameter=linespacing.fit-font.extra-space,value=1.15ex plus 0.5pt minus 0.5pt]
 \set[parameter=linebreak.hyphenPenalty,value=300]
 \set[parameter=document.spaceskip,value=0.6ex plus 0.4ex minus 0.2ex]
-\define[command=publicationpage:font]{\font[family=Libertinus Serif,style=Regular,size=9pt,language=und]}
+\define[command=publicationpage:font]{\font[family=Libertinus Serif,size=9pt,language=und]}
 \define[command=publicationpage]{\nofolios
 \hbox\vfill
 \begin{raggedright}
 \publicationpage:font
 \set[parameter=linespacing.fit-font.extra-space,value=0.8ex plus 0.5pt minus 0.5pt]
 \set[parameter=document.parskip,value=1.2ex]
-\font[weight=600,style=Bold]{\meta:title}\break
+\font[weight=600]{\meta:title}\break
 \meta:creators{}
 \meta:info{}
 
@@ -61,7 +61,7 @@ SILE.doTexlike([[
 
 \meta:versecredits{}
 
-\font[weight=600,style=Bold]{Via Christus Yayınları}\break
+\font[weight=600]{Via Christus Yayınları}\break
 \font[size=1.8ex]{
 \book:monofont{https://www.viachristus.com}\break
 \book:monofont{viachristushizmetleri@gmail.com}
@@ -562,7 +562,7 @@ SILE.registerCommand("seriespage:title", function(options, content)
       SILE.call("font", { style="Italic", language="und" }, content)
       SILE.call("medskip")
     else
-      SILE.call("font", { style="Bold", language="und" }, content)
+      SILE.call("font", { weight="600", language="und" }, content)
       SILE.typesetter:typeset(" ")
       SILE.call("aki")
       SILE.typesetter:typeset("— ")
