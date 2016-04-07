@@ -74,7 +74,7 @@ SILE.doTexlike([[
 \define[command=wraptitle]{\process}
 \define[command=wrapsubtitle]{\process}
 \define[command=halftitlepage]{\nofolios\center{\hbox\skip[height=20ph]\book:partnumfont[size=4.5pw]{\meta:title}\bigskip\book:partfont[size=3.5pw]{\meta:subtitle}}}
-\define[command=titlepage]{\open-double-page\center{\hbox\skip[height=15ph]\book:partnumfont[size=9pw]{\wraptitle{\meta:title}}\bigskip\book:partfont[size=6pw]{\wrapsubtitle{\meta:subtitle}}\skip[height=10ph]\book:partfont[size=5pw]{\font[weight=300]{\meta:author}}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=25pw]}\par\break}
+\define[command=titlepage]{\open-double-page\center{\hbox\skip[height=15ph]\book:partnumfont{\font[size=7pw]{\wraptitle{\meta:title}}}\bigskip\book:partfont{\font[size=6pw]{\wrapsubtitle{\meta:subtitle}}}\skip[height=8ph]\book:partfont{\font[size=4pw,weight=300]{\meta:author}}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=25pw]}\par\break}
 \book:seriffont[size=11.5pt]
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
