@@ -1,3 +1,56 @@
+SILE.registerCommand("book:monofont", function(options, content)
+  options.family = "Hack"
+  SILE.call("font", options, content)
+end)
+SILE.registerCommand("book:sansfont", function(options, content)
+  options.family = "Montserrat"
+  SILE.call("font", options, content)
+end)
+SILE.registerCommand("book:seriffont", function(options, content)
+  options.family = "Crimson"
+  SILE.call("font", options, content)
+end)
+SILE.registerCommand("book:partfont", function(options, content)
+  options.weight = 600
+  options.size = "16pt"
+  SILE.call("book:sansfont", options, content)
+end)
+SILE.registerCommand("book:partnumfont", function(options, content)
+  options.size = "20pt"
+  SILE.call("book:partfont", options, content)
+end)
+SILE.registerCommand("book:altseriffont", function(options, content)
+  options.family = "Libertinus Serif"
+  SILE.call("font", options, content)
+end)
+SILE.registerCommand("book:subparagraphfont", function(options, content)
+  options.size = "11pt"
+  options.features = "+smcp"
+  SILE.call("book:altseriffont", options, content)
+end)
+SILE.registerCommand("book:footnotefont", function(options, content)
+  options.size = "8.5pt"
+  SILE.call("book:altseriffont", options, content)
+end)
+SILE.registerCommand("book:chapterfont", function(options, content)
+  options.weight = 600
+  options.size = "10pt"
+  SILE.call("book:sansfont", options, content)
+end)
+SILE.registerCommand("book:chapternumfont", function(options, content)
+  options.family = "Libertinus Serif Display"
+  options.size = "11pt"
+  SILE.call("font", options, content)
+end)
+SILE.registerCommand("book:sectionfont", function(options, content)
+  options.size = "8.5pt"
+  SILE.call("book:chapterfont", options, content)
+end)
+SILE.registerCommand("verbatim:font", function(options, content)
+  options.size = "10pt"
+  SILE.call("book:monofont", options, content)
+end)
+  --options.filename = "fonts/Scriptina_Pro.otf"
 SILE.doTexlike([[
 \language[main=tr]
 \script[src=packages/rules]
@@ -5,34 +58,24 @@ SILE.doTexlike([[
 \script[src=packages/rebox]
 %\script[src=packages/frametricks]
 %\showframe[id=all]
-\define[command=book:monofont]{\font[family=Hack]{\process}}
-\define[command=book:sansfont]{\font[family=Montserrat]{\process}}
-\define[command=book:seriffont]{\font[family=Crimson]{\process}}
-\define[command=book:partnumfont]{\book:sansfont{\font[weight=600,size=20pt]{\process}}}
-\define[command=book:partfont]{\book:sansfont{\font[weight=600,size=16pt]{\process}}}
-\define[command=book:subparagraphfont]{\font[family=Libertinus Serif,weight=400,size=11pt,features=+smcp]{\process}}
-\define[command=book:footnotefont]{\font[family=Libertinus Serif,weight=400,size=8.5pt]{\process}}
 \footnote:separator{\rebox[width=6em,height=2ex]{\hrule[width=5em,height=0.2pt]}\smallskip}
-\define[command=book:chapterfont]{\book:sansfont{\font[weight=600,size=10pt]{\process}}}
-\define[command=book:sectionfont]{\book:sansfont{\font[weight=600,size=8.5pt]{\process}}}
-\define[command=verbatim:font]{\book:monofont{\font[size=10pt]{\process}}}
-\define[command=book:chapter:pre:tr]{\font[family=Libertinus Serif Display,size=11pt,weight=400]BÖLÜM }
+\define[command=book:chapter:pre:tr]{\book:chapternumfont BÖLÜM }
 \define[command=book:chapter:post]{\font[filename=avadanlik/fonts/FeFlow2.otf,size=9pt]{\skip[height=-3pt]a\medskip}}
 \define[command=book:part:pre]{}%
 \define[command=book:part:post]{ KISIM\par}%
 \define[command=book:subparagraph:post]{ }%
-\define[command=book:left-running-head-font]{\font[family=Libertinus Serif,size=12pt]}%
-\define[command=book:right-running-head-font]{\font[family=Libertinus Serif,style=Italic,size=12pt]}%
-\define[command=book:page-number-font]{\font[family=Libertinus Serif,style=Regular,size=13pt]{\process}}%
+\define[command=book:left-running-head-font]{\book:altseriffont[size=12pt]{\process}}%
+\define[command=book:right-running-head-font]{\book:altseriffont[size=12pt,style=Italic]{\process}}%
+\define[command=book:page-number-font]{\book:altseriffont[style=Roman,size=13pt]{\process}}%
 \define[command=tableofcontents:headerfont]{\book:partfont{\process}}%
 \define[command=tableofcontents:header]{\center{\hbox\skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\bigskip\fullrule\bigskip}%
-\define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont{\font[size=10pt,weight=600]{\process}\break}}%
+\define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont[size=10pt,weight=600]{\process}\break}%
 \define[command=tableofcontents:level2item]{\skip[height=4pt]\noindent\glue[width=2ex]\font[size=11pt]{\process}\break\skip[height=0]}%
 \define[command=wraptitle]{\process}
 \define[command=wrapsubtitle]{\process}
-\define[command=halftitlepage]{\nofolios\center{\hbox\skip[height=20ph]\book:partnumfont[size=5pw]{\meta:title}\bigskip\book:partfont[size=4pw]{\meta:subtitle}}}
-\define[command=titlepage]{\open-double-page\center{\hbox\skip[height=15ph]\book:partnumfont[size=9pw]{\wraptitle{\meta:title}}\bigskip\book:partfont[size=6pw]{\wrapsubtitle{\meta:subtitle}}\skip[height=10ph]\book:partfont[weight=300,size=5pw]{\meta:author}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=25pw]}\par\break}
-\font[family=Crimson,size=11.5pt]
+\define[command=halftitlepage]{\nofolios\center{\hbox\skip[height=20ph]\book:partnumfont[size=4.5pw]{\meta:title}\bigskip\book:partfont[size=3.5pw]{\meta:subtitle}}}
+\define[command=titlepage]{\open-double-page\center{\hbox\skip[height=15ph]\book:partnumfont[size=9pw]{\wraptitle{\meta:title}}\bigskip\book:partfont[size=6pw]{\wrapsubtitle{\meta:subtitle}}\skip[height=10ph]\book:partfont[size=5pw]{\font[weight=300]{\meta:author}}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=25pw]}\par\break}
+\book:seriffont[size=11.5pt]
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
 \set[parameter=linespacing.fit-font.extra-space,value=1.15ex plus 0.5pt minus 0.5pt]
@@ -63,8 +106,8 @@ SILE.doTexlike([[
 
 \font[weight=600]{Via Christus Yayınları}\break
 \font[size=1.8ex]{
-\book:monofont{https://www.viachristus.com}\break
-\book:monofont{viachristushizmetleri@gmail.com}
+\font[family=Hack]{https://www.viachristus.com}\break
+\font[family=Hack]{viachristushizmetleri@gmail.com}
 }
 \end{raggedright}
 \par\break
@@ -85,11 +128,12 @@ book.endPage = function(self)
         SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
         SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
         SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
-        SILE.call("book:right-running-head-font")
-        SILE.process(SILE.scratch.headers.right)
-        SILE.call("hfill")
-        SILE.call("book:page-number-font", {}, function()
-          SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
+        SILE.call("book:right-running-head-font", {}, function()
+          SILE.process(SILE.scratch.headers.right)
+          SILE.call("hfill")
+          SILE.call("book:page-number-font", {}, function()
+            SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
+          end)
         end)
         SILE.typesetter:leaveHmode()
         SILE.call("skip", {height="-8pt"})
@@ -101,12 +145,13 @@ book.endPage = function(self)
         SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
         SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
         SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
-        SILE.call("book:left-running-head-font")
-        SILE.call("book:page-number-font", {}, function()
-          SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
+        SILE.call("book:left-running-head-font", {}, function()
+          SILE.call("book:page-number-font", {}, function()
+            SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
+          end)
+          SILE.call("hfill")
+          SILE.call("meta:title")
         end)
-        SILE.call("hfill")
-        SILE.call("meta:title")
         SILE.typesetter:leaveHmode()
         SILE.call("skip", {height="-8pt"})
         SILE.call("fullrule")
@@ -241,10 +286,7 @@ SILE.registerCommand("chapter", function (options, content)
   end)
   SILE.call("left-running-head")
   SILE.Commands["right-running-head"]({}, function()
-    SILE.settings.temporarily(function()
-      SILE.call("book:right-running-head-font")
-      SILE.process(content)
-    end)
+    SILE.call("book:right-running-head-font", {}, content)
   end)
   SILE.scratch.headers.skipthispage = true
   if (options.numbering == false or options.numbering == "false") then
@@ -471,9 +513,7 @@ SILE.registerCommand("footnote", function(options, content)
       -- don't justify footnotes
       SILE.call("raggedright", {}, function()
         --inhibit hyphenation in footnotes
-        SILE.Commands["font"]({language = "und"}, function()
-          SILE.process(content)
-        end)
+        SILE.call("font", { language="und" }, content)
       end)
     end)
   end)
