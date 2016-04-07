@@ -58,6 +58,7 @@ SILE.doTexlike([[
 \script[src=packages/rebox]
 %\script[src=packages/frametricks]
 %\showframe[id=all]
+\define[command=strong]{\font[weight=600]{\process}}%
 \footnote:separator{\rebox[width=6em,height=2ex]{\hrule[width=5em,height=0.2pt]}\smallskip}
 \define[command=book:chapter:pre:tr]{\book:chapternumfont BÖLÜM }
 \define[command=book:chapter:post]{\font[filename=avadanlik/fonts/FeFlow2.otf,size=9pt]{\skip[height=-3pt]a\medskip}}
