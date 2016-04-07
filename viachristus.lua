@@ -649,9 +649,13 @@ SILE.registerCommand("criticDel", function(options, content)
 end)
 
 local inputfilter = SILE.require("packages/inputfilter").exports
-local addDiscressionaryBreaks = function(content)
+local addDiscressionaryBreaks = function(content, args)
+  if not args.attr.breakat then args.attr.breakat = "[:]" end
+  if not args.attr.breakwith then args.attr.breakwith = "aki" end
+  if not args.attr.breakopts then args.attr.breakopts = {} end
   local currentText = ""
   local result = {}
+  local process
   local function insertText()
     if (#currentText>0) then
       table.insert(result, currentText)
@@ -660,25 +664,20 @@ local addDiscressionaryBreaks = function(content)
   end
   local function insertPenalty()
     table.insert(result, inputfilter.createCommand(
-        content.pos, content.col, content.line,
-        "aki", {}, currentText
+        content.pos, content.col, content.line, args.attr.breakwith, args.attr.breakopts
       ))
+	process = function(separator) currentText = currentText..separator end
   end
-  local function ignore(separator)
-    currentText = currentText .. separator
-  end
-  local process = {
-    [":"] = function(separator)
-      currentText = currentText .. ":"
+  process = function(separator)
+      currentText = currentText .. separator
       insertText()
       insertPenalty()
-    end
-  }
-  for token in SU.gtoke(content, "[:;—]") do
+  end
+  for token in SU.gtoke(content, args.attr.breakat) do
     if(token.string) then
       currentText = currentText .. token.string
     else
-      (process[token.separator] or ignore)(token.separator)
+      process(token.separator)
     end
   end
   insertText()
@@ -686,5 +685,5 @@ local addDiscressionaryBreaks = function(content)
 end
 
 SILE.registerCommand("addDiscressionaryBreaks", function(options, content)
-  SILE.process(inputfilter.transformContent(content, addDiscressionaryBreaks))
+  SILE.process(inputfilter.transformContent(content, addDiscressionaryBreaks, options))
 end, "Try to find good breakpoints based on punctuation")
