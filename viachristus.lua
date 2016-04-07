@@ -647,3 +647,44 @@ SILE.registerCommand("criticDel", function(options, content)
     SILE.call("color", { color="#E60000" }, content)
   end)
 end)
+
+local inputfilter = SILE.require("packages/inputfilter").exports
+local addDiscressionaryBreaks = function(content)
+  local currentText = ""
+  local result = {}
+  local function insertText()
+    if (#currentText>0) then
+      table.insert(result, currentText)
+      currentText = ""
+    end
+  end
+  local function insertPenalty()
+    table.insert(result, inputfilter.createCommand(
+        content.pos, content.col, content.line,
+        "aki", {}, currentText
+      ))
+  end
+  local function ignore(separator)
+    currentText = currentText .. separator
+  end
+  local process = {
+    [":"] = function(separator)
+      currentText = currentText .. ":"
+      insertText()
+      insertPenalty()
+    end
+  }
+  for token in SU.gtoke(content, "[:;—]") do
+    if(token.string) then
+      currentText = currentText .. token.string
+    else
+      (process[token.separator] or ignore)(token.separator)
+    end
+  end
+  insertText()
+  return result
+end
+
+SILE.registerCommand("addDiscressionaryBreaks", function(options, content)
+  SILE.process(inputfilter.transformContent(content, addDiscressionaryBreaks))
+end, "Try to find good breakpoints based on punctuation")
