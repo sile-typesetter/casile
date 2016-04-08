@@ -650,10 +650,7 @@ SILE.registerCommand("criticDel", function(options, content)
 end)
 
 local inputfilter = SILE.require("packages/inputfilter").exports
-local addDiscressionaryBreaks = function(content, args)
-  if not args.attr.breakat then args.attr.breakat = "[:]" end
-  if not args.attr.breakwith then args.attr.breakwith = "aki" end
-  if not args.attr.breakopts then args.attr.breakopts = {} end
+local discressionaryBreaksFilter = function(content, args, options)
   local currentText = ""
   local result = {}
   local process
@@ -665,16 +662,24 @@ local addDiscressionaryBreaks = function(content, args)
   end
   local function insertPenalty()
     table.insert(result, inputfilter.createCommand(
-        content.pos, content.col, content.line, args.attr.breakwith, args.attr.breakopts
-      ))
-	process = function(separator) currentText = currentText..separator end
+      content.pos, content.col, content.line, options.breakwith, options.breakopts
+    ))
+    if not options.breakall then
+      process = function(separator) currentText = currentText..separator end
+    end
   end
   process = function(separator)
-      currentText = currentText .. separator
-      insertText()
-      insertPenalty()
+      if options.breakbefore == true then
+        insertText()
+        insertPenalty()
+        currentText = currentText .. separator
+      else
+        currentText = currentText .. separator
+        insertText()
+        insertPenalty()
+      end
   end
-  for token in SU.gtoke(content, args.attr.breakat) do
+  for token in SU.gtoke(content, options.breakat) do
     if(token.string) then
       currentText = currentText .. token.string
     else
@@ -684,7 +689,15 @@ local addDiscressionaryBreaks = function(content, args)
   insertText()
   return result
 end
+addDiscressionaryBreaks = function(options, content)
+  if not options.breakat then options.breakat = "[:]" end
+  if not options.breakwith then options.breakwith = "aki" end
+  if not options.breakopts then options.breakopts = {} end
+  if not options.breakall then options.breakall = false end
+  if not options.breakbefore then options.breakbefore = false end
+  return inputfilter.transformContent(content, discressionaryBreaksFilter, options)
+end
 
 SILE.registerCommand("addDiscressionaryBreaks", function(options, content)
-  SILE.process(inputfilter.transformContent(content, addDiscressionaryBreaks, options))
+  SILE.process(addDiscressionaryBreaks(options, content))
 end, "Try to find good breakpoints based on punctuation")
