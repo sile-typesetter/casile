@@ -56,24 +56,27 @@ $endfor$
 \script[src=packages/url]
 \script[src=packages/pdf]
 \script[src=packages/footnotes]
-\define[command=label]{}%
 \define[command=listarea]{\set[parameter=document.rskip,value=10pt]\set[parameter=document.lskip,value=20pt]\process\set[parameter=document.lskip]\set[parameter=document.rskip]\noindent}%
 \define[command=listitem]{\smallskip{}\glue[width=-1em]• \glue[width=0.3em]\process\smallskip}%
-$for(include)$
-\include[src=$include$]
-$endfor$
-$for(script)$
-\script[src=$script$]
-$endfor$
-$if(links-as-notes)$
 \begin{script}
-SILE.registerCommand("href", function(content)
-  --SILE.process(content)
+SILE.registerCommand("label", function()
+  -- ignore labels
+end)
+$if(links-as-notes)$
+SILE.registerCommand("href", function(options, content)
   SILE.call("url", {}, content)
   SILE.call("footnote", {}, content)
 end)
-\end{script}
 $endif$
+\end{script}
+$for(include)$
+\include[src=$include$]
+
+$endfor$
+$for(script)$
+\script[src=$script$]
+
+$endfor$
 \halftitlepage
 \titlepage
 \publicationpage
