@@ -74,7 +74,7 @@ SILE.doTexlike([[
 \define[command=tableofcontents:level2item]{\skip[height=4pt]\noindent\glue[width=2ex]\font[size=11pt]{\process}\break\skip[height=0]}%
 \define[command=wraptitle]{\process}
 \define[command=wrapsubtitle]{\process}
-\define[command=halftitlepage]{\nofolios\center{\hbox\skip[height=20ph]\book:partnumfont[size=4.5pw]{\meta:title}\bigskip\book:partfont[size=3.5pw]{\meta:subtitle}}}
+\define[command=halftitlepage]{\nofolios\center{\hbox\skip[height=20ph]\book:partnumfont[size=4.5pw]{\wraptitle{\meta:wraptitle}}\bigskip}}
 \define[command=titlepage]{\open-double-page\center{\hbox\skip[height=10ph]\book:partnumfont{\font[size=7pw]{\wraptitle{\meta:title}}}\bigskip\book:partfont{\font[size=6pw]{\wrapsubtitle{\meta:subtitle}}}\skip[height=8ph]\book:partfont{\font[size=4pw,weight=300]{\meta:author}}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=25pw]}\par\break}
 \book:seriffont[size=11.5pt]
 \script[src=packages/linespacing]
