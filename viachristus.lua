@@ -89,7 +89,7 @@ SILE.doTexlike([[
 \publicationpage:font
 \set[parameter=linespacing.fit-font.extra-space,value=0.8ex plus 0.5pt minus 0.5pt]
 \set[parameter=document.parskip,value=1.2ex]
-\font[weight=600]{\meta:title}\break
+\font[weight=600,style=Bold]{\meta:title}\break
 \meta:creators{}
 \meta:info{}
 
@@ -105,7 +105,7 @@ SILE.doTexlike([[
 
 \meta:versecredits{}
 
-\font[weight=600]{Via Christus Yayınları}\break
+\font[weight=600,style=Bold]{Via Christus Yayınları}\break
 \font[size=1.8ex]{
 \font[family=Hack]{https://www.viachristus.com}\break
 \font[family=Hack]{viachristushizmetleri@gmail.com}
