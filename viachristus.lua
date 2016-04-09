@@ -533,8 +533,12 @@ SILE.doTexlike([[
 ]])
 
 SILE.registerCommand("quote", function(options, content)
-  local setback = options.setback or "20pt"
-  SILE.call("medskip")
+  local setback = options.setback or "2em"
+  SILE.call("par")
+  SILE.call("skip", { height="1.1em plus 2pt minus 1pt" })
+  SILE.typesetter:typeset(" ")
+  SILE.call("par")
+  SILE.call("skip", { height="-1em plus 2pt minus 1pt" })
   SILE.settings.pushState()
   SILE.settings.temporarily(function()
     SILE.call("noindent")
