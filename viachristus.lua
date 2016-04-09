@@ -12,11 +12,9 @@ SILE.registerCommand("book:seriffont", function(options, content)
 end)
 SILE.registerCommand("book:partfont", function(options, content)
   options.weight = 600
-  options.size = "16pt"
   SILE.call("book:sansfont", options, content)
 end)
 SILE.registerCommand("book:partnumfont", function(options, content)
-  options.size = "20pt"
   SILE.call("book:partfont", options, content)
 end)
 SILE.registerCommand("book:altseriffont", function(options, content)
@@ -75,7 +73,7 @@ SILE.doTexlike([[
 \define[command=wraptitle]{\process}
 \define[command=wrapsubtitle]{\process}
 \define[command=halftitlepage]{\nofolios\center{\hbox\skip[height=20ph]\book:partnumfont[size=4.5pw]{\wraptitle{\meta:wraptitle}}\bigskip}}
-\define[command=titlepage]{\open-double-page\center{\hbox\skip[height=10ph]\book:partnumfont{\font[size=7pw]{\wraptitle{\meta:title}}}\bigskip\book:partfont{\font[size=6pw]{\wrapsubtitle{\meta:subtitle}}}\skip[height=8ph]\book:partfont{\font[size=4pw,weight=300]{\meta:author}}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=25pw]}\par\break}
+\define[command=titlepage]{\open-double-page\center{\hbox\skip[height=10ph]\book:partnumfont[size=7pw]{\wraptitle{\meta:title}}\bigskip\book:partfont{\font[size=6pw]{\wrapsubtitle{\meta:subtitle}}}\skip[height=8ph]\book:partfont{\font[size=4pw,weight=300]{\meta:author}}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=25pw]}\par\break}
 \book:seriffont[size=11.5pt]
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
@@ -315,9 +313,9 @@ SILE.registerCommand("part", function (options, content)
   SILE.call("noindent")
   SILE.call("set-counter", {id = "footnote", value = 1})
   SILE.call("center", {}, function()
-    SILE.call("book:partnumfont", {}, function()
-      SILE.typesetter:typeset(" ")
-      SILE.call("skip", {height="6ex"})
+    SILE.call("book:partnumfont", { size="5pw" }, function()
+      SILE.call("hbox")
+      SILE.call("skip", { height="10ph" })
       SILE.call("book:sectioning", {
         numbering = options.numbering,
         level = 1,
@@ -328,9 +326,9 @@ SILE.registerCommand("part", function (options, content)
       }, content)
     end)
     SILE.call("medskip")
-    SILE.Commands["book:partfont"]({}, content);
+    SILE.Commands["book:partfont"]({ size="4pw" }, content);
     SILE.call("medskip")
-    SILE.call("font", { filename = "avadanlik/fonts/FeFlow2.otf", size = "9pt"}, {"a"})
+    SILE.call("font", { filename="avadanlik/fonts/FeFlow2.otf", size="9pt" }, {"a"})
     SILE.call("bigskip")
   end)
   SILE.scratch.headers.skipthispage = true
