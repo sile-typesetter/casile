@@ -161,6 +161,20 @@ endef
 %.mobi: %.epub
 	-kindlegen $<
 
+%-barkod.svg: %.yml
+	zint --directsvg --scale=5 --barcode=69 --height=30 \
+		--data=$(shell $(TOOLS)/bin/isbn_format.py $< print) |\
+		convert - \
+			-bordercolor White -border 10x10 \
+			-font Hack-Regular -pointsize 36 \
+			label:"ISBN $(shell $(TOOLS)/bin/isbn_format.py $< print mask)" +swap -gravity Center -append \
+			-bordercolor White -border 0x10 \
+			-bordercolor Black -border 4x4 \
+			$@
+
+%-barkod.png: %.yml %-barkod.svg
+	convert $< $@
+
 stats: $(foreach SOURCE,$(SOURCES),$(SOURCE)-stats)
 
 %-stats:
