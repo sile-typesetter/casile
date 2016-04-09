@@ -156,7 +156,11 @@ endef
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),115mm x 170mm)
 
 %.epub %.odt %.docx: %.md %.yml
-	pandoc $(basename $<).yml $< -o $@
+	pandoc \
+		$(TOOLS)/viachristus.yml \
+		$(shell test -f "$(PROJECT).yml" && echo "$(PROJECT).yml") \
+		$(shell test -f "$(basename $1).yml" && echo "$(basename $1).yml") \
+		$*.yml $< -o $@
 
 %.mobi: %.epub
 	-kindlegen $<
