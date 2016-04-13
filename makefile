@@ -100,9 +100,7 @@ define versioninfo
 		git describe --tags >/dev/null 2>/dev/null || echo -en "$(BRANCH)-"
 		git describe --long --tags --always --dirty=* | xargs echo -en
 	else
-		if $(DIFF); then
-			echo -en "$(PARENT)→"
-		fi
+		$(DIFF) && echo -en "$(PARENT)→"
 		echo -en "$(BRANCH)-"
 		git rev-list --boundary $(PARENT)...HEAD | grep -v - | wc -l | xargs -iX echo -en "X-"
 		git describe --always | xargs echo -en
@@ -115,7 +113,7 @@ define process_criticmark
 		sed -e 's#{==##g;s#==}##g' $1 |
 			sed -e 's#{>>##g;s#<<}##g'
 	else
-		$(DIFF) && branch2criticmark.bash $(PARENT) $1 || cat $1 |
+		($(DIFF) && branch2criticmark.bash $(PARENT) $1 || cat $1) |
 			sed -e 's#{==#\\criticHighlight{#g' -e 's#==}#}#g' \
 				-e 's#{>>#\\criticComment{#g'   -e 's#<<}#}#g' \
 				-e 's#{++#\\criticAdd{#g'       -e 's#++}#}#g' \
