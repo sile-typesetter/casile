@@ -20,6 +20,10 @@ BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 ifeq ($(BRANCH),HEAD)
 BRANCH = $(CI_BUILD_REF_NAME)
 endif
+_BRANCH = PARENT_$(subst +,_,$(subst -,_,$(BRANCH)))
+ifneq ($($(_BRANCH)),)
+PARENT = $($(_BRANCH))
+endif
 ifneq ($(BRANCH),master)
 PARENT ?= $(shell $(TOOLS)/bin/findfirstnonunique.zsh)
 OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)/$(BRANCH)
