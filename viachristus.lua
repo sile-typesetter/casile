@@ -3,11 +3,11 @@ SILE.registerCommand("book:monofont", function(options, content)
   SILE.call("font", options, content)
 end)
 SILE.registerCommand("book:sansfont", function(options, content)
-  options.family = options.family or "Montserrat"
+  options.family = options.family or "Libertinus Sans"
   SILE.call("font", options, content)
 end)
 SILE.registerCommand("book:seriffont", function(options, content)
-  options.family = options.family or "Crimson"
+  options.family = options.family or "Libertinus Serif"
   SILE.call("font", options, content)
 end)
 SILE.registerCommand("book:partfont", function(options, content)
@@ -77,15 +77,14 @@ SILE.doTexlike([[
 \book:seriffont[size=11.5pt]
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
-\set[parameter=linespacing.fit-font.extra-space,value=1.15ex plus 0.5pt minus 0.5pt]
+\set[parameter=linespacing.fit-font.extra-space,value=1ex plus 0.2ex minus 0.2ex]
 \set[parameter=linebreak.hyphenPenalty,value=300]
-\set[parameter=document.spaceskip,value=0.6ex plus 0.4ex minus 0.2ex]
 \define[command=publicationpage:font]{\font[family=Libertinus Serif,size=9pt,language=und]}
 \define[command=publicationpage]{\nofolios
 \hbox\vfill
 \begin{raggedright}
 \publicationpage:font
-\set[parameter=linespacing.fit-font.extra-space,value=0.8ex plus 0.5pt minus 0.5pt]
+\set[parameter=linespacing.fit-font.extra-space,value=0.8ex plus 0.2ex minus 0.2ex]
 \set[parameter=document.parskip,value=1.2ex]
 \font[weight=600,style=Bold]{\meta:title}\break
 \meta:creators{}
