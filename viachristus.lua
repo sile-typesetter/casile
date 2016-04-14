@@ -313,6 +313,7 @@ SILE.registerCommand("chapter", function (options, content)
       SILE.call("book:chapterfont", {}, content)
       SILE.call("bigskip")
       SILE.call("fullrule")
+      SILE.call("skip", { height="-1.5ex" }) -- part of bug 262 hack
     end)
   end)
   SILE.call("left-running-head")
@@ -566,11 +567,15 @@ SILE.doTexlike([[
 
 SILE.registerCommand("quote", function(options, content)
   local setback = options.setback or "2em"
+  -- See https://github.com/simoncozens/sile/issues/262 and remove this dreadful
+  -- hack whet that issue is resolved.
   SILE.call("par")
+  SILE.call("hbox") -- for the case where the quote is the first thing on a page
   SILE.call("skip", { height="1.1em plus 2pt minus 1pt" })
   SILE.typesetter:typeset(" ")
   SILE.call("par")
   SILE.call("skip", { height="-1em plus 2pt minus 1pt" })
+  -- end dreadful hack
   SILE.settings.pushState()
   SILE.settings.temporarily(function()
     SILE.call("noindent")
