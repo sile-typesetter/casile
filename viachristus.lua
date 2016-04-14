@@ -1,51 +1,51 @@
 SILE.registerCommand("book:monofont", function(options, content)
-  options.family = "Hack"
+  options.family = options.family or "Hack"
   SILE.call("font", options, content)
 end)
 SILE.registerCommand("book:sansfont", function(options, content)
-  options.family = "Montserrat"
+  options.family = options.family or "Montserrat"
   SILE.call("font", options, content)
 end)
 SILE.registerCommand("book:seriffont", function(options, content)
-  options.family = "Crimson"
+  options.family = options.family or "Crimson"
   SILE.call("font", options, content)
 end)
 SILE.registerCommand("book:partfont", function(options, content)
-  options.weight = 600
+  options.weight = options.weight or 600
   SILE.call("book:sansfont", options, content)
 end)
 SILE.registerCommand("book:partnumfont", function(options, content)
   SILE.call("book:partfont", options, content)
 end)
 SILE.registerCommand("book:altseriffont", function(options, content)
-  options.family = "Libertinus Serif"
+  options.family = options.family or "Libertinus Serif"
   SILE.call("font", options, content)
 end)
 SILE.registerCommand("book:subparagraphfont", function(options, content)
-  options.size = "11pt"
-  options.features = "+smcp"
+  options.size = options.size or "11pt"
+  options.features = options.features or "+smcp"
   SILE.call("book:altseriffont", options, content)
 end)
 SILE.registerCommand("book:footnotefont", function(options, content)
-  options.size = "8.5pt"
+  options.size = options.size or "8.5pt"
   SILE.call("book:altseriffont", options, content)
 end)
 SILE.registerCommand("book:chapterfont", function(options, content)
-  options.weight = 600
-  options.size = "10pt"
+  options.weight = options.weight or 600
+  options.size = options.size or "10pt"
   SILE.call("book:sansfont", options, content)
 end)
 SILE.registerCommand("book:chapternumfont", function(options, content)
-  options.family = "Libertinus Serif Display"
-  options.size = "11pt"
+  options.family = options.family or "Libertinus Serif Display"
+  options.size = options.size or "11pt"
   SILE.call("font", options, content)
 end)
 SILE.registerCommand("book:sectionfont", function(options, content)
-  options.size = "8.5pt"
+  options.size = options.size or "8.5pt"
   SILE.call("book:chapterfont", options, content)
 end)
 SILE.registerCommand("verbatim:font", function(options, content)
-  options.size = "10pt"
+  options.size = options.size or "10pt"
   SILE.call("book:monofont", options, content)
 end)
   --options.filename = "fonts/Scriptina_Pro.otf"
