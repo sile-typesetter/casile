@@ -2,53 +2,90 @@ SILE.registerCommand("book:monofont", function(options, content)
   options.family = options.family or "Hack"
   SILE.call("font", options, content)
 end)
+
 SILE.registerCommand("book:sansfont", function(options, content)
   options.family = options.family or "Libertinus Sans"
   SILE.call("font", options, content)
 end)
+
 SILE.registerCommand("book:seriffont", function(options, content)
   options.family = options.family or "Libertinus Serif"
   SILE.call("font", options, content)
 end)
+
+SILE.registerCommand("book:displayfont", function(options, content)
+  options.family = "Libertinus Serif Display"
+  SILE.call("font", options, content)
+end)
+
 SILE.registerCommand("book:partfont", function(options, content)
   options.weight = options.weight or 600
   SILE.call("book:sansfont", options, content)
 end)
+
 SILE.registerCommand("book:partnumfont", function(options, content)
   SILE.call("book:partfont", options, content)
 end)
+
 SILE.registerCommand("book:altseriffont", function(options, content)
   options.family = options.family or "Libertinus Serif"
   SILE.call("font", options, content)
 end)
+
 SILE.registerCommand("book:subparagraphfont", function(options, content)
   options.size = options.size or "11pt"
   options.features = options.features or "+smcp"
   SILE.call("book:altseriffont", options, content)
 end)
+
 SILE.registerCommand("book:footnotefont", function(options, content)
   options.size = options.size or "8.5pt"
   SILE.call("book:altseriffont", options, content)
 end)
+
 SILE.registerCommand("book:chapterfont", function(options, content)
   options.weight = options.weight or 600
-  options.size = options.size or "10pt"
-  SILE.call("book:sansfont", options, content)
+  options.size = options.size or "16pt"
+  SILE.call("book:seriffont", options, content)
 end)
+
 SILE.registerCommand("book:chapternumfont", function(options, content)
   options.family = options.family or "Libertinus Serif Display"
   options.size = options.size or "11pt"
   SILE.call("font", options, content)
 end)
+
 SILE.registerCommand("book:sectionfont", function(options, content)
   options.size = options.size or "8.5pt"
   SILE.call("book:chapterfont", options, content)
 end)
+
 SILE.registerCommand("verbatim:font", function(options, content)
   options.size = options.size or "10pt"
   SILE.call("book:monofont", options, content)
 end)
-  --options.filename = "fonts/Scriptina_Pro.otf"
+
+SILE.registerCommand("book:page-number-font", function(options, content)
+  options.style = options.style or "Roman"
+  options.size = options.size or "13pt"
+  SILE.call("book:altseriffont", options, content)
+end)
+
+SILE.registerCommand("book:left-running-head-font", function(options, content)
+  options.size = options.size or "12pt"
+  SILE.call("book:altseriffont", options, content)
+end)
+
+SILE.registerCommand("book:right-running-head-font", function(options, content)
+  options.style = options.style or "Italic"
+  options.size = options.size or "12pt"
+  SILE.call("book:altseriffont", options, content)
+end)
+
+SILE.registerCommand("tableofcontents:headerfont", function(options, content)
+  SILE.call("book:partfont", options, content)
+end)
+
 SILE.doTexlike([[
 \language[main=tr]
 \script[src=packages/rules]
@@ -63,10 +100,6 @@ SILE.doTexlike([[
 \define[command=book:part:pre]{}%
 \define[command=book:part:post]{ KISIM\par}%
 \define[command=book:subparagraph:post]{ }%
-\define[command=book:left-running-head-font]{\book:altseriffont[size=12pt]{\process}}%
-\define[command=book:right-running-head-font]{\book:altseriffont[size=12pt,style=Italic]{\process}}%
-\define[command=book:page-number-font]{\book:altseriffont[style=Roman,size=13pt]{\process}}%
-\define[command=tableofcontents:headerfont]{\book:partfont{\process}}%
 \define[command=tableofcontents:header]{\center{\hbox\skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\bigskip\fullrule\bigskip}%
 \define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont[size=10pt,weight=600]{\process}\break}%
 \define[command=tableofcontents:level2item]{\skip[height=4pt]\noindent\glue[width=2ex]\font[size=11pt]{\process}\break\skip[height=0]}%
