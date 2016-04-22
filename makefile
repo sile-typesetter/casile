@@ -112,6 +112,10 @@ define versioninfo
 	TZ=Turkey LC_ALL=en_US.UTF-8 date '+%d %b %Y, %R %Z' | xargs -iX echo -en ' (X)'
 endef
 
+define urlinfo
+	echo -en "https://yayinlar.viachristus.com/$(basename $1)"
+endef
+
 define process_criticmark
 	if [[ "$(BRANCH)" == master ]]; then
 		sed -e 's#{==##g;s#==}##g' $1 |
@@ -131,6 +135,8 @@ define build_sile
 		-V documentclass="book" \
 		-V papersize="$4" \
 		-V versioninfo="$(shell $(call versioninfo,$1))" \
+		-V urlinfo="$(shell $(call urlinfo,$1))" \
+		-V qrimg="./$(basename $1)-url.png" \
 		$(shell test -f "$(basename $1).lua" && echo "-V script=$(basename $1)") \
 		$(shell test -f "$(PROJECT).lua" && echo "-V script=$(PROJECT)") \
 		-V script=$(TOOLS)/layout-$3 \
@@ -142,19 +148,19 @@ define build_sile
 		<($(call process_criticmark,$1)) -o $2-$3.sil
 endef
 
-%-a4.sil: %.md %.yml $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-a4.lua
+%-a4.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-a4.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4)
 
-%-a5trim.sil: %.md %.yml $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-a5trim.lua
+%-a5trim.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-a5trim.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),133mm x 195mm)
 
-%-octavo.sil: %.md %.yml $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-octavo.lua
+%-octavo.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-octavo.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),432pt x 648pt)
 
-%-halfletter.sil: %.md %.yml $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-halfletter.lua
+%-halfletter.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-halfletter.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),halfletter)
 
-%-cep.sil: %.md %.yml $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-cep.lua
+%-cep.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-cep.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),115mm x 170mm)
 
 %.epub %.odt %.docx: %.md %.yml
@@ -178,7 +184,18 @@ endef
 			-bordercolor Black -border 4x4 \
 			$@
 
-%-barkod.png: %.yml %-barkod.svg
+%-url.png: %-url.svg %.yml
+	convert $< $@
+
+%-url.svg: %.yml
+	zint --directsvg --scale=10 --barcode=58 \
+		--data=$(shell $(call urlinfo,$*)) |\
+		convert - \
+			-bordercolor White -border 10x10 \
+			-bordercolor Black -border 4x4 \
+			$@
+
+%-barkod.png: %-barkod.svg %.yml
 	convert $< $@
 
 stats: $(foreach SOURCE,$(SOURCES),$(SOURCE)-stats)
