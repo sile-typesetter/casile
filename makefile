@@ -109,7 +109,6 @@ define versioninfo
 		git rev-list --boundary $(PARENT)...HEAD | grep -v - | wc -l | xargs -iX echo -en "X-"
 		git describe --always | xargs echo -en
 	fi
-	TZ=Turkey LC_ALL=en_US.UTF-8 date '+%d %b %Y, %R %Z' | xargs -iX echo -en ' (X)'
 endef
 
 define urlinfo
