@@ -86,6 +86,13 @@ SILE.registerCommand("tableofcontents:headerfont", function(options, content)
   SILE.call("book:partfont", options, content)
 end)
 
+SILE.registerCommand("qrimg", function(options, content)
+	SILE.call("skip", { height="6.5em" })
+	SILE.call("img", { src=qrimg, height="5.8em" })
+	SILE.call("skip", { height="-6.3em" })
+	SILE.call("set", { parameter="document.lskip",value="5em" })
+end)
+
 SILE.doTexlike([[
 \language[main=tr]
 \script[src=packages/rules]
@@ -119,27 +126,41 @@ SILE.doTexlike([[
 \publicationpage:font
 \set[parameter=linespacing.fit-font.extra-space,value=0.8ex plus 0.2ex minus 0.2ex]
 \set[parameter=document.parskip,value=1.2ex]
+\img[src=avadanlik/vc_sembol_renksiz.pdf,height=6em]
+{
+\skip[height=-6.2em]
+\set[parameter=document.lskip,value=5em]
+\font[filename=avadanlik/fonts/Mason-Bold.otf,size=1.25em]{Via Christus Yayınları}\break
+{Davutpaşa Cad. Kazım Dinçol San. Sit.\break No 81/87, Topkapı, İstanbul\break}
+\font[family=Hack,size=0.8em]{https://viachristus.com\break yayinlar@viachristus.com}
+}
+
+\set[parameter=document.lskip]
 \font[weight=600,style=Bold]{\meta:title}\break
 \meta:creators{}
 \meta:info{}
 
 \meta:rights{}
 
-\meta:identifiers{}
 
+\qrimg{}
+\meta:identifiers{}
+\font[weight=600,style=Bold]{Sürüm:} \meta:surum\break
+\font[weight=600,style=Bold]{URL:} \meta:url\break
+
+\set[parameter=document.lskip]
 \meta:contributors{}
 
 \meta:extracredits{}
 
-\meta:manufacturer{}
-
 \meta:versecredits{}
 
-\font[weight=600,style=Bold]{Via Christus Yayınları}\break
-\font[size=1.8ex]{
-\font[family=Hack]{https://www.viachristus.com}\break
-\font[family=Hack]{viachristushizmetleri@gmail.com}
-}
+\meta:manufacturer{}
+
+\meta:date{}
+
+%\skip[height=6em]
+
 \end{raggedright}
 \par\break
 }
