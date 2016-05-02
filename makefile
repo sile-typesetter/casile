@@ -115,12 +115,13 @@ define urlinfo
 	echo -en "https://yayinlar.viachristus.com/$(basename $1)"
 endef
 
-define process_criticmark
+define preprocess_markdown
 	if [[ "$(BRANCH)" == master ]]; then
-		sed -e 's#{==##g;s#==}##g' $1 |
+		m4 $(TOOLS)/viachristus.m4 $1 |
+			sed -e 's#{==##g;s#==}##g' |
 			sed -e 's#{>>##g;s#<<}##g'
 	else
-		($(DIFF) && branch2criticmark.bash $(PARENT) $1 || cat $1) |
+		($(DIFF) && branch2criticmark.bash $(PARENT) $1 || m4 $(TOOLS)/viachristus.m4 $1) |
 			sed -e 's#{==#\\criticHighlight{#g' -e 's#==}#}#g' \
 				-e 's#{>>#\\criticComment{#g'   -e 's#<<}#}#g' \
 				-e 's#{++#\\criticAdd{#g'       -e 's#++}#}#g' \
@@ -144,7 +145,7 @@ define build_sile
 		$(TOOLS)/viachristus.yml \
 		$(shell test -f "$(PROJECT).yml" && echo "$(PROJECT).yml") \
 		$(shell test -f "$(basename $1).yml" && echo "$(basename $1).yml") \
-		<($(call process_criticmark,$1)) -o $2-$3.sil
+		<($(call preprocess_markdown,$1)) -o $2-$3.sil
 endef
 
 %-a4.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-a4.lua
@@ -167,7 +168,8 @@ endef
 		$(TOOLS)/viachristus.yml \
 		$(shell test -f "$(PROJECT).yml" && echo "$(PROJECT).yml") \
 		$(shell test -f "$(basename $1).yml" && echo "$(basename $1).yml") \
-		$*.yml $< -o $@
+		$*.yml \
+		<($(call preprocess_markdown,$<)) -o $@
 
 %.mobi: %.epub
 	-kindlegen $<
