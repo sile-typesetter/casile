@@ -128,6 +128,10 @@ define process_criticmark
 	fi
 endef
 
+define preprocess_markdown
+	m4 $(TOOLS)/viachristus.m4 $1
+endef
+
 define build_sile
 	pandoc --standalone \
 		--wrap=preserve \
@@ -144,7 +148,7 @@ define build_sile
 		$(TOOLS)/viachristus.yml \
 		$(shell test -f "$(PROJECT).yml" && echo "$(PROJECT).yml") \
 		$(shell test -f "$(basename $1).yml" && echo "$(basename $1).yml") \
-		<($(call process_criticmark,$1)) -o $2-$3.sil
+		<($(call preprocess_markdown,$1)) -o $2-$3.sil
 endef
 
 %-a4.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-a4.lua
@@ -167,7 +171,8 @@ endef
 		$(TOOLS)/viachristus.yml \
 		$(shell test -f "$(PROJECT).yml" && echo "$(PROJECT).yml") \
 		$(shell test -f "$(basename $1).yml" && echo "$(basename $1).yml") \
-		$*.yml $< -o $@
+		$*.yml \
+		<($(call preprocess_markdown,$<)) -o $@
 
 %.mobi: %.epub
 	-kindlegen $<
