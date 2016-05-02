@@ -5,7 +5,8 @@ trap 'rm -rf ${WT}' EXIT SIGHUP SIGTERM
 
 macros=avadanlik/viachristus.m4
 
-git worktree add ${WT} ${1}
+git worktree prune
+git worktree add --detach ${WT} ${1}
 
 m4 ${macros} ${WT}/${2} | git hash-object --stdin -w | read A
 m4 ${macros} ${2} | git hash-object --stdin -w | read B
