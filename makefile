@@ -118,10 +118,12 @@ endef
 define preprocess_markdown
 	if [[ "$(BRANCH)" == master ]]; then
 		m4 $(TOOLS)/viachristus.m4 $1 |
+			smart_quotes.pl |
 			sed -e 's#{==##g;s#==}##g' |
 			sed -e 's#{>>##g;s#<<}##g'
 	else
 		($(DIFF) && branch2criticmark.bash $(PARENT) $1 || m4 $(TOOLS)/viachristus.m4 $1) |
+			smart_quotes.pl |
 			sed -e 's#{==#\\criticHighlight{#g' -e 's#==}#}#g' \
 				-e 's#{>>#\\criticComment{#g'   -e 's#<<}#}#g' \
 				-e 's#{++#\\criticAdd{#g'       -e 's#++}#}#g' \
