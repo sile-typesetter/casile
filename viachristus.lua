@@ -310,6 +310,31 @@ SILE.registerCommand("book:sectioning", function (options, content)
   end
 end)
 
+SILE.registerCommand("tableofcontents", function (options, content)
+  local f,err = io.open(SILE.masterFilename .. '.toc')
+  if not f then
+    SILE.call("tableofcontents:notocmessage")
+    return
+  end
+  local doc = f:read("*all")
+  local toc = assert(loadstring(doc))()
+  SILE.call("tableofcontents:header")
+  for i = 1,#toc do
+    local item = toc[i]
+    SILE.call("tableofcontents:item", { level=item.level, pageno=item.pageno }, item.label)
+  end
+end)
+
+SILE.registerCommand("tocentry", function (options, content)
+  SILE.call("info", {
+    category = "toc",
+    value = {
+      label = content,
+      level = (options.level or 1)
+    }
+  })
+end)
+
 SILE.registerCommand("chapter", function (options, content)
   SILE.call("open-double-page")
   SILE.call("noindent")
@@ -524,7 +549,7 @@ SILE.registerCommand("tableofcontents:item", function (o,c)
   SILE.settings.temporarily(function ()
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
     SILE.call("tableofcontents:level"..o.level.."item", {}, function()
-      SILE.process({c})
+      SILE.process(c)
       if o.level == 1 then
         SILE.call("hss")
       elseif o.level == 2 then
