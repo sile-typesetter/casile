@@ -272,6 +272,7 @@ SILE.registerCommand("my-increment-multilevel-counter", function (options, conte
 end)
 
 SILE.registerCommand("book:sectioning", function (options, content)
+  local content = SU.subContent(content)
   local level = SU.required(options, "level", "book:sectioning")
   if not (options.numbering == false or options.numbering == "false") then
     if not options.reset == true or options.reset == "true" then reset = false end
@@ -308,31 +309,6 @@ SILE.registerCommand("book:sectioning", function (options, content)
   else
     SILE.call("tocentry", {level = options.level}, content)
   end
-end)
-
-SILE.registerCommand("tableofcontents", function (options, content)
-  local f,err = io.open(SILE.masterFilename .. '.toc')
-  if not f then
-    SILE.call("tableofcontents:notocmessage")
-    return
-  end
-  local doc = f:read("*all")
-  local toc = assert(loadstring(doc))()
-  SILE.call("tableofcontents:header")
-  for i = 1,#toc do
-    local item = toc[i]
-    SILE.call("tableofcontents:item", { level=item.level, pageno=item.pageno }, item.label)
-  end
-end)
-
-SILE.registerCommand("tocentry", function (options, content)
-  SILE.call("info", {
-    category = "toc",
-    value = {
-      label = content,
-      level = (options.level or 1)
-    }
-  })
 end)
 
 SILE.registerCommand("chapter", function (options, content)
@@ -546,15 +522,16 @@ SILE.registerCommand("increment-multilevel-counter", function (options, content)
 end)
 
 SILE.registerCommand("tableofcontents:item", function (o,c)
+  SU.debug("viachristus", { "C", c })
   SILE.settings.temporarily(function ()
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
     SILE.call("tableofcontents:level"..o.level.."item", {}, function()
       SILE.process(c)
-      if o.level == 1 then
-        SILE.call("hss")
-      elseif o.level == 2 then
+      if o.level == 2 then
         SILE.call("dotfill")
         SILE.typesetter:typeset(o.pageno)
+      else
+        SILE.call("hss")
       end
     end)
   end)
