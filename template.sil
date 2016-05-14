@@ -1,7 +1,7 @@
 \begin[$if(papersize)$papersize=$papersize$,$endif$class=$documentclass$]{document}
 $if(lang)$
-\language[main=$language$]
-\font[language=$language$]
+\language[main=$lang$]
+\font[language=$lang$]
 $endif$
 $if(langscript)$
 \font[script=$langscript$]
