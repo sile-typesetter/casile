@@ -133,6 +133,7 @@ endef
 
 define build_sile
 	pandoc --standalone \
+		--smart \
 		--wrap=preserve \
 		-V documentclass="book" \
 		-V papersize="$4" \
@@ -167,6 +168,7 @@ endef
 
 %.epub %.odt %.docx: %.md %.yml
 	pandoc \
+		--smart \
 		$(TOOLS)/viachristus.yml \
 		$(shell test -f "$(PROJECT).yml" && echo "$(PROJECT).yml") \
 		$(shell test -f "$(basename $1).yml" && echo "$(basename $1).yml") \
