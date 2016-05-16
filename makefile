@@ -75,6 +75,7 @@ sync_post:
 
 %.pdf: %.sil $(TOOLS)/viachristus.lua
 	@$(shell test -f "$<" || echo exit 0)
+	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	# Once for TOC, again for real page numbers, again again for final
 	if $(DRAFT); then \
 		sile -d viachristus $< -o $@ ;\
