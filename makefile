@@ -134,7 +134,6 @@ endef
 
 define build_sile
 	pandoc --standalone \
-		--smart \
 		--wrap=preserve \
 		-V documentclass="book" \
 		-V papersize="$4" \
