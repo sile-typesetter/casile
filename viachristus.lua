@@ -522,7 +522,6 @@ SILE.registerCommand("increment-multilevel-counter", function (options, content)
 end)
 
 SILE.registerCommand("tableofcontents:item", function (o,c)
-  SU.debug("viachristus", { "C", c })
   SILE.settings.temporarily(function ()
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
     SILE.call("tableofcontents:level"..o.level.."item", {}, function()
