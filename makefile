@@ -186,7 +186,6 @@ endef
 			-font Hack-Regular -pointsize 36 \
 			label:"ISBN $(shell $(TOOLS)/bin/isbn_format.py $< print mask)" +swap -gravity Center -append \
 			-bordercolor White -border 0x10 \
-			-bordercolor Black -border 4x4 \
 			$@
 
 %-url.png: %-url.svg %.yml
