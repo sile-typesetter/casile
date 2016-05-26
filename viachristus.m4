@@ -1,1 +1,2 @@
 changecom(`@@')
+changequote(`[[', `]]')
