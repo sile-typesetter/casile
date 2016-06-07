@@ -588,7 +588,7 @@ SILE.doTexlike([[
 ]])
 
 SILE.registerCommand("quote", function(options, content)
-  local setback = options.setback or "2em"
+  options.setback = options.setback or SILE.settings.get("document.parindent")
   -- See https://github.com/simoncozens/sile/issues/262 and remove this dreadful
   -- hack whet that issue is resolved.
   SILE.call("par")
@@ -601,8 +601,8 @@ SILE.registerCommand("quote", function(options, content)
   SILE.settings.pushState()
   SILE.settings.temporarily(function()
     SILE.call("noindent")
-    SILE.settings.set("document.rskip", SILE.nodefactory.newGlue(setback))
-    SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(setback))
+    SILE.settings.set("document.rskip", SILE.nodefactory.newGlue(options.setback))
+    SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(options.setback))
     SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
     SILE.settings.set("document.parindent", SILE.nodefactory.zeroGlue)
     SILE.settings.set("document.parskip", SILE.nodefactory.newVglue("1.5ex"))
