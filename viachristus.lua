@@ -406,7 +406,7 @@ end)
 SILE.registerCommand("subparagraph", function (options, content)
   SILE.typesetter:leaveHmode()
   SILE.call("novbreak")
-  -- Backtracking 6pt approximates the \medskip after quotations
+  -- Backtracking to approximate the skip after quotations
   SILE.Commands["skip"]({ height = "-8pt" })
   SILE.call("novbreak")
   SILE.Commands["book:subparagraphfont"]({}, function()
@@ -419,6 +419,7 @@ SILE.registerCommand("subparagraph", function (options, content)
   SILE.call("novbreak")
   SILE.call("bigskip")
   SILE.call("novbreak")
+  SILE.scratch.last_was_ref = true
 end, "Begin a new subparagraph")
 
 local utf8 = require("lua-utf8")
@@ -619,14 +620,23 @@ SILE.registerCommand("quote", function(options, content)
   SILE.call("medskip")
   SILE.call("novbreak")
   SILE.call("noindent")
-end, "Typeset quototion blocks")
+end, "Typeset quotation blocks")
 
 SILE.registerCommand("excerpt", function()
   SILE.call("font", { size="0.975em" })
   SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.675ex plus 0.05ex minus 0.05ex"))
 end)
 
+SILE.scratch.last_was_ref = false
+SILE.typesetter:registerPageEndHook(function ()
+  SILE.scratch.last_was_ref = false
+end)
+
 SILE.registerCommand("verse", function()
+  if SILE.scratch.last_was_ref then
+    SILE.Commands["skip"]({ height = "-20pt" })
+  end
+  SILE.scratch.last_was_ref = false
   SILE.call("font", {family="Libertinus Serif", weight=400, style="Italic", features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
   SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.25ex plus 0.05ex minus 0.05ex"))
 end)
