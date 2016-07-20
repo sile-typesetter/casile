@@ -117,14 +117,14 @@ SILE.doTexlike([[
 \book:seriffont[size=11.5pt]
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
-\set[parameter=linespacing.fit-font.extra-space,value=1ex plus 0.2ex minus 0.2ex]
+\set[parameter=linespacing.fit-font.extra-space,value=0.6ex plus 0.2ex minus 0.2ex]
 \set[parameter=linebreak.hyphenPenalty,value=300]
 \define[command=publicationpage:font]{\font[family=Libertinus Serif,size=9pt,language=und]}
 \define[command=publicationpage]{\nofolios
 \hbox\vfill
 \begin{raggedright}
 \publicationpage:font
-\set[parameter=linespacing.fit-font.extra-space,value=0.8ex plus 0.2ex minus 0.2ex]
+\set[parameter=linespacing.fit-font.extra-space,value=0.3ex plus 0.2ex minus 0.2ex]
 \set[parameter=document.parskip,value=1.2ex]
 \img[src=avadanlik/vc_sembol_renksiz.pdf,height=6em]
 {
@@ -555,7 +555,7 @@ SILE.registerCommand("footnote", function(options, content)
   SILE.settings.pushState()
   SILE.settings.reset()
   SILE.settings.set("linespacing.method", "fit-font")
-  SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.4ex plus 0.1pt minus 0.1pt"))
+  SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.05ex plus 0.1pt minus 0.1pt"))
   SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(indent))
   local material = SILE.Commands["vbox"]({}, function()
     SILE.Commands["book:footnotefont"]({}, function()
@@ -621,12 +621,12 @@ end, "Typeset quototion blocks")
 
 SILE.registerCommand("excerpt", function()
   SILE.call("font", { size="0.975em" })
-  SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.975ex plus 0.05ex minus 0.05ex"))
+  SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.675ex plus 0.05ex minus 0.05ex"))
 end)
 
 SILE.registerCommand("verse", function()
   SILE.call("font", {family="Libertinus Serif", weight=400, style="Italic", features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
-  SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.8ex plus 0.05ex minus 0.05ex"))
+  SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.25ex plus 0.05ex minus 0.05ex"))
 end)
 
 SILE.registerCommand("poetry", function()
