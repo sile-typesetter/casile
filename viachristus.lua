@@ -595,11 +595,13 @@ SILE.registerCommand("quote", function(options, content)
   -- See https://github.com/simoncozens/sile/issues/262 and remove this dreadful
   -- hack whet that issue is resolved.
   SILE.call("par")
+  -- SILE.call("ifnotattop", {}, function()
   SILE.call("hbox") -- for the case where the quote is the first thing on a page
-  SILE.call("skip", { height="1.1em plus 2pt minus 1pt" })
-  SILE.typesetter:typeset(" ")
+  SILE.call("skip", { height="1.1em" })
+  SILE.call("kern")
   SILE.call("par")
-  SILE.call("skip", { height="-1em plus 2pt minus 1pt" })
+  SILE.call("skip", { height="-1em" })
+  -- end)
   -- end dreadful hack
   SILE.settings.pushState()
   SILE.settings.temporarily(function()
