@@ -118,8 +118,8 @@ SILE.doTexlike([[
 \define[command=tableofcontents:level2item]{\skip[height=4pt]\noindent\glue[width=2ex]\font[size=11pt]{\process}\break\skip[height=0]}%
 \define[command=wraptitle]{\process}
 \define[command=wrapsubtitle]{\process}
-\define[command=halftitlepage]{\nofolios\center{\hbox\skip[height=20ph]\book:partnumfont[size=4.5pw]{\wraptitle{\meta:title}}\bigskip}}
-\define[command=titlepage]{\open-double-page\center{\hbox\skip[height=10ph]\book:partnumfont[size=7pw]{\wraptitle{\meta:title}}\bigskip\book:partfont{\font[size=6pw]{\wrapsubtitle{\meta:subtitle}}}\skip[height=8ph]\book:partfont{\font[size=4pw,weight=300]{\meta:author}}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=25pw]}\par\break}
+\define[command=halftitlepage]{\nofolios\center{\hbox\skip[height=20%ph]\book:partnumfont[size=4.5%pw]{\wraptitle{\meta:title}}\bigskip}}
+\define[command=titlepage]{\open-double-page\center{\hbox\skip[height=10%ph]\book:partnumfont[size=7%pw]{\wraptitle{\meta:title}}\bigskip\book:partfont{\font[size=6%pw]{\wrapsubtitle{\meta:subtitle}}}\skip[height=8%ph]\book:partfont{\font[size=4%pw,weight=300]{\meta:author}}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=25%pw]}\par\break}
 \book:seriffont[size=11.5pt]
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
@@ -222,13 +222,6 @@ book.endPage = function(self)
   return plain.endPage(book)
 end
 
-SILE.registerUnit("pw", { relative = true, definition = function (v)
-  return v / 100 * SILE.documentState.paperSize[1]
-end})
-SILE.registerUnit("ph", { relative = true, definition = function (v)
-  return v / 100 * SILE.documentState.paperSize[2]
-end})
-
 SILE.registerCommand("aki", function()
   SILE.call("penalty", { penalty=-1 })
 end)
@@ -325,7 +318,7 @@ SILE.registerCommand("chapter", function (options, content)
   SILE.call("center", {}, function()
     SILE.settings.temporarily(function()
       SILE.typesetter:typeset(" ")
-      SILE.call("skip", { height="10ph" })
+      SILE.call("skip", { height="10%ph" })
       SILE.call("book:sectioning", {
         numbering = options.numbering,
         level = 2,
@@ -375,9 +368,9 @@ SILE.registerCommand("part", function (options, content)
   SILE.call("noindent")
   SILE.call("set-counter", {id = "footnote", value = 1})
   SILE.call("center", {}, function()
-    SILE.call("book:partnumfont", { size="5pw" }, function()
+    SILE.call("book:partnumfont", { size="5%pw" }, function()
       SILE.call("hbox")
-      SILE.call("skip", { height="10ph" })
+      SILE.call("skip", { height="10%ph" })
       SILE.call("book:sectioning", {
         numbering = options.numbering,
         level = 1,
@@ -388,7 +381,7 @@ SILE.registerCommand("part", function (options, content)
       }, content)
     end)
     SILE.call("medskip")
-    SILE.Commands["book:partfont"]({ size="4pw" }, content);
+    SILE.Commands["book:partfont"]({ size="4%pw" }, content);
     SILE.call("medskip")
     SILE.call("font", { filename="avadanlik/fonts/FeFlow2.otf", size="9pt" }, {"a"})
     SILE.call("bigskip")
