@@ -1,3 +1,9 @@
+SILE.require("packages/color")
+SILE.require("packages/ifattop")
+SILE.require("packages/leaders")
+SILE.require("packages/raiselower")
+SILE.require("packages/rebox");
+
 SILE.registerCommand("book:monofont", function(options, content)
   options.family = options.family or "Hack"
   SILE.call("font", options, content)
@@ -350,7 +356,6 @@ SILE.registerCommand("chapter", function (options, content)
   --SILE.call("nofoliosthispage")
 end, "Begin a new chapter");
 
-SILE.require("packages/ifattop")
 SILE.registerCommand("section", function (options, content)
   SILE.call("goodbreak")
   SILE.call("ifnotattop", {}, function()
@@ -431,10 +436,6 @@ end
 SILE.registerCommand("uppercase", function(options, content)
   SILE.process(inputfilter.transformContent(content, trupper))
 end, "Typeset the enclosed text as uppercase")
-
-SILE.require("packages/raiselower")
-SILE.require("packages/rebox")
-SILE.require("packages/leaders")
 
 local function tr_num2text (num, ordinal)
   local ord = ordinal or false
@@ -544,7 +545,6 @@ SILE.registerCommand("fullrule", function (options, content)
   SILE.call("hrule", { height = height, width = SILE.typesetter.frame:lineWidth() })
 end)
 
-SILE.require("packages/rebox");
 local insertions = SILE.require("packages/insertions")
 SILE.registerCommand("footnote", function(options, content)
   local indent = "14pt"
@@ -687,8 +687,6 @@ SILE.registerCommand("seriespage:title", function(options, content)
     end
   end)
 end)
-
-SILE.require("packages/color")
 
 SILE.registerCommand("criticHighlight", function(options, content)
   SILE.settings.temporarily(function()
