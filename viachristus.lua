@@ -115,7 +115,7 @@ SILE.doTexlike([[
 \define[command=book:subparagraph:post]{ }%
 \define[command=tableofcontents:header]{\center{\hbox\skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\bigskip\fullrule\bigskip}%
 \define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont[size=10pt,weight=600]{\process}\break}%
-\define[command=tableofcontents:level2item]{\skip[height=4pt]\noindent\glue[width=2ex]\font[size=11pt]{\process}\break\skip[height=0]}%
+\define[command=tableofcontents:level2item]{\skip[height=4.5pt]\noindent\glue[width=2ex]\font[size=11pt]{\process}\break\skip[height=0]}%
 \define[command=wraptitle]{\process}
 \define[command=wrapsubtitle]{\process}
 \define[command=halftitlepage]{\nofolios\center{\hbox\skip[height=20%ph]\book:partnumfont[size=4.5%pw]{\wraptitle{\meta:title}}\bigskip}}
