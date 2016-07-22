@@ -99,6 +99,9 @@ SILE.registerCommand("qrimg", function(options, content)
 	SILE.call("set", { parameter="document.lskip",value="5em" })
 end)
 
+SILE.call("set", { parameter="typesetter.underfulltolerance", value="6ex" })
+SILE.call("set", { parameter="typesetter.overfulltolerance", value="0.2ex" })
+
 SILE.doTexlike([[
 \language[main=tr]
 \script[src=packages/rules]
