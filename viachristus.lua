@@ -586,19 +586,20 @@ SILE.doTexlike([[
 \define[command=langen]{\font[language=en,style=Italic]{\process}}
 ]])
 
-SILE.registerCommand("quote", function(options, content)
-  options.setback = options.setback or SILE.settings.get("document.parindent")
-  -- See https://github.com/simoncozens/sile/issues/262 and remove this dreadful
-  -- hack whet that issue is resolved.
+-- For when pushBack breaks my whitespace
+-- Remove this dreadful hack when https://github.com/simoncozens/sile/issues/262
+SILE.registerCommand("hackBack", function(options, content)
   SILE.call("par")
-  -- SILE.call("ifnotattop", {}, function()
-  SILE.call("hbox") -- for the case where the quote is the first thing on a page
+  SILE.call("hbox")
   SILE.call("skip", { height="1.1em" })
   SILE.call("kern")
   SILE.call("par")
   SILE.call("skip", { height="-1em" })
-  -- end)
-  -- end dreadful hack
+end)
+
+SILE.registerCommand("quote", function(options, content)
+  options.setback = options.setback or SILE.settings.get("document.parindent")
+  SILE.call("hackBack")
   SILE.settings.pushState()
   SILE.settings.temporarily(function()
     SILE.call("noindent")
