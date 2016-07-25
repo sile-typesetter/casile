@@ -771,3 +771,7 @@ end
 SILE.registerCommand("addDiscressionaryBreaks", function(options, content)
   SILE.process(addDiscressionaryBreaks(options, content))
 end, "Try to find good breakpoints based on punctuation")
+
+SILE.call("hyphenator:add-exceptions", { lang="tr" }, {
+  "rab’-bin rab'-bin tan-rı'-nın tan-rı'-nın tan-rı'-yla tan-rı’-yla"
+})
