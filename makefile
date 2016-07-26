@@ -13,6 +13,7 @@ PRINTS ?=
 #PRINTS ?= kesme kesme-ciftyonlu
 DRAFT ?= false
 DIFF ?= true
+CROP ?= false
 STATS_MONTHS ?= 2
 
 # Local and CI builds calculate the branach differently
@@ -142,6 +143,7 @@ define build_sile
 		-V qrimg="./$(basename $1)-url.png" \
 		$(shell test -f "$(basename $1).lua" && echo "-V script=$(basename $1)") \
 		$(shell test -f "$(PROJECT).lua" && echo "-V script=$(PROJECT)") \
+		$(shell $5 || $(CROP) && echo "-V script=$(TOOLS)/crop") \
 		-V script=$(TOOLS)/layout-$3 \
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
@@ -152,19 +154,19 @@ define build_sile
 endef
 
 %-a4.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-a4.lua
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4)
+	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
 
 %-a5trim.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-a5trim.lua
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),133mm x 195mm)
+	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),133mm x 195mm,true)
 
 %-octavo.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-octavo.lua
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),432pt x 648pt)
+	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),432pt x 648pt,true)
 
 %-halfletter.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-halfletter.lua
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),halfletter)
+	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),halfletter,true)
 
 %-cep.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-cep.lua
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),115mm x 170mm)
+	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),115mm x 170mm,true)
 
 %.epub %.odt %.docx: %.md %.yml
 	pandoc \
