@@ -20,6 +20,9 @@ $endif$
 \define[command=meta:title]{$title-meta$}
 $for(creator)$
 \define[command=meta:$creator.role$]{$creator.text$}
+$if(creator.about)$
+\define[command=meta:$creator.role$:about]{$creator.about$}
+$endif$
 $endfor$
 \define[command=meta:subtitle]{$subtitle$}
 \define[command=meta:rights]{$rights$}
@@ -45,6 +48,9 @@ $for(info)$
 \font[weight=600,style=Bold]{$info.file-as$}: $info.text$\break
 $endfor$
 }
+$if(source)$
+\define[command=meta:source]{$source$}
+$endif$
 \define[command=meta:publisher]{
 $for(publisher)$
 \font[weight=600,style=Bold]{$publisher.file-as$}: $publisher.text$\break
