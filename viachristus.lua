@@ -102,6 +102,36 @@ end)
 SILE.call("set", { parameter="typesetter.underfulltolerance", value="6ex" })
 SILE.call("set", { parameter="typesetter.overfulltolerance", value="0.2ex" })
 
+SILE.registerCommand("titlepage", function(options, content)
+  SILE.call("nofolios")
+  SILE.call("open-double-page")
+  SILE.call("center", {}, function()
+    SILE.call("hbox")
+    SILE.call("skip", { height="10%ph" })
+    SILE.call("book:partnumfont", { size="7%pw" }, function()
+      SILE.call("wraptitle", {}, function()
+        SILE.call("meta:title", {}, function()
+        end)
+      end)
+    end)
+    SILE.call("bigskip")
+    SILE.call("book:partfont", { size="6%pw" }, function()
+      SILE.call("wrapsubtitle", {}, function()
+        SILE.call("meta:subtitle", {}, function()
+        end)
+      end)
+    end)
+    SILE.call("skip", { height="8%ph" })
+    SILE.call("book:partfont", { size="4%pw", weight=300 }, function()
+      SILE.call("meta:author")
+    end)
+    SILE.call("vfill")
+    SILE.call("img", { src="avadanlik/vc_logo_renksiz.pdf", width="25%pw" })
+  end)
+  SILE.call("par")
+  SILE.call("break")
+end)
+
 SILE.doTexlike([[
 \language[main=tr]
 \script[src=packages/rules]
@@ -122,7 +152,6 @@ SILE.doTexlike([[
 \define[command=wraptitle]{\process}
 \define[command=wrapsubtitle]{\process}
 \define[command=halftitlepage]{\nofolios\center{\hbox\skip[height=20%ph]\book:partnumfont[size=4.5%pw]{\wraptitle{\meta:title}}\bigskip}}
-\define[command=titlepage]{\open-double-page\center{\hbox\skip[height=10%ph]\book:partnumfont[size=7%pw]{\wraptitle{\meta:title}}\bigskip\book:partfont{\font[size=6%pw]{\wrapsubtitle{\meta:subtitle}}}\skip[height=8%ph]\book:partfont{\font[size=4%pw,weight=300]{\meta:author}}\vfill{}\img[src=avadanlik/vc_logo_renksiz.pdf,width=25%pw]}\par\break}
 \book:seriffont[size=11.5pt]
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
