@@ -81,11 +81,9 @@ $endif$
 \end{script}
 $for(include)$
 \include[src=$include$]
-
 $endfor$
 $for(script)$
 \script[src=$script$]
-
 $endfor$
 \halftitlepage
 \titlepage
