@@ -3,6 +3,7 @@ SILE.require("packages/ifattop")
 SILE.require("packages/leaders")
 SILE.require("packages/raiselower")
 SILE.require("packages/rebox");
+SILE.require("publicationpage");
 
 SILE.registerCommand("book:monofont", function(options, content)
   options.family = options.family or "Hack"
@@ -92,13 +93,6 @@ SILE.registerCommand("tableofcontents:headerfont", function(options, content)
   SILE.call("book:partfont", options, content)
 end)
 
-SILE.registerCommand("qrimg", function(options, content)
-	SILE.call("skip", { height="6.5em" })
-	SILE.call("img", { src=qrimg, height="5.8em" })
-	SILE.call("skip", { height="-6.3em" })
-	SILE.call("set", { parameter="document.lskip",value="5em" })
-end)
-
 SILE.call("set", { parameter="typesetter.underfulltolerance", value="6ex" })
 SILE.call("set", { parameter="typesetter.overfulltolerance", value="0.2ex" })
 
@@ -157,51 +151,6 @@ SILE.doTexlike([[
 \set[parameter=linespacing.method,value=fit-font]
 \set[parameter=linespacing.fit-font.extra-space,value=0.6ex plus 0.2ex minus 0.2ex]
 \set[parameter=linebreak.hyphenPenalty,value=300]
-\define[command=publicationpage:font]{\font[family=Libertinus Serif,size=9pt,language=und]}
-\define[command=publicationpage]{\nofolios
-\hbox\vfill
-\begin{raggedright}
-\publicationpage:font
-\set[parameter=linespacing.fit-font.extra-space,value=0.3ex plus 0.2ex minus 0.2ex]
-\set[parameter=document.parskip,value=1.2ex]
-\img[src=avadanlik/vc_sembol_renksiz.pdf,height=6em]
-{
-\skip[height=-6.2em]
-\set[parameter=document.lskip,value=5em]
-\font[filename=avadanlik/fonts/Mason-Bold.otf,size=1.25em]{Via Christus Yayınları}\break
-{Davutpaşa Cad. Kazım Dinçol San. Sit.\break No 81/87, Topkapı, İstanbul\break}
-\font[family=Hack,size=0.8em]{https://viachristus.com\break yayinlar@viachristus.com}
-}
-
-\set[parameter=document.lskip]
-\font[weight=600,style=Bold]{\meta:title}\break
-\meta:creators{}
-\meta:info{}
-
-\meta:rights{}
-
-
-\qrimg{}
-\meta:identifiers{}
-\font[weight=600,style=Bold]{Sürüm:} \meta:surum\break
-\font[weight=600,style=Bold]{URL:} \meta:url\break
-
-\set[parameter=document.lskip]
-\meta:contributors{}
-
-\meta:extracredits{}
-
-\meta:versecredits{}
-
-\meta:manufacturer{}
-
-\meta:date{}
-
-%\skip[height=6em]
-
-\end{raggedright}
-\par\break
-}
 ]])
 local plain = SILE.require("classes/plain");
 local book = SILE.require("classes/book");
