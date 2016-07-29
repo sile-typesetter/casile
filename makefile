@@ -39,6 +39,7 @@ endif
 export TEXMFHOME := $(TOOLS)/texmf
 export PATH := $(TOOLS)/bin:$(PATH)
 export HOSTNAME := $(shell hostname)
+export SILE_PATH := $(TOOLS)/
 
 .ONESHELL:
 .SECONDEXPANSION:
