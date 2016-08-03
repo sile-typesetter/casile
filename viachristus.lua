@@ -657,6 +657,8 @@ SILE.registerCommand("seriespage:title", function(options, content)
   SILE.call("raggedright", {}, function()
     SILE.settings.set("current.parindent", SILE.nodefactory.newGlue("-2em"))
     SILE.settings.set("document.lskip", SILE.nodefactory.newGlue("2em"))
+    SILE.settings.set("linespacing.method", "fit-font")
+    SILE.settings.set("linespacing.fixed.baselinedistance", SILE.length.parse("0.6ex plus 0.2ex minus 0.2ex"))
     if not options.author then
       SILE.call("font", { style="Italic", language="und" }, content)
       SILE.call("medskip")
