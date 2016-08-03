@@ -61,11 +61,13 @@ $for(manufacturer)$
 \font[weight=600,style=Bold]{$manufacturer.file-as$}: $manufacturer.text$\break
 $endfor$
 }
+$if(date)$
 \define[command=meta:date]{
 $for(date)$
 \font[weight=600,style=Bold]{$date.file-as$}: \pubDateFormat{$date.text$}\break
 $endfor$
 }
+$endif$
 \define[command=meta:extracredits]{$extracredits$}
 \define[command=meta:versecredits]{$versecredits$}
 \script[src=packages/url]
