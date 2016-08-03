@@ -634,6 +634,7 @@ SILE.registerCommand("poetry", function()
 end)
 
 SILE.registerCommand("dedication", function(options, content)
+  SILE.scratch.headers.skipthispage = true
   SILE.call("center", {}, function()
     SILE.call("hbox")
     SILE.call("vfill")
