@@ -769,6 +769,27 @@ SILE.call("hyphenator:add-exceptions", { lang="tr" }, {[[
   tan-rı'-yla
   tan-rı’-yla
   doğ-ru
+  grek-çe’-deki
+  müj-de’-den
+  müj-de’-nin
+  müj-de-si’-ni
+  müj-de’-yi
+  müj-de’-de
+  müj-de’-deki
+  müj-de’-den
+  müj-de’-dir
+  müj-de’-mi-zin
+  müj-de’-nin
+  müj-de-si’-nde
+  müj-de-si’-n-deki
+  müj-de-si’-n-den
+  müj-de-si’-ne
+  müj-de-si’-ni
+  müj-de-si’-nin
+  müj-de-si’-yle
+  müj-de’-ye
+  müj-de’-yi
+  müj-de’-yle
 ]]})
 
 if SILE.settings.get("document.language") == "tr" then
