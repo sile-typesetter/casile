@@ -771,6 +771,5 @@ SILE.registerCommand("pubDateFormat", function(options, content)
 	local pattern = "(%d+)-(%d+)"
 	local year, month = input:match(pattern)
 	local ts = os.time({ year=year, month=month, day=1 })
-	SU.debug("viachristus", { year, month, ts })
 	SILE.typesetter:typeset(os.date("%B %Y", ts))
 end, "Try to find good breakpoints based on punctuation")
