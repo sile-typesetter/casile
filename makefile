@@ -8,7 +8,7 @@ OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)
 SOURCES := $(wildcard *.md)
 TARGETS := ${SOURCES:.md=}
 FORMATS ?= pdf epub mobi
-LAYOUTS ?= a4 a5trim octavo halfletter cep
+LAYOUTS ?= a4 a5trim octavo halfletter cep app
 PRINTS ?=
 #PRINTS ?= kesme kesme-ciftyonlu
 DRAFT ?= false
@@ -169,6 +169,9 @@ endef
 
 %-cep.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-cep.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),115mm x 170mm,true)
+
+%-app.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-app.lua
+	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),62mm x 110mm,false)
 
 %.epub %.odt %.docx: %.md %.yml
 	pandoc \
