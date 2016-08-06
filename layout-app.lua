@@ -11,3 +11,8 @@ SILE.call("switch-master-one-page", {id="right"})
 SILE.doTexlike([[
 \define[command=publicationpage:font]{\font[family=Libertinus Serif,style=Regular,size=7.5pt,language=und]}
 ]])
+
+-- Kindle sepia background: #5a4129
+-- Kindle sepia text color: #e9d8ba
+local color = SILE.colorparser("#333333")
+SILE.outputter:setColor(color)
