@@ -8,9 +8,10 @@ book:defineMaster({ id = "left", firstContentFrame = "content", frames = {}})
 book:loadPackage("twoside", { oddPageMaster = "right", evenPageMaster = "left" });
 book:mirrorMaster("right", "left")
 SILE.call("switch-master-one-page", {id="right"})
-SILE.doTexlike([[
-\define[command=publicationpage:font]{\font[family=Libertinus Serif,style=Regular,size=7.5pt,language=und]}
-]])
+
+SILE.registerCommand("publicationpage:font", function(options, content)
+  SILE.call("font", { family="Libertinus Serif", size="7.5pt", language="und" }, content)
+end)
 
 -- Kindle sepia background: #5a4129
 -- Kindle sepia text color: #e9d8ba
