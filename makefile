@@ -171,7 +171,7 @@ endef
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),115mm x 170mm,true)
 
 %-app.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-app.lua
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),62mm x 110mm,false)
+	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),82mm x 146mm,false)
 
 %.epub %.odt %.docx: %.md %.yml
 	pandoc \
