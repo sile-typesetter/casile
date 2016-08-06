@@ -62,7 +62,10 @@ SILE.registerCommand("publicationpage", function(options, content)
         SILE.call("meta:extracredits")
         SILE.call("par")
         SILE.call("meta:versecredits")
-        if SILE.Commands["meta:date"] then
+        if SILE.Commands["meta:distribution"] then
+          SILE.call("par")
+          SILE.call("meta:distribution")
+        elseif SILE.Commands["meta:date"] then
           SILE.call("par")
           SILE.call("meta:manufacturer")
           SILE.call("par")

@@ -13,6 +13,11 @@ SILE.registerCommand("publicationpage:font", function(options, content)
   SILE.call("font", { family="Libertinus Serif", size="7.5pt", language="und" }, content)
 end)
 
+SILE.registerCommand("meta:distribution", function(options, content)
+  SILE.call("font", { weight=600, style="Bold" }, {"Yayın: "})
+  SILE.typesetter:typeset("Bu PDF biçimi, akıl telefon cihazlar için uygun biçimlemiştir ve Fetiye Halk Kilise’nin hazırladığı Kilise Uygulaması içinde ve Via Christus’un internet sitesinde izinle üçretsiz yayılmaktadır.")
+end)
+
 -- Kindle sepia background: #5a4129
 -- Kindle sepia text color: #e9d8ba
 local color = SILE.colorparser("#333333")
