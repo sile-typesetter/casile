@@ -10,7 +10,7 @@ book:mirrorMaster("right", "left")
 SILE.call("switch-master-one-page", {id="right"})
 
 SILE.registerCommand("publicationpage:font", function(options, content)
-  SILE.call("font", { family="Libertinus Serif", size="7.5pt", language="und" }, content)
+  SILE.call("font", { family="Libertinus Serif", size="6.5pt", language="und" }, content)
 end)
 
 SILE.registerCommand("meta:distribution", function(options, content)
