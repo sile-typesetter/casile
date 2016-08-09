@@ -18,7 +18,7 @@ SILE.registerCommand("meta:distribution", function(options, content)
   SILE.typesetter:typeset("Bu PDF biçimi, akıl telefon cihazlar için uygun biçimlemiştir ve Fetiye Halk Kilise’nin hazırladığı Kilise Uygulaması içinde ve Via Christus’un internet sitesinde izinle üçretsiz yayılmaktadır.")
 end)
 
--- Mobile devide PDF readers don't need blank even numbered pages ;)
+-- Mobile device PDF readers don't need blank even numbered pages ;)
 SILE.registerCommand("open-double-page", function()
   SILE.typesetter:leaveHmode();
   SILE.Commands["supereject"]();
