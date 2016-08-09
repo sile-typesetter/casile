@@ -25,6 +25,10 @@ SILE.registerCommand("open-double-page", function()
   SILE.typesetter:leaveHmode();
 end)
 
+-- Forgo bottom of page layouts for mobile devices
+SILE.registerCommand("topfill", function(options, content)
+end)
+
 -- Kindle sepia background: #5a4129
 -- Kindle sepia text color: #e9d8ba
 local color = SILE.colorparser("#333333")

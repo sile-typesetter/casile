@@ -101,10 +101,7 @@ $endfor$
 $body$
 \novbreak\medskip\novbreak\center{\novbreak\book:chapter:post{}}
 $if(seriestitle)$
-\open-double-page
-\script{SILE.scratch.headers.skipthispage = true}
-\nofolios
-\hbox\vfill
+\seriespage:pre
 \seriespage:series{$seriestitle$}
 $for(seriestitles)$
 $if(seriestitles.text)$

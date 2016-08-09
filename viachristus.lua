@@ -655,6 +655,19 @@ SILE.registerCommand("seriespage:series", function(options, content)
   end)
 end)
 
+SILE.registerCommand("seriespage:pre", function(options, content)
+  SILE.call("open-double-page")
+  SILE.scratch.headers.skipthispage = true
+  SILE.call("nofolios")
+  SILE.call("topfill")
+end)
+
+-- Make this a function because we want to override it in some layouts
+SILE.registerCommand("topfill", function(options, content)
+  SILE.call("hbox")
+  SILE.call("vfill")
+end)
+
 SILE.registerCommand("seriespage:title", function(options, content)
   SILE.call("raggedright", {}, function()
     SILE.settings.set("current.parindent", SILE.nodefactory.newGlue("-2em"))
