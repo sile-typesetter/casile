@@ -578,10 +578,10 @@ SILE.doTexlike([[
 SILE.registerCommand("hackBack", function(options, content)
   SILE.call("par")
   SILE.call("hbox")
-  SILE.call("skip", { height="1.1em" })
+  SILE.call("skip", { height="4.1em" })
   SILE.call("kern")
   SILE.call("par")
-  SILE.call("skip", { height="-1em" })
+  SILE.call("skip", { height="-4em" })
 end)
 
 SILE.registerCommand("quote", function(options, content)
