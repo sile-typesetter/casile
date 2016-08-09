@@ -18,6 +18,13 @@ SILE.registerCommand("meta:distribution", function(options, content)
   SILE.typesetter:typeset("Bu PDF biçimi, akıl telefon cihazlar için uygun biçimlemiştir ve Fetiye Halk Kilise’nin hazırladığı Kilise Uygulaması içinde ve Via Christus’un internet sitesinde izinle üçretsiz yayılmaktadır.")
 end)
 
+-- Mobile devide PDF readers don't need blank even numbered pages ;)
+SILE.registerCommand("open-double-page", function()
+  SILE.typesetter:leaveHmode();
+  SILE.Commands["supereject"]();
+  SILE.typesetter:leaveHmode();
+end)
+
 -- Kindle sepia background: #5a4129
 -- Kindle sepia text color: #e9d8ba
 local color = SILE.colorparser("#333333")
