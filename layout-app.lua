@@ -29,26 +29,8 @@ end)
 SILE.registerCommand("topfill", function(options, content)
 end)
 
--- Kindle sepia background: #e9d8ba
--- Kindle sepia text color: #5a4129
+SILE.require("packages/background")
+SILE.call("background", { color="#e9d8ba" })
+
 local inkColor = SILE.colorparser("#5a4129")
 SILE.outputter:pushColor(inkColor)
-
-local outputBackground = function()
-  local page = SILE.getFrame("page")
-  local backgroundColor = SILE.colorparser("#e9d8ba")
-  SILE.outputter:pushColor(backgroundColor)
-  SILE.outputter.rule(page:left(), page:top(), page:right(), page:bottom())
-  SILE.outputter:popColor()
-end
-
--- By this point, the first page is already initialized so give it some color
-outputBackground()
-
--- Replace the new page function with one that draws a background first thing
-local oldNewPage = book.newPage
-book.newPage = function(self)
-  local page = oldNewPage(self)
-  outputBackground()
-  return page
-end
