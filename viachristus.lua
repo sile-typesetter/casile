@@ -410,11 +410,10 @@ SILE.registerCommand("subparagraph", function (options, content)
   SILE.scratch.last_was_ref = true
 end, "Begin a new subparagraph")
 
-local utf8 = require("lua-utf8")
+local icu = require("justenoughicu")
 local inputfilter = SILE.require("packages/inputfilter").exports
 function trupper (string)
-  string = string:gsub("i", "İ")
-  return utf8.upper(string)
+  return icu.case(string, "tr", "upper")
 end
 SILE.registerCommand("uppercase", function(options, content)
   SILE.process(inputfilter.transformContent(content, trupper))
