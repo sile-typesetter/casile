@@ -279,7 +279,7 @@ SILE.registerCommand("book:sectioning", function (options, content)
     local counters = SILE.scratch.counters["sectioning"]
     if level == 1 then
       local val = SILE.formatCounter({display = "ORDINAL", value = counters.value[level]})
-      toc_content[1] = val .. " KISIM: " .. trupper(content[1])
+      toc_content[1] = val .. " KISIM: " .. uppercase(content[1])
     elseif level == 2 then
       local val = SILE.formatCounter({display = "arabic", value = counters.value[level]})
       toc_content[1] = val .. ". " .. content[1]
@@ -412,12 +412,30 @@ end, "Begin a new subparagraph")
 
 local icu = require("justenoughicu")
 local inputfilter = SILE.require("packages/inputfilter").exports
-function trupper (string)
-  return icu.case(string, "tr", "upper")
+
+function uppercase(string)
+  return icu.case(string, SILE.settings.get("document.language"), "upper")
 end
+
+function lowercase(string)
+  return icu.case(string, SILE.settings.get("document.language"), "lower")
+end
+
+function titlecase(string)
+  return icu.case(string, SILE.settings.get("document.language"), "title")
+end
+
 SILE.registerCommand("uppercase", function(options, content)
-  SILE.process(inputfilter.transformContent(content, trupper))
+  SILE.process(inputfilter.transformContent(content, uppercase))
 end, "Typeset the enclosed text as uppercase")
+
+SILE.registerCommand("lowercase", function(options, content)
+  SILE.process(inputfilter.transformContent(content, lowercase))
+end, "Typeset the enclosed text as lowercase")
+
+SILE.registerCommand("titlecase", function(options, content)
+  SILE.process(inputfilter.transformContent(content, titlecase))
+end, "Typeset the enclosed text as titlecase")
 
 local function tr_num2text (num, ordinal)
   local ord = ordinal or false
@@ -464,9 +482,9 @@ SILE.formatCounter = function(options)
   --if (options.display == "Alpha") then return alpha(options.value):upper() end
   if (options.display == "string") then return tr_num2text(options.value):lower() end
   if (options.display == "String") then return tr_num2text(options.value) end
-  if (options.display == "STRING") then return trupper(tr_num2text(options.value)) end
+  if (options.display == "STRING") then return uppercase(tr_num2text(options.value)) end
   if (options.display == "Ordinal") then return tr_num2text(options.value, true) end
-  if (options.display == "ORDINAL") then return trupper(tr_num2text(options.value, true)) end
+  if (options.display == "ORDINAL") then return uppercase(tr_num2text(options.value, true)) end
   return tostring(options.value);
 end
 
