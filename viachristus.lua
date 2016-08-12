@@ -637,6 +637,8 @@ end)
 SILE.registerCommand("dedication", function(options, content)
   SILE.scratch.headers.skipthispage = true
   SILE.call("center", {}, function()
+    SILE.settings.set("linespacing.method", "fit-font")
+    SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.4ex plus 0.1ex minus 0.1ex"))
     SILE.call("hbox")
     SILE.call("vfill")
     SILE.call("font", { style="Italic", size="14pt" }, content)
