@@ -15,6 +15,7 @@ DRAFT ?= false
 DIFF ?= true
 CROP ?= false
 STATS_MONTHS ?= 2
+PRE_SYNC ?= true
 
 # Local and CI builds calculate the branach differently
 BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
@@ -34,6 +35,7 @@ endif
 TAG = $(shell git describe --tags)
 ifeq ($(shell git describe --long --tags | cut -d- -f2),0)
 OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)/$(TAG)
+PRE_SYNC = false
 endif
 
 export TEXMFHOME := $(TOOLS)/texmf
@@ -66,7 +68,7 @@ endef
 
 sync_pre:
 	$(call sync_owncloud)
-	-rsync -ctv \
+	-$(PRE_SYNC) && rsync -ctv \
 		$(foreach FORMAT,$(FORMATS),$(OUTPUT)/*.$(FORMAT)) $(BASE)/
 
 sync_post:
