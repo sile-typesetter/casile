@@ -33,9 +33,10 @@ endif
 
 # If we are directly on a tagged commit, build it to a special directory
 TAG = $(shell git describe --tags)
-ifeq ($(shell git describe --long --tags | cut -d- -f2),0)
+ifeq ($(shell git describe --long --tags | rev | cut -d- -f2),0)
 OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)/$(TAG)
 PRE_SYNC = false
+DIFF = false
 endif
 
 export TEXMFHOME := $(TOOLS)/texmf
