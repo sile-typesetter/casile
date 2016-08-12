@@ -109,7 +109,7 @@ define versioninfo
 	echo -en "$(basename $1)@"
 	if [[ "$(BRANCH)" == master ]]; then
 		git describe --tags >/dev/null 2>/dev/null || echo -en "$(BRANCH)-"
-		git describe --long --tags --always --dirty=* | xargs echo -en
+		git describe --long --tags --always --dirty=* | cut -d/ -f2 | xargs echo -en
 	else
 		$(DIFF) && echo -en "$(PARENT)→"
 		echo -en "$(BRANCH)-"
