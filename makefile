@@ -39,6 +39,13 @@ PRE_SYNC = false
 DIFF = false
 endif
 
+# If our tag or branch has a slash in it, treat the first bit as a target
+# and only build that item no the whole project.
+TAG_TARGET = $(shell git describe --tags | cut -d/ -f1)
+ifneq ($(TAG),$(TAG_TARGET))
+TARGETS = $(TAG_TARGET)
+endif
+
 export TEXMFHOME := $(TOOLS)/texmf
 export PATH := $(TOOLS)/bin:$(PATH)
 export HOSTNAME := $(shell hostname)
