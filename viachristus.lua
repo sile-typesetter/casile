@@ -324,7 +324,7 @@ SILE.registerCommand("chapter", function (options, content)
       SILE.call("book:chapterfont", {}, content)
       SILE.call("bigskip")
       SILE.call("fullrule")
-      SILE.call("skip", { height="-1.5ex" }) -- part of bug 262 hack
+      SILE.call("skip", { height="-1ex" }) -- part of bug 262 hack
     end)
   end)
   SILE.call("left-running-head")
@@ -333,9 +333,9 @@ SILE.registerCommand("chapter", function (options, content)
   end)
   SILE.scratch.headers.skipthispage = true
   if (options.numbering == false or options.numbering == "false") then
-    SILE.call("medskip")
+    SILE.call("skip", { height="10pt" })
   end
-  SILE.call("medskip")
+  SILE.call("skip", { height="8pt" })
   --SILE.call("nofoliosthispage")
 end, "Begin a new chapter");
 
@@ -603,7 +603,7 @@ SILE.registerCommand("quote", function(options, content)
     SILE.call("novbreak")
   end)
   SILE.settings.popState()
-  SILE.call("medskip")
+  SILE.call("skip", { height="6pt" })
   SILE.call("novbreak")
   SILE.call("noindent")
 end, "Typeset quotation blocks")
