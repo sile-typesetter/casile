@@ -35,6 +35,7 @@ endif
 # If we are directly on a tagged commit, build it to a special directory
 TAG = $(shell git describe --tags)
 ifeq ($(shell git describe --long --tags | rev | cut -d- -f2),0)
+BRANCH = master
 OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)/$(TAG)
 PRE_SYNC = false
 DIFF = false
@@ -122,7 +123,7 @@ define versioninfo
 		$(DIFF) && echo -en "$(PARENT)→"
 		echo -en "$(BRANCH)-"
 		git rev-list --boundary $(PARENT)...HEAD | grep -v - | wc -l | xargs -iX echo -en "X-"
-		git describe --always | xargs echo -en
+		git describe --always | cut -d/ -f2 | xargs echo -en
 	fi
 endef
 
