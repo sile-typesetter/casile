@@ -42,10 +42,17 @@ DIFF = false
 endif
 
 # If our tag or branch has a slash in it, treat the first bit as a target
-# and only build that item no the whole project.
+# and only build that item not the whole project.
 TAG_TARGET = $(shell git describe --tags | cut -d/ -f1)
 ifneq ($(TAG),$(TAG_TARGET))
+TAG = $(shell git describe --tags | cut -d/ -f2)
 TARGETS = $(TAG_TARGET)
+endif
+
+# If there is a layout associated with at tag, only build that layout
+ifneq (LAYOUT_$(TAG),0)
+LAYOUTS = $(LAYOUT_$(TAG))
+FORMATS = pdf
 endif
 
 export TEXMFHOME := $(TOOLS)/texmf
