@@ -29,6 +29,7 @@ endif
 ifneq ($(BRANCH),master)
 PARENT ?= $(shell $(TOOLS)/bin/findfirstnonunique.zsh)
 OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)/$(BRANCH)
+PRE_SYNC = false
 endif
 
 # If we are directly on a tagged commit, build it to a special directory
