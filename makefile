@@ -43,15 +43,16 @@ endif
 
 # If our tag or branch has a slash in it, treat the first bit as a target
 # and only build that item not the whole project.
-TAG_TARGET = $(shell git describe --tags | cut -d/ -f1)
-ifneq ($(TAG),$(TAG_TARGET))
-TAG = $(shell git describe --tags | cut -d/ -f2)
-TARGETS = $(TAG_TARGET)
+TAG_BASE = $(shell git describe --tags | cut -d/ -f1)
+TAG_NAME = $(TAG)
+ifneq ($(TAG),$(TAG_BASE))
+TAG_NAME = $(shell git describe --tags | cut -d/ -f2)
+TARGETS = $(TAG_BASE)
 endif
 
 # If there is a layout associated with at tag, only build that layout
-ifneq (LAYOUT_$(TAG),0)
-LAYOUTS = $(LAYOUT_$(TAG))
+ifneq (LAYOUT_$(TAG_NAME),0)
+LAYOUTS = $(LAYOUT_$(TAG_NAME))
 FORMATS = pdf
 endif
 
