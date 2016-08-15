@@ -111,7 +111,7 @@ sync_post:
 	elif [ ! "" = "$(findstring a5trim,$@)" ]; then\
 		export PAPER_OPTS="paperheight=210mm,paperwidth=148.5mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.75mm" ;\
 	elif [ ! "" = "$(findstring cep,$@)" ]; then\
-		export PAPER_OPTS="paperheight=210mm,paperwidth=148.5mm,layoutheight=170mm,layoutwidth=115mm,layouthoffset=16.5mm,layoutvoffset=20mm" ;\
+		export PAPER_OPTS="paperheight=210mm,paperwidth=148.5mm,layoutheight=170mm,layoutwidth=110mm,layouthoffset=19.35mm,layoutvoffset=20.08mm" ;\
 	else \
 		exit 0 ;\
 	fi
@@ -187,7 +187,7 @@ endef
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),halfletter,true)
 
 %-cep.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-cep.lua
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),115mm x 170mm,true)
+	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),110mm x 170mm,true)
 
 %-app.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-app.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),82mm x 146mm,false)
