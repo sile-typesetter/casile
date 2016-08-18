@@ -127,6 +127,21 @@ SILE.registerCommand("titlepage", function(options, content)
   SILE.call("break")
 end)
 
+SILE.registerCommand("halftitlepage", function(options, content)
+  SILE.call("nofolios")
+  SILE.call("center", {}, function()
+    SILE.call("hbox")
+    SILE.call("skip", { height="20%ph" })
+    SILE.call("book:partnumfont", { size="4.5%pw" }, function()
+      SILE.call("wraptitle", {}, function()
+        SILE.call("meta:title", {}, function()
+        end)
+      end)
+    end)
+    SILE.call("bigskip")
+  end)
+end)
+
 SILE.doTexlike([[
 \language[main=tr]
 \script[src=packages/rules]
@@ -146,7 +161,6 @@ SILE.doTexlike([[
 \define[command=tableofcontents:level2item]{\skip[height=4.5pt]\noindent\glue[width=2ex]\font[size=11pt]{\process}\break\skip[height=0]}%
 \define[command=wraptitle]{\process}
 \define[command=wrapsubtitle]{\process}
-\define[command=halftitlepage]{\nofolios\center{\hbox\skip[height=20%ph]\book:partnumfont[size=4.5%pw]{\wraptitle{\meta:title}}\bigskip}}
 \book:seriffont[size=11.5pt]
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fit-font]
