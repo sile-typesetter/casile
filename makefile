@@ -51,7 +51,7 @@ TARGETS = $(TAG_BASE)
 endif
 
 # If there is a layout associated with at tag, only build that layout
-ifneq (LAYOUT_$(TAG_NAME),0)
+ifdef LAYOUT_$(TAG_NAME)
 LAYOUTS = $(LAYOUT_$(TAG_NAME))
 FORMATS = pdf
 endif
