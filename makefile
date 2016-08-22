@@ -23,6 +23,16 @@ ifeq ($(BRANCH),HEAD)
 BRANCH = $(CI_BUILD_REF_NAME)
 endif
 
+# If we are directly on a tagged commit, build it to a special directory
+TAG = $(shell git describe --tags)
+TAG_SEQ = $(shell git describe --long --tags | rev | cut -d- -f2)
+ifeq ($(TAG_SEQ),0)
+BRANCH = master
+OUTPUT := $(OUTPUT)/$(TAG)
+PRE_SYNC = false
+DIFF = false
+else
+
 # If we are not on the master branch, guess the parent and output to a directory
 ifneq ($(BRANCH),master)
 PARENT ?= $(shell $(TOOLS)/bin/findfirstnonunique.zsh)
@@ -36,14 +46,6 @@ ifneq ($($(_BRANCH)),)
 PARENT = $($(_BRANCH))
 endif
 
-# If we are directly on a tagged commit, build it to a special directory
-TAG = $(shell git describe --tags)
-TAG_SEQ = $(shell git describe --long --tags | rev | cut -d- -f2)
-ifeq ($(TAG_SEQ),0)
-BRANCH = master
-OUTPUT := $(OUTPUT)/$(TAG)
-PRE_SYNC = false
-DIFF = false
 endif
 
 # If our tag or branch has a slash in it, treat the first bit as a target
