@@ -20,7 +20,11 @@ PRE_SYNC ?= true
 # CI runners need help getting the branch name because of funky checkouts
 BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 ifeq ($(BRANCH),HEAD)
+ifeq ($(shell git rev-parse master),$(shell git rev-parse HEAD))
+BRANCH = master
+else
 BRANCH = $(CI_BUILD_REF_NAME)
+endif
 endif
 
 # If we are directly on a tagged commit, build it to a special directory
