@@ -17,26 +17,31 @@ CROP ?= false
 STATS_MONTHS ?= 2
 PRE_SYNC ?= true
 
-# Local and CI builds calculate the branach differently
+# CI runners need help getting the branch name because of funky checkouts
 BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 ifeq ($(BRANCH),HEAD)
 BRANCH = $(CI_BUILD_REF_NAME)
 endif
+
+# If we are not on the master branch, guess the parent and output to a directory
+ifneq ($(BRANCH),master)
+PARENT ?= $(shell $(TOOLS)/bin/findfirstnonunique.zsh)
+OUTPUT := $(OUTPUT)/$(BRANCH)
+PRE_SYNC = false
+endif
+
+# If the environment has information about a parent, override the calculated one
 _BRANCH = PARENT_$(subst +,_,$(subst -,_,$(BRANCH)))
 ifneq ($($(_BRANCH)),)
 PARENT = $($(_BRANCH))
 endif
-ifneq ($(BRANCH),master)
-PARENT ?= $(shell $(TOOLS)/bin/findfirstnonunique.zsh)
-OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)/$(BRANCH)
-PRE_SYNC = false
-endif
 
 # If we are directly on a tagged commit, build it to a special directory
 TAG = $(shell git describe --tags)
-ifeq ($(shell git describe --long --tags | rev | cut -d- -f2),0)
+TAG_SEQ = $(shell git describe --long --tags | rev | cut -d- -f2)
+ifeq ($(TAG_SEQ),0)
 BRANCH = master
-OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)/$(TAG)
+OUTPUT := $(OUTPUT)/$(TAG)
 PRE_SYNC = false
 DIFF = false
 endif
@@ -50,7 +55,7 @@ TAG_NAME = $(shell git describe --tags | cut -d/ -f2)
 TARGETS = $(TAG_BASE)
 endif
 
-# If there is a layout associated with at tag, only build that layout
+# If there is a layout associated with a tag, only build that layout
 ifdef LAYOUT_$(TAG_NAME)
 LAYOUTS = $(LAYOUT_$(TAG_NAME))
 FORMATS = pdf
