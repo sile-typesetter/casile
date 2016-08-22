@@ -190,6 +190,21 @@ define build_sile
 		<($(call preprocess_markdown,$1)) -o $2-$3.sil
 endef
 
+define build_covers
+	# Check for a cover PDF in the output directory
+	test -f $(OUTPUT)/$1-kapak.pdf || false
+
+	convert -density 288 -quality 85 -antialias \
+		$(OUTPUT)/$1-kapak.pdf[0] \
+		-shave 132x132 \
+		+repage \
+		$2-front.png
+
+	echo $2
+	false
+
+endef
+
 %-a4.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-a4.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
 
@@ -205,8 +220,9 @@ endef
 %-cep.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-cep.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),110mm x 170mm,true)
 
-%-app.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-app.lua
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),82mm x 146mm,false)
+%-app.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-app.lua %-front.png %-back.png
+	# (call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),82mm x 146mm,false)
+	$(call build_covers,$*,$(patsubst $*-%.sil,%,$@))
 
 %.epub %.odt %.docx: %.md %.yml
 	pandoc \
