@@ -3,7 +3,7 @@ SILE.require("packages/ifattop")
 SILE.require("packages/leaders")
 SILE.require("packages/raiselower")
 SILE.require("packages/rebox");
-SILE.require("publicationpage");
+SILE.require("imprint");
 SILE.require("hyphenation_exceptions");
 
 SILE.registerCommand("book:monofont", function(options, content)

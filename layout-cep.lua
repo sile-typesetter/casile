@@ -11,6 +11,6 @@ book:loadPackage("twoside", { oddPageMaster="right", evenPageMaster="left" });
 book:mirrorMaster("right", "left")
 SILE.call("switch-master-one-page", { id="right" })
 
-SILE.registerCommand("publicationpage:font", function(options, content)
+SILE.registerCommand("imprint:font", function(options, content)
   SILE.call("font", { family="Libertinus Serif", size="7pt", language="und" }, content)
 end)

@@ -95,7 +95,7 @@ $for(script)$
 $endfor$
 \halftitlepage
 \titlepage
-\publicationpage
+\imprint
 \tableofcontents
 \eject
 $body$
