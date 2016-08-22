@@ -14,7 +14,7 @@ PRINTS ?=
 DRAFT ?= false
 DIFF ?= true
 CROP ?= false
-STATS_MONTHS ?= 2
+STATS_MONTHS ?= 1
 PRE_SYNC ?= true
 
 # CI runners need help getting the branch name because of funky checkouts
