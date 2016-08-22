@@ -110,11 +110,17 @@ sync_post:
 %.pdf: %.sil $(TOOLS)/viachristus.lua
 	@$(shell test -f "$<" || echo exit 0)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
-	# Once for TOC, again for real page numbers, again again for final
+	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
+	# account for TOC issue: https://github.com/simoncozens/sile/issues/230
 	if $(DRAFT); then \
 		sile -d viachristus $< -o $@ ;\
 	else \
-		sile $< -o $@ && sile $< -o $@ && sile $< -o $@ ;\
+		export pg0="$$(test -f $@ && ( pdfinfo $@ | grep Pages: | awk '{print $$2}' ) || echo 0)" ;\
+		sile $< -o $@ ;\
+		export pg1="$$(test -f $@ && ( pdfinfo $@ | grep Pages: | awk '{print $$2}' ) || echo 0)" ;\
+		[[ $${pg0} -ne $${pg1} ]] && sile $< -o $@ ||: ;\
+		export pg2="$$(test -f $@ && ( pdfinfo $@ | grep Pages: | awk '{print $$2}' ) || echo 0)" ;\
+		[[ $${pg1} -ne $${pg2} ]] && sile $< -o $@ ||: ;\
 	fi
 
 %-kesme.pdf: %.pdf
