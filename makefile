@@ -115,11 +115,11 @@ sync_post:
 	if $(DRAFT); then \
 		sile -d viachristus $< -o $@ ;\
 	else \
-		export pg0="$$(test -f $@ && ( pdfinfo $@ | grep Pages: | awk '{print $$2}' ) || echo 0)" ;\
+		export pg0="$$(test -f $<.toc && ( pdfinfo $@ | grep Pages: | awk '{print $$2}' ) || echo 0)" ;\
 		sile $< -o $@ ;\
-		export pg1="$$(test -f $@ && ( pdfinfo $@ | grep Pages: | awk '{print $$2}' ) || echo 0)" ;\
+		export pg1="$$(pdfinfo $@ | grep Pages: | awk '{print $$2}')" ;\
 		[[ $${pg0} -ne $${pg1} ]] && sile $< -o $@ ||: ;\
-		export pg2="$$(test -f $@ && ( pdfinfo $@ | grep Pages: | awk '{print $$2}' ) || echo 0)" ;\
+		export pg2="$$(pdfinfo $@ | grep Pages: | awk '{print $$2}')" ;\
 		[[ $${pg1} -ne $${pg2} ]] && sile $< -o $@ ||: ;\
 	fi
 
