@@ -168,8 +168,8 @@ SILE.doTexlike([[
 \define[command=book:part:post]{ KISIM\par}%
 \define[command=book:subparagraph:post]{ }%
 \define[command=tableofcontents:header]{\center{\hbox\skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\bigskip\fullrule\bigskip}%
-\define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont[size=10pt,weight=600]{\process}\break}%
-\define[command=tableofcontents:level2item]{\skip[height=4.5pt]\noindent\glue[width=2ex]\font[size=11pt]{\process}\break\skip[height=0]}%
+\define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont[size=10pt,weight=600]{\raggedright{\process}}}%
+\define[command=tableofcontents:level2item]{\skip[height=4.5pt]\set[parameter=document.lskip,value=5ex]\glue[width=-3ex]\noindent\font[size=11pt]{\process}\break\skip[height=0]}%
 \define[command=wraptitle]{\process}
 \define[command=wrapsubtitle]{\process}
 \book:seriffont[size=11.5pt]
@@ -537,7 +537,7 @@ SILE.registerCommand("tableofcontents:item", function (o,c)
   SILE.settings.temporarily(function ()
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
     SILE.call("tableofcontents:level"..o.level.."item", {}, function()
-      SILE.process(c)
+      SILE.process(addDiscressionaryBreaks({},c))
       if o.level == 2 then
         SILE.call("dotfill")
         SILE.typesetter:typeset(o.pageno)
