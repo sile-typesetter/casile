@@ -150,10 +150,7 @@ SILE.registerCommand("halftitlepage", function(options, content)
         end)
       end)
     end)
-    SILE.call("vfill")
   end)
-  SILE.call("par")
-  SILE.call("break")
 end)
 
 SILE.doTexlike([[

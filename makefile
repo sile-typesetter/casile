@@ -122,6 +122,12 @@ sync_post:
 		export pg2="$$(pdfinfo $@ | grep Pages: | awk '{print $$2}')" ;\
 		[[ $${pg1} -ne $${pg2} ]] && sile $< -o $@ ||: ;\
 	fi
+	# If we have a specil cover page for this format, swap it out for the half title page
+	if [[ -f $*-kapak.pdf ]]; then
+		pdftk $@ dump_data_utf8 output $*.info
+		pdftk C=$*-kapak.pdf B=$@ cat C1 B2-end output $*.tmp.pdf
+		pdftk $*.tmp.pdf update_info_utf8 $*.info output $@
+	fi
 
 %-kesme.pdf: %.pdf
 	@if [ ! "" = "$(findstring octavo,$@)$(findstring halfletter,$@)" ]; then\
@@ -205,8 +211,21 @@ endef
 %-cep.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-cep.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),110mm x 170mm,true)
 
-%-app.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-app.lua
+%-app.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-app.lua %-app-kapak.pdf
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),82mm x 146mm,false)
+
+%-app-kapak.pdf: %-epub-kapak.png
+	convert $< \
+		-resize x1460 \
+		-gravity Center \
+		-crop 820x1460+15+0! \
+		-gravity SouthWest \
+		-extent 820x1460 \
+		-page 232.306x413.618 \
+		-compress jpeg \
+		-quality 80 \
+		+repage \
+		$@
 
 %.epub %.odt %.docx: %.md %.yml
 	pandoc \
