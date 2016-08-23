@@ -212,16 +212,16 @@ endef
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),110mm x 170mm,true)
 
 %-app.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-app.lua %-app-kapak.pdf
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),82mm x 146mm,false)
+	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),80mm x 128mm,false)
 
 %-app-kapak.pdf: %-epub-kapak.png
 	convert $< \
-		-resize x1460 \
+		-resize x1280 \
 		-gravity Center \
-		-crop 820x1460+15+0! \
+		-crop 800x1280+0+0! \
 		-gravity SouthWest \
-		-extent 820x1460 \
-		-page 232.306x413.618 \
+		-extent 800x1280 \
+		-page 226.64x362.624 \
 		-compress jpeg \
 		-quality 80 \
 		+repage \
