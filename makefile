@@ -270,4 +270,4 @@ stats: $(foreach SOURCE,$(SOURCES),$(SOURCE)-stats)
 
 watch:
 	( git ls-files ; cd $(TOOLS) ; git ls-files | xargs -iX echo avadanlik/X ) | \
-		entr -c -p make DRAFT=true
+		entr -c -p make -B DRAFT=true
