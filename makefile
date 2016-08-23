@@ -122,6 +122,12 @@ sync_post:
 		export pg2="$$(pdfinfo $@ | grep Pages: | awk '{print $$2}')" ;\
 		[[ $${pg1} -ne $${pg2} ]] && sile $< -o $@ ||: ;\
 	fi
+	# If we have a specil cover page for this format, swap it out for the half title page
+	if [[ -f $*-kapak.pdf ]]; then
+		pdftk $@ dump_data_utf8 output $*.info
+		pdftk C=$*-kapak.pdf B=$@ cat C1 B2-end output $*.tmp.pdf
+		pdftk $*.tmp.pdf update_info_utf8 $*.info output $@
+	fi
 
 %-kesme.pdf: %.pdf
 	@if [ ! "" = "$(findstring octavo,$@)$(findstring halfletter,$@)" ]; then\
@@ -190,21 +196,6 @@ define build_sile
 		<($(call preprocess_markdown,$1)) -o $2-$3.sil
 endef
 
-define build_covers
-	# Check for a cover PDF in the output directory
-	test -f $(OUTPUT)/$1-kapak.pdf || false
-
-	convert -density 288 -quality 85 -antialias \
-		$(OUTPUT)/$1-kapak.pdf[0] \
-		-shave 132x132 \
-		+repage \
-		$2-front.png
-
-	echo $2
-	false
-
-endef
-
 %-a4.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-a4.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
 
@@ -220,9 +211,21 @@ endef
 %-cep.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-cep.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),110mm x 170mm,true)
 
-%-app.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-app.lua %-front.png %-back.png
-	# (call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),82mm x 146mm,false)
-	$(call build_covers,$*,$(patsubst $*-%.sil,%,$@))
+%-app.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-app.lua %-app-kapak.pdf
+	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),82mm x 146mm,false)
+
+%-app-kapak.pdf: %-epub-kapak.png
+	convert $< \
+		-resize x1460 \
+		-gravity Center \
+		-crop 820x1460+15+0! \
+		-gravity SouthWest \
+		-extent 820x1460 \
+		-page 232.306x413.618 \
+		-compress jpeg \
+		-quality 80 \
+		+repage \
+		$@
 
 %.epub %.odt %.docx: %.md %.yml
 	pandoc \
