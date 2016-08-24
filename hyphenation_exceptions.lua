@@ -311,6 +311,7 @@ ya-sa’-yla
 ya-zı-lar’-da
 ya-zı-lar’-daki
 ya-zı-lar’-dan
+ya-zı-lar’-ı
 ya-zı-lar’-ın
 ya-zı-lar’-la
 ya-zı’-yı
