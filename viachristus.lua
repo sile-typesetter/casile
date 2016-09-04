@@ -110,6 +110,7 @@ SILE.call("set", { parameter="typesetter.underfulltolerance", value="6ex" })
 SILE.call("set", { parameter="typesetter.overfulltolerance", value="0.2ex" })
 
 SILE.registerCommand("titlepage", function(options, content)
+  if not SILE.Commands["meta:title"] then return end
   SILE.call("nofolios")
   SILE.call("open-double-page")
   SILE.call("center", {}, function()
@@ -128,10 +129,12 @@ SILE.registerCommand("titlepage", function(options, content)
         end)
       end)
     end)
-    SILE.call("skip", { height="8%ph" })
-    SILE.call("book:titlepage-author-font", { size="4%pw", weight=300 }, function()
-      SILE.call("meta:author")
-    end)
+    if SILE.Commands["meta:author"] then
+      SILE.call("skip", { height="8%ph" })
+      SILE.call("book:titlepage-author-font", { size="4%pw", weight=300 }, function()
+        SILE.call("meta:author")
+      end)
+    end
     SILE.call("vfill")
     SILE.call("img", { src="avadanlik/vc_logo_renksiz.pdf", width="25%pw" })
   end)
@@ -140,6 +143,7 @@ SILE.registerCommand("titlepage", function(options, content)
 end)
 
 SILE.registerCommand("halftitlepage", function(options, content)
+  if not SILE.Commands["meta:title"] then return end
   SILE.call("nofolios")
   SILE.call("center", {}, function()
     SILE.call("hbox")
