@@ -35,20 +35,26 @@ SILE.registerCommand("imprint", function(options, content)
           SILE.call("par")
         end)
 
-        SILE.call("font", { weight=600, style="Bold" }, SILE.Commands["meta:title"])
-        SILE.call("break")
-        SILE.call("meta:creators")
-        SILE.call("meta:info")
-        SILE.call("par")
-        SILE.call("meta:rights")
-        SILE.call("par")
+        if SILE.Commands["meta:title"] then
+          SILE.call("font", { weight=600, style="Bold" }, SILE.Commands["meta:title"])
+          SILE.call("break")
+        end
+        if SILE.Commands["meta:creators"] then SILE.call("meta:creators") end
+        if SILE.Commands["meta:info"] then
+          SILE.call("meta:info")
+          SILE.call("par")
+        end
+        if SILE.Commands["meta:rights"] then
+          SILE.call("meta:rights")
+          SILE.call("par")
+        end
 
         SILE.call("skip", { height="5.4em" })
         SILE.settings.temporarily(function()
           SILE.call("img", { src=qrimg, height="5.8em" })
           SILE.call("skip", { height="-6.3em" })
           SILE.settings.set("document.lskip", SILE.nodefactory.newGlue({width = imgUnit * 6.5}))
-          SILE.call("meta:identifiers")
+          if SILE.Commands["meta:identifiers"] then SILE.call("meta:identifiers") end
           SILE.call("font", { weight=600, style="Bold" }, { "Sürüm: " })
           SILE.call("font", { family="Hack", size="0.8em" }, SILE.Commands["meta:surum"])
           SILE.call("break")
@@ -57,11 +63,17 @@ SILE.registerCommand("imprint", function(options, content)
           SILE.call("par")
         end)
 
-        SILE.call("meta:contributors")
-        SILE.call("par")
-        SILE.call("meta:extracredits")
-        SILE.call("par")
-        SILE.call("meta:versecredits")
+        if SILE.Commands["meta:contributors"] then
+          SILE.call("meta:contributors")
+          SILE.call("par")
+        end
+        if SILE.Commands["meta:extracredits"] then
+          SILE.call("meta:extracredits")
+          SILE.call("par")
+        end
+        if SILE.Commands["meta:versecredits"] then
+          SILE.call("meta:versecredits")
+        end
         if SILE.Commands["meta:distribution"] then
           SILE.call("par")
           SILE.call("meta:distribution")
