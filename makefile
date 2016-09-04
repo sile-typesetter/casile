@@ -105,9 +105,9 @@ sync_post:
 		$(foreach FORMAT,$(FORMATS),*.$(FORMAT)) $(OUTPUT)/
 	$(call sync_owncloud)
 
-%.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) ;
+%.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) $(MAKEFILE_LIST) ;
 
-%.pdf: %.sil $(TOOLS)/viachristus.lua
+%.pdf: %.sil $(TOOLS)/viachristus.lua $(MAKEFILE_LIST)
 	@$(shell test -f "$<" || echo exit 0)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
@@ -129,7 +129,7 @@ sync_post:
 		pdftk $*.tmp.pdf update_info_utf8 $*.info output $@
 	fi
 
-%-kesme.pdf: %.pdf
+%-kesme.pdf: %.pdf $(MAKEFILE_LIST)
 	@if [ ! "" = "$(findstring octavo,$@)$(findstring halfletter,$@)" ]; then\
 		export PAPER_OPTS="paperwidth=210mm,paperheight=297mm" ;\
 	elif [ ! "" = "$(findstring a5trim,$@)" ]; then\
@@ -142,7 +142,7 @@ sync_post:
 	-xelatex -jobname=$(basename $@) -interaction=batchmode \
 		"\documentclass{scrbook}\usepackage[$$PAPER_OPTS,showcrop]{geometry}\usepackage{pdfpages}\begin{document}\includepdf[pages=-,noautoscale,fitpaper=false]{$<}\end{document}"
 
-%-ciftyonlu.pdf: %.pdf
+%-ciftyonlu.pdf: %.pdf $(MAKEFILE_LIST)
 	-pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $<
 
 define versioninfo
@@ -196,25 +196,25 @@ define build_sile
 		<($(call preprocess_markdown,$1)) -o $2-$3.sil
 endef
 
-%-a4.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua
+%-a4.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
 
-%-a5trim.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a5trim.lua
+%-a5trim.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a5trim.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),133mm x 195mm,true)
 
-%-octavo.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-octavo.lua
+%-octavo.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-octavo.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),432pt x 648pt,true)
 
-%-halfletter.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-halfletter.lua
+%-halfletter.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-halfletter.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),halfletter,true)
 
-%-cep.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-cep.lua
+%-cep.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-cep.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),110mm x 170mm,true)
 
-%-app.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-app.lua %-app-kapak.pdf
+%-app.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-app.lua %-app-kapak.pdf $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),80mm x 128mm,false)
 
-%-app-kapak.pdf: %-epub-kapak.png
+%-app-kapak.pdf: %-epub-kapak.png $(MAKEFILE_LIST)
 	convert $< \
 		-resize x1280 \
 		-gravity Center \
@@ -227,7 +227,7 @@ endef
 		+repage \
 		$@
 
-%.epub %.odt %.docx: %.md $$(wildcard $$*.yml)
+%.epub %.odt %.docx: %.md $$(wildcard $$*.yml) $(MAKEFILE_LIST)
 	pandoc \
 		--smart \
 		$(TOOLS)/viachristus.yml \
@@ -236,10 +236,10 @@ endef
 		$*.yml \
 		<($(call preprocess_markdown,$<)) -o $@
 
-%.mobi: %.epub
+%.mobi: %.epub $(MAKEFILE_LIST)
 	-kindlegen $<
 
-%-barkod.svg: %.yml
+%-barkod.svg: %.yml $(MAKEFILE_LIST)
 	zint --directsvg --scale=5 --barcode=69 --height=30 \
 		--data=$(shell $(TOOLS)/bin/isbn_format.py $< print) |\
 		convert - \
@@ -249,10 +249,10 @@ endef
 			-bordercolor White -border 0x10 \
 			$@
 
-%-url.png: %-url.svg | %.yml
+%-url.png: %-url.svg $(MAKEFILE_LIST)
 	convert $< $@
 
-%-url.svg: | %.yml
+%-url.svg: $(MAKEFILE_LIST)
 	zint --directsvg --scale=10 --barcode=58 \
 		--data=$(shell $(call urlinfo,$*)) |\
 		convert - \
@@ -260,15 +260,12 @@ endef
 			-bordercolor Black -border 4x4 \
 			$@
 
-%-barkod.png: %-barkod.svg %.yml
+%-barkod.png: %-barkod.svg %.yml $(MAKEFILE_LIST)
 	convert $< $@
-
-%.yml:
-	touch $@
 
 stats: $(foreach SOURCE,$(SOURCES),$(SOURCE)-stats)
 
-%-stats:
+%-stats: $(MAKEFILE_LIST)
 	@$(TOOLS)/stats.zsh $(@:-stats=) $(STATS_MONTHS)
 
 watch:
