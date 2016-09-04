@@ -196,22 +196,22 @@ define build_sile
 		<($(call preprocess_markdown,$1)) -o $2-$3.sil
 endef
 
-%-a4.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-a4.lua
+%-a4.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
 
-%-a5trim.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-a5trim.lua
+%-a5trim.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a5trim.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),133mm x 195mm,true)
 
-%-octavo.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-octavo.lua
+%-octavo.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-octavo.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),432pt x 648pt,true)
 
-%-halfletter.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-halfletter.lua
+%-halfletter.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-halfletter.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),halfletter,true)
 
-%-cep.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-cep.lua
+%-cep.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-cep.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),110mm x 170mm,true)
 
-%-app.sil: %.md %.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $(TOOLS)/layout-app.lua %-app-kapak.pdf
+%-app.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-app.lua %-app-kapak.pdf
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),80mm x 128mm,false)
 
 %-app-kapak.pdf: %-epub-kapak.png
@@ -227,7 +227,7 @@ endef
 		+repage \
 		$@
 
-%.epub %.odt %.docx: %.md %.yml
+%.epub %.odt %.docx: %.md $$(wildcard $$*.yml)
 	pandoc \
 		--smart \
 		$(TOOLS)/viachristus.yml \
@@ -249,10 +249,10 @@ endef
 			-bordercolor White -border 0x10 \
 			$@
 
-%-url.png: %-url.svg %.yml
+%-url.png: %-url.svg | %.yml
 	convert $< $@
 
-%-url.svg: %.yml
+%-url.svg: | %.yml
 	zint --directsvg --scale=10 --barcode=58 \
 		--data=$(shell $(call urlinfo,$*)) |\
 		convert - \
@@ -262,6 +262,9 @@ endef
 
 %-barkod.png: %-barkod.svg %.yml
 	convert $< $@
+
+%.yml:
+	touch $@
 
 stats: $(foreach SOURCE,$(SOURCES),$(SOURCE)-stats)
 
