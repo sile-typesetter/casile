@@ -157,6 +157,22 @@ SILE.registerCommand("halftitlepage", function(options, content)
   end)
 end)
 
+SILE.registerCommand("tableofcontents", function(options, content)
+  local f,err = io.open(SILE.masterFilename .. '.toc')
+  if not f then return end
+  local doc = f:read("*all")
+  local toc = assert(loadstring(doc))()
+  SU.debug("viachristus", #toc)
+  if #toc < 2 then return end -- Skip the TOC if there is only one top level entry
+  SILE.call("tableofcontents:header")
+  for i = 1,#toc do
+    local item = toc[i]
+    SILE.call("tableofcontents:item", {level = item.level, pageno= item.pageno}, item.label)
+  end
+  SILE.call("tableofcontents:footer")
+end)
+
+
 SILE.doTexlike([[
 \language[main=tr]
 \script[src=packages/rules]
@@ -172,6 +188,7 @@ SILE.doTexlike([[
 \define[command=book:part:post]{ KISIM\par}%
 \define[command=book:subparagraph:post]{ }%
 \define[command=tableofcontents:header]{\center{\hbox\skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\bigskip\fullrule\bigskip}%
+\define[command=tableofcontents:footer]{\vfill\break}%
 \define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont[size=10pt,weight=600]{\raggedright{\process}}}%
 \define[command=tableofcontents:level2item]{\skip[height=4.5pt]\set[parameter=document.lskip,value=5ex]\set[parameter=document.rskip,value=3em]\set[parameter=typesetter.parfillskip,value=-2em]\noindent\glue[width=-2ex]\font[size=11pt]{\process}\break\skip[height=0]}%
 \define[command=wraptitle]{\process}

@@ -125,7 +125,6 @@ $endfor$
 \titlepage
 \imprint
 \tableofcontents
-\eject
 $body$
 \novbreak\medskip\novbreak\center{\novbreak\book:chapter:post{}}
 $if(seriestitle)$
