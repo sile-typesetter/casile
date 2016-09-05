@@ -371,7 +371,6 @@ SILE.registerCommand("chapter", function (options, content)
       SILE.call("book:chapterfont", {}, content)
       SILE.call("bigskip")
       SILE.call("fullrule")
-      SILE.call("skip", { height = "-1ex" }) -- part of bug 262 hack
     end)
   end)
   SILE.call("left-running-head")
@@ -622,20 +621,8 @@ SILE.doTexlike([[
 \define[command=langen]{\font[language=en,style=Italic]{\process}}
 ]])
 
--- For when pushBack breaks my whitespace
--- Remove this dreadful hack when https://github.com/simoncozens/sile/issues/262
-SILE.registerCommand("hackBack", function (options, content)
-  SILE.call("par")
-  SILE.call("hbox")
-  SILE.call("skip", { height = "4.1em" })
-  SILE.call("kern")
-  SILE.call("par")
-  SILE.call("skip", { height = "-4em" })
-end)
-
 SILE.registerCommand("quote", function (options, content)
   options.setback = options.setback or SILE.settings.get("document.parindent")
-  SILE.call("hackBack")
   SILE.settings.pushState()
   SILE.settings.temporarily(function ()
     SILE.call("noindent")
