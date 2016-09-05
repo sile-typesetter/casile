@@ -6,158 +6,158 @@ SILE.require("packages/rebox");
 SILE.require("imprint");
 SILE.require("hyphenation_exceptions");
 
-SILE.registerCommand("book:monofont", function(options, content)
+SILE.registerCommand("book:monofont", function (options, content)
   options.family = options.family or "Hack"
   SILE.call("font", options, content)
 end)
 
-SILE.registerCommand("book:sansfont", function(options, content)
+SILE.registerCommand("book:sansfont", function (options, content)
   options.family = options.family or "Libertinus Sans"
   SILE.call("font", options, content)
 end)
 
-SILE.registerCommand("book:seriffont", function(options, content)
+SILE.registerCommand("book:seriffont", function (options, content)
   options.family = options.family or "Libertinus Serif"
   SILE.call("font", options, content)
 end)
 
-SILE.registerCommand("book:displayfont", function(options, content)
+SILE.registerCommand("book:displayfont", function (options, content)
   options.family = "Libertinus Serif Display"
   SILE.call("font", options, content)
 end)
 
-SILE.registerCommand("book:partfont", function(options, content)
+SILE.registerCommand("book:partfont", function (options, content)
   options.weight = options.weight or 600
   SILE.call("book:sansfont", options, content)
 end)
 
-SILE.registerCommand("book:partnumfont", function(options, content)
+SILE.registerCommand("book:partnumfont", function (options, content)
   SILE.call("book:partfont", options, content)
 end)
 
-SILE.registerCommand("book:altseriffont", function(options, content)
+SILE.registerCommand("book:altseriffont", function (options, content)
   options.family = options.family or "Libertinus Serif"
   SILE.call("font", options, content)
 end)
 
-SILE.registerCommand("book:subparagraphfont", function(options, content)
+SILE.registerCommand("book:subparagraphfont", function (options, content)
   options.size = options.size or "11pt"
   options.features = options.features or "+smcp"
   SILE.call("book:altseriffont", options, content)
 end)
 
-SILE.registerCommand("book:footnotefont", function(options, content)
+SILE.registerCommand("book:footnotefont", function (options, content)
   options.size = options.size or "8.5pt"
   SILE.call("book:altseriffont", options, content)
 end)
 
-SILE.registerCommand("book:chapterfont", function(options, content)
+SILE.registerCommand("book:chapterfont", function (options, content)
   options.weight = options.weight or 600
   options.size = options.size or "16pt"
   SILE.call("book:seriffont", options, content)
 end)
 
-SILE.registerCommand("book:chapternumfont", function(options, content)
+SILE.registerCommand("book:chapternumfont", function (options, content)
   options.family = options.family or "Libertinus Serif Display"
   options.size = options.size or "11pt"
   SILE.call("font", options, content)
 end)
 
-SILE.registerCommand("book:sectionfont", function(options, content)
+SILE.registerCommand("book:sectionfont", function (options, content)
   options.size = options.size or "8.5pt"
   SILE.call("book:chapterfont", options, content)
 end)
 
-SILE.registerCommand("verbatim:font", function(options, content)
+SILE.registerCommand("verbatim:font", function (options, content)
   options.size = options.size or "10pt"
   SILE.call("book:monofont", options, content)
 end)
 
-SILE.registerCommand("book:page-number-font", function(options, content)
+SILE.registerCommand("book:page-number-font", function (options, content)
   options.style = options.style or "Roman"
   options.size = options.size or "13pt"
   SILE.call("book:altseriffont", options, content)
 end)
 
-SILE.registerCommand("book:left-running-head-font", function(options, content)
+SILE.registerCommand("book:left-running-head-font", function (options, content)
   options.size = options.size or "12pt"
   SILE.call("book:altseriffont", options, content)
 end)
 
-SILE.registerCommand("book:right-running-head-font", function(options, content)
+SILE.registerCommand("book:right-running-head-font", function (options, content)
   options.style = options.style or "Italic"
   options.size = options.size or "12pt"
   SILE.call("book:altseriffont", options, content)
 end)
 
-SILE.registerCommand("book:titlepage-title-font", function(options, content)
+SILE.registerCommand("book:titlepage-title-font", function (options, content)
   SILE.call("book:partnumfont", options, content)
 end)
 
-SILE.registerCommand("book:titlepage-subtitle-font", function(options, content)
+SILE.registerCommand("book:titlepage-subtitle-font", function (options, content)
   SILE.call("book:partfont", options, content)
 end)
 
-SILE.registerCommand("book:titlepage-author-font", function(options, content)
+SILE.registerCommand("book:titlepage-author-font", function (options, content)
   SILE.call("book:partfont", options, content)
 end)
 
-SILE.registerCommand("tableofcontents:headerfont", function(options, content)
+SILE.registerCommand("tableofcontents:headerfont", function (options, content)
   SILE.call("book:partfont", options, content)
 end)
 
-SILE.call("set", { parameter="typesetter.underfulltolerance", value="6ex" })
-SILE.call("set", { parameter="typesetter.overfulltolerance", value="0.2ex" })
+SILE.call("set", { parameter = "typesetter.underfulltolerance", value = "6ex" })
+SILE.call("set", { parameter = "typesetter.overfulltolerance", value = "0.2ex" })
 
-SILE.registerCommand("titlepage", function(options, content)
+SILE.registerCommand("titlepage", function (options, content)
   if not SILE.Commands["meta:title"] then return end
   SILE.call("nofolios")
   SILE.call("open-double-page")
-  SILE.call("center", {}, function()
+  SILE.call("center", {}, function ()
     SILE.call("hbox")
-    SILE.call("skip", { height="10%ph" })
-    SILE.call("book:titlepage-title-font", { size="7%pw" }, function()
-      SILE.call("wraptitle", {}, function()
-        SILE.call("meta:title", {}, function()
+    SILE.call("skip", { height = "10%ph" })
+    SILE.call("book:titlepage-title-font", { size = "7%pw" }, function ()
+      SILE.call("wraptitle", {}, function ()
+        SILE.call("meta:title", {}, function ()
         end)
       end)
     end)
     SILE.call("bigskip")
-    SILE.call("book:titlepage-subtitle-font", { size="6%pw" }, function()
-      SILE.call("wrapsubtitle", {}, function()
-        SILE.call("meta:subtitle", {}, function()
+    SILE.call("book:titlepage-subtitle-font", { size = "6%pw" }, function ()
+      SILE.call("wrapsubtitle", {}, function ()
+        SILE.call("meta:subtitle", {}, function ()
         end)
       end)
     end)
     if SILE.Commands["meta:author"] then
-      SILE.call("skip", { height="8%ph" })
-      SILE.call("book:titlepage-author-font", { size="4%pw", weight=300 }, function()
+      SILE.call("skip", { height = "8%ph" })
+      SILE.call("book:titlepage-author-font", { size = "4%pw", weight = 300 }, function ()
         SILE.call("meta:author")
       end)
     end
     SILE.call("vfill")
-    SILE.call("img", { src="avadanlik/vc_logo_renksiz.pdf", width="25%pw" })
+    SILE.call("img", { src = "avadanlik/vc_logo_renksiz.pdf", width = "25%pw" })
   end)
   SILE.call("par")
   SILE.call("break")
 end)
 
-SILE.registerCommand("halftitlepage", function(options, content)
+SILE.registerCommand("halftitlepage", function (options, content)
   if not SILE.Commands["meta:title"] then return end
   SILE.call("nofolios")
-  SILE.call("center", {}, function()
+  SILE.call("center", {}, function ()
     SILE.call("hbox")
-    SILE.call("skip", { height="20%ph" })
-    SILE.call("book:titlepage-title-font", { size="4.5%pw" }, function()
-      SILE.call("wraptitle", {}, function()
-        SILE.call("meta:title", {}, function()
+    SILE.call("skip", { height = "20%ph" })
+    SILE.call("book:titlepage-title-font", { size = "4.5%pw" }, function ()
+      SILE.call("wraptitle", {}, function ()
+        SILE.call("meta:title", {}, function ()
         end)
       end)
     end)
   end)
 end)
 
-SILE.registerCommand("tableofcontents", function(options, content)
+SILE.registerCommand("tableofcontents", function (options, content)
   local f,err = io.open(SILE.masterFilename .. '.toc')
   if not f then return end
   local doc = f:read("*all")
@@ -165,9 +165,9 @@ SILE.registerCommand("tableofcontents", function(options, content)
   SU.debug("viachristus", #toc)
   if #toc < 2 then return end -- Skip the TOC if there is only one top level entry
   SILE.call("tableofcontents:header")
-  for i = 1,#toc do
+  for i = 1, #toc do
     local item = toc[i]
-    SILE.call("tableofcontents:item", {level = item.level, pageno= item.pageno}, item.label)
+    SILE.call("tableofcontents:item", { level = item.level, pageno = item.pageno }, item.label)
   end
   SILE.call("tableofcontents:footer")
 end)
@@ -202,18 +202,18 @@ SILE.doTexlike([[
 local plain = SILE.require("classes/plain");
 local book = SILE.require("classes/book");
 
-book.endPage = function(self)
+book.endPage = function (self)
   book:moveTocNodes()
 
   if (not SILE.scratch.headers.skipthispage) then
     SILE.settings.pushState()
     SILE.settings.reset()
     if (book:oddPage() and SILE.scratch.headers.right) then
-      SILE.typesetNaturally(SILE.getFrame("runningHead"), function()
+      SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
         SILE.call("book:right-running-head")
       end)
     elseif (not(book:oddPage()) and SILE.scratch.headers.left) then
-      SILE.typesetNaturally(SILE.getFrame("runningHead"), function()
+      SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
         SILE.call("book:left-running-head")
       end)
     end
@@ -224,57 +224,57 @@ book.endPage = function(self)
   return plain.endPage(book)
 end
 
-SILE.registerCommand("book:right-running-head", function(options, content)
+SILE.registerCommand("book:right-running-head", function (options, content)
   SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
   SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
   SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
   SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
-  SILE.call("book:right-running-head-font", {}, function()
+  SILE.call("book:right-running-head-font", {}, function ()
     SILE.process(SILE.scratch.headers.right)
     SILE.call("hfill")
-    SILE.call("book:page-number-font", {}, function()
+    SILE.call("book:page-number-font", {}, function ()
       SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
     end)
   end)
   SILE.typesetter:leaveHmode()
-  SILE.call("skip", {height="-8pt"})
+  SILE.call("skip", { height = "-8pt" })
   SILE.call("fullrule")
 end)
 
-SILE.registerCommand("book:left-running-head", function(options, content)
+SILE.registerCommand("book:left-running-head", function (options, content)
   SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
   SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
   SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
   SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
-  SILE.call("book:left-running-head-font", {}, function()
-    SILE.call("book:page-number-font", {}, function()
+  SILE.call("book:left-running-head-font", {}, function ()
+    SILE.call("book:page-number-font", {}, function ()
       SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
     end)
     SILE.call("hfill")
     SILE.call("meta:title")
   end)
   SILE.typesetter:leaveHmode()
-  SILE.call("skip", {height="-8pt"})
+  SILE.call("skip", { height = "-8pt" })
   SILE.call("fullrule")
 end)
 
-SILE.registerCommand("aki", function()
-  SILE.call("penalty", { penalty=-1 })
+SILE.registerCommand("aki", function ()
+  SILE.call("penalty", { penalty = -1 })
 end)
 
-SILE.registerCommand("left-running-head", function(options, content)
+SILE.registerCommand("left-running-head", function (options, content)
   local closure = SILE.settings.wrap()
   SILE.scratch.headers.left = function () closure(content) end
 end, "Text to appear on the top of the left page");
 
-SILE.registerCommand("right-running-head", function(options, content)
+SILE.registerCommand("right-running-head", function (options, content)
   local closure = SILE.settings.wrap()
   SILE.scratch.headers.right = function () closure(content) end
 end, "Text to appear on the top of the right page");
 
 local _initml = function (c)
   if not(SILE.scratch.counters[c]) then
-    SILE.scratch.counters[c] = { value= {0}, display= {"arabic"} }
+    SILE.scratch.counters[c] = { value= { 0 }, display = { "arabic" } }
   end
 end
 
@@ -293,7 +293,7 @@ SILE.registerCommand("my-increment-multilevel-counter", function (options, conte
       else
         this.value[currentLevel] = 1
       end
-      this.display[currentLevel] = this.display[currentLevel -1]
+      this.display[currentLevel] = this.display[currentLevel-1]
     end
   else -- level < currentLevel
     this.value[level] = this.value[level] + 1
@@ -324,10 +324,10 @@ SILE.registerCommand("book:sectioning", function (options, content)
     local lang = SILE.settings.get("document.language")
     local counters = SILE.scratch.counters["sectioning"]
     if level == 1 then
-      local val = SILE.formatCounter({display = "ORDINAL", value = counters.value[level]})
+      local val = SILE.formatCounter({ display = "ORDINAL", value = counters.value[level] })
       toc_content[1] = val .. " KISIM: " .. trupper(content[1])
     elseif level == 2 then
-      local val = SILE.formatCounter({display = "arabic", value = counters.value[level]})
+      local val = SILE.formatCounter({ display = "arabic", value = counters.value[level] })
       toc_content[1] = val .. ". " .. content[1]
     end
     if options.prenumber then
@@ -335,26 +335,26 @@ SILE.registerCommand("book:sectioning", function (options, content)
       if SILE.Commands["book:chapter:precounter"] then SILE.call("book:chapter:precounter") end
       SILE.call(options.prenumber)
     end
-    SILE.call("show-multilevel-counter", {id="sectioning", display = options.display, minlevel = level, level = level})
+    SILE.call("show-multilevel-counter", { id = "sectioning", display = options.display, minlevel = level, level = level })
     if options.postnumber then
       if SILE.Commands[options.postnumber..":"..lang] then options.postnumber = options.postnumber..":"..lang end
       SILE.call(options.postnumber)
     end
-    SILE.call("tocentry", {level = options.level}, toc_content)
+    SILE.call("tocentry", { level = options.level }, toc_content)
   else
-    SILE.call("tocentry", {level = options.level}, content)
+    SILE.call("tocentry", { level = options.level }, content)
   end
 end)
 
 SILE.registerCommand("chapter", function (options, content)
   SILE.call("open-double-page")
   SILE.call("noindent")
-  SILE.call("set-counter", {id = "footnote", value = 1})
+  SILE.call("set-counter", { id = "footnote", value = 1 })
   SILE.scratch.theChapter = content
-  SILE.call("center", {}, function()
-    SILE.settings.temporarily(function()
+  SILE.call("center", {}, function ()
+    SILE.settings.temporarily(function ()
       SILE.typesetter:typeset(" ")
-      SILE.call("skip", { height="10%ph" })
+      SILE.call("skip", { height = "10%ph" })
       SILE.call("book:sectioning", {
         numbering = options.numbering,
         level = 2,
@@ -370,29 +370,29 @@ SILE.registerCommand("chapter", function (options, content)
       SILE.call("book:chapterfont", {}, content)
       SILE.call("bigskip")
       SILE.call("fullrule")
-      SILE.call("skip", { height="-1ex" }) -- part of bug 262 hack
+      SILE.call("skip", { height = "-1ex" }) -- part of bug 262 hack
     end)
   end)
   SILE.call("left-running-head")
-  SILE.Commands["right-running-head"]({}, function()
+  SILE.Commands["right-running-head"]({}, function ()
     SILE.call("book:right-running-head-font", {}, content)
   end)
   SILE.scratch.headers.skipthispage = true
   if (options.numbering == false or options.numbering == "false") then
-    SILE.call("skip", { height="10pt" })
+    SILE.call("skip", { height = "10pt" })
   end
-  SILE.call("skip", { height="8pt" })
+  SILE.call("skip", { height = "8pt" })
   --SILE.call("nofoliosthispage")
 end, "Begin a new chapter");
 
 SILE.registerCommand("section", function (options, content)
   SILE.call("goodbreak")
-  SILE.call("ifnotattop", {}, function()
-    SILE.call("skip", { height="12pt plus 6pt minus 4pt" })
+  SILE.call("ifnotattop", {}, function ()
+    SILE.call("skip", { height = "12pt plus 6pt minus 4pt" })
   end)
-  SILE.settings.temporarily(function()
+  SILE.settings.temporarily(function ()
     SILE.call("noindent")
-    SILE.call("book:sectionfont", {}, function()
+    SILE.call("book:sectionfont", {}, function ()
       SILE.call("uppercase", {}, content)
     end)
   end)
@@ -402,11 +402,11 @@ end, "Begin a new section")
 SILE.registerCommand("part", function (options, content)
   SILE.call("open-double-page")
   SILE.call("noindent")
-  SILE.call("set-counter", {id = "footnote", value = 1})
-  SILE.call("center", {}, function()
-    SILE.call("book:partnumfont", { size="5%pw" }, function()
+  SILE.call("set-counter", { id = "footnote", value = 1})
+  SILE.call("center", {}, function ()
+    SILE.call("book:partnumfont", { size = "5%pw" }, function ()
       SILE.call("hbox")
-      SILE.call("skip", { height="10%ph" })
+      SILE.call("skip", { height = "10%ph" })
       SILE.call("book:sectioning", {
         numbering = options.numbering,
         level = 1,
@@ -417,15 +417,15 @@ SILE.registerCommand("part", function (options, content)
       }, content)
     end)
     SILE.call("medskip")
-    SILE.Commands["book:partfont"]({ size="4%pw" }, content);
+    SILE.Commands["book:partfont"]({ size = "4%pw" }, content);
     SILE.call("medskip")
-    SILE.call("font", { filename="avadanlik/fonts/FeFlow2.otf", size="9pt" }, {"a"})
+    SILE.call("font", { filename = "avadanlik/fonts/FeFlow2.otf", size = "9pt" }, { "a" })
     SILE.call("bigskip")
   end)
   SILE.scratch.headers.skipthispage = true
 end, "Begin a new part");
 
-SILE.registerCommand("open-double-page", function()
+SILE.registerCommand("open-double-page", function ()
   SILE.typesetter:leaveHmode();
   SILE.Commands["supereject"]();
   if SILE.documentState.documentClass:oddPage() then
@@ -441,17 +441,17 @@ SILE.registerCommand("subparagraph", function (options, content)
   SILE.typesetter:leaveHmode()
   SILE.call("novbreak")
   -- Backtracking to approximate the skip after quotations
-  SILE.call("skip", { height="-8pt" })
+  SILE.call("skip", { height = "-8pt" })
   SILE.call("novbreak")
-  SILE.Commands["book:subparagraphfont"]({}, function()
-    SILE.call("raggedleft", {}, function()
+  SILE.Commands["book:subparagraphfont"]({}, function ()
+    SILE.call("raggedleft", {}, function ()
       SILE.settings.set("document.rskip", SILE.nodefactory.newGlue("20pt"))
       SILE.process(content)
     end)
   end)
   SILE.typesetter:leaveHmode()
   SILE.call("novbreak")
-  SILE.call("skip", { height="3en" })
+  SILE.call("skip", { height = "3en" })
   SILE.call("novbreak")
   SILE.scratch.last_was_ref = true
 end, "Begin a new subparagraph")
@@ -462,7 +462,7 @@ function trupper (string)
   string = string:gsub("i", "İ")
   return utf8.upper(string)
 end
-SILE.registerCommand("uppercase", function(options, content)
+SILE.registerCommand("uppercase", function (options, content)
   SILE.process(inputfilter.transformContent(content, trupper))
 end, "Typeset the enclosed text as uppercase")
 
@@ -504,7 +504,7 @@ local function tr_num2text (num, ordinal)
   return table.concat( words, " " )
 end
 
-SILE.formatCounter = function(options)
+SILE.formatCounter = function (options)
   if (options.display == "roman") then return romanize(options.value):lower() end
   if (options.display == "Roman") then return romanize(options.value) end
   if (options.display == "alpha") then return alpha(options.value) end
@@ -519,7 +519,7 @@ end
 
 local _initml = function (c)
   if not(SILE.scratch.counters[c]) then
-    SILE.scratch.counters[c] = { value= {0}, display= {"arabic"} };
+    SILE.scratch.counters[c] = { value= { 0 }, display= { "arabic" } };
   end
 end
 
@@ -557,10 +557,10 @@ end)
 SILE.registerCommand("tableofcontents:item", function (o,c)
   SILE.settings.temporarily(function ()
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
-    SILE.call("tableofcontents:level"..o.level.."item", {}, function()
+    SILE.call("tableofcontents:level"..o.level.."item", {}, function ()
       SILE.process(addDiscressionaryBreaks({},c))
       if o.level == 2 then
-        SILE.call("hbox", {}, function()
+        SILE.call("hbox", {}, function ()
           SILE.call("dotfill")
           SILE.typesetter:typeset(o.pageno)
         end)
@@ -577,7 +577,7 @@ SILE.registerCommand("fullrule", function (options, content)
 end)
 
 local insertions = SILE.require("packages/insertions")
-SILE.registerCommand("footnote", function(options, content)
+SILE.registerCommand("footnote", function (options, content)
   local indent = "14pt"
   SILE.call("footnotemark")
   local opts = SILE.scratch.insertions.classes.footnote
@@ -591,17 +591,17 @@ SILE.registerCommand("footnote", function(options, content)
   SILE.settings.set("linespacing.method", "fit-font")
   SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.05ex plus 0.1pt minus 0.1pt"))
   SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(indent))
-  local material = SILE.Commands["vbox"]({}, function()
-    SILE.Commands["book:footnotefont"]({}, function()
+  local material = SILE.Commands["vbox"]({}, function ()
+    SILE.Commands["book:footnotefont"]({}, function ()
       SILE.call("noindent")
       SILE.typesetter:pushGlue({ width = 0 - SILE.length.parse(indent) })
-      SILE.Commands["rebox"]({ width = indent }, function()
+      SILE.Commands["rebox"]({ width = indent }, function ()
         SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.footnote)..".")
       end)
       -- don't justify footnotes
-      SILE.call("raggedright", {}, function()
+      SILE.call("raggedright", {}, function ()
         --inhibit hyphenation in footnotes
-        SILE.call("font", { language="und" }, content)
+        SILE.call("font", { language = "und" }, content)
       end)
     end)
   end)
@@ -623,20 +623,20 @@ SILE.doTexlike([[
 
 -- For when pushBack breaks my whitespace
 -- Remove this dreadful hack when https://github.com/simoncozens/sile/issues/262
-SILE.registerCommand("hackBack", function(options, content)
+SILE.registerCommand("hackBack", function (options, content)
   SILE.call("par")
   SILE.call("hbox")
-  SILE.call("skip", { height="4.1em" })
+  SILE.call("skip", { height = "4.1em" })
   SILE.call("kern")
   SILE.call("par")
-  SILE.call("skip", { height="-4em" })
+  SILE.call("skip", { height = "-4em" })
 end)
 
-SILE.registerCommand("quote", function(options, content)
+SILE.registerCommand("quote", function (options, content)
   options.setback = options.setback or SILE.settings.get("document.parindent")
   SILE.call("hackBack")
   SILE.settings.pushState()
-  SILE.settings.temporarily(function()
+  SILE.settings.temporarily(function ()
     SILE.call("noindent")
     SILE.settings.set("document.rskip", SILE.nodefactory.newGlue(options.setback))
     SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(options.setback))
@@ -651,13 +651,13 @@ SILE.registerCommand("quote", function(options, content)
     SILE.call("novbreak")
   end)
   SILE.settings.popState()
-  SILE.call("skip", { height="6pt" })
+  SILE.call("skip", { height = "6pt" })
   SILE.call("novbreak")
   SILE.call("noindent")
 end, "Typeset quotation blocks")
 
-SILE.registerCommand("excerpt", function()
-  SILE.call("font", { size="0.975em" })
+SILE.registerCommand("excerpt", function ()
+  SILE.call("font", { size = "0.975em" })
   SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.675ex plus 0.05ex minus 0.05ex"))
 end)
 
@@ -666,37 +666,37 @@ SILE.typesetter:registerPageEndHook(function ()
   SILE.scratch.last_was_ref = false
 end)
 
-SILE.registerCommand("verse", function()
+SILE.registerCommand("verse", function ()
   if SILE.scratch.last_was_ref then
-    SILE.call("skip", { height="-3en" })
+    SILE.call("skip", { height = "-3en" })
   end
   SILE.scratch.last_was_ref = false
-  SILE.call("font", {family="Libertinus Serif", weight=400, style="Italic", features="+salt,+ss02,+onum,+liga,+dlig,+clig"})
+  SILE.call("font", { family = "Libertinus Serif", weight = 400, style = "Italic", features = "+salt,+ss02,+onum,+liga,+dlig,+clig" })
   SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.25ex plus 0.05ex minus 0.05ex"))
 end)
 
-SILE.registerCommand("poetry", function()
+SILE.registerCommand("poetry", function ()
   SILE.settings.set("document.lskip", SILE.nodefactory.newGlue("30pt"))
   SILE.settings.set("document.rskip", SILE.nodefactory.hfillGlue)
   SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
   SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
 end)
 
-SILE.registerCommand("dedication", function(options, content)
+SILE.registerCommand("dedication", function (options, content)
   SILE.scratch.headers.skipthispage = true
-  SILE.call("center", {}, function()
+  SILE.call("center", {}, function ()
     SILE.settings.set("linespacing.method", "fit-font")
     SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.4ex plus 0.1ex minus 0.1ex"))
     SILE.call("hbox")
     SILE.call("vfill")
-    SILE.call("font", { style="Italic", size="14pt" }, content)
+    SILE.call("font", { style = "Italic", size = "14pt" }, content)
     SILE.call("bigskip")
   end)
 end)
 
-SILE.registerCommand("seriespage:series", function(options, content)
-  SILE.call("center", {}, function()
-    SILE.call("book:chapterfont", {}, function()
+SILE.registerCommand("seriespage:series", function (options, content)
+  SILE.call("center", {}, function ()
+    SILE.call("book:chapterfont", {}, function ()
       SILE.process(content)
       SILE.call("aki")
       SILE.typesetter:typeset(" Serisi’ndeki Yayınlar")
@@ -705,7 +705,7 @@ SILE.registerCommand("seriespage:series", function(options, content)
   end)
 end)
 
-SILE.registerCommand("seriespage:pre", function(options, content)
+SILE.registerCommand("seriespage:pre", function (options, content)
   SILE.call("open-double-page")
   SILE.scratch.headers.skipthispage = true
   SILE.call("nofolios")
@@ -713,26 +713,26 @@ SILE.registerCommand("seriespage:pre", function(options, content)
 end)
 
 -- Make this a function because we want to override it in some layouts
-SILE.registerCommand("topfill", function(options, content)
+SILE.registerCommand("topfill", function (options, content)
   SILE.call("hbox")
   SILE.call("vfill")
 end)
 
-SILE.registerCommand("seriespage:title", function(options, content)
-  SILE.call("raggedright", {}, function()
+SILE.registerCommand("seriespage:title", function (options, content)
+  SILE.call("raggedright", {}, function ()
     SILE.settings.set("current.parindent", SILE.nodefactory.newGlue("-2em"))
     SILE.settings.set("document.lskip", SILE.nodefactory.newGlue("2em"))
     SILE.settings.set("linespacing.method", "fixed")
     SILE.settings.set("linespacing.fixed.baselinedistance", SILE.length.parse("3ex plus 1ex minus 0.5ex"))
     if not options.author then
-      SILE.call("font", { style="Italic", language="und" }, content)
+      SILE.call("font", { style = "Italic", language = "und" }, content)
       SILE.call("medskip")
     else
-      SILE.call("font", { weight="600", language="und" }, content)
+      SILE.call("font", { weight = "600", language = "und" }, content)
       SILE.typesetter:typeset(" ")
       SILE.call("aki")
       SILE.typesetter:typeset("— ")
-      SILE.call("font", { style="Italic", language="und" }, function()
+      SILE.call("font", { style = "Italic", language = "und" }, function ()
         SILE.typesetter:typeset(options.author)
       end)
       SILE.call("smallskip")
@@ -740,17 +740,17 @@ SILE.registerCommand("seriespage:title", function(options, content)
   end)
 end)
 
-SILE.registerCommand("criticHighlight", function(options, content)
-  SILE.settings.temporarily(function()
-    SILE.call("font", { weight=600 })
-    SILE.call("color", { color="#0000E6" }, content)
+SILE.registerCommand("criticHighlight", function (options, content)
+  SILE.settings.temporarily(function ()
+    SILE.call("font", { weight = 600 })
+    SILE.call("color", { color = "#0000E6" }, content)
   end)
 end)
 
-SILE.registerCommand("criticComment", function(options, content)
-  SILE.settings.temporarily(function()
-    SILE.call("font", { style="Italic" })
-    SILE.call("color", { color="#bdbdbd" }, function()
+SILE.registerCommand("criticComment", function (options, content)
+  SILE.settings.temporarily(function ()
+    SILE.call("font", { style = "Italic" })
+    SILE.call("color", { color = "#bdbdbd" }, function ()
       SILE.typesetter:typeset(" (")
       SILE.process(content)
       SILE.typesetter:typeset(")")
@@ -758,22 +758,22 @@ SILE.registerCommand("criticComment", function(options, content)
   end)
 end)
 
-SILE.registerCommand("criticAdd", function(options, content)
-  SILE.settings.temporarily(function()
-    SILE.call("font", { weight=600 })
-    SILE.call("color", { color="#0E7A00" }, content)
+SILE.registerCommand("criticAdd", function (options, content)
+  SILE.settings.temporarily(function ()
+    SILE.call("font", { weight = 600 })
+    SILE.call("color", { color = "#0E7A00" }, content)
   end)
 end)
 
-SILE.registerCommand("criticDel", function(options, content)
-  SILE.settings.temporarily(function()
-    SILE.call("font", { weight=600 })
-    SILE.call("color", { color="#E60000" }, content)
+SILE.registerCommand("criticDel", function (options, content)
+  SILE.settings.temporarily(function ()
+    SILE.call("font", { weight = 600 })
+    SILE.call("color", { color = "#E60000" }, content)
   end)
 end)
 
 local inputfilter = SILE.require("packages/inputfilter").exports
-local discressionaryBreaksFilter = function(content, args, options)
+local discressionaryBreaksFilter = function (content, args, options)
   local currentText = ""
   local result = {}
   local process
@@ -788,10 +788,10 @@ local discressionaryBreaksFilter = function(content, args, options)
       content.pos, content.col, content.line, options.breakwith, options.breakopts
     ))
     if not options.breakall then
-      process = function(separator) currentText = currentText..separator end
+      process = function (separator) currentText = currentText..separator end
     end
   end
-  process = function(separator)
+  process = function (separator)
       if options.breakbefore == true then
         insertText()
         insertPenalty()
@@ -812,7 +812,7 @@ local discressionaryBreaksFilter = function(content, args, options)
   insertText()
   return result
 end
-addDiscressionaryBreaks = function(options, content)
+addDiscressionaryBreaks = function (options, content)
   if not options.breakat then options.breakat = "[:]" end
   if not options.breakwith then options.breakwith = "aki" end
   if not options.breakopts then options.breakopts = {} end
@@ -821,7 +821,7 @@ addDiscressionaryBreaks = function(options, content)
   return inputfilter.transformContent(content, discressionaryBreaksFilter, options)
 end
 
-SILE.registerCommand("addDiscressionaryBreaks", function(options, content)
+SILE.registerCommand("addDiscressionaryBreaks", function (options, content)
   SILE.process(addDiscressionaryBreaks(options, content))
 end, "Try to find good breakpoints based on punctuation")
 
@@ -829,10 +829,10 @@ if SILE.settings.get("document.language") == "tr" then
 	os.setlocale("tr_TR.utf-8", "time")
 end
 
-SILE.registerCommand("pubDateFormat", function(options, content)
+SILE.registerCommand("pubDateFormat", function (options, content)
 	local input =  SU.contentToString(content)
 	local pattern = "(%d+)-(%d+)"
 	local year, month = input:match(pattern)
-	local ts = os.time({ year=year, month=month, day=1 })
+	local ts = os.time({ year = year, month = month, day = 1 })
 	SILE.typesetter:typeset(os.date("%B %Y", ts))
 end, "Try to find good breakpoints based on punctuation")

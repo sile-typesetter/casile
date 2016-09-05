@@ -1,4 +1,4 @@
-SILE.call("hyphenator:add-exceptions", { lang="tr" }, {[[
+SILE.call("hyphenator:add-exceptions", { lang = "tr" }, {[[
 ada-sı’-nda
 ada-sı’-n-day-ken
 adem’-de-dir
