@@ -239,6 +239,9 @@ endef
 %.mobi: %.epub $(MAKEFILE_LIST)
 	-kindlegen $<
 
+%.json: $(TOOLS)/viachristus.yml $(wildcard $(PROJECT).yml $**.yml)
+	jq -s 'reduce .[] as $$item({}; . + $$item)' $(foreach YAML,$^,<(yaml2json $(YAML))) > $@
+
 %-barkod.svg: %.yml $(MAKEFILE_LIST)
 	zint --directsvg --scale=5 --barcode=69 --height=30 \
 		--data=$(shell $(TOOLS)/bin/isbn_format.py $< print) |\
