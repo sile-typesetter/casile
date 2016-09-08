@@ -163,7 +163,6 @@ SILE.registerCommand("tableofcontents", function (options, content)
   if not f then return end
   local doc = f:read("*all")
   local toc = assert(loadstring(doc))()
-  SU.debug("viachristus", #toc)
   if #toc < 2 then return end -- Skip the TOC if there is only one top level entry
   SILE.call("tableofcontents:header")
   for i = 1, #toc do
