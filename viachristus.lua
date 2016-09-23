@@ -36,8 +36,7 @@ SILE.registerCommand("book:partnumfont", function (options, content)
 end)
 
 SILE.registerCommand("book:altseriffont", function (options, content)
-  options.family = options.family or "Libertinus Serif"
-  SILE.call("font", options, content)
+  SILE.call("book:seriffont", options, content)
 end)
 
 SILE.registerCommand("book:subparagraphfont", function (options, content)
