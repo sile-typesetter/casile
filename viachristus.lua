@@ -6,6 +6,8 @@ SILE.require("packages/rebox");
 SILE.require("imprint");
 SILE.require("hyphenation_exceptions");
 
+publisher = "viachristus"
+
 SILE.registerCommand("book:monofont", function (options, content)
   options.family = options.family or "Hack"
   SILE.call("font", options, content)
@@ -135,8 +137,10 @@ SILE.registerCommand("titlepage", function (options, content)
         SILE.call("meta:author")
       end)
     end
-    SILE.call("vfill")
-    SILE.call("img", { src = "avadanlik/vc_logo_renksiz.pdf", width = "25%pw" })
+    if publisher == "viachristus" then
+      SILE.call("vfill")
+      SILE.call("img", { src = "avadanlik/vc_logo_renksiz.pdf", width = "25%pw" })
+    end
   end)
   SILE.call("par")
   SILE.call("break")
