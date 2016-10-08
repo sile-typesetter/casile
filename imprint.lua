@@ -1,5 +1,9 @@
 SILE.registerCommand("imprint:font", function (options, content)
-  SILE.call("font", { family = "Libertinus Serif", size = "9pt", language = "und" }, content)
+  options.weight = options.weight or 400
+  options.size = options.size or "9pt"
+  options.language = options.language or "und"
+  options.family = options.family or "Libertinus Serif"
+  SILE.call("font", options, content)
 end)
 
 SILE.registerCommand("imprint", function (options, content)

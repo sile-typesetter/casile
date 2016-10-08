@@ -9,8 +9,10 @@ book:loadPackage("twoside", { oddPageMaster = "right", evenPageMaster = "left" }
 book:mirrorMaster("right", "left")
 SILE.call("switch-master-one-page", { id = "right" })
 
+local oldImprintFont = SILE.Commands["imprint:font"]
 SILE.registerCommand("imprint:font", function (options, content)
-  SILE.call("font", { family = "Libertinus Serif", size = "6.5pt", language = "und" }, content)
+  options.size = options.size or "6.5pt"
+  oldImprintFont(options, content)
 end)
 
 SILE.registerCommand("meta:distribution", function (options, content)
