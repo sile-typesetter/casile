@@ -182,6 +182,7 @@ SILE.require("packages/rebox")
 SILE.registerCommand("strong", function (options, content)
   SILE.call("font", { weight = 600 }, content)
 end)
+
 SILE.call("footnote:separator", function ()
   SILE.call("rebox", { width = "6em", height = "2ex" }, function ()
     SILE.call("hrule", { width = "5em", height = "0.2pt" })
@@ -189,11 +190,28 @@ SILE.call("footnote:separator", function ()
   SILE.call("smallskip")
 end)
 
+SILE.registerCommand("book:chapter:pre:tr", function ()
+  SILE.call("book:chapternumfont")
+  SILE.typesetter:typeset("BÖLÜM ")
+end)
+
+SILE.registerCommand("book:chapter:post", function ()
+  SILE.call("font", { filename = "avadanlik/fonts/FeFlow2.otf", size = "9pt" }, function ()
+    SILE.call("skip", { height = "-3pt" })
+    SILE.typesetter:typeset("a")
+    SILE.call("medskip")
+  end)
+end)
+
+SILE.registerCommand("book:part:pre", function ()
+end)
+
+SILE.registerCommand("book:part:post", function ()
+  SILE.typesetter:typeset(" KISIM")
+  SILE.call("par")
+end)
+
 SILE.doTexlike([[
-\define[command=book:chapter:pre:tr]{\book:chapternumfont BÖLÜM }
-\define[command=book:chapter:post]{\font[filename=avadanlik/fonts/FeFlow2.otf,size=9pt]{\skip[height=-3pt]a\medskip}}
-\define[command=book:part:pre]{}%
-\define[command=book:part:post]{ KISIM\par}%
 \define[command=book:subparagraph:post]{ }%
 \define[command=tableofcontents:header]{\center{\hbox\skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\bigskip\fullrule\bigskip}%
 \define[command=tableofcontents:footer]{\vfill\break}%
