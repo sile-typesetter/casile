@@ -175,16 +175,21 @@ SILE.registerCommand("tableofcontents", function (options, content)
   SILE.call("tableofcontents:footer")
 end)
 
+SILE.call("language", { main = "tr" })
+SILE.require("packages/rules")
+SILE.require("packages/image")
+SILE.require("packages/rebox")
+SILE.registerCommand("strong", function (options, content)
+  SILE.call("font", { weight = 600 }, content)
+end)
+SILE.call("footnote:separator", function ()
+  SILE.call("rebox", { width = "6em", height = "2ex" }, function ()
+    SILE.call("hrule", { width = "5em", height = "0.2pt" })
+  end)
+  SILE.call("smallskip")
+end)
 
 SILE.doTexlike([[
-\language[main=tr]
-\script[src=packages/rules]
-\script[src=packages/image]
-\script[src=packages/rebox]
-%\script[src=packages/frametricks]
-%\showframe[id=all]
-\define[command=strong]{\font[weight=600]{\process}}%
-\footnote:separator{\rebox[width=6em,height=2ex]{\hrule[width=5em,height=0.2pt]}\smallskip}
 \define[command=book:chapter:pre:tr]{\book:chapternumfont BÖLÜM }
 \define[command=book:chapter:post]{\font[filename=avadanlik/fonts/FeFlow2.otf,size=9pt]{\skip[height=-3pt]a\medskip}}
 \define[command=book:part:pre]{}%
