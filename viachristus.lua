@@ -192,8 +192,6 @@ SILE.doTexlike([[
 \define[command=book:subparagraph:post]{ }%
 \define[command=tableofcontents:header]{\center{\hbox\skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\bigskip\fullrule\bigskip}%
 \define[command=tableofcontents:footer]{\vfill\break}%
-\define[command=tableofcontents:level1item]{\bigskip\noindent\book:sansfont[size=10pt,weight=600]{\raggedright{\process}}}%
-\define[command=tableofcontents:level2item]{\skip[height=4.5pt]\set[parameter=document.lskip,value=5ex]\set[parameter=document.rskip,value=3em]\set[parameter=typesetter.parfillskip,value=-2em]\noindent\glue[width=-2ex]\font[size=11pt]{\process}\break\skip[height=0]}%
 \define[command=wraptitle]{\process}
 \define[command=wrapsubtitle]{\process}
 \book:seriffont[size=11.5pt]
@@ -571,6 +569,28 @@ SILE.registerCommand("tableofcontents:item", function (o,c)
       end
     end)
   end)
+end)
+
+SILE.registerCommand("tableofcontents:level1item", function (options, content)
+  SILE.call("bigskip")
+  SILE.settings.temporarily(function ()
+    SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
+    SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
+    SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
+    SILE.call("book:sansfont", { size = "10pt", weight = 600 }, content)
+  end)
+end)
+
+SILE.registerCommand("tableofcontents:level2item", function (options, content)
+  SILE.call("skip", { height = "4.5pt" })
+  SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
+  SILE.settings.set("document.lskip", SILE.nodefactory.newGlue("5ex"))
+  SILE.settings.set("document.rskip", SILE.nodefactory.newGlue("3em"))
+  SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.newGlue("-2em"))
+  SILE.call("glue", { width = "-2ex" })
+  SILE.call("font", { size = "11pt" }, content)
+  SILE.call("break")
+  SILE.call("skip", { height = 0 })
 end)
 
 SILE.registerCommand("fullrule", function (options, content)
