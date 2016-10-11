@@ -13,8 +13,8 @@ SILE.require("hyphenation_exceptions");
 SILE.require("inline_styles");
 SILE.require("block_styles");
 
-SILE.settings.set("typesetter.underfulltolerance", "6ex")
-SILE.settings.set("typesetter.overfulltolerance", "0.2ex")
+SILE.settings.set("typesetter.underfulltolerance", SILE.length.parse("6ex"))
+SILE.settings.set("typesetter.overfulltolerance", SILE.length.parse("0.2ex"))
 
 SILE.call("language", { main = "tr" })
 
@@ -80,8 +80,8 @@ SILE.call("book:seriffont", { size = "11.5pt" })
 
 SILE.require("packages/linespacing")
 SILE.settings.set("linespacing.method", "fit-font")
-SILE.settings.set("linespacing.fit-font.extra-space", "0.6ex plus 0.2ex minus 0.2ex")
-SILE.settings.set("linebreak.hyphenPenalty", "300")
+SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.6ex plus 0.2ex minus 0.2ex"))
+SILE.settings.set("linebreak.hyphenPenalty", 300)
 
 local plain = SILE.require("classes/plain");
 local book = SILE.require("classes/book");
