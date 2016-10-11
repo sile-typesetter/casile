@@ -3,6 +3,8 @@ SILE.require("packages/ifattop")
 SILE.require("packages/leaders")
 SILE.require("packages/raiselower")
 SILE.require("packages/rebox");
+SILE.require("packages/rules")
+SILE.require("packages/image")
 
 publisher = "viachristus"
 
@@ -15,12 +17,6 @@ SILE.settings.set("typesetter.underfulltolerance", "6ex")
 SILE.settings.set("typesetter.overfulltolerance", "0.2ex")
 
 SILE.call("language", { main = "tr" })
-SILE.require("packages/rules")
-SILE.require("packages/image")
-SILE.require("packages/rebox")
-SILE.registerCommand("strong", function (options, content)
-  SILE.call("font", { weight = 600 }, content)
-end)
 
 SILE.call("footnote:separator", function ()
   SILE.call("rebox", { width = "6em", height = "2ex" }, function ()
@@ -233,84 +229,6 @@ SILE.registerCommand("book:sectioning", function (options, content)
     SILE.call("tocentry", { level = options.level }, content)
   end
 end)
-
-SILE.registerCommand("chapter", function (options, content)
-  SILE.call("open-double-page")
-  SILE.call("noindent")
-  SILE.call("set-counter", { id = "footnote", value = 1 })
-  SILE.scratch.theChapter = content
-  SILE.call("center", {}, function ()
-    SILE.settings.temporarily(function ()
-      SILE.typesetter:typeset(" ")
-      SILE.call("skip", { height = "10%ph" })
-      SILE.call("book:sectioning", {
-        numbering = options.numbering,
-        level = 2,
-        reset = false,
-        display = "STRING",
-        prenumber = "book:chapter:pre",
-        postnumber = "book:chapter:post"
-      }, content)
-      -- If Sectioning doesn't output numbering, the chapter starts too high on the page
-      if (options.numbering == false or options.numbering == "false") then
-        SILE.call("skip", { height = "10ex" })
-      end
-      SILE.call("book:chapterfont", {}, content)
-      SILE.call("bigskip")
-      SILE.call("fullrule")
-    end)
-  end)
-  SILE.call("left-running-head")
-  SILE.Commands["right-running-head"]({}, function ()
-    SILE.call("book:right-running-head-font", {}, content)
-  end)
-  SILE.scratch.headers.skipthispage = true
-  if (options.numbering == false or options.numbering == "false") then
-    SILE.call("skip", { height = "10pt" })
-  end
-  SILE.call("skip", { height = "8pt" })
-  --SILE.call("nofoliosthispage")
-end, "Begin a new chapter");
-
-SILE.registerCommand("section", function (options, content)
-  SILE.call("goodbreak")
-  SILE.call("ifnotattop", {}, function ()
-    SILE.call("skip", { height = "12pt plus 6pt minus 4pt" })
-  end)
-  SILE.settings.temporarily(function ()
-    SILE.call("noindent")
-    SILE.call("book:sectionfont", {}, function ()
-      SILE.call("uppercase", {}, content)
-    end)
-  end)
-  SILE.call("novbreak")
-end, "Begin a new section")
-
-SILE.registerCommand("part", function (options, content)
-  SILE.call("open-double-page")
-  SILE.call("noindent")
-  SILE.call("set-counter", { id = "footnote", value = 1})
-  SILE.call("center", {}, function ()
-    SILE.call("book:partnumfont", { size = "5%pw" }, function ()
-      SILE.call("hbox")
-      SILE.call("skip", { height = "10%ph" })
-      SILE.call("book:sectioning", {
-        numbering = options.numbering,
-        level = 1,
-        reset = false,
-        display = "ORDINAL",
-        prenumber = "book:part:pre",
-        postnumber = "book:part:post"
-      }, content)
-    end)
-    SILE.call("medskip")
-    SILE.Commands["book:partfont"]({ size = "4%pw" }, content);
-    SILE.call("medskip")
-    SILE.call("font", { filename = "avadanlik/fonts/FeFlow2.otf", size = "9pt" }, { "a" })
-    SILE.call("bigskip")
-  end)
-  SILE.scratch.headers.skipthispage = true
-end, "Begin a new part");
 
 SILE.registerCommand("open-double-page", function ()
   SILE.typesetter:leaveHmode();
