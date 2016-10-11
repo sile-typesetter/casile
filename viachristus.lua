@@ -10,8 +10,8 @@ SILE.require("imprint");
 SILE.require("hyphenation_exceptions");
 SILE.require("inline_styles");
 
-SILE.call("set", { parameter = "typesetter.underfulltolerance", value = "6ex" })
-SILE.call("set", { parameter = "typesetter.overfulltolerance", value = "0.2ex" })
+SILE.settings.set("typesetter.underfulltolerance", "6ex")
+SILE.settings.set("typesetter.overfulltolerance", "0.2ex")
 
 SILE.registerCommand("titlepage", function (options, content)
   if not SILE.Commands["meta:title"] then return end
