@@ -114,18 +114,43 @@ SILE.registerCommand("book:part:post", function ()
   SILE.call("par")
 end)
 
-SILE.doTexlike([[
-\define[command=book:subparagraph:post]{ }%
-\define[command=tableofcontents:header]{\center{\hbox\skip[height=12ex]\tableofcontents:headerfont{\tableofcontents:title}}\bigskip\fullrule\bigskip}%
-\define[command=tableofcontents:footer]{\vfill\break}%
-\define[command=wraptitle]{\process}
-\define[command=wrapsubtitle]{\process}
-\book:seriffont[size=11.5pt]
-\script[src=packages/linespacing]
-\set[parameter=linespacing.method,value=fit-font]
-\set[parameter=linespacing.fit-font.extra-space,value=0.6ex plus 0.2ex minus 0.2ex]
-\set[parameter=linebreak.hyphenPenalty,value=300]
-]])
+SILE.registerCommand("book:subparagraph:post", function ()
+end)
+
+SILE.registerCommand("tableofcontents:header", function ()
+  SILE.call("center", {}, function ()
+    SILE.call("hbox", {}, function ()
+      SILE.call("skip", { height = "12ex" })
+      SILE.call("tableofcontents:headerfont", { height = "12ex" }, function ()
+        SILE.call("tableofcontents:title")
+      end)
+    end)
+  end)
+  SILE.call("bigskip")
+  SILE.call("fullrule")
+  SILE.call("bigskip")
+end)
+
+SILE.registerCommand("tableofcontents:footer", function ()
+  SILE.call("vfill")
+  SILE.call("break")
+end)
+
+SILE.registerCommand("wraptitle", function (options, content)
+  SILE.process(content)
+end)
+
+SILE.registerCommand("wrapsubtitle", function (options, content)
+  SILE.process(content)
+end)
+
+SILE.call("book:seriffont", { size = "11.5pt" })
+
+SILE.require("packages/linespacing")
+SILE.settings.set("linespacing.method", "fit-font")
+SILE.settings.set("linespacing.fit-font.extra-space", "0.6ex plus 0.2ex minus 0.2ex")
+SILE.settings.set("linebreak.hyphenPenalty", "300")
+
 local plain = SILE.require("classes/plain");
 local book = SILE.require("classes/book");
 
