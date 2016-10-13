@@ -272,5 +272,5 @@ stats: $(foreach SOURCE,$(SOURCES),$(SOURCE)-stats)
 	@$(TOOLS)/stats.zsh $(@:-stats=) $(STATS_MONTHS)
 
 watch:
-	( git ls-files ; cd $(TOOLS) ; git ls-files | xargs -iX echo avadanlik/X ) | \
+	( git ls-files ; cd $(TOOLS) ; git ls-files | xargs -iX echo $(TOOLS)/X ) | \
 		entr -c -p make -B DRAFT=true

@@ -1,4 +1,7 @@
 #!/usr/bin/env zsh
+
+BRANCH=${1}
+FILE=${2}
 WT=$(mktemp -d -u worktree-diff.XXXXXX)
 
 trap 'rm -rf ${WT}' EXIT SIGHUP SIGTERM
@@ -6,10 +9,10 @@ trap 'rm -rf ${WT}' EXIT SIGHUP SIGTERM
 macros=avadanlik/viachristus.m4
 
 git worktree prune > /dev/null
-git worktree add --detach ${WT} ${1} > /dev/null
+git worktree add --detach ${WT} ${BRANCH} > /dev/null
 
-m4 ${macros} ${WT}/${2} | git hash-object --stdin -w | read A
-m4 ${macros} ${2} | git hash-object --stdin -w | read B
+m4 ${macros} ${WT}/${FILE} | git hash-object --stdin -w | read A
+m4 ${macros} ${FILE} | git hash-object --stdin -w | read B
 
 if git diff ${A}..${B} --quiet; then
     git show ${B}
