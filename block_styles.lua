@@ -83,6 +83,8 @@ SILE.registerCommand("chapter:after", function (options, content)
 end)
 
 SILE.registerCommand("chapter", function (options, content)
+  options.display = options.display or "STRING"
+  options.numbering = options.numbering or true
   SILE.call("chapter:before", options, content)
   SILE.call("set-counter", { id = "footnote", value = 1 })
   SILE.scratch.theChapter = content
@@ -94,7 +96,7 @@ SILE.registerCommand("chapter", function (options, content)
         numbering = options.numbering,
         level = 2,
         reset = false,
-        display = "STRING",
+        display = options.display,
         prenumber = "book:chapter:pre",
         postnumber = "book:chapter:post"
       }, content)
