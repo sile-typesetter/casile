@@ -158,13 +158,14 @@ end, "Text to appear on the top of the right page");
 
 local _initml = function (c)
   if not(SILE.scratch.counters[c]) then
-    SILE.scratch.counters[c] = { value= { 0 }, display = { "arabic" } }
+    SILE.scratch.counters[c] = { value = { 0 }, display = { "arabic" } };
   end
 end
 
-SILE.registerCommand("my-increment-multilevel-counter", function (options, content)
+SILE.registerCommand("increment-multilevel-counter", function (options)
   local c = options.id; _initml(c)
   local this = SILE.scratch.counters[c]
+
   local currentLevel = #this.value
   local level = tonumber(options.level) or currentLevel
   if level == currentLevel then
@@ -195,7 +196,7 @@ SILE.registerCommand("book:sectioning", function (options, content)
   local level = SU.required(options, "level", "book:sectioning")
   if not (options.numbering == false or options.numbering == "false") then
     if not options.reset == true or options.reset == "true" then reset = false end
-    SILE.call("my-increment-multilevel-counter", {
+    SILE.call("increment-multilevel-counter", {
       id = "sectioning",
       level = options.level,
       display = options.display,
@@ -303,43 +304,6 @@ SILE.formatCounter = function (options)
   if (options.display == "ORDINAL") then return trupper(tr_num2text(options.value, true)) end
   return tostring(options.value);
 end
-
-local _initml = function (c)
-  if not(SILE.scratch.counters[c]) then
-    SILE.scratch.counters[c] = { value= { 0 }, display= { "arabic" } };
-  end
-end
-
-SILE.registerCommand("increment-multilevel-counter", function (options, content)
-  local c = options.id; _initml(c)
-  local this = SILE.scratch.counters[c]
-
-  local currentLevel = #this.value
-  local level = tonumber(options.level) or currentLevel
-  local prev
-  if level == currentLevel then
-    this.value[level] = this.value[level] + 1
-  elseif level > currentLevel then
-    while level > currentLevel do
-      if not(options.reset == false) then
-        prev = 0
-      else
-        prev = this.value[currentLevel] + 1
-      end
-      currentLevel = currentLevel + 1
-      this.value[currentLevel] = prev
-      this.display[currentLevel] = this.display[currentLevel -1]
-    end
-  else -- level < currentLevel
-    this.value[level] = this.value[level] + 1
-    while currentLevel > level do
-      this.value[currentLevel] = nil
-      this.display[currentLevel] = nil
-      currentLevel = currentLevel - 1
-    end
-  end
-  if options.display then this.display[currentLevel] = options.display end
-end)
 
 SILE.registerCommand("tableofcontents:item", function (o,c)
   SILE.settings.temporarily(function ()
