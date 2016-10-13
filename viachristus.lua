@@ -230,6 +230,7 @@ SILE.registerCommand("book:sectioning", function (options, content)
   end
 end)
 
+-- This is the same as SILE's version but sets our no-headers variable on blank pages
 SILE.registerCommand("open-double-page", function ()
   SILE.typesetter:leaveHmode();
   SILE.Commands["supereject"]();
