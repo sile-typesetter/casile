@@ -158,7 +158,7 @@ end, "Text to appear on the top of the right page");
 
 local _initml = function (c)
   if not(SILE.scratch.counters[c]) then
-    SILE.scratch.counters[c] = { value = { 0 }, display = { "arabic" } };
+    SILE.scratch.counters[c] = { value = { 1 }, display = { "arabic" } };
   end
 end
 
