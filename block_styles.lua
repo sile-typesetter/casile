@@ -63,9 +63,27 @@ SILE.registerCommand("tableofcontents", function (options, content)
   SILE.call("tableofcontents:footer")
 end)
 
-SILE.registerCommand("chapter", function (options, content)
+SILE.registerCommand("chapter:before", function (options, content)
   SILE.call("open-double-page")
   SILE.call("noindent")
+  -- If Sectioning doesn't output numbering, the chapter starts too high on the page
+  if (options.numbering == false or options.numbering == "false") then
+    SILE.call("skip", { height = "10ex" })
+  end
+end)
+
+SILE.registerCommand("chapter:after", function (options, content)
+  SILE.call("bigskip")
+  SILE.call("fullrule")
+  if (options.numbering == false or options.numbering == "false") then
+    SILE.call("skip", { height = "10pt" })
+  end
+  SILE.call("skip", { height = "8pt" })
+  --SILE.call("nofoliosthispage")
+end)
+
+SILE.registerCommand("chapter", function (options, content)
+  SILE.call("chapter:before", options, content)
   SILE.call("set-counter", { id = "footnote", value = 1 })
   SILE.scratch.theChapter = content
   SILE.call("center", {}, function ()
@@ -80,13 +98,7 @@ SILE.registerCommand("chapter", function (options, content)
         prenumber = "book:chapter:pre",
         postnumber = "book:chapter:post"
       }, content)
-      -- If Sectioning doesn't output numbering, the chapter starts too high on the page
-      if (options.numbering == false or options.numbering == "false") then
-        SILE.call("skip", { height = "10ex" })
-      end
       SILE.call("book:chapterfont", {}, content)
-      SILE.call("bigskip")
-      SILE.call("fullrule")
     end)
   end)
   SILE.call("left-running-head")
@@ -94,11 +106,7 @@ SILE.registerCommand("chapter", function (options, content)
     SILE.call("book:right-running-head-font", {}, content)
   end)
   SILE.scratch.headers.skipthispage = true
-  if (options.numbering == false or options.numbering == "false") then
-    SILE.call("skip", { height = "10pt" })
-  end
-  SILE.call("skip", { height = "8pt" })
-  --SILE.call("nofoliosthispage")
+  SILE.call("chapter:after", options, content)
 end, "Begin a new chapter");
 
 SILE.registerCommand("section", function (options, content)
