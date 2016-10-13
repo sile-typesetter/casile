@@ -26,8 +26,7 @@ SILE.call("footnote:separator", function ()
 end)
 
 SILE.registerCommand("book:chapter:pre:tr", function ()
-  SILE.call("book:chapternumfont")
-  SILE.typesetter:typeset("BÖLÜM ")
+  SILE.call("book:chapternumfont", { "BÖLÜM " })
 end)
 
 SILE.registerCommand("book:chapter:post", function ()
