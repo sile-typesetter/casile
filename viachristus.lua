@@ -632,3 +632,13 @@ SILE.registerCommand("pubDateFormat", function (options, content)
 	local ts = os.time({ year = year, month = month, day = 1 })
 	SILE.typesetter:typeset(os.date("%B %Y", ts))
 end, "Try to find good breakpoints based on punctuation")
+
+setCommandDefaults = function (command, newOptions)
+  local oldCommand = SILE.Commands[command]
+  SILE.Commands[command] = function (options, content)
+    for k, v in pairs(newOptions) do
+      options[k] = options[k] or v
+    end
+    return oldCommand(options, content)
+  end
+end
