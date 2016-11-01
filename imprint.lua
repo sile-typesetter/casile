@@ -67,6 +67,16 @@ SILE.registerCommand("imprint", function (options, content)
             SILE.call("break")
             SILE.call("font", { weight = 600, style = "Bold" }, { "URL: " })
             SILE.call("font", { family = "Hack", size = "0.8em" }, SILE.Commands["meta:url"])
+            -- Hack around not being able to output a vbox with an indent
+            -- See https://github.com/simoncozens/sile/issues/318
+            local lines = 1
+            for i = 1, #SILE.typesetter.state.nodes do
+              lines = lines + (SILE.typesetter.state.nodes[i]:isPenalty() and 1 or 0)
+            end
+            for i = lines, 5 do
+              SILE.call("hbox")
+              SILE.call("break")
+            end
             SILE.call("par")
           end)
         end
