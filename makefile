@@ -17,6 +17,8 @@ CROP ?= false
 STATS_MONTHS ?= 1
 PRE_SYNC ?= true
 
+SILE ?= sile
+
 # CI runners need help getting the branch name because of funky checkouts
 BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 ifeq ($(BRANCH),HEAD)
@@ -113,14 +115,14 @@ sync_post:
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
 	# account for TOC issue: https://github.com/simoncozens/sile/issues/230
 	if $(DRAFT); then \
-		sile -d viachristus $< -o $@ ;\
+		$(SILE) -d viachristus $< -o $@ ;\
 	else \
 		export pg0="$$(test -f $<.toc && ( pdfinfo $@ | grep Pages: | awk '{print $$2}' ) || echo 0)" ;\
-		sile $< -o $@ ;\
+		$(SILE) $< -o $@ ;\
 		export pg1="$$(pdfinfo $@ | grep Pages: | awk '{print $$2}')" ;\
-		[[ $${pg0} -ne $${pg1} ]] && sile $< -o $@ ||: ;\
+		[[ $${pg0} -ne $${pg1} ]] && $(SILE) $< -o $@ ||: ;\
 		export pg2="$$(pdfinfo $@ | grep Pages: | awk '{print $$2}')" ;\
-		[[ $${pg1} -ne $${pg2} ]] && sile $< -o $@ ||: ;\
+		[[ $${pg1} -ne $${pg2} ]] && $(SILE) $< -o $@ ||: ;\
 	fi
 	# If we have a specil cover page for this format, swap it out for the half title page
 	if [[ -f $*-kapak.pdf ]]; then
