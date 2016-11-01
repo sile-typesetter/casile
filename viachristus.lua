@@ -155,41 +155,6 @@ SILE.registerCommand("right-running-head", function (options, content)
   SILE.scratch.headers.right = function () closure(content) end
 end, "Text to appear on the top of the right page");
 
-local _initml = function (c)
-  if not(SILE.scratch.counters[c]) then
-    SILE.scratch.counters[c] = { value = { 1 }, display = { "arabic" } };
-  end
-end
-
-SILE.registerCommand("increment-multilevel-counter", function (options)
-  local c = options.id; _initml(c)
-  local this = SILE.scratch.counters[c]
-
-  local currentLevel = #this.value
-  local level = tonumber(options.level) or currentLevel
-  if level == currentLevel then
-    this.value[level] = this.value[level] + 1
-  elseif level > currentLevel then
-    while level > currentLevel do
-      currentLevel = currentLevel + 1
-      if options.reset == false then
-        this.value[currentLevel] = this.value[currentLevel-1]
-      else
-        this.value[currentLevel] = 1
-      end
-      this.display[currentLevel] = this.display[currentLevel-1]
-    end
-  else -- level < currentLevel
-    this.value[level] = this.value[level] + 1
-    while currentLevel > level do
-      if not options.rest == false then this.value[currentLevel] = nil end
-      this.display[currentLevel] = nil
-      currentLevel = currentLevel - 1
-    end
-  end
-  if options.display then this.display[currentLevel] = options.display end
-end)
-
 SILE.registerCommand("book:sectioning", function (options, content)
   local content = SU.subContent(content)
   local level = SU.required(options, "level", "book:sectioning")
