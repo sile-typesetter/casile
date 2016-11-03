@@ -69,6 +69,11 @@ LAYOUTS = $(LAYOUT_$(TAG_NAME))
 FORMATS = pdf
 endif
 
+# If there is a format associated with a tag, only build that format
+ifdef FORMAT_$(TAG_NAME)
+FORMATS = $(FORMAT_$(TAG_NAME))
+endif
+
 export TEXMFHOME := $(TOOLS)/texmf
 export PATH := $(TOOLS)/bin:$(PATH)
 export HOSTNAME := $(shell hostname)
