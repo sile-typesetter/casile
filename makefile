@@ -109,7 +109,7 @@ sync_post:
 
 %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) $(MAKEFILE_LIST) ;
 
-%.pdf: %.sil $(TOOLS)/viachristus.lua $(MAKEFILE_LIST)
+%.pdf: %.sil $(TOOLS)/viachristus.lua $$(shell [[ $$* =~ -app ]] && echo $$*-bolumler.md) $(MAKEFILE_LIST)
 	@$(shell test -f "$<" || echo exit 0)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
