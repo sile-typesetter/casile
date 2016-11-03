@@ -81,9 +81,9 @@ export SILE_PATH := $(TOOLS)/
 
 .ONESHELL:
 .SECONDEXPANSION:
-.PHONY: all ci clean init sync_pre sync_post $(TARGETS)
+.PHONY: all ci clean init sync_pre sync_post $(TARGETS) %.app
 .SECONDARY:
-.PRECIOUS: %.pdf %.sil
+.PRECIOUS: %.pdf %.sil %.toc
 
 all: $(TARGETS)
 
@@ -105,11 +105,11 @@ endef
 sync_pre:
 	$(call sync_owncloud)
 	-$(PRE_SYNC) && rsync -ctv \
-		$(foreach FORMAT,$(FORMATS),$(OUTPUT)/*-$(FORMAT)*p{df,ng} $(OUTPUT)/*.$(FORMAT)) $(BASE)/
+		$(foreach FORMAT,$(FORMATS),$(OUTPUT)/*-$(FORMAT)*.{pdf,info,png} $(OUTPUT)/*.$(FORMAT)) $(BASE)/
 
 sync_post:
 	-rsync -ctv \
-		$(foreach FORMAT,$(FORMATS),*-$(FORMAT)*p{df,ng} *.$(FORMAT)) $(OUTPUT)/
+		$(foreach FORMAT,$(FORMATS),*-$(FORMAT)*.{pdf,info,png} *.$(FORMAT)) $(OUTPUT)/
 	$(call sync_owncloud)
 
 %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) $(MAKEFILE_LIST) ;
@@ -131,9 +131,9 @@ sync_post:
 	fi
 	# If we have a specil cover page for this format, swap it out for the half title page
 	if [[ -f $*-kapak.pdf ]]; then
-		pdftk $@ dump_data_utf8 output $*.info
+		pdftk $@ dump_data_utf8 output $*.dat
 		pdftk C=$*-kapak.pdf B=$@ cat C1 B2-end output $*.tmp.pdf
-		pdftk $*.tmp.pdf update_info_utf8 $*.info output $@
+		pdftk $*.tmp.pdf update_info_utf8 $*.dat output $@
 		rm $*.tmp.pdf
 	fi
 
@@ -224,7 +224,9 @@ endef
 
 %.sil.toc: %.pdf ;
 
-%.app: %-app.sil.toc %-app.pdf %-app-kapak.pdf $(MAKEFILE_LIST) $(TOOLS)/bin/toc2breaks.lua
+%.app: %-app.info ;
+
+%-app.info: %-app.sil.toc %-app.pdf %-app-kapak.pdf $(MAKEFILE_LIST) $(TOOLS)/bin/toc2breaks.lua
 	echo -e "# $*\n" > $@
 	$(TOOLS)/bin/toc2breaks.lua $< |\
 		while read no range; do \
