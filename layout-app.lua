@@ -2,14 +2,36 @@ SILE.scratch.layout = "app"
 
 local book = SILE.require("classes/book");
 book:defineMaster({ id = "right", firstContentFrame = "content", frames = {
-  content = { left = "2mm", right = "100%pw-2mm", top = "12mm", bottom = "top(footnotes)" },
-  runningHead =  { left = "left(content)", right = "right(content)", top = "top(content)-10mm", bottom = "top(content)-2mm" },
+  content = { left = "2mm", right = "100%pw-2mm", top = "16mm", bottom = "top(footnotes)" },
+  runningHead =  { left = "left(content)", right = "right(content)", top = "top(content)-14mm", bottom = "top(content)-2mm" },
   footnotes = { left = "left(content)", right = "right(content)", bottom = "100%ph-2mm", height = "0" },
 }})
 book:defineMaster({ id = "left", firstContentFrame = "content", frames = {} })
 book:loadPackage("twoside", { oddPageMaster = "right", evenPageMaster = "left" });
 book:mirrorMaster("right", "left")
 SILE.call("switch-master-one-page", { id = "right" })
+
+SILE.registerCommand("book:right-running-head", function (options, content)
+  SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
+  SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
+  SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
+  SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
+  SILE.call("book:left-running-head-font", {}, function ()
+    SILE.call("center", {}, function()
+      SILE.call("meta:title")
+    end)
+  end)
+  SILE.call("skip", { height = "2pt" })
+  SILE.call("book:right-running-head-font", {}, SILE.scratch.headers.right)
+  SILE.call("hfill")
+  SILE.call("book:page-number-font", {}, { SILE.formatCounter(SILE.scratch.counters.folio) })
+  SILE.call("skip", { height = "-4pt" })
+  SILE.call("fullrule")
+end)
+
+SILE.registerCommand("book:left-running-head", function (options, content)
+  SILE.call("book:right-running-head")
+end)
 
 local oldImprintFont = SILE.Commands["imprint:font"]
 SILE.registerCommand("imprint:font", function (options, content)
