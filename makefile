@@ -7,7 +7,7 @@ SHELL = bash
 OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)
 SOURCES := $(wildcard *.md)
 TARGETS := ${SOURCES:.md=}
-FORMATS ?= pdf epub mobi
+FORMATS ?= pdf epub mobi app
 LAYOUTS ?= a4 a5trim octavo halfletter cep app
 PRINTS ?=
 #PRINTS ?= kesme kesme-ciftyonlu
@@ -109,7 +109,7 @@ sync_post:
 
 %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) $(MAKEFILE_LIST) ;
 
-%.pdf: %.sil $(TOOLS)/viachristus.lua $$(shell [[ $$* =~ -app ]] && echo $$*-bolumler.md) $(MAKEFILE_LIST)
+%.pdf: %.sil $(TOOLS)/viachristus.lua $(MAKEFILE_LIST)
 	@$(shell test -f "$<" || echo exit 0)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
@@ -218,7 +218,7 @@ endef
 
 %.sil.toc: %.pdf ;
 
-%-app-bolumler.md: %-app.sil.toc %-app.pdf $(MAKEFILE_LIST) $(TOOLS)/bin/toc2breaks.lua
+%.app: %-app.sil.toc %-app.pdf $(MAKEFILE_LIST) $(TOOLS)/bin/toc2breaks.lua
 	echo -e "# $*\n" > $@
 	$(TOOLS)/bin/toc2breaks.lua $< |\
 		while read no range; do \
