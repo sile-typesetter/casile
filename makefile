@@ -227,8 +227,7 @@ endef
 
 %.app: %-app.info ;
 
-# %-app.info: %-app.sil.toc %-app.pdf %-app-kapak.pdf $(MAKEFILE_LIST) $(TOOLS)/bin/toc2breaks.lua $(TOOLS)/bin/share_link.py
-%-app.info: %-app.sil.toc %-app.pdf %-app-kapak.pdf $(MAKEFILE_LIST) $(TOOLS)/bin/toc2breaks.lua $(TOOLS)/bin/share_link.py
+%-app.info: %-app.sil.toc %-app.pdf %-app-kapak.png $(MAKEFILE_LIST) $(TOOLS)/bin/toc2breaks.lua $(TOOLS)/bin/share_link.py
 	echo -e "# $* (Complete)\n" > $@
 	echo " * [$*-app.pdf]($$($(TOOLS)/bin/share_link.py $*-app.pdf))" >> $@ ;\
 	echo -e "\n# $* (Chunks)\n" >> $@
@@ -238,6 +237,10 @@ endef
 			pdftk $*-app.pdf cat $$range output $$output ;\
 			echo " * [$$output]($$($(TOOLS)/bin/share_link.py $$output))" >> $@ ;\
 		done
+	echo -e "\n# $* (Cover)\n" >> $@
+	echo " * [$*-app-kapak.png]($$($(TOOLS)/bin/share_link.py $*-app-kapak.png))" >> $@
+	echo -e "\n# $* (Ebooks)\n" >> $@
+	echo " * [$*-app-kapak.png]($$($(TOOLS)/bin/share_link.py $*-app-kapak.png))" >> $@
 
 %-app-kapak.png: %-epub-kapak.png
 	cp $^ $@
