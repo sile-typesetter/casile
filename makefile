@@ -105,11 +105,11 @@ endef
 sync_pre:
 	$(call sync_owncloud)
 	-$(PRE_SYNC) && rsync -ctv \
-		$(foreach FORMAT,$(FORMATS),$(OUTPUT)/*.$(FORMAT)) $(BASE)/
+		$(foreach FORMAT,$(FORMATS),$(OUTPUT)/*-$(FORMAT)*pdf $(OUTPUT)/*.$(FORMAT)) $(BASE)/
 
 sync_post:
 	-rsync -ctv \
-		$(foreach FORMAT,$(FORMATS),*.$(FORMAT)) $(OUTPUT)/
+		$(foreach FORMAT,$(FORMATS),*-$(FORMAT)*pdf *.$(FORMAT)) $(OUTPUT)/
 	$(call sync_owncloud)
 
 %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) $(MAKEFILE_LIST) ;
@@ -134,6 +134,7 @@ sync_post:
 		pdftk $@ dump_data_utf8 output $*.info
 		pdftk C=$*-kapak.pdf B=$@ cat C1 B2-end output $*.tmp.pdf
 		pdftk $*.tmp.pdf update_info_utf8 $*.info output $@
+		rm $*.tmp.pdf
 	fi
 
 %-kesme.pdf: %.pdf $(MAKEFILE_LIST)
