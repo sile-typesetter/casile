@@ -105,11 +105,11 @@ endef
 sync_pre:
 	$(call sync_owncloud)
 	-$(PRE_SYNC) && rsync -ctv \
-		$(foreach FORMAT,$(FORMATS),$(OUTPUT)/*-$(FORMAT)*pdf $(OUTPUT)/*.$(FORMAT)) $(BASE)/
+		$(foreach FORMAT,$(FORMATS),$(OUTPUT)/*-$(FORMAT)*p{df,ng} $(OUTPUT)/*.$(FORMAT)) $(BASE)/
 
 sync_post:
 	-rsync -ctv \
-		$(foreach FORMAT,$(FORMATS),*-$(FORMAT)*pdf *.$(FORMAT)) $(OUTPUT)/
+		$(foreach FORMAT,$(FORMATS),*-$(FORMAT)*p{df,ng} *.$(FORMAT)) $(OUTPUT)/
 	$(call sync_owncloud)
 
 %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) $(MAKEFILE_LIST) ;
@@ -224,7 +224,7 @@ endef
 
 %.sil.toc: %.pdf ;
 
-%.app: %-app.sil.toc %-app.pdf $(MAKEFILE_LIST) $(TOOLS)/bin/toc2breaks.lua
+%.app: %-app.sil.toc %-app.pdf %-app-kapak.pdf $(MAKEFILE_LIST) $(TOOLS)/bin/toc2breaks.lua
 	echo -e "# $*\n" > $@
 	$(TOOLS)/bin/toc2breaks.lua $< |\
 		while read no range; do \
@@ -233,7 +233,10 @@ endef
 			echo " * $$output" >> $@ ;\
 		done
 
-%-app-kapak.pdf: %-epub-kapak.png $(MAKEFILE_LIST)
+%-app-kapak.png: %-epub-kapak.png
+	cp $^ $@
+
+%-app-kapak.pdf: %-app-kapak.png $(MAKEFILE_LIST)
 	convert $< \
 		-resize x1280 \
 		-gravity Center \
