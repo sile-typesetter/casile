@@ -216,6 +216,17 @@ endef
 %-app.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-app.lua $$(shell test -f $$*-epub-kapak.png && echo $$*-app-kapak.pdf) $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),80mm x 128mm,false)
 
+%.sil.toc: %.pdf ;
+
+%-app-bolumler.md: %-app.sil.toc %-app.pdf $(MAKEFILE_LIST) $(TOOLS)/bin/toc2breaks.lua
+	echo -e "# $*\n" > $@
+	$(TOOLS)/bin/toc2breaks.lua $< |\
+		while read no range; do \
+			output="$*-app-$$no.pdf" ;\
+			pdftk $*-app.pdf cat $$range output $$output ;\
+			echo " * $$output" >> $@ ;\
+		done
+
 %-app-kapak.pdf: %-epub-kapak.png $(MAKEFILE_LIST)
 	convert $< \
 		-resize x1280 \
