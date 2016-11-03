@@ -242,6 +242,21 @@ endef
 	echo -e "\n# $* (Ebooks)\n" >> $@
 	echo " * [$*-app-kapak.png]($$($(TOOLS)/bin/share_link.py $*-app-kapak.png))" >> $@
 
+%-kapak-kare.png:
+	export caption=$$($(TOOLS)/bin/cover_title.py $@)
+	convert \
+		-background lightgrey \
+		-fill darkblue \
+		-pointsize 256 \
+		caption:"$$caption" \
+		-resize 480x \
+		-gravity Center \
+		-extent 480x480 \
+		-bordercolor black \
+		-border 10x10 \
+		+repage \
+		$@
+
 %-app-kapak.png: %-kapak-kare.png
 	cp $^ $@
 
