@@ -1,3 +1,5 @@
+SILE.scratch.layout = "app"
+
 local book = SILE.require("classes/book");
 book:defineMaster({ id = "right", firstContentFrame = "content", frames = {
   content = { left = "2mm", right = "100%pw-2mm", top = "12mm", bottom = "top(footnotes)" },
