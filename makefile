@@ -242,7 +242,7 @@ endef
 	echo -e "\n# $* (Ebooks)\n" >> $@
 	echo " * [$*-app-kapak.png]($$($(TOOLS)/bin/share_link.py $*-app-kapak.png))" >> $@
 
-%-app-kapak.png: %-epub-kapak.png
+%-app-kapak.png: %-kapak-kare.png
 	cp $^ $@
 
 %-app-kapak.pdf: %-app-kapak.png $(MAKEFILE_LIST)
