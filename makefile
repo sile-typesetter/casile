@@ -78,6 +78,7 @@ export TEXMFHOME := $(TOOLS)/texmf
 export PATH := $(TOOLS)/bin:$(PATH)
 export HOSTNAME := $(shell hostname)
 export SILE_PATH := $(TOOLS)/
+export PROJECT := $(PROJECT)
 
 .ONESHELL:
 .SECONDEXPANSION:
@@ -226,13 +227,16 @@ endef
 
 %.app: %-app.info ;
 
-%-app.info: %-app.sil.toc %-app.pdf %-app-kapak.pdf $(MAKEFILE_LIST) $(TOOLS)/bin/toc2breaks.lua
-	echo -e "# $*\n" > $@
+# %-app.info: %-app.sil.toc %-app.pdf %-app-kapak.pdf $(MAKEFILE_LIST) $(TOOLS)/bin/toc2breaks.lua $(TOOLS)/bin/share_link.py
+%-app.info: %-app.sil.toc %-app.pdf %-app-kapak.pdf $(MAKEFILE_LIST) $(TOOLS)/bin/toc2breaks.lua $(TOOLS)/bin/share_link.py
+	echo -e "# $* (Complete)\n" > $@
+	echo " * [$*-app.pdf]($$($(TOOLS)/bin/share_link.py $*-app.pdf))" >> $@ ;\
+	echo -e "\n# $* (Chunks)\n" >> $@
 	$(TOOLS)/bin/toc2breaks.lua $< |\
 		while read no range; do \
-			output="$*-app-$$no.pdf" ;\
+			export output="$*-app-$$no.pdf" ;\
 			pdftk $*-app.pdf cat $$range output $$output ;\
-			echo " * $$output" >> $@ ;\
+			echo " * [$$output]($$($(TOOLS)/bin/share_link.py $$output))" >> $@ ;\
 		done
 
 %-app-kapak.png: %-epub-kapak.png
