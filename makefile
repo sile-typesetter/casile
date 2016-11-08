@@ -321,7 +321,7 @@ endef
 	$(call skip_if_tracked,$@)
 	convert $< -resize 1000x1600 $@
 
-%.epub %.odt %.docx: %.md $$(wildcard $$*.yml) $(MAKEFILE_LIST)
+%.epub %.odt %.docx: %.md $$(wildcard $$*.yml) %-epub-kapak.png $(MAKEFILE_LIST)
 	pandoc \
 		--smart \
 		$(TOOLS)/viachristus.yml \
