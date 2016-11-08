@@ -91,10 +91,26 @@ export PROJECT := $(PROJECT)
 
 all: $(TARGETS)
 
-ci: init clean sync_pre all sync_post stats
+ci: init clean debug sync_pre all sync_post stats
 
 clean:
 	git clean -xf
+
+debug:
+	@echo ================================================================================
+	@echo SOURCES: $(SOURCES)
+	@echo TARGETS: $(TARGETS)
+	@echo FORMATS: $(FORMATS)
+	@echo LAYOUTS: $(LAYOUTS)
+	@echo TAG: $(TAG)
+	@echo TAG_SEQ: $(TAG_SEQ)
+	@echo TAG_BASE: $(TAG_BASE)
+	@echo TAG_NAME: $(TAG_NAME)
+	@echo BRANCH: $(BRANCH)
+	@echo PARENT: $(PARENT)
+	@echo DIFF: $(DIFF)
+	@echo OUTPUT: $(OUTPUT)
+	@echo ================================================================================
 
 $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
 
