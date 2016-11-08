@@ -255,29 +255,29 @@ define draw_title
 		-stroke none \
 		-annotate 0 "$1" \
 		-trim \
-		-resize $2 -extent $3 \
-		$4 +swap \
-		-resize $3^ -extent $3 \
+		-resize $2 -resize 95% -extent $2 \
+		$3 +swap \
+		-resize $2^ -extent $2 \
 		-shave 10x10 \
 		-bordercolor black -border 10x10 \
 		-composite \
-		$5
+		$4
 endef
 
 %-kapak-kare.png: %-kapak-bg.png $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
-	$(call draw_title,$$caption,1948x,2048x2048,$<,$@)
+	$(call draw_title,$$caption,2048x2048,$<,$@)
 
 %-kapak-genis.png: %-kapak-bg.png $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
-	$(call draw_title,$$caption,x1760,3840x2160,$<,$@)
+	$(call draw_title,$$caption,3840x2160,$<,$@)
 
 %-kapak.png: %-kapak-bg.png $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
-	$(call draw_title,$$caption,1900x,2000x3200,$<,$@)
+	$(call draw_title,$$caption,2000x3200,$<,$@)
 
 %-app-kapak-kare.png: %-kapak-kare.png $(MAKEFILE_LIST)
 	convert $< -resize 1024x1024 $@
