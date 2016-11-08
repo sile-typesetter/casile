@@ -234,7 +234,7 @@ endef
 		done
 
 define skip_if_tracked
-	git ls-files --error-unmatch -- $1 2&>1 && exit 0 ||:
+	git ls-files --error-unmatch -- $1 2>/dev/null && exit 0 ||:
 endef
 
 %-kapak-bg.png: $(MAKEFILE_LIST)
@@ -277,7 +277,7 @@ endef
 %-kapak.png: %-kapak-bg.png $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
-	$(call draw_title,$$caption,x1760,2000x3200,$<,$@)
+	$(call draw_title,$$caption,1900x,2000x3200,$<,$@)
 
 %-app-kapak-kare.png: %-kapak-kare.png $(MAKEFILE_LIST)
 	convert $< -resize 1024x1024 $@
