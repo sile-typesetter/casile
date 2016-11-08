@@ -220,7 +220,7 @@ endef
 %-cep.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-cep.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),110mm x 170mm,true)
 
-%-app.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-app.lua $$(shell test -f $$*-epub-kapak.png && echo $$*-app-kapak.pdf) $(MAKEFILE_LIST)
+%-app.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png %-app-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-app.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),80mm x 128mm,false)
 
 %.sil.toc: %.pdf ;
@@ -274,15 +274,18 @@ endef
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
 	$(call draw_title,$$caption,x1760,3840x2160,$<,$@)
 
+%-kapak.png: %-kapak-bg.png $(MAKEFILE_LIST)
+	$(call skip_if_tracked,$@)
+	export caption=$$($(TOOLS)/bin/cover_title.py $@)
+	$(call draw_title,$$caption,x1760,2000x3200,$<,$@)
+
 %-app-kapak-kare.png: %-kapak-kare.png $(MAKEFILE_LIST)
 	convert $< -resize 1024x1024 $@
-	sudo beep 10
 
 %-app-kapak-genis.png: %-kapak-genis.png $(MAKEFILE_LIST)
 	convert $< -resize 1920x1080 $@
-	sudo beep 10
 
-%-app-kapak.pdf: %-app-kapak.png $(MAKEFILE_LIST)
+%-app-kapak.pdf: %-kapak.png $(MAKEFILE_LIST)
 	convert $< \
 		-resize x1280 \
 		-gravity Center \
@@ -294,6 +297,10 @@ endef
 		-quality 80 \
 		+repage \
 		$@
+
+%-epub-kapak.png: %-kapak.png $(MAKEFILE_LIST)
+	$(call skip_if_tracked,$@)
+	convert $< -resize 1000x1600 $@
 
 %.epub %.odt %.docx: %.md $$(wildcard $$*.yml) $(MAKEFILE_LIST)
 	pandoc \
