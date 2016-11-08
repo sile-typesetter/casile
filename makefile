@@ -349,3 +349,6 @@ stats: $(foreach SOURCE,$(SOURCES),$(SOURCE)-stats)
 watch:
 	( git ls-files ; cd $(TOOLS) ; git ls-files | xargs -iX echo $(TOOLS)/X ) | \
 		entr -c -p make -B DRAFT=true
+
+watchdiff:
+	git ls-files | entr -c -p git diff --color=always
