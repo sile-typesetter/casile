@@ -33,10 +33,22 @@ endif
 TAG := $(shell git describe --tags)
 TAG_SEQ := $(shell git describe --long --tags | rev | cut -d- -f2)
 ifeq ($(TAG_SEQ),0)
+
 BRANCH = master
 OUTPUT := $(OUTPUT)/$(TAG)
 PRE_SYNC = false
 DIFF = false
+
+# If our tag or branch has a slash in it, treat the first bit as a target
+# and only build that item not the whole project.
+TAG_BASE = $(shell echo $(TAG) | cut -d/ -f1)
+TAG_NAME = $(TAG)
+ifneq ($(TAG),$(TAG_BASE))
+TAG_NAME = $(shell echo $(TAG) | cut -d/ -f2)
+TARGETS = $(TAG_BASE)
+endif
+
+# Not directly on a tag
 else
 
 # If we are not on the master branch, guess the parent and output to a directory
@@ -50,15 +62,6 @@ endif
 _BRANCH = PARENT_$(subst +,_,$(subst -,_,$(BRANCH)))
 ifneq ($($(_BRANCH)),)
 PARENT = $($(_BRANCH))
-endif
-
-# If our tag or branch has a slash in it, treat the first bit as a target
-# and only build that item not the whole project.
-TAG_BASE = $(shell git describe --tags | cut -d/ -f1)
-TAG_NAME = $(TAG)
-ifneq ($(TAG),$(TAG_BASE))
-TAG_NAME = $(shell git describe --tags | cut -d/ -f2)
-TARGETS = $(TAG_BASE)
 endif
 
 endif
@@ -106,11 +109,11 @@ endef
 sync_pre:
 	$(call sync_owncloud)
 	-$(PRE_SYNC) && rsync -ctv \
-		$(foreach FORMAT,$(FORMATS),$(OUTPUT)/*-$(FORMAT)*.{pdf,info,png} $(OUTPUT)/*.$(FORMAT)) $(BASE)/
+		$(OUTPUT)/* $(BASE)/
 
 sync_post:
 	-rsync -ctv \
-		$(foreach FORMAT,$(FORMATS),*-$(FORMAT)*.{pdf,info,png} *.$(FORMAT)) $(OUTPUT)/
+		$(foreach TARGET,$(TARGETS),$(foreach FORMAT,$(FORMATS),$(TARGET)*-$(FORMAT)*.{pdf,info,png} $(TARGET)*.$(FORMAT))) $(OUTPUT)/
 	$(call sync_owncloud)
 
 %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) $(MAKEFILE_LIST) ;
