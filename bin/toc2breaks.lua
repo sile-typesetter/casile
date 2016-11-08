@@ -2,19 +2,19 @@
 
 -- local dump = require("pl.pretty").dump
 
-local tocfile = io.open(arg[1], "r")
+local project = os.getenv("PROJECT")
+local basename = arg[1]
+
+local tocfile = io.open(arg[2], "r")
 if not tocfile then return false end
 local doc = tocfile:read("*a")
 tocfile:close()
 local toc = assert(loadstring(doc))()
 
-local basename = arg[2]
-local share = arg[3]
-
 local yaml = require("yaml")
-local meta = yaml.loadpath(basename .. ".yml")
+local meta = yaml.loadpath(arg[3])
 
--- local meta = yaml.load(doc)
+local share = "https://owncloud.alerque.com/" .. (meta.owncloudshare and "index.php/s/" .. meta.owncloudshare .. "/download?path=%2F&files=" or "remote.php/webdav/viachristus/" .. project .. "/")
 
 local infofile = io.open(arg[4], "w")
 if not infofile  then return false end
@@ -37,6 +37,9 @@ end
 
 infow("AUTHOR:" )
 infow(meta.author, true)
+
+infow("ABSTRACT:")
+infow(meta.abstract, true)
 
 -- Drop the first TOC entry, the top of the file will be 1
 table.remove(toc, 1)
@@ -65,15 +68,13 @@ infow("WHOLE FILE:")
 local out = basename .. "-app.pdf"
 infow(share .. out, true)
 
-infow("--------------------------------------------------------------------------------", true)
-
 -- Output a list suitable for shell script parsing
 for i, v in pairs(breaks) do
   local n = string.format("%03d", i)
   local out = basename .. "-app-" .. n .. ".pdf"
 
   -- Fieds expected by makefile to pass to pdftk
-  print(n, v, out)
+  print(v, out)
 
   -- Human readable info for copy/paste to the church app
   infow("CHUNK " .. i  .. ":")

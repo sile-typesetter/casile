@@ -223,13 +223,13 @@ endef
 %-app.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-app.lua $$(shell test -f $$*-epub-kapak.png && echo $$*-app-kapak.pdf) $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),80mm x 128mm,false)
 
-%.sil.toc: %.pdf ;
+# %.sil.toc: %.pdf ;
 
-%.app: %-app.info ;
+%.app: %-app.info %-app-kapak.png $(MAKEFILE_LIST);
 
-%-app.info: %-app.sil.toc %-app.pdf %-app-kapak.png $(MAKEFILE_LIST) $(TOOLS)/bin/toc2breaks.lua $(TOOLS)/bin/share_link.py
-	$(TOOLS)/bin/toc2breaks.lua $< $* "$(shell $(TOOLS)/bin/share_link.py $*)" $@ |\
-		while read no range out; do \
+%-app.info: %-app.sil.toc %.yml
+	$(TOOLS)/bin/toc2breaks.lua $* $^ $@ |\
+		while read range out; do \
 			pdftk $*-app.pdf cat $$range output $$out ;\
 		done
 
