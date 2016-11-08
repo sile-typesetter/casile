@@ -43,8 +43,8 @@ infow("ABSTRACT:")
 infow(meta.abstract, true)
 
 local labels = {}
--- loctal setlabel = function(i, str) labels[i] = str end
 
+-- Label the first chunk before we skip to the content
 labels[1] = toc[1].label[1]
 
 -- Drop the first TOC entry, the top of the file will be 1

@@ -223,7 +223,7 @@ endef
 %-app.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-app.lua $$(shell test -f $$*-epub-kapak.png && echo $$*-app-kapak.pdf) $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),80mm x 128mm,false)
 
-# %.sil.toc: %.pdf ;
+%.sil.toc: %.pdf ;
 
 %.app: %-app.info %-app-kapak.png $(MAKEFILE_LIST);
 
