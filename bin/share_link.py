@@ -6,7 +6,7 @@ import yaml
 import re
 
 file = sys.argv[1]
-metafile = re.sub("-.*$", ".yml", file)
+metafile = file + ".yml"
 project = os.environ["PROJECT"]
 metadata = open(metafile, 'r').read()
 yamldata = yaml.load(metadata)
@@ -23,5 +23,5 @@ else:
     prefix = "remote.php/webdav/viachristus/"
     infix = project + "/"
 
-print (domain + prefix + infix + file)
+print (domain + prefix + infix)
 
