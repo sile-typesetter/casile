@@ -1,6 +1,7 @@
 #!/bin/env lua
 
--- local dump = require("pl.pretty").dump
+local dump = require("pl.pretty").dump
+local d = function(t) dump(t, "/dev/stderr") end
 
 local project = os.getenv("PROJECT")
 local basename = arg[1]
@@ -25,7 +26,7 @@ local infow = function(str, endpar)
   infofile:write(str .. "\n" .. endpar)
 end
 
-infow("BOOK NAME:")
+infow("TITLE:")
 infow(meta.title, true)
 
 infow("SUBTITLE:")
@@ -41,6 +42,11 @@ infow(meta.author, true)
 infow("ABSTRACT:")
 infow(meta.abstract, true)
 
+local labels = {}
+-- loctal setlabel = function(i, str) labels[i] = str end
+
+labels[1] = toc[1].label[1]
+
 -- Drop the first TOC entry, the top of the file will be 1
 table.remove(toc, 1)
 
@@ -48,11 +54,14 @@ local lastpage = 1
 local breaks = { 1 }
 
 -- Get a table of major (more that 2 pages apart) TOC entries
-for k, tocentry in pairs(toc) do
+for i, tocentry in pairs(toc) do
   local pageno = tonumber(tocentry.pageno)
   if pageno > lastpage + 2 then
     table.insert(breaks, pageno)
+    labels[#breaks] = tocentry.label[1]
     lastpage = pageno
+  else
+    labels[#breaks] =  labels[#breaks] .. ", " .. tocentry.label[1]
   end
 end
 
@@ -64,7 +73,7 @@ for i, v in pairs(breaks) do
 end
 breaks[#breaks] = breaks[#breaks] .. "-end"
 
-infow("WHOLE FILE:")
+infow("SINGLE PDF:")
 local out = basename .. "-app.pdf"
 infow(share .. out, true)
 
@@ -78,6 +87,7 @@ for i, v in pairs(breaks) do
 
   -- Human readable info for copy/paste to the church app
   infow("CHUNK " .. i  .. ":")
+  infow(labels[i])
   infow(share .. out, true)
 end
 
