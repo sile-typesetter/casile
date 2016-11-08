@@ -225,7 +225,7 @@ endef
 
 %.sil.toc: %.pdf ;
 
-%.app: %-app.info %-app-kapak.png $(MAKEFILE_LIST);
+%.app: %-app.info %-app-kapak-kare.png %-app-kapak-genis.png $(MAKEFILE_LIST);
 
 %-app.info: %-app.sil.toc %.yml
 	$(TOOLS)/bin/toc2breaks.lua $* $^ $@ |\
@@ -233,23 +233,54 @@ endef
 			pdftk $*-app.pdf cat $$range output $$out ;\
 		done
 
-%-kapak-kare.png:
-	export caption=$$($(TOOLS)/bin/cover_title.py $@)
-	convert \
-		-background lightgrey \
-		-fill darkblue \
-		-pointsize 256 \
-		caption:"$$caption" \
-		-resize 480x \
-		-gravity Center \
-		-extent 480x480 \
-		-bordercolor black \
-		-border 10x10 \
-		+repage \
-		$@
+define skip_if_tracked
+	git ls-files --error-unmatch -- $1 2&>1 && exit 0 ||:
+endef
 
-%-app-kapak.png: %-kapak-kare.png
-	cp $^ $@
+%-kapak-bg.png: $(MAKEFILE_LIST)
+	$(call skip_if_tracked,$@)
+	convert -size 64x64 xc:darkgray +repage $@
+
+define draw_title
+	convert  \
+		-size 5000x4000 xc:none -background none \
+		-gravity center \
+		-pointsize 256 -kerning -10 \
+		-font Libertinus-Sans-Bold \
+		-fill black -stroke none \
+		-annotate 0 "$1" \
+		-blur 80x20 \
+		-fill white -stroke black -strokewidth 10 \
+		-annotate 0 "$1" \
+		-stroke none \
+		-annotate 0 "$1" \
+		-trim \
+		-resize $2 -extent $3 \
+		$4 +swap \
+		-resize $3^ -extent $3 \
+		-shave 10x10 \
+		-bordercolor black -border 10x10 \
+		-composite \
+		$5
+endef
+
+%-kapak-kare.png: %-kapak-bg.png $(MAKEFILE_LIST)
+	$(call skip_if_tracked,$@)
+	export caption=$$($(TOOLS)/bin/cover_title.py $@)
+	$(call draw_title,$$caption,1948x,2048x2048,$<,$@)
+
+%-kapak-genis.png: %-kapak-bg.png $(MAKEFILE_LIST)
+	$(call skip_if_tracked,$@)
+	export caption=$$($(TOOLS)/bin/cover_title.py $@)
+	$(call draw_title,$$caption,x1760,3840x2160,$<,$@)
+
+%-app-kapak-kare.png: %-kapak-kare.png $(MAKEFILE_LIST)
+	convert $< -resize 1024x1024 $@
+	sudo beep 10
+
+%-app-kapak-genis.png: %-kapak-genis.png $(MAKEFILE_LIST)
+	convert $< -resize 1920x1080 $@
+	sudo beep 10
 
 %-app-kapak.pdf: %-app-kapak.png $(MAKEFILE_LIST)
 	convert $< \
