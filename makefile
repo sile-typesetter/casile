@@ -20,7 +20,7 @@ PRE_SYNC ?= true
 SILE ?= sile
 
 # CI runners need help getting the branch name because of funky checkouts
-BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
+BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 ifeq ($(BRANCH),HEAD)
 ifeq ($(shell git rev-parse master),$(shell git rev-parse HEAD))
 BRANCH = master
@@ -30,8 +30,8 @@ endif
 endif
 
 # If we are directly on a tagged commit, build it to a special directory
-TAG = $(shell git describe --tags)
-TAG_SEQ = $(shell git describe --long --tags | rev | cut -d- -f2)
+TAG := $(shell git describe --tags)
+TAG_SEQ := $(shell git describe --long --tags | rev | cut -d- -f2)
 ifeq ($(TAG_SEQ),0)
 BRANCH = master
 OUTPUT := $(OUTPUT)/$(TAG)
@@ -52,8 +52,6 @@ ifneq ($($(_BRANCH)),)
 PARENT = $($(_BRANCH))
 endif
 
-endif
-
 # If our tag or branch has a slash in it, treat the first bit as a target
 # and only build that item not the whole project.
 TAG_BASE = $(shell git describe --tags | cut -d/ -f1)
@@ -61,6 +59,8 @@ TAG_NAME = $(TAG)
 ifneq ($(TAG),$(TAG_BASE))
 TAG_NAME = $(shell git describe --tags | cut -d/ -f2)
 TARGETS = $(TAG_BASE)
+endif
+
 endif
 
 # If there is a layout associated with a tag, only build that layout
