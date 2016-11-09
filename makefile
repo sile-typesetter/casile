@@ -8,7 +8,7 @@ OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)
 SOURCES := $(wildcard *.md)
 TARGETS := ${SOURCES:.md=}
 FORMATS ?= pdf epub mobi app
-LAYOUTS ?= a4 a5trim octavo halfletter cep app
+LAYOUTS ?= a4 a4ciltli a5trim octavo halfletter cep app
 PRINTS ?=
 #PRINTS ?= kesme kesme-ciftyonlu
 DRAFT ?= false
@@ -225,6 +225,9 @@ define build_sile
 endef
 
 %-a4.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua $(MAKEFILE_LIST)
+	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
+
+%-a4ciltli.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a4ciltli.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
 
 %-a5trim.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a5trim.lua $(MAKEFILE_LIST)
