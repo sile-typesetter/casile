@@ -16,8 +16,10 @@ DIFF ?= true
 CROP ?= false
 STATS_MONTHS ?= 1
 PRE_SYNC ?= true
+DEBUG = false
 
 SILE ?= sile
+SILE_DEBUG = viachristus
 
 # CI runners need help getting the branch name because of funky checkouts
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
@@ -80,8 +82,13 @@ endif
 export TEXMFHOME := $(TOOLS)/texmf
 export PATH := $(TOOLS)/bin:$(PATH)
 export HOSTNAME := $(shell hostname)
-export SILE_PATH := $(TOOLS)/
+export SILE_PATH := $(TOOLS)
 export PROJECT := $(PROJECT)
+
+ifeq ($(DEBUG),true)
+SILE = /home/caleb/projects/sile/sile
+export SILE_PATH = /home/caleb/projects/sile/;$(TOOLS)
+endif
 
 .ONESHELL:
 .SECONDEXPANSION:
@@ -109,7 +116,11 @@ debug:
 	@echo BRANCH: $(BRANCH)
 	@echo PARENT: $(PARENT)
 	@echo DIFF: $(DIFF)
+	@echo DEBUG: $(DEBUG)
 	@echo OUTPUT: $(OUTPUT)
+	@echo TOOLS: $(TOOLS)
+	@echo SILE: $(SILE)
+	@echo SILE_PATH: $(SILE_PATH)
 	@echo ================================================================================
 
 $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
@@ -140,7 +151,7 @@ sync_post:
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
 	# account for TOC issue: https://github.com/simoncozens/sile/issues/230
 	if $(DRAFT); then \
-		$(SILE) -d viachristus $< -o $@ ;\
+		$(SILE) -d $(SILE_DEBUG) $< -o $@ ;\
 	else \
 		export pg0="$$(test -f $<.toc && ( pdfinfo $@ | grep Pages: | awk '{print $$2}' ) || echo 0)" ;\
 		$(SILE) $< -o $@ ;\
