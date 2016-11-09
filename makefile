@@ -256,7 +256,7 @@ define skip_if_tracked
 	git ls-files --error-unmatch -- $1 2>/dev/null && exit 0 ||:
 endef
 
-%-kapak-bg.png: $(MAKEFILE_LIST)
+%-kapak-zemin.png: $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
 	convert -size 64x64 xc:darkgray +repage $@
 
@@ -283,17 +283,17 @@ define draw_title
 		$4
 endef
 
-%-kapak-kare.png: %-kapak-bg.png $(MAKEFILE_LIST)
+%-kapak-kare.png: %-kapak-zemin.png $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
 	$(call draw_title,$$caption,2048x2048,$<,$@)
 
-%-kapak-genis.png: %-kapak-bg.png $(MAKEFILE_LIST)
+%-kapak-genis.png: %-kapak-zemin.png $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
 	$(call draw_title,$$caption,3840x2160,$<,$@)
 
-%-kapak.png: %-kapak-bg.png $(MAKEFILE_LIST)
+%-kapak.png: %-kapak-zemin.png $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
 	$(call draw_title,$$caption,2000x3200,$<,$@)
