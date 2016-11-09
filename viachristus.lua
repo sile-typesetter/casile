@@ -6,8 +6,6 @@ SILE.require("packages/rebox");
 SILE.require("packages/rules")
 SILE.require("packages/image")
 
-publisher = "viachristus"
-
 SILE.require("imprint");
 SILE.require("hyphenation_exceptions");
 SILE.require("inline_styles");
@@ -81,31 +79,6 @@ SILE.require("packages/linespacing")
 SILE.settings.set("linespacing.method", "fit-font")
 SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.6ex plus 0.2ex minus 0.2ex"))
 SILE.settings.set("linebreak.hyphenPenalty", 300)
-
-local plain = SILE.require("classes/plain");
-local book = SILE.require("classes/book");
-
-book.endPage = function (self)
-  book:moveTocNodes()
-
-  if (not SILE.scratch.headers.skipthispage) then
-    SILE.settings.pushState()
-    SILE.settings.reset()
-    if (book:oddPage() and SILE.scratch.headers.right) then
-      SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
-        SILE.call("book:right-running-head")
-      end)
-    elseif (not(book:oddPage()) and SILE.scratch.headers.left) then
-      SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
-        SILE.call("book:left-running-head")
-      end)
-    end
-    SILE.settings.popState()
-  else
-    SILE.scratch.headers.skipthispage = false
-  end
-  return plain.endPage(book)
-end
 
 SILE.registerCommand("book:right-running-head", function (options, content)
   SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
