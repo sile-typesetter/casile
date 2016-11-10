@@ -212,7 +212,8 @@ md_cleanup:
 	git diff-index --quiet --cached HEAD || git ci -m "[auto] Replace straight quotation marks with typographic variants"
 
 define md_cleanup
-	smart_quotes.pl
+	smart_quotes.pl |
+	unicode_symbols.pl
 endef
 
 define preprocess_markdown
