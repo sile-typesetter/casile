@@ -214,10 +214,12 @@ endef
 
 md_cleanup:
 	$(call find_and_munge,*.md,smart_quotes.pl,Replace straight quotation marks with typographic variants)
+	$(call find_and_munge,*.md,figure_dash.pl,Convert hyphens between numbers to figure dashes)
 	$(call find_and_munge,*.md,unicode_symbols.pl,Replace lazy ASCI shortcuts with Unicode symbols)
 
 define md_cleanup
 	smart_quotes.pl |
+	figure_dash.pl |
 	unicode_symbols.pl
 endef
 
