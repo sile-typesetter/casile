@@ -211,18 +211,20 @@ md_cleanup:
 		done
 	git diff-index --quiet --cached HEAD || git ci -m "[auto] Replace straight quotation marks with typographic variants"
 
+define md_cleanup
+	smart_quotes.pl
+endef
+
 define preprocess_markdown
 	if [[ "$(BRANCH)" == master ]]; then
-		m4 $(TOOLS)/viachristus.m4 $(wildcard $(PROJECT).m4) $(wildcard $(basename $1).m4) $1 |
-			smart_quotes.pl
+		m4 $(TOOLS)/viachristus.m4 $(wildcard $(PROJECT).m4) $(wildcard $(basename $1).m4) $1
 	else
 		($(DIFF) && branch2criticmark.bash $(PARENT) $1 || m4 $(TOOLS)/viachristus.m4 $(wildcard $(PROJECT).m4) $(wildcard $(basename $1).m4) $1) |
-			smart_quotes.pl |
 			sed -e 's#{==#\\criticHighlight{#g' -e 's#==}#}#g' \
 				-e 's#{>>#\\criticComment{#g'   -e 's#<<}#}#g' \
 				-e 's#{++#\\criticAdd{#g'       -e 's#++}#}#g' \
 				-e 's#{--#\\criticDel{#g'       -e 's#--}#}#g'
-	fi
+	fi | $(call md_cleanup)
 endef
 
 define build_sile
