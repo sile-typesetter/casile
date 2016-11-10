@@ -13,7 +13,7 @@ SILE.registerCommand("titlepage", function (options, content)
     end)
     if SILE.Commands["meta:subtitle"] then
       SILE.call("bigskip")
-      SILE.call("book:titlepage-subtitle-font", { size = "6%pw" }, function ()
+      SILE.call("book:titlepage-subtitle-font", { size = "4%pw" }, function ()
         SILE.call("wrapsubtitle", {}, function ()
           SILE.call("meta:subtitle")
         end)
