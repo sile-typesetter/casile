@@ -160,7 +160,7 @@ sync_post:
 		export pg2="$$(pdfinfo $@ | grep Pages: | awk '{print $$2}')" ;\
 		[[ $${pg1} -ne $${pg2} ]] && $(SILE) $< -o $@ ||: ;\
 	fi
-	# If we have a specil cover page for this format, swap it out for the half title page
+	# If we have a special cover page for this format, swap it out for the half title page
 	if [[ -f $*-kapak.pdf ]]; then
 		pdftk $@ dump_data_utf8 output $*.dat
 		pdftk C=$*-kapak.pdf B=$@ cat C1 B2-end output $*.tmp.pdf
@@ -235,7 +235,7 @@ define build_sile
 		<($(call preprocess_markdown,$1)) -o $2-$3.sil
 endef
 
-%-a4.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua $(MAKEFILE_LIST)
+%-a4.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png %-a4-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
 
 %-a4ciltli.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a4ciltli.lua $(MAKEFILE_LIST)
@@ -317,6 +317,21 @@ endef
 
 %-app-kapak-genis.png: %-kapak-genis.png $(MAKEFILE_LIST)
 	convert $< -resize 1920x1080 $@
+
+%-kapak-isoa.png: %-kapak-zemin.png $(MAKEFILE_LIST)
+	$(call skip_if_tracked,$@)
+	export caption=$$($(TOOLS)/bin/cover_title.py $@)
+	$(call draw_title,$$caption,4000x5657,$<,$@)
+
+%-a4-kapak.pdf: %-kapak-isoa.png $(MAKEFILE_LIST)
+	convert  $< \
+		-bordercolor none -border 300x424 \
+		-resize 2000x2828 \
+		-page A4  \
+		-compress jpeg \
+		-quality 80 \
+		+repage \
+		$@
 
 %-app-kapak.pdf: %-kapak.png $(MAKEFILE_LIST)
 	convert $< \
