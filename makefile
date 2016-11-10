@@ -92,7 +92,7 @@ endif
 
 .ONESHELL:
 .SECONDEXPANSION:
-.PHONY: all ci clean init sync_pre sync_post $(TARGETS) %.app
+.PHONY: all ci clean init sync_pre sync_post $(TARGETS) %.app md_cleanup
 .SECONDARY:
 .PRECIOUS: %.pdf %.sil %.toc
 
@@ -200,6 +200,16 @@ endef
 define urlinfo
 	echo -en "https://yayinlar.viachristus.com/$(basename $1)"
 endef
+
+md_cleanup:
+	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
+	find $(BASE) -name '*.md' |
+		while read f; do
+			git diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
+			smart_quotes.pl < $$f | sponge $$f
+			git add -- $$f
+		done
+	git diff-index --quiet --cached HEAD || git ci -m "[auto] Replace straight quotation marks with typographic variants"
 
 define preprocess_markdown
 	if [[ "$(BRANCH)" == master ]]; then
