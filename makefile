@@ -161,7 +161,7 @@ sync_post:
 		[[ $${pg1} -ne $${pg2} ]] && $(SILE) $< -o $@ ||: ;\
 	fi
 	# If we have a special cover page for this format, swap it out for the half title page
-	if [[ -f $*-kapak.pdf ]]; then
+	if ! $(DRAFT) && [[ -f $*-kapak.pdf ]]; then
 		pdftk $@ dump_data_utf8 output $*.dat
 		pdftk C=$*-kapak.pdf B=$@ cat C1 B2-end output $*.tmp.pdf
 		pdftk $*.tmp.pdf update_info_utf8 $*.dat output $@
