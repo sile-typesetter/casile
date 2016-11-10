@@ -340,7 +340,7 @@ endef
 		-crop 800x1280+0+0! \
 		-gravity SouthWest \
 		-extent 800x1280 \
-		-page 226.64x362.624 \
+		-page 226.772x362.834 \
 		-compress jpeg \
 		-quality 80 \
 		+repage \
