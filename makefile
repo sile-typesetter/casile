@@ -201,15 +201,20 @@ define urlinfo
 	echo -en "https://yayinlar.viachristus.com/$(basename $1)"
 endef
 
-md_cleanup:
+define find_and_munge
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
-	find $(BASE) -name '*.md' |
+	find $(BASE) -name '$1' |
 		while read f; do
 			git diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
-			smart_quotes.pl < $$f | sponge $$f
+			$2 < $$f | sponge $$f
 			git add -- $$f
 		done
-	git diff-index --quiet --cached HEAD || git ci -m "[auto] Replace straight quotation marks with typographic variants"
+	git diff-index --quiet --cached HEAD || git ci -m "[auto] $3"
+endef
+
+md_cleanup:
+	$(call find_and_munge,*.md,smart_quotes.pl,Replace straight quotation marks with typographic variants)
+	$(call find_and_munge,*.md,unicode_symbols.pl,Replace lazy ASCI shortcuts with Unicode symbols)
 
 define md_cleanup
 	smart_quotes.pl |
