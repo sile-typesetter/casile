@@ -1,15 +1,9 @@
 SILE.scratch.layout = "app"
 
-local book = SILE.require("classes/book");
-book:defineMaster({ id = "right", firstContentFrame = "content", frames = {
-  content = { left = "2mm", right = "100%pw-2mm", top = "16mm", bottom = "top(footnotes)" },
-  runningHead =  { left = "left(content)", right = "right(content)", top = "top(content)-14mm", bottom = "top(content)-2mm" },
-  footnotes = { left = "left(content)", right = "right(content)", bottom = "100%ph-2mm", height = "0" },
-}})
-book:defineMaster({ id = "left", firstContentFrame = "content", frames = {} })
-book:loadPackage("twoside", { oddPageMaster = "right", evenPageMaster = "left" });
-book:mirrorMaster("right", "left")
-SILE.call("switch-master-one-page", { id = "right" })
+local class = SILE.documentState.documentClass
+class:declareFrame("content", { left = "2mm", right = "100%pw-2mm", top = "16mm", bottom = "top(footnotes)" })
+class:declareFrame("runningHead",  { left = "left(content)", right = "right(content)", top = "top(content)-14mm", bottom = "top(content)-2mm" })
+class:declareFrame("footnotes", { left = "left(content)", right = "right(content)", bottom = "100%ph-2mm", height = "0" })
 
 SILE.registerCommand("book:right-running-head", function (options, content)
   SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)

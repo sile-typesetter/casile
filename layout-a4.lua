@@ -1,14 +1,7 @@
 local class = SILE.documentState.documentClass
-class:loadPackage("masters")
-class:defineMaster({ id = "right", firstContentFrame = "content", frames = {
-  content = { left = "32mm", right = "100%pw-32mm", top = "36mm", bottom = "top(footnotes)" },
-  runningHead = { left = "left(content)", right = "right(content)", top = "top(content)-12mm", bottom = "top(content)-2mm" },
-  footnotes = { left = "left(content)", right = "right(content)", height = "0", bottom = "100%ph-24mm"}
-}})
-class:defineMaster({ id = "left", firstContentFrame = "content", frames = {} })
-class:loadPackage("twoside", { oddPageMaster = "right", evenPageMaster = "left" });
-class:mirrorMaster("right", "left")
-SILE.call("switch-master-one-page", {id = "right"})
+class:declareFrame("content", { left = "32mm", right = "100%pw-32mm", top = "36mm", bottom = "top(footnotes)" })
+class:declareFrame("runningHead", { left = "left(content)", right = "right(content)", top = "top(content)-12mm", bottom = "top(content)-2mm" })
+class:declareFrame("footnotes", { left = "left(content)", right = "right(content)", height = "0", bottom = "100%ph-24mm"})
 
 SILE.registerCommand("meta:distribution", function (options, content)
   SILE.call("font", { weight = 600, style = "Bold" }, { "Yayın: " })
