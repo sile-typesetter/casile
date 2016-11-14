@@ -23,8 +23,9 @@ SILE.call("footnote:separator", function ()
   SILE.call("smallskip")
 end)
 
+local oldPreTr = SILE.Commands["book:chapter:pre:tr"]
 SILE.registerCommand("book:chapter:pre:tr", function ()
-  SILE.call("book:chapternumfont", { "BÖLÜM " })
+  SILE.call("uppercase", {}, oldPreTr)
 end)
 
 SILE.registerCommand("book:chapter:post", function ()
