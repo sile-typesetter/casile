@@ -28,7 +28,7 @@ class:defineMaster({
 class:mirrorMaster("right", "left")
 SILE.call("switch-master-one-page", { id = "right" })
 
-SILE.registerCommand("book:right-running-head", function (options, content)
+SILE.registerCommand("output-right-running-head", function (options, content)
   SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
   SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
   SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
@@ -41,13 +41,13 @@ SILE.registerCommand("book:right-running-head", function (options, content)
   SILE.call("skip", { height = "2pt" })
   SILE.call("book:right-running-head-font", {}, SILE.scratch.headers.right)
   SILE.call("hfill")
-  SILE.call("book:page-number-font", {}, { SILE.formatCounter(SILE.scratch.counters.folio) })
+  SILE.call("book:page-number-font", {},  { SILE.formatCounter(SILE.scratch.counters.folio) })
   SILE.call("skip", { height = "-4pt" })
   SILE.call("fullrule")
 end)
 
-SILE.registerCommand("book:left-running-head", function (options, content)
-  SILE.call("book:right-running-head")
+SILE.registerCommand("output-left-running-head", function (options, content)
+  SILE.call("output-right-running-head")
 end)
 
 local oldImprintFont = SILE.Commands["imprint:font"]

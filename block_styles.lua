@@ -104,9 +104,7 @@ SILE.registerCommand("chapter", function (options, content)
     end)
   end)
   SILE.call("left-running-head")
-  SILE.Commands["right-running-head"]({}, function ()
-    SILE.call("book:right-running-head-font", {}, content)
-  end)
+  SILE.call("right-running-head", {}, content)
   SILE.scratch.headers.skipthispage = true
   SILE.call("chapter:after", options, content)
 end, "Begin a new chapter");
