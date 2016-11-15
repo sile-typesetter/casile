@@ -8,7 +8,7 @@ class:defineMaster({
         left = "38mm",
         right = "100%pw-26mm",
         top = "bottom(runningHead)+4mm",
-        bottom = "top(footnotes)-4mm"
+        bottom = "top(footnotes)"
       },
       runningHead = {
         left = "left(content)",

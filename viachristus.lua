@@ -16,11 +16,11 @@ SILE.settings.set("typesetter.overfulltolerance", SILE.length.parse("0.2ex"))
 
 SILE.call("language", { main = "tr" })
 
-SILE.call("footnote:separator", function ()
+SILE.call("footnote:separator", {}, function ()
   SILE.call("rebox", { width = "6em", height = "2ex" }, function ()
     SILE.call("hrule", { width = "5em", height = "0.2pt" })
   end)
-  SILE.call("smallskip")
+  SILE.call("medskip")
 end)
 
 local oldPreTr = SILE.Commands["book:chapter:pre:tr"]
