@@ -23,9 +23,8 @@ SILE.call("footnote:separator", {}, function ()
   SILE.call("medskip")
 end)
 
-local oldPreTr = SILE.Commands["book:chapter:pre:tr"]
 SILE.registerCommand("book:chapter:pre:tr", function ()
-  SILE.call("uppercase", {}, oldPreTr)
+  SILE.typesetter:typeset("BÖLÜM ")
 end)
 
 SILE.registerCommand("book:chapter:post", function ()
@@ -198,14 +197,17 @@ function titlecase(string)
 end
 
 SILE.registerCommand("uppercase", function(options, content)
+  content = SU.contentToString(content)
   SILE.process(inputfilter.transformContent(content, uppercase))
 end, "Typeset the enclosed text as uppercase")
 
 SILE.registerCommand("lowercase", function(options, content)
+  content = SU.contentToString(content)
   SILE.process(inputfilter.transformContent(content, lowercase))
 end, "Typeset the enclosed text as lowercase")
 
 SILE.registerCommand("titlecase", function(options, content)
+  content = SU.contentToString(content)
   SILE.process(inputfilter.transformContent(content, titlecase))
 end, "Typeset the enclosed text as titlecase")
 
