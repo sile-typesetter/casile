@@ -119,13 +119,11 @@ SILE.registerCommand("aki", function ()
 end)
 
 SILE.registerCommand("left-running-head", function (options, content)
-  local closure = SILE.settings.wrap()
-  SILE.scratch.headers.left = function () closure(content) end
+  SILE.scratch.headers.left = content
 end, "Text to appear on the top of the left page");
 
 SILE.registerCommand("right-running-head", function (options, content)
-  local closure = SILE.settings.wrap()
-  SILE.scratch.headers.right = function () closure(content) end
+  SILE.scratch.headers.right = content
 end, "Text to appear on the top of the right page");
 
 SILE.registerCommand("book:sectioning", function (options, content)
