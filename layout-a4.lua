@@ -1,7 +1,37 @@
 local class = SILE.documentState.documentClass
-class:declareFrame("content", { left = "32mm", right = "100%pw-32mm", top = "36mm", bottom = "top(footnotes)" })
-class:declareFrame("runningHead", { left = "left(content)", right = "right(content)", top = "top(content)-12mm", bottom = "top(content)-2mm" })
-class:declareFrame("footnotes", { left = "left(content)", right = "right(content)", height = "0", bottom = "100%ph-24mm"})
+
+class:defineMaster({
+    id = "right",
+    firstContentFrame = "content",
+    frames = {
+      content = {
+        left = "32mm",
+        right = "100%pw-32mm",
+        top = "bottom(runningHead)+4mm",
+        bottom = "top(footnotes)-4mm"
+      },
+      runningHead = {
+        left = "left(content)",
+        right = "right(content)",
+        top = "24mm",
+        bottom = "30mm"
+      },
+      footnotes = {
+        left = "left(content)",
+        right = "right(content)",
+        height = "0",
+        bottom = "top(folio)-4mm"
+      },
+      folio = {
+        left = "left(content)",
+        right = "right(content)",
+        top = "100%ph-30mm",
+        bottom = "100%ph-24mm"
+      }
+    }
+  })
+class:mirrorMaster("right", "left")
+SILE.call("switch-master-one-page", { id = "right" })
 
 SILE.registerCommand("meta:distribution", function (options, content)
   SILE.call("font", { weight = 600, style = "Bold" }, { "Yayın: " })
