@@ -17,6 +17,7 @@ CROP ?= false
 STATS_MONTHS ?= 1
 PRE_SYNC ?= true
 DEBUG = false
+COVERS = true
 
 SILE ?= sile
 SILE_DEBUG = viachristus
@@ -161,7 +162,7 @@ sync_post:
 		[[ $${pg1} -ne $${pg2} ]] && $(SILE) $< -o $@ ||: ;\
 	fi
 	# If we have a special cover page for this format, swap it out for the half title page
-	if ! $(DRAFT) && [[ -f $*-kapak.pdf ]]; then
+	if $(COVERS) && [[ -f $*-kapak.pdf ]]; then
 		pdftk $@ dump_data_utf8 output $*.dat
 		pdftk C=$*-kapak.pdf B=$@ cat C1 B2-end output $*.tmp.pdf
 		pdftk $*.tmp.pdf update_info_utf8 $*.dat output $@
@@ -289,10 +290,12 @@ endef
 		done
 
 define skip_if_tracked
+	$(COVERS) || exit 0
 	git ls-files --error-unmatch -- $1 2>/dev/null && exit 0 ||:
 endef
 
 %-kapak-zemin.png: $(MAKEFILE_LIST)
+	$(COVERS) || exit 0
 	$(call skip_if_tracked,$@)
 	convert -size 64x64 xc:darkgray +repage $@
 
@@ -335,9 +338,11 @@ endef
 	$(call draw_title,$$caption,2000x3200,$<,$@)
 
 %-app-kapak-kare.png: %-kapak-kare.png $(MAKEFILE_LIST)
+	$(COVERS) || exit 0
 	convert $< -resize 1024x1024 $@
 
 %-app-kapak-genis.png: %-kapak-genis.png $(MAKEFILE_LIST)
+	$(COVERS) || exit 0
 	convert $< -resize 1920x1080 $@
 
 %-kapak-isoa.png: %-kapak-zemin.png $(MAKEFILE_LIST)
@@ -346,6 +351,7 @@ endef
 	$(call draw_title,$$caption,4000x5657,$<,$@)
 
 %-a4-kapak.pdf: %-kapak-isoa.png $(MAKEFILE_LIST)
+	$(COVERS) || exit 0
 	convert  $< \
 		-bordercolor none -border 300x424 \
 		-resize 2000x2828 \
@@ -356,6 +362,7 @@ endef
 		$@
 
 %-app-kapak.pdf: %-kapak.png $(MAKEFILE_LIST)
+	$(COVERS) || exit 0
 	convert $< \
 		-resize x1280 \
 		-gravity Center \
