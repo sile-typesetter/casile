@@ -182,30 +182,27 @@ end)
 local icu = require("justenoughicu")
 local inputfilter = SILE.require("packages/inputfilter").exports
 
-function uppercase(string)
-  return icu.case(string, SILE.settings.get("document.language"), "upper")
+function uppercase(input)
+  return icu.case(input, SILE.settings.get("document.language"), "upper")
 end
 
-function lowercase(string)
-  return icu.case(string, SILE.settings.get("document.language"), "lower")
+function lowercase(input)
+  return icu.case(input, SILE.settings.get("document.language"), "lower")
 end
 
-function titlecase(string)
-  return icu.case(string, SILE.settings.get("document.language"), "title")
+function titlecase(input)
+  return icu.case(input, SILE.settings.get("document.language"), "title")
 end
 
 SILE.registerCommand("uppercase", function(options, content)
-  content = SU.contentToString(content)
   SILE.process(inputfilter.transformContent(content, uppercase))
 end, "Typeset the enclosed text as uppercase")
 
 SILE.registerCommand("lowercase", function(options, content)
-  content = SU.contentToString(content)
   SILE.process(inputfilter.transformContent(content, lowercase))
 end, "Typeset the enclosed text as lowercase")
 
 SILE.registerCommand("titlecase", function(options, content)
-  content = SU.contentToString(content)
   SILE.process(inputfilter.transformContent(content, titlecase))
 end, "Typeset the enclosed text as titlecase")
 
