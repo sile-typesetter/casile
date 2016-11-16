@@ -341,15 +341,40 @@ end)
 
 SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse("0.7ex plus 0 minus 0")
 
-SILE.doTexlike([[
-\define[command=langund]{\font[language=und]{\process}}
-\define[command=langel]{\font[language=el,style=Italic]{\process}}
-\define[command=langla]{\font[language=la,style=Italic]{\process}}
-\define[command=langhe]{\font[language=he]{\process}}
-\define[command=langen]{\font[language=en]{\process}}
-\define[command=langde]{\font[language=de]{\process}}
-\define[command=langnl]{\font[language=nl]{\process}}
-]])
+SILE.registerCommand("font:la", function (options, content)
+	options.style = options.style or "Italic"
+	SILE.call("font", options, content)
+end)
+SILE.registerCommand("font:el", function (options, content)
+	options.style = options.style or "Italic"
+	SILE.call("font", options, content)
+end)
+SILE.registerCommand("lang", function (options, content)
+	local language = options.language or "und"
+	local fontfunc = SILE.Commands[SILE.Commands["font:" .. language] and "font:" .. language or "font"]
+	fontfunc({ language = language }, content)
+end)
+SILE.registerCommand("langund", function (options, content)
+	SILE.call("lang", {}, content)
+end)
+SILE.registerCommand("langel", function (options, content)
+	SILE.call("lang", { language = "el" }, content)
+end)
+SILE.registerCommand("langla", function (options, content)
+	SILE.call("lang", { language = "la" }, content)
+end)
+SILE.registerCommand("langen", function (options, content)
+	SILE.call("lang", { language = "en" }, content)
+end)
+SILE.registerCommand("langde", function (options, content)
+	SILE.call("lang", { language = "de" }, content)
+end)
+SILE.registerCommand("langnl", function (options, content)
+	SILE.call("lang", { language = "nl" }, content)
+end)
+SILE.registerCommand("langhe", function (options, content)
+	SILE.call("lang", { language = "he" }, content)
+end)
 
 SILE.registerCommand("quote", function (options, content)
   options.setback = options.setback or SILE.settings.get("document.parindent")
