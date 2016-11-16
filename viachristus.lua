@@ -342,11 +342,13 @@ end)
 SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse("0.7ex plus 0 minus 0")
 
 SILE.doTexlike([[
+\define[command=langund]{\font[language=und]{\process}}
 \define[command=langel]{\font[language=el,style=Italic]{\process}}
-\define[command=langhe]{\font[language=he,style=Italic]{\process}}
-\define[command=langund]{\font[language=und,style=Italic]{\process}}
 \define[command=langla]{\font[language=la,style=Italic]{\process}}
-\define[command=langen]{\font[language=en,style=Italic]{\process}}
+\define[command=langhe]{\font[language=he]{\process}}
+\define[command=langen]{\font[language=en]{\process}}
+\define[command=langde]{\font[language=de]{\process}}
+\define[command=langnl]{\font[language=nl]{\process}}
 ]])
 
 SILE.registerCommand("quote", function (options, content)
