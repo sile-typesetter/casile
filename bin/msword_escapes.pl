@@ -6,10 +6,10 @@
 use utf8;
 use open ':std', ':encoding(UTF-8)';
 
-# Convert lazy double quote entry styles to something sane
+# Fixup bad MS word typing habits that Pandoc tries to preserve
 while (<>) {
-  s#(?<!\s)['‘’`]{3}#'"#g;
-  s#['‘’`]{3}(?!\s)#"'#g;
-  s#['‘’`]{2}#"#g;
+  s#\\\[#[#g;
+  s#\\\]#]#g;
+  s#\\`#'#g;
   print;
 }

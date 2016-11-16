@@ -213,6 +213,7 @@ define find_and_munge
 endef
 
 md_cleanup:
+	$(call find_and_munge,*.md,msword_escapes.pl,Fixup bad MS word typing habits that Pandoc tries to preserve)
 	$(call find_and_munge,*.md,lazy_quotes.pl,Replace lazy double single quotes with real doubles)
 	$(call find_and_munge,*.md,smart_quotes.pl,Replace straight quotation marks with typographic variants)
 	$(call find_and_munge,*.md,figure_dash.pl,Convert hyphens between numbers to figure dashes)
