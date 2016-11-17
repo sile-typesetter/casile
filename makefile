@@ -390,7 +390,8 @@ endef
 	jq -s 'reduce .[] as $$item({}; . + $$item)' $(foreach YAML,$^,<(yaml2json $(YAML))) > $@
 
 %-merged.yml: $(TOOLS)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
-	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $^ > $@
+	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $^ |\
+		sed -e '/^--- |/d;$$a...' > $@
 
 %-barkod.svg: %-merged.yml $(MAKEFILE_LIST)
 	zint --directsvg --scale=5 --barcode=69 --height=30 \
