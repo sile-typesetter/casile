@@ -252,38 +252,36 @@ define build_sile
 		-V script=$(TOOLS)/layout-$3 \
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
-		$(TOOLS)/viachristus.yml \
-		$(shell test -f "$(PROJECT).yml" && echo "$(PROJECT).yml") \
-		$(shell test -f "$(basename $1).yml" && echo "$(basename $1).yml") \
+		"$(basename $1)-merged.yml" \
 		<($(call preprocess_markdown,$1)) -o $2-$3.sil
 endef
 
-%-a4.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png %-a4-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua $(MAKEFILE_LIST)
+%-a4.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-a4-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
 
-%-a4ciltli.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a4ciltli.lua $(MAKEFILE_LIST)
+%-a4ciltli.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a4ciltli.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
 
-%-a5trim.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a5trim.lua $(MAKEFILE_LIST)
+%-a5trim.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a5trim.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),133mm x 195mm,true)
 
-%-octavo.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-octavo.lua $(MAKEFILE_LIST)
+%-octavo.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-octavo.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),432pt x 648pt,true)
 
-%-halfletter.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-halfletter.lua $(MAKEFILE_LIST)
+%-halfletter.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-halfletter.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),halfletter,true)
 
-%-cep.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-cep.lua $(MAKEFILE_LIST)
+%-cep.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-cep.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),110mm x 170mm,true)
 
-%-app.sil: %.md $$(wildcard $$*.yml $$*.lua) %-url.png %-app-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-app.lua $(MAKEFILE_LIST)
+%-app.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-app-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-app.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),80mm x 128mm,false)
 
 %.sil.toc: %.pdf ;
 
 %.app: %-app.info %-app-kapak-kare.png %-app-kapak-genis.png $(MAKEFILE_LIST);
 
-%-app.info: %-app.sil.toc %.yml
+%-app.info: %-app.sil.toc %-merged.yml
 	$(TOOLS)/bin/toc2breaks.lua $* $^ $@ |\
 		while read range out; do \
 			pdftk $*-app.pdf cat $$range output $$out ;\
@@ -379,13 +377,10 @@ endef
 	$(call skip_if_tracked,$@)
 	convert $< -resize 1000x1600 $@
 
-%.epub %.odt %.docx: %.md $$(wildcard $$*.yml) %-epub-kapak.png $(MAKEFILE_LIST)
+%.epub %.odt %.docx: %.md %-merged.yml %-epub-kapak.png $(MAKEFILE_LIST)
 	pandoc \
 		--smart \
-		$(TOOLS)/viachristus.yml \
-		$(shell test -f "$(PROJECT).yml" && echo "$(PROJECT).yml") \
-		$(shell test -f "$(basename $1).yml" && echo "$(basename $1).yml") \
-		$*.yml \
+		"$(basename $1)-merged.yml" \
 		<($(call preprocess_markdown,$<)) -o $@
 
 %.mobi: %.epub $(MAKEFILE_LIST)
@@ -394,7 +389,10 @@ endef
 %.json: $(TOOLS)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
 	jq -s 'reduce .[] as $$item({}; . + $$item)' $(foreach YAML,$^,<(yaml2json $(YAML))) > $@
 
-%-barkod.svg: %.yml $(MAKEFILE_LIST)
+%-merged.yml: $(TOOLS)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
+	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $^ > $@
+
+%-barkod.svg: %-merged.yml $(MAKEFILE_LIST)
 	zint --directsvg --scale=5 --barcode=69 --height=30 \
 		--data=$(shell $(TOOLS)/bin/isbn_format.py $< print) |\
 		convert - \
@@ -415,7 +413,7 @@ endef
 			-bordercolor Black -border 4x4 \
 			$@
 
-%-barkod.png: %-barkod.svg %.yml $(MAKEFILE_LIST)
+%-barkod.png: %-barkod.svg $(MAKEFILE_LIST)
 	convert $< $@
 
 stats: $(foreach SOURCE,$(SOURCES),$(SOURCE)-stats)
