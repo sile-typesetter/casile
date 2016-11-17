@@ -391,7 +391,7 @@ endef
 %.mobi: %.epub $(MAKEFILE_LIST)
 	-kindlegen $<
 
-%.json: $(TOOLS)/viachristus.yml $(wildcard $(PROJECT).yml $**.yml)
+%.json: $(TOOLS)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
 	jq -s 'reduce .[] as $$item({}; . + $$item)' $(foreach YAML,$^,<(yaml2json $(YAML))) > $@
 
 %-barkod.svg: %.yml $(MAKEFILE_LIST)
