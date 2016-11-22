@@ -243,6 +243,7 @@ define build_sile
 		--wrap=preserve \
 		-V documentclass="vc" \
 		-V papersize="$4" \
+		-V metadatafile="$(basename $1)-merged.yml" \
 		-V versioninfo="$(shell $(call versioninfo,$1))" \
 		-V urlinfo="$(shell $(call urlinfo,$1))" \
 		-V qrimg="./$(basename $1)-url.png" \
