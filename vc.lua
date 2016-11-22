@@ -3,10 +3,6 @@ local book = SILE.require("classes/book")
 local plain = SILE.require("classes/plain")
 local vc = book { id = "vc" }
 
--- Add a shortcut method to dump tables in a pretty-print format to stderr
-local dump = require("pl.pretty").dump
-local d = function(object) dump(object, "/dev/stderr") end
-
 vc:loadPackage("folio")
 
 vc.endPage = function (self)
