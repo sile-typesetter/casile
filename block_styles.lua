@@ -25,7 +25,7 @@ SILE.registerCommand("titlepage", function (options, content)
         SILE.call("meta:author")
       end)
     end
-    if publisher == "viachristus" then
+    if SILE.metadata.publisher then
       SILE.call("vfill")
       SILE.call("img", { src = "avadanlik/vc_logo_renksiz.pdf", width = "25%pw" })
     end
