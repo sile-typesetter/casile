@@ -22,6 +22,12 @@ COVERS = true
 SILE ?= sile
 SILE_DEBUG = viachristus
 
+# For watch targets, treat exta parameters as things to pass to the next make
+ifeq (watch,$(firstword $(MAKECMDGOALS)))
+  WATCH_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  $(eval $(WATCH_ARGS):;@:)
+endif
+
 # CI runners need help getting the branch name because of funky checkouts
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 ifeq ($(BRANCH),HEAD)
@@ -425,7 +431,7 @@ stats: $(foreach SOURCE,$(SOURCES),$(SOURCE)-stats)
 
 watch:
 	( git ls-files ; cd $(TOOLS) ; git ls-files | xargs -iX echo $(TOOLS)/X ) | \
-		entr -c -p make -B DRAFT=true
+		entr -c -p make -B DRAFT=true $(WATCH_ARGS)
 
 watchdiff:
 	git ls-files | entr -c -p git diff --color=always
