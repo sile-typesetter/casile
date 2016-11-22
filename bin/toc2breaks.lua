@@ -1,8 +1,5 @@
 #!/bin/env lua
 
-local dump = require("pl.pretty").dump
-local d = function(t) dump(t, "/dev/stderr") end
-
 local project = os.getenv("PROJECT")
 local basename = arg[1]
 
