@@ -263,7 +263,7 @@ endef
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
 
 %-a5trim.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a5trim.lua $(MAKEFILE_LIST)
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),133mm x 195mm,true)
+	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),137.878787mm x 195mm,true)
 
 %-octavo.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-octavo.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),432pt x 648pt,true)
