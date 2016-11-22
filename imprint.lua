@@ -21,12 +21,12 @@ SILE.registerCommand("imprint", function (options, content)
         SILE.settings.set("linespacing.method", "fixed")
         SILE.settings.set("linespacing.fixed.baselinedistance", SILE.length.parse("2.8ex plus 1pt minus 0.5pt"))
 
-        if publisher == "viachristus" then
+        if SILE.metadata.publisher then
           SILE.settings.temporarily(function ()
             SILE.call("img", { src = "avadanlik/vc_sembol_renksiz.pdf", height = "6.5em" })
             SILE.call("skip", { height = "-6.7em" })
             SILE.settings.set("document.lskip", SILE.nodefactory.newGlue({ width = imgUnit * 6.5 }))
-            SILE.call("font", { filename = "avadanlik/fonts/Mason-Bold.otf", size = "1.25em" }, { "Via Christus Yayınları" })
+            SILE.call("font", { filename = "avadanlik/fonts/Mason-Bold.otf", size = "1.25em" }, { SILE.metadata.publisher })
             SILE.call("break")
             SILE.typesetter:typeset("Davutpaşa Cad. Kazım Dinçol San. Sit.")
             SILE.call("break")
@@ -55,7 +55,7 @@ SILE.registerCommand("imprint", function (options, content)
           SILE.call("par")
         end
 
-        if publisher then
+        if SILE.metadata.publisher then
           SILE.call("skip", { height = "5.4em" })
           SILE.settings.temporarily(function ()
             SILE.call("img", { src = qrimg, height = "5.8em" })
@@ -92,7 +92,7 @@ SILE.registerCommand("imprint", function (options, content)
         if SILE.Commands["meta:versecredits"] then
           SILE.call("meta:versecredits")
         end
-        if publisher then
+        if SILE.metadata.publisher then
           if SILE.Commands["meta:distribution"] then
             SILE.call("par")
             SILE.call("meta:distribution")
