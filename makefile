@@ -429,6 +429,12 @@ stats: $(foreach SOURCE,$(SOURCES),$(SOURCE)-stats)
 %-stats: $(MAKEFILE_LIST)
 	@$(TOOLS)/stats.zsh $(@:-stats=) $(STATS_MONTHS)
 
+proper_names.txt: $(SOURCES) | $(TOOLS)/bin/extract_names.pl $(MAKEFILE_LIST)
+	$(call skip_if_tracked,$@)
+	$(TOOLS)/bin/extract_names.pl < $^ |\
+		sort -u |\
+		grep -vxf $(TOOLS)/names.tr.txt -vxf $(TOOLS)/names.en.txt > $@
+
 watch:
 	( git ls-files ; cd $(TOOLS) ; git ls-files | xargs -iX echo $(TOOLS)/X ) | \
 		entr -c -p make -B DRAFT=true $(WATCH_ARGS)
