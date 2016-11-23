@@ -435,6 +435,9 @@ proper_names.txt: $(SOURCES) | $(TOOLS)/bin/extract_names.pl $(MAKEFILE_LIST)
 		sort -u |\
 		grep -vxf $(TOOLS)/names.tr.txt -vxf $(TOOLS)/names.en.txt > $@
 
+add_names: proper_names.txt
+	sort_names.zsh < $^
+
 watch:
 	( git ls-files ; cd $(TOOLS) ; git ls-files | xargs -iX echo $(TOOLS)/X ) | \
 		entr -c -p make -B DRAFT=true $(WATCH_ARGS)
