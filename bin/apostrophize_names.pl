@@ -10,7 +10,7 @@ open(my $names_en, '<:encoding(UTF-8)', dirname($0)."/../names.en.txt");
 while (my $name = <$names_en>) { chomp($name); push @names, $name; }
 open(my $names_tr, '<:encoding(UTF-8)', dirname($0)."/../names.tr.txt");
 while (my $name = <$names_tr>) { chomp($name); push @names, $name; }
-my $names = "(".join('|', @names).")";
+my $names = "(".join('|', sort { length $b <=> length $a } @names).")";
 
 # Except for -lar -lu and -sal suffixes, suffixes should get apostrophes
 while (<>) {
