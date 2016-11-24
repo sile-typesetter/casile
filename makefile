@@ -433,10 +433,15 @@ proper_names.txt: $(SOURCES) | $(TOOLS)/bin/extract_names.pl $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
 	$(TOOLS)/bin/extract_names.pl < $^ |\
 		sort -u |\
-		grep -vxf $(TOOLS)/names.tr.txt -vxf $(TOOLS)/names.en.txt > $@
+		grep -vxf <(cat $(TOOLS)/names.*.txt) > $@
 
-add_names: proper_names.txt
+NAMELANGS = en tr und part xx
+add_names: proper_names.txt | $(TOOLS)/bin/sort_names.zsh $(foreach LANG,$(NAMELANGS),$(TOOLS)/names.$(LANG).txt)
 	sort_names.zsh < $^
+
+$(TOOLS)/names.%.txt:
+	test -f $@ || touch $@
+	sort $@ | sponge $@
 
 watch:
 	( git ls-files ; cd $(TOOLS) ; git ls-files | xargs -iX echo $(TOOLS)/X ) | \
