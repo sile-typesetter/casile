@@ -457,6 +457,12 @@ avadanlik/names.%.txt:
 	test -f $@ || touch $@
 	sort -u $@ | sponge $@
 
+%-ayetler.json: %.md | $(MAKEFILE_LIST)
+	# cd $(TOOLS)
+	# yarn add bible-passage-reference-parser
+	extract_references.js < <(head -n 10 $^) > $@
+	cat $@
+
 watch:
 	( git ls-files ; cd $(TOOLS) ; git ls-files | xargs -iX echo $(TOOLS)/X ) | \
 		entr -c -p make -B DRAFT=true $(WATCH_ARGS)
