@@ -4,7 +4,7 @@ lang=$1 ; shift
 names=$1 ; shift
 
 for source in $@; do
-	awk '{ print length, $0 }' < $names | sort -n | cut -d' ' -f2- |
+	perl -e 'print sort { length($b) <=> length($a) } <>' < $names |
 		while read name; do
 			clear
 			git co -- $source
