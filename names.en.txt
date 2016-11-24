@@ -13,3 +13,4 @@ Wayne Grudem
 William Lobdell
 William Miller
 William Shakespeare
+Allan Anderson
