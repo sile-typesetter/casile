@@ -134,6 +134,8 @@ $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
 
 init:
 	mkdir -p $(OUTPUT)
+	git submodule update --init --remote
+
 
 define sync_owncloud
 	-pgrep -u $(USER) -x owncloud || \
