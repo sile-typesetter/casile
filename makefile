@@ -443,8 +443,13 @@ proper_names.txt: $(SOURCES) $(NAMESFILES) | $(TOOLS)/bin/extract_names.pl $(MAK
 		sort -u |\
 		grep -vxf <(cat $(NAMESFILES)) > $@
 
-add_names: proper_names.txt | $(TOOLS)/bin/sort_names.zsh $(NAMESFILES)
+sort_names: proper_names.txt | $(TOOLS)/bin/sort_names.zsh $(NAMESFILES)
 	sort_names.zsh < $^
+
+tag_names: $(SOURCES) | $(TOOLS)/bin/tag_names.zsh $(NAMESFILES) $(MAKEFILE_LIST)
+	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
+	git diff-files --quiet -- $^ || exit 1 # die if input files have uncommitted changes
+	tag_names.zsh en avadanlik/names.en.txt $^
 
 avadanlik/names.%.txt:
 	test -f $@ || touch $@
