@@ -432,11 +432,11 @@ stats: $(foreach SOURCE,$(SOURCES),$(SOURCE)-stats)
 NAMELANGS = en tr und part xx
 NAMESFILES = $(foreach LANG,$(NAMELANGS),$(TOOLS)/names.$(LANG).txt)
 
-proper_names.txt: $(SOURCES) | $(TOOLS)/bin/extract_names.pl $(NAMESFILES) $(MAKEFILE_LIST)
+proper_names.txt: $(SOURCES) $(NAMESFILES) | $(TOOLS)/bin/extract_names.pl $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
-	$(TOOLS)/bin/extract_names.pl < $^ |\
+	$(TOOLS)/bin/extract_names.pl < $(SOURCES) |\
 		sort -u |\
-		grep -vxf <(cat $(TOOLS)/names.*.txt) > $@
+		grep -vxf <(cat $(NAMESFILES)) > $@
 
 add_names: proper_names.txt | $(TOOLS)/bin/sort_names.zsh $(NAMESFILES)
 	sort_names.zsh < $^
