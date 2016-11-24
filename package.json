@@ -1,0 +1,12 @@
+{
+  "name": "avadanlik",
+  "version": "1.0.0",
+  "description": "Book Publishing Toolkit from Via Christus Publications",
+  "main": "index.js",
+  "repository": "gitlab@gitlab.alerque.com:viachristus/avadanlik.git",
+  "author": "Caleb Maclennan <caleb@alerque.com>",
+  "license": "LGPL",
+  "dependencies": {
+    "bible-passage-reference-parser": "^2.0.0"
+  }
+}
