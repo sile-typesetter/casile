@@ -429,19 +429,21 @@ stats: $(foreach SOURCE,$(SOURCES),$(SOURCE)-stats)
 %-stats: $(MAKEFILE_LIST)
 	@$(TOOLS)/stats.zsh $(@:-stats=) $(STATS_MONTHS)
 
-proper_names.txt: $(SOURCES) | $(TOOLS)/bin/extract_names.pl $(MAKEFILE_LIST)
+NAMELANGS = en tr und part xx
+NAMESFILES = $(foreach LANG,$(NAMELANGS),$(TOOLS)/names.$(LANG).txt)
+
+proper_names.txt: $(SOURCES) | $(TOOLS)/bin/extract_names.pl $(NAMESFILES) $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
 	$(TOOLS)/bin/extract_names.pl < $^ |\
 		sort -u |\
 		grep -vxf <(cat $(TOOLS)/names.*.txt) > $@
 
-NAMELANGS = en tr und part xx
-add_names: proper_names.txt | $(TOOLS)/bin/sort_names.zsh $(foreach LANG,$(NAMELANGS),$(TOOLS)/names.$(LANG).txt)
+add_names: proper_names.txt | $(TOOLS)/bin/sort_names.zsh $(NAMESFILES)
 	sort_names.zsh < $^
 
-$(TOOLS)/names.%.txt:
+avadanlik/names.%.txt:
 	test -f $@ || touch $@
-	sort $@ | sponge $@
+	sort -u $@ | sponge $@
 
 watch:
 	( git ls-files ; cd $(TOOLS) ; git ls-files | xargs -iX echo $(TOOLS)/X ) | \
