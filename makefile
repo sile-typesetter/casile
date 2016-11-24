@@ -219,6 +219,11 @@ define find_and_munge
 	git diff-index --quiet --cached HEAD || git ci -m "[auto] $3"
 endef
 
+import_cleanup:
+	$(call find_and_munge,*.md,italic_reorder.pl,Fixup italics around names and parethesised translations)
+	# $(call find_and_munge,*.md,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
+	# $(call find_and_munge,*.md,tag_foreign_names.pl,)
+
 md_cleanup:
 	$(call find_and_munge,*.md,msword_escapes.pl,Fixup bad MS word typing habits that Pandoc tries to preserve)
 	$(call find_and_munge,*.md,lazy_quotes.pl,Replace lazy double single quotes with real doubles)
