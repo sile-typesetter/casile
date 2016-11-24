@@ -4,7 +4,10 @@ HALF=$(($COLUMNS/2-20))
 
 while read name; do
 	clear
-	rg --color=always "$name" < *.md | perl -pne "s/.*?(.{0,$HALF}$name.*)/\\1/g" | cut -b1-$COLUMNS
+	rg -n "$name" < *.md |
+		perl -pne "s/^(\d+:).*?(.{0,$HALF}$name.*)/\\1\\2/g" |
+		cut -b1-$COLUMNS |
+		rg -N --color=always "$name"
 	echo "\n\n\t$name\n\n"
 	read -k "reply?Is this a full proper name in English, Turkish, Other, None, Partial, Skip, or Quit? (e/t/o/n/p/s/q)" < /dev/tty
 	case $reply in
