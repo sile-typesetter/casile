@@ -15,7 +15,7 @@ while read name; do
 		t|T) echo $name >> avadanlik/names.tr.txt ;;
 		o|O) echo $name >> avadanlik/names.und.txt ;;
 		p|P) echo $name >> avadanlik/names.part.txt ;;
-		n|n) echo $name >> avadanlik/names.xx.txt ;;
+		n|N) echo $name >> avadanlik/names.xx.txt ;;
 		q|Q) exit 0 ;;
 	esac
 done
