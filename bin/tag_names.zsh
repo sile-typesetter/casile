@@ -24,6 +24,7 @@ for file in $@; do
 		while read name; do
 			tag_name $file $name
 		done
+	git co -- $file
 done
 
 # Next try permutations of first, last, etc. (within reason)
@@ -33,4 +34,5 @@ for file in $@; do
 		while read name; do
 			tag_name $file $name
 		done
+	git co -- $file
 done
