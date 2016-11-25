@@ -3,7 +3,7 @@
 var readline = require('readline');
 var bcv_parser = require('bible-passage-reference-parser/js/tr_bcv_parser').bcv_parser;
 var bcv = new bcv_parser();
-var formatter = require('bible-reference-formatter/es6/en');
+var formatter = require('bible-reference-formatter/es6/tr');
 
 bcv.set_options({
   'sequence_combination_strategy': 'separate'
@@ -24,7 +24,7 @@ function extract_references (data) {
     var ref = {};
     ref.original = data.slice(match.indices[0], match.indices[1]);
     ref.osis = match.osis;
-    ref.reformat = formatter('niv-long', match.osis);
+    ref.reformat = formatter('yc-long', match.osis);
     references.push(ref);
   });
 }
