@@ -460,7 +460,7 @@ avadanlik/names.%.txt:
 %-ayetler.json: %.md | $(MAKEFILE_LIST)
 	# cd $(TOOLS)
 	# yarn add bible-passage-reference-parser
-	extract_references.js < <(head -n 10 $^) > $@
+	extract_references.js < $^ > $@
 	cat $@
 
 watch:

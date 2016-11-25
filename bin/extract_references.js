@@ -18,17 +18,19 @@ var rl = readline.createInterface({
 var references = [];
 
 function extract_references (data) {
-  // console.log("DATA:", data);
-  var res = bcv.parse(data);
-  references.push(res.osis());
-  // rl.write(res.osis());
-  // console.log("RESULTS:", res.osis());
+  var res = bcv.parse(data).osis_and_indices();
+  res.forEach(function(match) {
+    var ref = {};
+    ref.original = data.slice(match.indices[0], match.indices[1]);
+    ref.osis = match.osis;
+    references.push(ref);
+  });
 }
 
 function output_references () {
-  console.log(references);
+  var output = JSON.stringify(references, null, '  ');
+  process.stdout.write(output);
 }
 
 rl.on('line', extract_references);
-
 rl.on('close', output_references);
