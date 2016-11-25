@@ -1,6 +1,8 @@
-Agnes Ozman
-Akabinde Bakker
 Ayırt Edici İşaretler
+Afrika
+Asya
+Avihu
+Baal
 Baba Tanrı
 Beytel Okulu
 Bir Amerikalının Hayatı
@@ -23,7 +25,9 @@ Gözcü Kulesi Topluluğu
 Güney Afrika
 Güney Kaliforniya
 Güney Kore
+Hagavos
 Hristiyan Bilimi
+Harun
 İkinci Elçisel Çağ
 İlahi Müessese
 İman Şehri
@@ -32,7 +36,10 @@ Hristiyan Bilimi
 İsa Mesih
 İsrail
 İznik Konseyi
+Japonya
+Kaliforniya
 Kanada Yayın Kanalı
+Kansas Şehrini
 Kansas Şehri Peygamberleri
 Karizmatik Akım
 Karizmatik Hareket
@@ -46,6 +53,7 @@ Kelimenin Gücü
 Kelimenin Gücü Akımı
 Kelimenin Gücü Hareketi
 Kenyon Kilisesinin Yayını
+Korint
 Kutsal Kitap
 Kutsallaşma Hareketi
 Kutsal Ruh
@@ -55,13 +63,16 @@ Kutsal Yasa
 Kutsap Kitap
 Kuzey Amerika
 Latin Amerika
+Lazarı
 Melek Cebrail
 Mesih
 Mesih İsa
 Mezhepsel Olmayan Kilise
 Mucize Meselesi
 Muhammed Ali
+Musa
 Nazi Almanya
+Nikodim
 Noel Baba
 Oğul Tanrı
 Orta Çağ
@@ -70,6 +81,7 @@ Pasifik Okyanusu
 Pastörel Mektuplar
 Pavlus
 Pentekostal Hareket
+Petrus
 Phoenix Semineri
 Protestan Reformu
 Rab
@@ -77,11 +89,15 @@ Rabbimiz Mesih İsa
 Rabbin Sofrası
 Rab İsa
 Rab İsa Mesih
+Roma
 Roma Katolik Kilisesi
+Ruh
+Safira
 Simun Petrus
 Son Gün Azizleri
 Son Yağmur
 Son-Zaman Azizleri
+Şeytan
 Tanrı
 Tanrı Kuzusu
 Tevhid Pentekostalciliği
@@ -92,6 +108,7 @@ Tüm İnsanların Ortak Dua Evi
 ÜçlüBirlik Yayın Ağı
 Üçüncü Dalga
 Uluslararası Karizmatik Kutsal Kitap Hizmetleri
+Üst Oda
 Vaftizci Yahya
 Venedik Taciri
 Vineyard Hareketi
@@ -109,5 +126,6 @@ Yeni King James
 Yeni Uluslararası Çeviri
 Yeni Yeruşalim
 Yeni Zelanda
+Yoel
 Yüceler Yücesi
 Zihin Bilimi

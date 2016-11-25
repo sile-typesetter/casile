@@ -1,4 +1,7 @@
 A.A. Allen
+Agnes Ozman
+Augustine
+Akabinde Bakker
 Aimee Semple McPherson
 Aime Semple McPherson
 A. J. Gordon
@@ -15,6 +18,7 @@ Arthur W. Pink
 A. W. Tozer
 Azuza Street Revival
 B.B. Warfield
+Benjamin Franklin
 Benny Hinn
 Bethel Bible Institute
 Bible Missionary Society
@@ -22,8 +26,10 @@ Bill Hamon
 Billy Joe Daugherty
 Bob Jones
 Bruce Bickel
+Bruce Ware
 Bryan Norman
 Byron Mote
+California
 Calvary Chapel
 Canadian Broadcasting Channel
 Carlton Pearson
@@ -33,7 +39,6 @@ Charles Chauncy
 Charles Doolittle
 Charles Fox Parham
 Charles Parham
-Charles Parhan
 Charles Spurgeon
 Christian International
 Christianity Today
@@ -44,12 +49,17 @@ Christinanity Today
 Christopher Wright
 Chuck Grassley
 Chuck Smith
+Chuck Swindoll
 Clarence McClendon
 Claude King
+Colorado
 Colorado Springs
 Comedy Central
+Connecticut
 C. Peter Wagner
 Creflo Dollar
+Dana Point
+Dan Phillips
 David Edwin Harrell Jr
 David Farnell
 David Jones
@@ -66,14 +76,19 @@ Dougles Jacobsen
 D. R. McConnell
 Earl Paulk
 Eddie Long
+Ellen G. White
 Enoch Lonnie Ford
 Essek William Kenyon
 E. W. Kenyon
 Experiencing God
+Facebook
+F.F. Bruce
 Fidel Castro
 First Nation Apostles
+Florida
 Four Seasons
 Francis MacNutt
+Frederick Dale Bruner
 Frederick Harris
 Fred L. Volz
 Fred Price
@@ -81,13 +96,18 @@ Free Will Baptist
 Friedrich Schleiermacher
 George Marsden
 George Whitefield
+Glendale
 Hank Hanegraaff
 Henry Blackaby
 Horizontal Apostles
 Houston Daily Post
+Ignatius
+Illinois
+Independence
 International Charismatic Bible Ministries
 Jack Deere
 Jack Hayford
+James Montgomery Boice
 James Randi
 James R. Goff
 Jan Crouch
@@ -116,6 +136,8 @@ Jonathan Edwards
 Joseph Smith
 Joyce Meyer
 Juanita Bynun
+Justin Peters
+Kansas
 Kansas City
 Kansas City Prophets
 Kansas City Times
@@ -142,12 +164,16 @@ Martin E. Marty
 Martin Luther
 Marvin Gorman
 Mary Baker Eddy
+Massachusetts
 Metro Vineyard Fellowship
+Matthew Henry
 Michael Brown
 Michael Guglielmucci
 Michael Horton
 Mike Bickle
 Mike Thomas
+Missouri
+Mitt Romney
 Morningstar Ministries
 Myles Munroe
 Nathan Busenitz
@@ -168,9 +194,12 @@ New York Times
 Norm Geisler
 North Battleford
 North Cleveland
+Olathe
 Oneness Pentecostalism
 Oral Roberts
+Orlando
 Orlando Christian Center
+Pat Robertson
 Paula White
 Paul Cain
 Paul Crouch
@@ -185,6 +214,7 @@ Phil Johnson
 Phineas P. Quimby
 Post-Denominational Church
 Presiding Apostle
+Quaker
 Rafael Martinez
 Randy White
 R. C. Sproul
@@ -192,6 +222,7 @@ Reinhard Bonnke
 Rene Pache
 R. G. Robbins
 Rhonda Byrne
+Richard Gaffin
 Richard Fischer
 Richard Roberts
 Richart J. Gehman
@@ -208,16 +239,22 @@ Ron Rhodes
 Russell Woodbridge
 Samuel Waldron
 Sam Waldron
+San Antonio
 Sarah Young
+Seattle
 Shakespeare
+S. C. Todd
 S. J. Riggins
 Smith Wigglesworth
 Southern Baptist
+Spencer
 Stan Jantz
 Steve Lawson
+Suffield
 T. D. Jakes
 Ted Haggard
 Ted Olsen
+Texas
 The Christian Faith
 The Daily Show
 The Gospel Truth
@@ -228,19 +265,23 @@ The Topeka Daily Capital
 Third Wave
 Third Wave Movement
 Thomas Edgar
+Thomas Goodwin
 Thomas Nelson
 Thomas Wesley Weeks III
 T.L. Orborne
 Todd Bentley
+Topeka
 Topeka Daily Capital
 Topeka State Journal
 Toronto Airport Christian Fellowship
 Toronto Blessing
 T. P. Thigpen
 Trinity Broadcasting Network
+Van Nuys
 Vertical Apostles
 Vinson Synan
 W. A. Criswell
+Washington
 Washington Post
 Watchtower Society
 Wayne Grudem
@@ -255,3 +296,4 @@ William Vandenkolk
 World Evangelization
 W. Paul Williamson
 YouTube
+Zion
