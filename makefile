@@ -461,6 +461,14 @@ avadanlik/names.%.txt:
 	extract_references.js < $^ > $@
 	cat $@
 
+define normalize_references
+	normalize_references.js < $1 | sponge $1
+endef
+
+normalize_references: $(SOURCES)
+	$(foreach SOURCE,$(SOURCES),$(call normalize_references,$(SOURCE)))
+	git --no-pager diff --word-diff=color --word-diff-regex=. -- $(SOURCES)
+
 watch:
 	( git ls-files ; cd $(TOOLS) ; git ls-files | xargs -iX echo $(TOOLS)/X ) | \
 		entr -c -p make -B DRAFT=true $(WATCH_ARGS)
