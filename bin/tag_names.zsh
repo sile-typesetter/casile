@@ -8,6 +8,7 @@ function tag_name () {
 	name=$@
 	clear
 	git co -- $md
+	git reset
 	msg="Tag instances of name '$name' as language '$lang'"
 	perl -i -pne "s/(?<!\{)$name(?!\})/\\\\lang$lang{$name}/g if ! /^(\[\^\d+\]|#+ )/" -- $md
 	git add -- $md
@@ -25,6 +26,7 @@ for file in $@; do
 			tag_name $file $name
 		done
 	git co -- $file
+	git reset
 done
 
 # Next try permutations of first, last, etc. (within reason)
@@ -35,4 +37,5 @@ for file in $@; do
 			tag_name $file $name
 		done
 	git co -- $file
+	git reset
 done
