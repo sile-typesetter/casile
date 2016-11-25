@@ -7,6 +7,7 @@
   "author": "Caleb Maclennan <caleb@alerque.com>",
   "license": "LGPL",
   "dependencies": {
-    "bible-passage-reference-parser": "^2.0.0"
+    "bible-passage-reference-parser": "https://github.com/alerque/Bible-Passage-Reference-Parser",
+    "bible-reference-formatter": "https://github.com/alerque/Bible-Reference-Formatter"
   }
 }
