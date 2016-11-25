@@ -1,15 +1,29 @@
-Ayırt Edici İşaretler
 Afrika
+Antlaşma Sandığı
 Asya
 Avihu
+Aydınlanma Rasyoneller
+Ayırt Edici İşaretler
+Azusa Sokak Uyanış
 Baal
 Baba Tanrı
+Bağımsız Kilise Hareketi
+Batı Yakası
+Beytel Kutsal Kitap Enstitüsü
 Beytel Okulu
 Bir Amerikalının Hayatı
 Birinci Akvam Elçileri
 Bugün Senin Günün
+Buluşma Çadırı
+Büyücü Simun
+Büyük Doktor
 Büyük Uyanış
+Cambridge Üniversitesi
+Dallas Teoloji Okulu
+Diriliş Bayramı
+Doğu Yakası
 Dördüncü Büyük Uyanış
+Dünya Ticaret Merkezi
 Dünyaya Müjdeleme
 Elçilerin Uluslararası Koalisyonu
 Elçi Pavlus
@@ -17,8 +31,13 @@ Elçi Petrus
 Elçisel İman Hareketi
 Elçisel Kilise
 Elçi Yuhanna
+Emerson Hitabet Okulu
+Emerson Okulu
 Eski Antlaşma
+Evanjelik Akıma
 Fuller Teoloji Okulu
+Fuller Teoloji Semineri
+Gerçeğin Öğretmeni
 Gerçeğin Ruhu
 Gerçek Ruh
 Gözcü Kulesi Topluluğu
@@ -26,78 +45,106 @@ Güney Afrika
 Güney Kaliforniya
 Güney Kore
 Hagavos
-Hristiyan Bilimi
 Harun
+Hristiyan Araştırma Enstitüsü
+Hristiyan Bilimi
+İkinci Elçilik Çağı
 İkinci Elçisel Çağ
 İlahi Müessese
 İman Şehri
 İsa
 İsa Arıyor
+İsa Hareketi
 İsa Mesih
 İsrail
 İznik Konseyi
 Japonya
+Kadiri Mutlak Kutsal Ruh
 Kaliforniya
 Kanada Yayın Kanalı
 Kansas Şehrini
 Kansas Şehri Peygamberleri
+Kansas Şehri Peygamberleri Hareketi
 Karizmatik Akım
+Karizmatik Akımı
 Karizmatik Hareket
 Karizmatik Kaos
 Karizmatik Karmaşa
 Karizmatik Kiliselerin Uluslararası Birliği
 Karizmatik Uyanış Hareketi
+Karmel Dağı
 Katolik Karizmatik Uyanış
 Katolik Kilisesi
 Kelimenin Gücü
 Kelimenin Gücü Akımı
 Kelimenin Gücü Hareketi
 Kenyon Kilisesinin Yayını
+Kirtland Tapınağı
+Konstantinapolis Konseyi
 Korint
+Kuşkucunun Sözlüğü
 Kutsal Kitap
 Kutsallaşma Hareketi
 Kutsal Ruh
 Kutsal Ruh Hokus Pokus
 Kutsal Ruh Yenilenmesi
+Kutsal Toprak
 Kutsal Yasa
 Kutsap Kitap
 Kuzey Amerika
+Lakeland Uyanış
 Latin Amerika
 Lazarı
+Londra Başkent Tapınağı
+Magnezyanlara Mektubu
+Master Semineri
 Melek Cebrail
 Mesih
 Mesih İsa
 Mezhepsel Olmayan Kilise
+Mormon Kitabı
 Mucize Meselesi
 Muhammed Ali
 Musa
 Nazi Almanya
 Nikodim
 Noel Baba
+Oğlu İsa
 Oğul Tanrı
+Oral Roberts Üniversitesi
+Orlando Hristiyan Merkezi
 Orta Çağ
+Orta Doğu
 Özgür İrade Baptist
 Pasifik Okyanusu
 Pastörel Mektuplar
 Pavlus
+Pentekost
 Pentekostal Hareket
-Petrus
 Phoenix Semineri
 Protestan Reformu
+Püritan
 Rab
 Rabbimiz Mesih İsa
+Rabbin Ruhu
 Rabbin Sofrası
 Rab İsa
 Rab İsa Mesih
+Regent Üniversitesi
 Roma
 Roma Katolik Kilisesi
+Romalı Clement
 Ruh
 Safira
+Schleiermacher Halle Üniversitesi
+Seattle Kutsal Kitap Enstitüsü
+Seher Yıldızı Hizmetleri
+Selanik
+Şeytan
 Simun Petrus
 Son Gün Azizleri
 Son Yağmur
 Son-Zaman Azizleri
-Şeytan
 Tanrı
 Tanrı Kuzusu
 Tevhid Pentekostalciliği
@@ -107,13 +154,17 @@ Tüm İnsanların Ortak Dua Evi
 Üçlübirlik
 ÜçlüBirlik Yayın Ağı
 Üçüncü Dalga
+Üçüncü Dalga Hareketi
+Uluslararası Hristiyan Elçilik Ağı
 Uluslararası Karizmatik Kutsal Kitap Hizmetleri
 Üst Oda
 Vaftizci Yahya
+Van Nuys Kilisesi
 Venedik Taciri
 Vineyard Hareketi
 Wesleyan Kutsallık
 Yahuda İskariyot
+Yale Üniversitesi
 Yaşam Ruh
 Yaşayan Söz Kilisesi
 Yedinci-Gün Adventistleri
@@ -121,11 +172,14 @@ Yeni Antlaşma
 Yeni Çağ
 Yeni Düşünce
 Yeni Düşünüş
+Yeni Elçilik Akımı
 Yeni Elçisel Reform
 Yeni King James
 Yeni Uluslararası Çeviri
 Yeni Yeruşalim
+Yeni Yeryüzü
 Yeni Zelanda
+Yeruşalim
 Yoel
 Yüceler Yücesi
 Zihin Bilimi

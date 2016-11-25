@@ -1,10 +1,8 @@
 A.A. Allen
 Agnes Ozman
-Augustine
-Akabinde Bakker
 Aimee Semple McPherson
-Aime Semple McPherson
 A. J. Gordon
+Akabinde Bakker
 Albrecht Ritschl
 Allan Anderson
 Andrew Womack
@@ -15,6 +13,7 @@ Apostalic Church
 Apostalic Faith
 Archie Parrish
 Arthur W. Pink
+Augustine
 A. W. Tozer
 Azuza Street Revival
 B.B. Warfield
@@ -31,6 +30,7 @@ Bryan Norman
 Byron Mote
 California
 Calvary Chapel
+Cambridge
 Canadian Broadcasting Channel
 Carlton Pearson
 Chad Brand
@@ -38,6 +38,7 @@ Charismatic Chaos
 Charles Chauncy
 Charles Doolittle
 Charles Fox Parham
+Charles F. Parham
 Charles Parham
 Charles Spurgeon
 Christian International
@@ -77,6 +78,7 @@ D. R. McConnell
 Earl Paulk
 Eddie Long
 Ellen G. White
+Enoch Adeboye
 Enoch Lonnie Ford
 Essek William Kenyon
 E. W. Kenyon
@@ -150,6 +152,7 @@ Kenneth Hagin
 Kenneth L. Nolan
 Kevin DeYoung
 King James
+Kirtland
 Ku Klux Klan
 Las Vegas
 Latter-Day Saints
@@ -165,8 +168,8 @@ Martin Luther
 Marvin Gorman
 Mary Baker Eddy
 Massachusetts
-Metro Vineyard Fellowship
 Matthew Henry
+Metro Vineyard Fellowship
 Michael Brown
 Michael Guglielmucci
 Michael Horton
@@ -222,8 +225,8 @@ Reinhard Bonnke
 Rene Pache
 R. G. Robbins
 Rhonda Byrne
-Richard Gaffin
 Richard Fischer
+Richard Gaffin
 Richard Roberts
 Richart J. Gehman
 Rick Joyner
@@ -241,9 +244,9 @@ Samuel Waldron
 Sam Waldron
 San Antonio
 Sarah Young
+S. C. Todd
 Seattle
 Shakespeare
-S. C. Todd
 S. J. Riggins
 Smith Wigglesworth
 Southern Baptist
@@ -251,6 +254,7 @@ Spencer
 Stan Jantz
 Steve Lawson
 Suffield
+Suzanne Hinn
 T. D. Jakes
 Ted Haggard
 Ted Olsen
