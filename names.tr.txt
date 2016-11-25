@@ -1,22 +1,5 @@
 Agnes Ozman
 Akabinde Bakker
-Eski Antlaşma
-İsa
-İsrail
-Kutsal Ruh
-Kutsap Kitap
-Mesih
-Pavlus
-Rab
-Rab İsa Mesih
-Tanrı
-Üçlübirlik
-Yaşam Ruh
-Yeni Antlaşma
-Yeni Düşünce
-Yeni Elçisel Reform
-Yeni King James
-Yüceler Yücesi
 Ayırt Edici İşaretler
 Baba Tanrı
 Beytel Okulu
@@ -32,6 +15,7 @@ Elçi Petrus
 Elçisel İman Hareketi
 Elçisel Kilise
 Elçi Yuhanna
+Eski Antlaşma
 Fuller Teoloji Okulu
 Gerçeğin Ruhu
 Gerçek Ruh
@@ -43,8 +27,10 @@ Hristiyan Bilimi
 İkinci Elçisel Çağ
 İlahi Müessese
 İman Şehri
+İsa
 İsa Arıyor
 İsa Mesih
+İsrail
 İznik Konseyi
 Kanada Yayın Kanalı
 Kansas Şehri Peygamberleri
@@ -62,12 +48,15 @@ Kelimenin Gücü Hareketi
 Kenyon Kilisesinin Yayını
 Kutsal Kitap
 Kutsallaşma Hareketi
+Kutsal Ruh
 Kutsal Ruh Hokus Pokus
 Kutsal Ruh Yenilenmesi
 Kutsal Yasa
+Kutsap Kitap
 Kuzey Amerika
 Latin Amerika
 Melek Cebrail
+Mesih
 Mesih İsa
 Mezhepsel Olmayan Kilise
 Mucize Meselesi
@@ -79,22 +68,27 @@ Orta Çağ
 Özgür İrade Baptist
 Pasifik Okyanusu
 Pastörel Mektuplar
+Pavlus
 Pentekostal Hareket
 Phoenix Semineri
 Protestan Reformu
+Rab
 Rabbimiz Mesih İsa
 Rabbin Sofrası
 Rab İsa
+Rab İsa Mesih
 Roma Katolik Kilisesi
 Simun Petrus
 Son Gün Azizleri
 Son Yağmur
 Son-Zaman Azizleri
+Tanrı
 Tanrı Kuzusu
 Tevhid Pentekostalciliği
 Toronto Kutsaması
 Toronto Üniversitesi
 Tüm İnsanların Ortak Dua Evi
+Üçlübirlik
 ÜçlüBirlik Yayın Ağı
 Üçüncü Dalga
 Uluslararası Karizmatik Kutsal Kitap Hizmetleri
@@ -103,11 +97,17 @@ Venedik Taciri
 Vineyard Hareketi
 Wesleyan Kutsallık
 Yahuda İskariyot
+Yaşam Ruh
 Yaşayan Söz Kilisesi
 Yedinci-Gün Adventistleri
+Yeni Antlaşma
 Yeni Çağ
+Yeni Düşünce
 Yeni Düşünüş
+Yeni Elçisel Reform
+Yeni King James
 Yeni Uluslararası Çeviri
 Yeni Yeruşalim
 Yeni Zelanda
+Yüceler Yücesi
 Zihin Bilimi

@@ -11,6 +11,7 @@ Ancak Elçilerin İşleri
 Ancak Elçi Pavlus
 Ancak Hagavos
 Ancak Jonathan Edwards
+Ancak Kelamını
 Ancak Kutsal Kitap
 Ancak Kutsal Kitapta Tanrı
 Ancak Kutsal Ruh
@@ -22,8 +23,6 @@ Ancak Kutsal Yazıların
 Ancak Kutsal Yazıların Tanrı
 Ancak Luther
 Ancak Mesih
-Ancak Kelamını
-Ancak Kelamını
 Ancak Orta Doğu
 Ancak Pentekost
 Ancak Püritan
@@ -73,6 +72,7 @@ Bayan Ozman
 Belki Hinn
 Beytel Kutsal Kitap Enstitüsünü
 Beytel Okulu Rahibi Charles F. Parham Topeka
+Bickle Jones
 Bickles Jones
 Bilhassa Selaniklilerin
 Birinci Anayasa Değişikliğinin
@@ -81,7 +81,6 @@ Bir Üçüncü Dalga
 Bize Kelamı
 Bizi İsrail
 Boğazlanmış Kuzu
-Bickle Jones
 Böylece Mesih İsa
 Bu Kelimenin Gücü
 Bu Kutsal Kitabın
@@ -179,6 +178,7 @@ Onu Dana Point
 Oral Roberts Üniversitesinde
 Oratory Emerson Okulu
 Orlanda Hristiyan Merkezinde
+Orlando Hristiyan Merkezinde
 Örneğin Benjamin Franklin
 Örneğin F.F. Bruce
 Örneğin Güney Baptistleri
@@ -213,6 +213,7 @@ Suffield Connecticut
 Tanrı Musa
 Tekrar Kenyon
 Temmuzda Orlanda Florida
+Temmuzda Orlando Florida
 Teolog Bruce Ware
 Teolog Frederick Dale Bruner
 Teolog James Montgomery Boice
@@ -220,8 +221,6 @@ Tersine Korint
 Tevhid Pentekostalleri
 Tevhid Pentekostalliğidir
 Texas San Antonio
-Orlando Hristiyan Merkezinde
-Temmuzda Orlando Florida
 Toronto Havaalanı Hristiyan Kardeşliğinde
 Tulsa Oral Roberts Üniversitesi
 ÜçlüBirliğin

@@ -7,7 +7,6 @@ Amerikan Hristiyanlığına
 Amerikan İç Savaşına
 An American Life
 Ancak Elçilerin İşleri
-Elçilerin İşleri
 Ancak Kelamını
 Angry God
 Anlaşılan Efesliler
@@ -18,6 +17,7 @@ Ayrıca İbraniler
 Ayrıca Yahudilerin Pavlus
 Be Healed
 Belirtiler Hareketi
+Benni Hinn
 Benny Hinn Aralık
 Benny Hinn Roberts
 Birinci Korintliler
@@ -28,7 +28,6 @@ Bizler Hristiyanız
 Bizleri Mesih
 Bizler Tanrı
 Bizse Tanrı
-Benni Hinn
 Bölgesel Elçiler
 Böylece Kutsal Yazıların
 Böylece Ruh
@@ -89,6 +88,7 @@ Eğer Yeni Antlaşma
 Elbette Ruh
 Elçi Başkanı
 Elçilerim İşleri
+Elçilerin İşleri
 Elçilerin İşlerinde
 Elçilerin İşlerindeki
 Elçilerin İşlerinde Luka
@@ -119,6 +119,7 @@ Ezgiler Ezgisi
 Fakat Benny Hinn
 Fakat Elçilerin İşleri
 Fakat İsrailliler
+Fakat Karizmatik Akımın
 Fakat Kutsal Kitap
 Fakat Kutsal Yazıların
 Fakat Pavlus
@@ -137,6 +138,7 @@ Gerçekten Ruh
 Günümüz Hristiyanlarından
 Günümüz Karizmatik Akımı
 Günümüz Karizmatik Akıminin
+Günümüz Karizmatik Akımının
 Hani Kutsal Kitapta
 Harekete Geçiren
 Hem Elçilerin İşleri
@@ -183,6 +185,7 @@ Karizmatik Akımi
 Karizmatik Akımı
 Karizmatik Akımin
 Karizmatik Akımın
+Karizmatik Akımına
 Karizmatik Akımine
 Karizmatik Akımının
 Karizmatik Akımın Kutsal Ruh
@@ -202,13 +205,11 @@ Karizmatikler Ruhla
 Karizmatikler Tanrı
 Karizmatikler Yeni Antlaşam
 Karizmatik Uyanış Akıminin
-Fakat Karizmatik Akımın
-Günümüz Karizmatik Akımının
-Karizmatik Akımına
 Karizmatik Uyanış Akımının
 Karizmatik Uyanış Hareketinin
 Karşı Uyarı
 Katolik Karizmatikler
+Kelimenin Gücü Akımına
 Kelimenin Gücü Akımında
 Kelimenin Gücü Akımının
 Kelimenin Gücü Hareketinin
@@ -261,6 +262,7 @@ Kutsal Ruh Kendi
 Kutsal Ruh Kendini
 Kutsal Ruh Kendisini
 Kutsal Ruh Korinlilerin
+Kutsal Ruh Korintlilerin
 Kutsal Ruh Kutsal Kitaba
 Kutsal Ruh Mesih
 Kutsal Ruh Tanrı Sözünde
@@ -385,6 +387,7 @@ Schleiermacher Kutsal Yazıların
 Seasoned Thoughts
 Sen İsrail
 Server Transferi
+Servet Transferi
 Sevgi Ailesi
 Sevgili Oğlum
 Şeytan Hristiyanlar
@@ -394,6 +397,7 @@ Skandallar Listesi
 Sonuçta Rab
 Son-Zaman Azizleri Arasında Köprü Kurmak
 Son-Zaman Azizlerini
+Southern Baptists
 Sözde Ruh
 Sözün Tanrısına
 Şuanda Dr
@@ -436,12 +440,9 @@ Tersine Tanrı
 The Distinguishing Marks
 The Knowledge
 The Life
-Kelimenin Gücü Akımına
-Kutsal Ruh Korintlilerin
-Servet Transferi
-Southern Baptists
 Tipik Pentekostal
 Toronto Kutsamasının
+Toufik Benedictus
 Tüm Pentekostal
 Tüm Ruhsal Armağanların Devam Ettiğini Söyleyen Arkadaşlarıma Açık Mektup
 Üçlü-Birlikteki Kutsal Ruh
@@ -487,8 +488,7 @@ Yeni Yaşam Kilisesinde
 Yılan Aden
 Yoksa Kutsal Ruh
 Your Day
+Yüce İsa Mesih
 Yücelik Olsun
 Zaten Tanrı
 Zihnimizdeki Tanrı
-Yüce İsa Mesih
-Toufik Benedictus
