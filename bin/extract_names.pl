@@ -8,7 +8,7 @@ use open ':std', ':encoding(UTF-8)';
 my @names;
 
 my $name = '\p{Lu}\p{Ll}(\p{L}|-\p{Lu}\p{L})*';
-my $postfix = ',?\s([IV]{1,3}|[JS]r|MD|Bey|Paşa|Hanım|Efendi|Başkanı)\.?';
+my $postfix = ',?\s([IV]{1,3}|[JS]r|MD|Bey|Paşa|Hanım|Efendi|Başkanı|St)\.?';
 my $nameOrInitial = '('.$name.'|\p{Lu}\.)\s*';
 
 print STDERR "NAME: $name\n";
