@@ -58,9 +58,10 @@ Comedy Central
 Connecticut
 C. Peter Wagner
 Creflo Dollar
+Dallas
 Dana Point
 Dan Phillips
-David Edwin Harrell Jr
+David Edwin Harrell Jr.
 David Farnell
 David Jones
 David Martyn Lloyd-Jones
@@ -76,6 +77,7 @@ D. R. McConnell
 Earl Paulk
 Eddie Long
 Ellen G. White
+Emerson
 Enoch Adeboye
 Enoch Lonnie Ford
 Essek William Kenyon
@@ -94,6 +96,7 @@ Fred L. Volz
 Fred Price
 Free Will Baptist
 Friedrich Schleiermacher
+Fuller
 George Marsden
 George Whitefield
 Glendale
@@ -152,6 +155,7 @@ Kevin DeYoung
 King James
 Kirtland
 Ku Klux Klan
+Lakeland
 Las Vegas
 Latter-Day Saints
 Latter Rain
@@ -214,12 +218,14 @@ Pew Forum
 Philip Jenkins
 Phil Johnson
 Phineas P. Quimby
+Phoenix
 Post-Denominational Church
 Presiding Apostle
 Quaker
 Rafael Martinez
 Randy White
 R. C. Sproul
+Regent
 Reinhard Bonnke
 René Pache
 R. G. Robbins
@@ -243,12 +249,14 @@ Samuel Waldron
 Sam Waldron
 San Antonio
 Sarah Young
+Schleiermacher Halle
 S. C. Todd
 Seattle
 Shakespeare
 S. J. Riggins
 Smith Wigglesworth
 Southern Baptist
+Southern Baptists
 Spencer
 Stan Jantz
 Steve Lawson
@@ -276,12 +284,15 @@ Todd Bentley
 Topeka
 Topeka Daily Capital
 Topeka State Journal
+Toronto
+Toronto Airport
 Toronto Airport Christian Fellowship
 Toronto Blessing
 T. P. Thigpen
 Trinity Broadcasting Network
 Van Nuys
 Vertical Apostles
+Vineyard
 Vinson Synan
 W. A. Criswell
 Washington
@@ -298,5 +309,6 @@ William Shakespeare
 William Vandenkolk
 World Evangelization
 W. Paul Williamson
+Yale
 YouTube
 Zion
