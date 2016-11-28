@@ -6,7 +6,7 @@ names=$1 ; shift
 touch rejects.txt
 
 function reject () {
-	echo $@ > rejects.txt
+	echo $@ >> rejects.txt
 }
 
 function tag_name () {
