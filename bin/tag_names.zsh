@@ -21,7 +21,7 @@ function tag_name () {
 	git --no-pager diff --cached -U0 --word-diff=color --word-diff-regex=. --minimal --ignore-all-space -- $md |
 		grep -v '@@'
 	git diff-index --quiet --cached HEAD && continue 1
-	read -q "?$msg? (y/n)" || { rejet $name && continue 1 }
+	read -q "?$msg? (y/n)" || { reject $name && continue 1 }
 	git commit -m "[auto] $msg"
 }
 
