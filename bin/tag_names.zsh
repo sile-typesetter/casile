@@ -16,7 +16,7 @@ function tag_name () {
 	git reset
 	git checkout HEAD -- $md
 	msg="Tag instances of name '$name' as language '$lang'"
-	perl -i -pne "s/(?<!\{)$name(?![^\{\}]\})/\\\\lang$lang{$name}/g if ! /^(\[\^\d+\]|#+ )/" -- $md
+	perl -i -pne "s/(?<!\{)$name(?![^\{\}]*\})/\\\\lang$lang{$name}/g if ! /^(\[\^\d+\]|#+ )/" -- $md
 	git add -- $md
 	git --no-pager diff --cached -U0 --word-diff=color --word-diff-regex=. --minimal --ignore-all-space -- $md |
 		grep -v '@@'
