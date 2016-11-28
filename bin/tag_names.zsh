@@ -39,6 +39,7 @@ done
 # Next try permutations of first, last, etc. (within reason)
 for file in $@; do
 	perl -ne 's/ /\n/g;print if /^.{3,}/' < $names |
+		sort -u |
 		perl -e 'print sort { length($b) <=> length($a) } <>' |
 		grep -vxf rejects.txt |
 		while read name; do
