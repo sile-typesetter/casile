@@ -22,13 +22,15 @@ String.prototype.replaceSplice = function (start, end, string) {
 
 function process_line (line) {
   line = line + "\n"; // restore that which readline rightfully stole
-  var offset = 0;
-  var refs = bcv.parse(line).osis_and_indices();
-  refs.forEach(function(ref) {
+  if (!line.match(/^(#|\[\^\d+\]:) /)) { // skip footnotes and headings for now
+    var offset = 0;
+    var refs = bcv.parse(line).osis_and_indices();
+    refs.forEach(function(ref) {
       var pretty = formatter('yc-long', ref.osis);
       line = line.replaceSplice(ref.indices[0] + offset, ref.indices[1] + offset, pretty); 
       offset += ref.indices[0] - ref.indices[1] + pretty.length;
     });
+  }
   process.stdout.write(line);
 }
 
