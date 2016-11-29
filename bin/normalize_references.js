@@ -24,9 +24,14 @@ function process_line (line) {
   line = line + "\n"; // restore that which readline rightfully stole
   if (!line.match(/^(#|\[\^\d+\]:) /)) { // skip footnotes and headings for now
     var offset = 0;
+    var lastEnd = 0;
+    var lastOsis = null;
     var refs = bcv.parse(line).osis_and_indices();
     refs.forEach(function(ref) {
-      var pretty = formatter('yc-long', ref.osis);
+      var context = ( lastEnd + 4 ) >= ref.indices[0] ? lastOsis : null;
+      var pretty = formatter('yc-long', ref.osis, context);
+      lastEnd = ref.indices[1];
+      lastOsis = ref.osis;
       line = line.replaceSplice(ref.indices[0] + offset, ref.indices[1] + offset, pretty); 
       offset += ref.indices[0] - ref.indices[1] + pretty.length;
     });
