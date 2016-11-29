@@ -95,7 +95,7 @@ Kuzey Amerika
 Lakeland Uyanış
 Latin Amerika
 Lazarı
-Londra Başkent Tapınağı
+Londra Büyükşehir Tapınağı
 Magnezyanlara Mektubu
 Master Semineri
 Melek Cebrail
@@ -183,3 +183,7 @@ Yeruşalim
 Yoel
 Yüceler Yücesi
 Zihin Bilimi
+İreneyus
+Tertullianus
+Lactantius
+Augustinus
