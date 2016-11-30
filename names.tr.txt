@@ -1,6 +1,7 @@
 Afrika
 Antlaşma Sandığı
 Asya
+Augustinus
 Avihu
 Aydınlanma Rasyoneller
 Ayırt Edici İşaretler
@@ -52,6 +53,7 @@ Hristiyan Bilimi
 İkinci Elçisel Çağ
 İlahi Müessese
 İman Şehri
+İreneyus
 İsa
 İsa Arıyor
 İsa Hareketi
@@ -92,6 +94,7 @@ Kutsal Toprak
 Kutsal Yasa
 Kutsap Kitap
 Kuzey Amerika
+Lactantius
 Lakeland Uyanış
 Latin Amerika
 Lazarı
@@ -147,6 +150,7 @@ Son Yağmur
 Son-Zaman Azizleri
 Tanrı
 Tanrı Kuzusu
+Tertullianus
 Tevhid Pentekostalciliği
 Toronto Kutsaması
 Toronto Üniversitesi
@@ -183,7 +187,3 @@ Yeruşalim
 Yoel
 Yüceler Yücesi
 Zihin Bilimi
-İreneyus
-Tertullianus
-Lactantius
-Augustinus
