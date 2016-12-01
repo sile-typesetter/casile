@@ -1,4 +1,5 @@
 Afrika
+Amerika
 Antlaşma Sandığı
 Asya
 Augustinus
@@ -9,17 +10,21 @@ Azusa Sokak Uyanış
 Baal
 Baba Tanrı
 Bağımsız Kilise Hareketi
+Balam
 Batı Yakası
 Beytel Kutsal Kitap Enstitüsü
 Beytel Okulu
 Bir Amerikalının Hayatı
 Birinci Akvam Elçileri
+Buick
 Bugün Senin Günün
 Buluşma Çadırı
 Büyücü Simun
 Büyük Doktor
 Büyük Uyanış
 Cambridge Üniversitesi
+Concorde
+Çin
 Dallas Teoloji Okulu
 Diriliş Bayramı
 Doğu Yakası
@@ -47,6 +52,7 @@ Güney Kaliforniya
 Güney Kore
 Hagavos
 Harun
+Hindistan
 Hristiyan Araştırma Enstitüsü
 Hristiyan Bilimi
 İkinci Elçilik Çağı
@@ -77,9 +83,11 @@ Karizmatik Uyanış Hareketi
 Karmel Dağı
 Katolik Karizmatik Uyanış
 Katolik Kilisesi
+Kayafa
 Kelimenin Gücü
 Kelimenin Gücü Akımı
 Kelimenin Gücü Hareketi
+Kenya
 Kenyon Kilisesinin Yayını
 Kirtland Tapınağı
 Konstantinapolis Konseyi
@@ -172,6 +180,7 @@ Yale Üniversitesi
 Yaşam Ruh
 Yaşayan Söz Kilisesi
 Yedinci-Gün Adventistleri
+Yehova
 Yeni Antlaşma
 Yeni Çağ
 Yeni Düşünce

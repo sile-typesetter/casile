@@ -1,9 +1,11 @@
 A. A. Allen
+ABC Nightline
 Agnes Ozman
 Aimee Semple McPherson
 A. J. Gordon
 Albrecht Ritschl
 Allan Anderson
+Anaheim
 Andrew Womack
 Angelus Temple
 Anthony Thiselton
@@ -61,6 +63,7 @@ Creflo Dollar
 Dallas
 Dana Point
 Dan Phillips
+Dateline
 David Edwin Harrell Jr.
 David Farnell
 David Jones
@@ -203,6 +206,7 @@ New York Times
 Norm Geisler
 North Battleford
 North Cleveland
+Oklahoma
 Olathe
 Oneness Pentecostalism
 Oral Roberts
@@ -222,6 +226,7 @@ Phil Johnson
 Phineas P. Quimby
 Phoenix
 Post-Denominational Church
+Praise-a-Thon
 Presiding Apostle
 Quaker
 Rafael Martinez
@@ -293,6 +298,7 @@ Toronto Airport Christian Fellowship
 Toronto Blessing
 T. P. Thigpen
 Trinity Broadcasting Network
+Tulsa
 Van Nuys
 Vertical Apostles
 Vineyard
@@ -315,3 +321,4 @@ W. Paul Williamson
 Yale
 YouTube
 Zion
+Evelyn Roberts
