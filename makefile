@@ -214,6 +214,7 @@ define find_and_munge
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
 	find $(BASE) -name '$1' |
 		while read f; do
+			grep -q 'esyscmd.*cat' $$f && continue # skip compilations that are mostly M4
 			git diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
 			$2 < $$f | sponge $$f
 			git add -- $$f
@@ -228,6 +229,7 @@ md_cleanup:
 	$(call find_and_munge,*.md,figure_dash.pl,Convert hyphens between numbers to figure dashes)
 	$(call find_and_munge,*.md,unicode_symbols.pl,Replace lazy ASCI shortcuts with Unicode symbols)
 	$(call find_and_munge,*.md,italic_reorder.pl,Fixup italics around names and parethesised translations)
+	$(call find_and_munge,*.md,pandoc --atx-headers --wrap=none --to=markdown,Normalize and tidy Markdown syntax using Pandoc)
 	# call find_and_munge,*.md,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
 
 define md_cleanup
