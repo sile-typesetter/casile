@@ -16,12 +16,13 @@ DIFF ?= false
 CROP ?= false
 STATS_MONTHS ?= 1
 PRE_SYNC ?= true
-DEBUG = false
-COVERS = true
+DEBUG ?= false
+COVERS ?= true
+HEAD ?= 0
 
 SILE ?= sile
 PANDOC ?= pandoc
-SILE_DEBUG = viachristus
+SILE_DEBUG ?= viachristus
 
 # For watch targets, treat exta parameters as things to pass to the next make
 ifeq (watch,$(firstword $(MAKECMDGOALS)))
@@ -240,6 +241,7 @@ md_cleanup:
 	# call find_and_munge,*.md,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
 
 define md_cleanup
+	cat | ( [[ $(HEAD) -ge 1 ]] && head -n $(HEAD) || cat ) |
 	smart_quotes.pl |
 	figure_dash.pl |
 	unicode_symbols.pl
