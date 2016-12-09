@@ -481,6 +481,17 @@ endef
 normalize_references: $(SOURCES)
 	$(foreach SOURCE,$(SOURCES),$(call normalize_references,$(SOURCE)))
 
+define split_chapters
+	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
+	git diff-files --quiet -- $1 || exit 1 # die if this file has uncommitted changes
+	grep -q 'esyscmd.*cat' $1 && exit 1 # skip if the source is aready a compilation
+	split_chapters.zsh $1
+	git diff-index --quiet --cached HEAD || git ci -m "[auto] Split $1 into one file per chapter"
+endef
+
+split_chapters:
+	$(foreach SOURCE,$(SOURCES),$(call split_chapters,$(SOURCE)))
+
 watch:
 	( git ls-files ; cd $(TOOLS) ; git ls-files | xargs -iX echo $(TOOLS)/X ) | \
 		entr -c -p make -B DRAFT=true $(WATCH_ARGS)
