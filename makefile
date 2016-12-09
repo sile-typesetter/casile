@@ -20,6 +20,7 @@ DEBUG = false
 COVERS = true
 
 SILE ?= sile
+PANDOC ?= pandoc
 SILE_DEBUG = viachristus
 
 # For watch targets, treat exta parameters as things to pass to the next make
@@ -99,7 +100,7 @@ endif
 
 .ONESHELL:
 .SECONDEXPANSION:
-.PHONY: all ci clean init sync_pre sync_post $(TARGETS) %.app md_cleanup
+.PHONY: all ci clean init dependencies sync_pre sync_post $(TARGETS) %.app md_cleanup
 .SECONDARY:
 .PRECIOUS: %.pdf %.sil %.toc
 
@@ -132,10 +133,16 @@ debug:
 
 $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
 
-init:
+init: dependencies
 	mkdir -p $(OUTPUT)
 	git submodule update --init --remote
+	cd $(TOOLS) && yarn install
 
+dependencies:
+	hash yarn
+	hash $(SILE)
+	hash $(PANDOC)
+	$(PANDOC) --list-output-formats | grep -q sile
 
 define sync_owncloud
 	-pgrep -u $(USER) -x owncloud || \
@@ -229,7 +236,7 @@ md_cleanup:
 	$(call find_and_munge,*.md,figure_dash.pl,Convert hyphens between numbers to figure dashes)
 	$(call find_and_munge,*.md,unicode_symbols.pl,Replace lazy ASCI shortcuts with Unicode symbols)
 	$(call find_and_munge,*.md,italic_reorder.pl,Fixup italics around names and parethesised translations)
-	$(call find_and_munge,*.md,pandoc --atx-headers --wrap=none --to=markdown,Normalize and tidy Markdown syntax using Pandoc)
+	$(call find_and_munge,*.md,$(PANDOC) --atx-headers --wrap=none --to=markdown,Normalize and tidy Markdown syntax using Pandoc)
 	# call find_and_munge,*.md,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
 
 define md_cleanup
@@ -251,7 +258,7 @@ define preprocess_markdown
 endef
 
 define build_sile
-	pandoc --standalone \
+	$(PANDOC) --standalone \
 		--wrap=preserve \
 		-V documentclass="vc" \
 		-V papersize="$4" \
@@ -391,7 +398,7 @@ endef
 	convert $< -resize 1000x1600 $@
 
 %.epub %.odt %.docx: %.md %-merged.yml %-epub-kapak.png $(MAKEFILE_LIST)
-	pandoc \
+	$(PANDOC) \
 		--smart \
 		"$(basename $1)-merged.yml" \
 		<($(call preprocess_markdown,$<)) -o $@
