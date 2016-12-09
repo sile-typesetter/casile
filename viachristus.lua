@@ -244,17 +244,14 @@ local function tr_num2text (num, ordinal)
   return table.concat( words, " " )
 end
 
+local originalFormatter = SILE.formatCounter
 SILE.formatCounter = function (options)
-  if (options.display == "roman") then return romanize(options.value):lower() end
-  if (options.display == "Roman") then return romanize(options.value) end
-  if (options.display == "alpha") then return alpha(options.value) end
-  --if (options.display == "Alpha") then return alpha(options.value):upper() end
   if (options.display == "string") then return tr_num2text(options.value):lower() end
   if (options.display == "String") then return tr_num2text(options.value) end
   if (options.display == "STRING") then return uppercase(tr_num2text(options.value)) end
   if (options.display == "Ordinal") then return tr_num2text(options.value, true) end
   if (options.display == "ORDINAL") then return uppercase(tr_num2text(options.value, true)) end
-  return tostring(options.value);
+  return originalFormatter(options)
 end
 
 SILE.registerCommand("tableofcontents:item", function (o,c)
