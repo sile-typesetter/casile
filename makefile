@@ -472,16 +472,8 @@ avadanlik/names.%.txt:
 	extract_references.js < $^ > $@
 	cat $@
 
-define normalize_references
-	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
-	git diff-files --quiet -- $1 || exit 1 # die if this file has uncommitted changes
-	normalize_references.js < $1 | sponge $1
-	git add -- $1
-	git diff-index --quiet --cached HEAD || git ci -m "[auto] Normalize verse references using BCV parser"
-endef
-
 normalize_references: $(SOURCES)
-	$(foreach SOURCE,$(SOURCES),$(call normalize_references,$(SOURCE)))
+	$(call find_and_munge,*.md,normalize_references.js,Normalize verse references using BCV parser)
 
 define split_chapters
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
