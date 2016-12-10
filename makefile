@@ -246,6 +246,7 @@ define md_cleanup
 	smart_quotes.pl |
 	figure_dash.pl |
 	reorder_punctuation.pl |
+	link_verses.js |
 	unicode_symbols.pl
 endef
 
