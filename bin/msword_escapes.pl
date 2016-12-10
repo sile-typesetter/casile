@@ -8,8 +8,6 @@ use open ':std', ':encoding(UTF-8)';
 
 # Fixup bad MS word typing habits that Pandoc tries to preserve
 while (<>) {
-  s#\\\[#[#g;
-  s#\\\]#]#g;
   s#\\`#'#g;
   print;
 }
