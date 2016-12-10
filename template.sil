@@ -113,10 +113,6 @@ SILE.registerCommand("label", function()
   -- ignore labels
 end)
 $if(links-as-notes)$
-SILE.registerCommand("href", function(options, content)
-  SILE.call("url", {}, content)
-  SILE.call("footnote", {}, content)
-end)
 $endif$
 \end{script}
 $for(include)$

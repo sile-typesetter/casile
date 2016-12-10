@@ -583,3 +583,69 @@ setCommandDefaults = function (command, newOptions)
     return oldCommand(options, content)
   end
 end
+
+local pdf = require("justenoughlibtexpdf")
+local inputfilter = SILE.require("packages/inputfilter").exports
+
+local urlFilter = function (node, content, breakpat)
+  if type(node) == "table" then return node end
+  local result = {}
+  for token in SU.gtoke(node, breakpat) do
+    if token.string then
+      result[#result+1] = token.string
+    else
+      result[#result+1] = token.separator
+      result[#result+1] = inputfilter.createCommand(
+        content.pos, content.col, content.line,
+        "penalty", { penalty = 100 }, nil
+      )
+    end
+  end
+  return result
+end
+
+SILE.registerCommand("href", function (options, content)
+  if not options.src then
+    options.src = content[1]
+    local breakpat = options.breakpat or "/"
+    content = inputfilter.transformContent(content, urlFilter, breakpat)
+    SILE.call("color", { color = "#00FF00" }, content)
+  elseif pdf then
+    SILE.call("color", { color = "#0000FF" }, function ()
+      SILE.call("pdf:externallink", { dest = options.src }, content)
+    end)
+  else
+    SILE.call("color", { color = "#FF0000" }, content)
+  end
+end)
+
+SILE.registerCommand("pdf:externallink", function (options,content)
+  local dest = SU.required(options, "dest", "pdf:externallink")
+  local llx, lly
+
+  SILE.typesetter:pushHbox({
+    value = nil,
+    height = 0,
+    width = 0,
+    depth = 0,
+    outputYourself = function (self,typesetter)
+      llx = typesetter.frame.state.cursorX
+      lly = SILE.documentState.paperSize[2] - typesetter.frame.state.cursorY
+      pdf.begin_annotation()
+    end
+  })
+
+  local hbox = SILE.Commands["hbox"]({}, content) -- hack
+
+  SILE.typesetter:pushHbox({
+    value = nil,
+    height = 0,
+    width = 0,
+    depth = 0,
+    outputYourself = function (self,typesetter)
+      local d = "<</Type/Annot/Subtype/Link/C [ 1 0 0 ]/A<</Type/Action/S/URI/URI("..dest..")>>>>"
+      pdf.end_annotation(d, llx, lly, typesetter.frame.state.cursorX, SILE.documentState.paperSize[2] -typesetter.frame.state.cursorY + hbox.height)
+    end
+  })
+
+end)
