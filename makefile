@@ -238,12 +238,14 @@ md_cleanup:
 	$(call find_and_munge,*.md,unicode_symbols.pl,Replace lazy ASCI shortcuts with Unicode symbols)
 	$(call find_and_munge,*.md,italic_reorder.pl,Fixup italics around names and parethesised translations)
 	$(call find_and_munge,*.md,$(PANDOC) --atx-headers --wrap=none --to=markdown,Normalize and tidy Markdown syntax using Pandoc)
+	# call find_and_munge,*.md,reorder_punctuation.pl,Cleanup punctuation mark order, footnote markers, etc.)
 	# call find_and_munge,*.md,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
 
 define md_cleanup
 	cat | ( [[ $(HEAD) -ge 1 ]] && head -n $(HEAD) || cat ) |
 	smart_quotes.pl |
 	figure_dash.pl |
+	reorder_punctuation.pl |
 	unicode_symbols.pl
 endef
 
