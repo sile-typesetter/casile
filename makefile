@@ -312,6 +312,19 @@ endef
 			pdftk $*-app.pdf cat $$range output $$out ;\
 		done
 
+issue.info:
+	@for source in $(SOURCES); do
+		echo -e "# $$source\n"
+		sed -ne "/^# /{s/^# *\(.*\)/ - [ ] [\1]($$source)/g;p}" $$source
+		find $${source%.md}-bolumler -name '*.md' -print |
+			sort -n |
+			while read chapter; do
+				number=$${chapter%-*}; number=$${number#*/}
+				sed -ne "/^# /{s/ {.*}$$//;s!^# *\(.*\)! - [ ] $$number — [\1]($$chapter)!g;p}" $$chapter
+			done
+		echo
+	done > $@
+
 define skip_if_tracked
 	$(COVERS) || exit 0
 	git ls-files --error-unmatch -- $1 2>/dev/null && exit 0 ||:
