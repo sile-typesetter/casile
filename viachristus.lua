@@ -300,7 +300,7 @@ end)
 
 local insertions = SILE.require("packages/insertions")
 SILE.registerCommand("footnote", function (options, content)
-  local indent = "14pt"
+  options.indent = options.indent or "14pt"
   SILE.call("footnotemark")
   local opts = SILE.scratch.insertions.classes.footnote
   local f = SILE.getFrame(opts["insertInto"].frame)
@@ -312,7 +312,7 @@ SILE.registerCommand("footnote", function (options, content)
   SILE.settings.reset()
   SILE.settings.set("linespacing.method", "fit-font")
   SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.05ex plus 0.1pt minus 0.1pt"))
-  SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(indent))
+  SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(options.indent))
   local material = SILE.Commands["vbox"]({}, function ()
     SILE.Commands["book:footnotefont"]({}, function ()
       SILE.call("footnote:counter", options, content)
@@ -331,9 +331,9 @@ end)
 
 SILE.registerCommand("footnote:counter", function(options, content)
   SILE.call("noindent")
-  SILE.typesetter:pushGlue({ width = 0 - SILE.length.parse(indent) })
-  SILE.Commands["rebox"]({ width = indent }, function ()
-    SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.footnote)..".")
+  SILE.typesetter:pushGlue({ width = 0 - SILE.length.parse(options.indent) })
+  SILE.Commands["rebox"]({ width = options.indent }, function ()
+    SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.footnote) .. ".")
   end)
 end)
 
