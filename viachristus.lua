@@ -315,11 +315,7 @@ SILE.registerCommand("footnote", function (options, content)
   SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(indent))
   local material = SILE.Commands["vbox"]({}, function ()
     SILE.Commands["book:footnotefont"]({}, function ()
-      SILE.call("noindent")
-      SILE.typesetter:pushGlue({ width = 0 - SILE.length.parse(indent) })
-      SILE.Commands["rebox"]({ width = indent }, function ()
-        SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.footnote)..".")
-      end)
+      SILE.call("footnote:counter", options, content)
       -- don't justify footnotes
       SILE.call("raggedright", {}, function ()
         --inhibit hyphenation in footnotes
@@ -331,6 +327,14 @@ SILE.registerCommand("footnote", function (options, content)
   SILE.typesetter = oldT
   insertions.exports:insert("footnote", material)
   SILE.scratch.counters.footnote.value = SILE.scratch.counters.footnote.value + 1
+end)
+
+SILE.registerCommand("footnote:counter", function(options, content)
+  SILE.call("noindent")
+  SILE.typesetter:pushGlue({ width = 0 - SILE.length.parse(indent) })
+  SILE.Commands["rebox"]({ width = indent }, function ()
+    SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.footnote)..".")
+  end)
 end)
 
 SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length.parse("0.7ex plus 0 minus 0")
