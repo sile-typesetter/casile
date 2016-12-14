@@ -243,11 +243,13 @@ md_cleanup:
 
 define md_cleanup
 	cat | ( [[ $(HEAD) -ge 1 ]] && head -n $(HEAD) || cat ) |
-	smart_quotes.pl |
-	figure_dash.pl |
-	reorder_punctuation.pl |
-	link_verses.js |
-	unicode_symbols.pl
+	( $(DIFF) && cat || (
+		smart_quotes.pl |
+		figure_dash.pl |
+		reorder_punctuation.pl |
+		link_verses.js |
+		unicode_symbols.pl
+	) )
 endef
 
 define preprocess_markdown
