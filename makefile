@@ -18,6 +18,7 @@ STATS_MONTHS ?= 1
 PRE_SYNC ?= true
 DEBUG ?= false
 COVERS ?= true
+COVER_GRAVITY ?= Center
 HEAD ?= 0
 
 SILE ?= sile
@@ -340,7 +341,7 @@ endef
 define draw_title
 	convert  \
 		-size 5000x4000 xc:none -background none \
-		-gravity center \
+		-gravity Center \
 		-pointsize 256 -kerning -10 \
 		-font Libertinus-Sans-Bold \
 		-fill black -stroke none \
@@ -353,6 +354,7 @@ define draw_title
 		-trim \
 		-resize $2 -resize 95% -extent $2 \
 		$3 +swap \
+		-gravity $(COVER_GRAVITY) \
 		-resize $2^ -extent $2 \
 		-shave 10x10 \
 		-bordercolor black -border 10x10 \
