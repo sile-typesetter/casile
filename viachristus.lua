@@ -609,24 +609,21 @@ local urlFilter = function (node, content, breakpat)
 end
 
 SILE.registerCommand("href", function (options, content)
-  if not options.src then
+  if not pdf then return SILE.process(content) end
+  if options.src then
+    SILE.call("pdf:link", { dest = options.src, external = true }, content)
+  else
     options.src = content[1]
     local breakpat = options.breakpat or "/"
     content = inputfilter.transformContent(content, urlFilter, breakpat)
-    SILE.call("color", { color = "#00FF00" }, content)
-  elseif pdf then
-    SILE.call("color", { color = "#0000FF" }, function ()
-      SILE.call("pdf:externallink", { dest = options.src }, content)
-    end)
-  else
-    SILE.call("color", { color = "#FF0000" }, content)
+    SILE.call("pdf:link", { dest = options.src, external = true }, content)
   end
 end)
 
-SILE.registerCommand("pdf:externallink", function (options,content)
-  local dest = SU.required(options, "dest", "pdf:externallink")
+SILE.registerCommand("pdf:link", function (options, content)
+  local dest = SU.required(options, "dest", "pdf:link")
+  local target = options.external and "/Type/Action/S/URI/URI" or "/S/GoTo/D"
   local llx, lly
-
   SILE.typesetter:pushHbox({
     value = nil,
     height = 0,
@@ -647,9 +644,8 @@ SILE.registerCommand("pdf:externallink", function (options,content)
     width = 0,
     depth = 0,
     outputYourself = function (self,typesetter)
-      local d = "<</Type/Annot/Subtype/Link/C [ 1 0 0 ]/A<</Type/Action/S/URI/URI("..dest..")>>>>"
+      local d = "<</Type/Annot/Subtype/Link/C [ 1 0 0 ]/A<<" .. target .. "(" .. dest .. ")>>>>"
       pdf.end_annotation(d, llx, lly, typesetter.frame.state.cursorX, SILE.documentState.paperSize[2] -typesetter.frame.state.cursorY + hbox.height)
     end
   })
-
 end)
