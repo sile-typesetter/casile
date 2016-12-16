@@ -338,9 +338,9 @@ endef
 
 define draw_title
 	convert  \
-		-size 5000x4000 xc:none -background none \
+		-size 2500x2000 xc:none -background none \
 		-gravity Center \
-		-pointsize 256 -kerning -10 \
+		-pointsize 128 -kerning -5 \
 		-font Libertinus-Sans-Bold \
 		-fill black -stroke none \
 		-annotate 0 "$1" \
