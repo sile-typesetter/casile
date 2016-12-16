@@ -108,7 +108,7 @@ endif
 
 all: $(TARGETS)
 
-ci: init clean debug sync_pre all sync_post stats
+ci: | init clean debug sync_pre all sync_post stats
 
 clean:
 	git clean -xf
