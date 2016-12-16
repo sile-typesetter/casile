@@ -114,7 +114,6 @@ clean:
 	git clean -xf
 
 debug:
-	@echo ================================================================================
 	@echo SOURCES: $(SOURCES)
 	@echo TARGETS: $(TARGETS)
 	@echo FORMATS: $(FORMATS)
@@ -131,7 +130,6 @@ debug:
 	@echo TOOLS: $(TOOLS)
 	@echo SILE: $(SILE)
 	@echo SILE_PATH: $(SILE_PATH)
-	@echo ================================================================================
 
 $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
 
