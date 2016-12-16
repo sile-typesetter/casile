@@ -41,26 +41,22 @@ BRANCH = $(CI_BUILD_REF_NAME)
 endif
 endif
 
-# If we are directly on a tagged commit, build it to a special directory
-TAG := $(shell git describe --tags)
-TAG_SEQ := $(shell git describe --long --tags | rev | cut -d- -f2)
-ifeq ($(TAG_SEQ),0)
+# If this commit is tagged, run special rules for it
+ALL_TAGS := $(shell git tag --points-at HEAD | xargs echo)
+LAST_TAG := $(shell git describe --tags)
+ifneq ($(ALL_TAGS),)
 
 BRANCH = master
-OUTPUT := $(OUTPUT)/$(TAG)
-PRE_SYNC = false
 DIFF = false
 
-# If our tag or branch has a slash in it, treat the first bit as a target
-# and only build that item not the whole project.
-TAG_BASE = $(shell echo $(TAG) | cut -d/ -f1)
-TAG_NAME = $(TAG)
-ifneq ($(TAG),$(TAG_BASE))
-TAG_NAME = $(shell echo $(TAG) | cut -d/ -f2)
-TARGETS = $(TAG_BASE)
-endif
+# Use first segment of tags as target names
+TARGETS = $(subst /,,$(dir $(ALL_TAGS)))
 
-# Not directly on a tag
+# Use last segment of tag names as formats
+FORMATS = $(sort $(notdir $(ALL_TAGS)))
+TAG_NAME = $(firstword $(sort $(notdir $(ALL_TAGS))))
+
+# Else not directly on any tags
 else
 
 # If we are not on the master branch, guess the parent and output to a directory
@@ -76,6 +72,7 @@ ifneq ($($(_BRANCH)),)
 PARENT = $($(_BRANCH))
 endif
 
+# End non-tagged
 endif
 
 # If there is a layout associated with a tag, only build that layout
@@ -155,8 +152,17 @@ sync_pre:
 		$(OUTPUT)/* $(BASE)/
 
 sync_post:
-	-rsync -ctv \
-		$(foreach TARGET,$(TARGETS),$(foreach FORMAT,$(FORMATS),$(TARGET)*-$(FORMAT)*.{pdf,info,png} $(TARGET)*.$(FORMAT))) $(OUTPUT)/
+	for target in $(TARGETS); do
+ifeq ($(ALL_TAGS),)
+		tagpath=
+else
+		tagpath=$$target/$(TAG_NAME)/
+endif
+		mkdir -p $(OUTPUT)/$$tagpath
+		-rsync -ctv $$target.info $(OUTPUT)/$$tagpath
+		-rsync -ctv $(foreach FORMAT,$(FORMATS),$$target.$(FORMAT)) $(OUTPUT)/$$tagpath
+		-rsync -ctv $$target-$(FORMAT)*.{pdf,info,png} $(OUTPUT)/$$tagpath
+	done
 	$(call sync_owncloud)
 
 %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) $(MAKEFILE_LIST) ;
