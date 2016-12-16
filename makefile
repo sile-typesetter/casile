@@ -141,6 +141,14 @@ dependencies:
 	hash $(PANDOC)
 	$(PANDOC) --list-output-formats | grep -q sile
 
+update_app_tags:
+	git tag |
+		grep '/app$$' |
+		while read tag; do
+			git tag -d $$tag
+			git tag $$tag
+		done
+
 define sync_owncloud
 	-pgrep -u $(USER) -x owncloud || \
 		owncloudcmd -n -s $(INPUT) $(OWNCLOUD) 2>/dev/null
