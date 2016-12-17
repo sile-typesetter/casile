@@ -273,7 +273,9 @@ define preprocess_markdown
 				-e 's#{>>#\\criticComment{#g'   -e 's#<<}#}#g' \
 				-e 's#{++#\\criticAdd{#g'       -e 's#++}#}#g' \
 				-e 's#{--#\\criticDel{#g'       -e 's#--}#}#g'
-	fi | $(call md_cleanup)
+	fi |
+		renumber_footnotes.pl |
+		$(call md_cleanup)
 endef
 
 define build_sile
