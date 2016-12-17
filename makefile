@@ -518,8 +518,8 @@ split_chapters:
 	$(foreach SOURCE,$(SOURCES),$(call split_chapters,$(SOURCE)))
 
 watch:
-	( git ls-files ; cd $(TOOLS) ; git ls-files | xargs -iX echo $(TOOLS)/X ) | \
-		entr -c -p make -B DRAFT=true $(WATCH_ARGS)
+	git ls-files --recurse-submodules |
+		entr -c -p make DRAFT=true $(WATCH_ARGS)
 
 watchdiff:
 	git ls-files | entr -c -p git diff --color=always
