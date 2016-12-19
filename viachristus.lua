@@ -254,15 +254,15 @@ SILE.formatCounter = function (options)
   return originalFormatter(options)
 end
 
-SILE.registerCommand("tableofcontents:item", function (o,c)
+SILE.registerCommand("tableofcontents:item", function (options, content)
   SILE.settings.temporarily(function ()
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
-    SILE.call("tableofcontents:level"..o.level.."item", {}, function ()
-      SILE.process(addDiscressionaryBreaks({},c))
-      if o.level == 2 then
+    SILE.call("tableofcontents:level"..options.level.."item", {}, function ()
+      SILE.process(addDiscressionaryBreaks({}, content))
+      if options.level == 2 then
         SILE.call("hbox", {}, function ()
           SILE.call("dotfill")
-          SILE.typesetter:typeset(o.pageno)
+          SILE.typesetter:typeset(options.pageno)
         end)
       else
         SILE.call("hss")
