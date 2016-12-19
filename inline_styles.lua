@@ -96,6 +96,7 @@ end)
 SILE.registerCommand("tableofcontents:headerfont", function (options, content)
   SILE.call("book:partfont", options, content)
 end)
+
 SILE.registerCommand("strong", function (options, content)
   SILE.call("font", { weight = 600 }, content)
 end)

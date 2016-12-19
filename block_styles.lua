@@ -167,22 +167,3 @@ SILE.registerCommand("subparagraph", function (options, content)
   SILE.call("novbreak")
   SILE.scratch.last_was_ref = true
 end, "Begin a new subparagraph")
-
-SILE.registerCommand("subparagraph", function (options, content)
-  SILE.typesetter:leaveHmode()
-  SILE.call("novbreak")
-  -- Backtracking to approximate the skip after quotations
-  SILE.call("skip", { height = "-8pt" })
-  SILE.call("novbreak")
-  SILE.Commands["book:subparagraphfont"]({}, function ()
-    SILE.call("raggedleft", {}, function ()
-      SILE.settings.set("document.rskip", SILE.nodefactory.newGlue("20pt"))
-      SILE.process(content)
-    end)
-  end)
-  SILE.typesetter:leaveHmode()
-  SILE.call("novbreak")
-  SILE.call("skip", { height = "3en" })
-  SILE.call("novbreak")
-  SILE.scratch.last_was_ref = true
-end, "Begin a new subparagraph")
