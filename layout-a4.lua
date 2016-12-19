@@ -7,7 +7,7 @@ class:defineMaster({
       content = {
         left = "32mm",
         right = "100%pw-32mm",
-        top = "bottom(runningHead)+4mm",
+        top = "34mm",
         bottom = "top(footnotes)"
       },
       runningHead = {
@@ -20,13 +20,13 @@ class:defineMaster({
         left = "left(content)",
         right = "right(content)",
         height = "0",
-        bottom = "top(folio)-4mm"
+        bottom = "100%ph-34mm"
       },
       folio = {
         left = "left(content)",
         right = "right(content)",
-        top = "100%ph-30mm",
-        bottom = "100%ph-24mm"
+        top = "100%ph-32mm",
+        bottom = "100%ph-26mm"
       }
     }
   })
