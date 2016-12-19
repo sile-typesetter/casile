@@ -15,3 +15,7 @@ SILE.registerCommand("imprint:font", function (options, content)
   options.size = options.size or "8.5pt"
   oldImprintFont(options, content)
 end)
+
+SILE.registerCommand("href", function (options, content)
+  SILE.process(content)
+end)
