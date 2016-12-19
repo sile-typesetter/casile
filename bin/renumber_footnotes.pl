@@ -8,7 +8,7 @@ my $last = 0;
 
 sub calculate_offset {
 	my ($i) = @_;
-	if ($1 == 1) {
+	if ($i == 1) {
 		$offset += $last;
 	}
 	$last = $i;
@@ -21,8 +21,10 @@ sub add_offset {
 }
 
 for my $line (<>) {
-	if ($line =~ m/(?<!^)\[\^(\d+)\]/) {
-		calculate_offset($1);
+	if (my @matches = $line =~ /(?<!^)\[\^(\d+)\]/g) {
+		for my $count (@matches) {
+			calculate_offset($count);
+		}
 	}
 	$line =~ s/\[\^(\d+)\]/add_offset($1)/ge;
 	print $line;
