@@ -20,12 +20,12 @@ class:defineMaster({
         left = "left(content)",
         right = "right(content)",
         height = "0",
-        bottom = "100%ph-15mm"
+        bottom = "100%ph-18mm"
       },
       folio = {
         left = "left(content)",
         right = "right(content)",
-        top = "100%ph-13mm",
+        top = "100%ph-12mm",
         height = "6mm"
       }
     }
