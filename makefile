@@ -288,7 +288,7 @@ define build_sile
 		-V urlinfo="$(shell $(call urlinfo,$1))" \
 		-V qrimg="./$(basename $1)-url.png" \
 		$(shell test -f "$(basename $1).lua" && echo "-V script=$(basename $1)") \
-		$(shell test -f "$(PROJECT).lua" && echo "-V script=$(PROJECT)") \
+		$(shell test -f "$(PROJECT).lua" && [[ "$(PROJECT)" != "$(basename $1)" ]] && echo "-V script=$(PROJECT)") \
 		$(shell $5 || $(CROP) && echo "-V script=$(TOOLS)/crop") \
 		-V script=$(TOOLS)/layout-$3 \
 		-V script=$(TOOLS)/viachristus \
