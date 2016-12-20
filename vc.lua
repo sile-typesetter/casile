@@ -6,21 +6,22 @@ local vc = book { id = "vc" }
 vc.endPage = function (self)
   vc:moveTocNodes()
 
-  if (not SILE.scratch.headers.skipthispage) then
+  if not SILE.scratch.headers.skipthispage then
     SILE.settings.pushState()
-    if (vc:oddPage() and SILE.scratch.headers.right) then
-      SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
-        SILE.call("output-right-running-head")
-      end)
-    elseif (not(vc:oddPage()) and SILE.scratch.headers.left) then
-      SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
-        SILE.call("output-left-running-head")
-      end)
+    SILE.settings.reset()
+    if vc:oddPage() then
+      SILE.call("output-right-running-head")
+    else
+      SILE.call("output-left-running-head")
     end
     SILE.settings.popState()
   end
   SILE.scratch.headers.skipthispage = false
-  return plain.endPage(book)
+
+  return plain.endPage(vc)
 end
+
+-- I can't figure out how or where, but book.endPage() gets run on the last page
+book.endPage = vc.endPage
 
 return vc
