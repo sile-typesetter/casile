@@ -11,6 +11,8 @@ SILE.require("hyphenation_exceptions");
 SILE.require("inline_styles");
 SILE.require("block_styles");
 
+textcase = SILE.require("packages/textcase").exports
+
 SILE.settings.set("typesetter.underfulltolerance", SILE.length.parse("6ex"))
 SILE.settings.set("typesetter.overfulltolerance", SILE.length.parse("0.2ex"))
 
@@ -151,7 +153,7 @@ SILE.registerCommand("book:sectioning", function (options, content)
     local counters = SILE.scratch.counters["sectioning"]
     if level == 1 then
       local val = SILE.formatCounter({ display = "ORDINAL", value = counters.value[level] })
-      toc_content[1] = val .. " KISIM: " .. uppercase(content[1])
+      toc_content[1] = val .. " KISIM: " .. textcase.uppercase(content[1])
     elseif level == 2 then
       local val = SILE.formatCounter({ display = "arabic", value = counters.value[level] })
       toc_content[1] = val .. ". " .. content[1]
@@ -184,33 +186,6 @@ SILE.registerCommand("open-double-page", function ()
   end
   SILE.typesetter:leaveHmode();
 end)
-
-local icu = require("justenoughicu")
-local inputfilter = SILE.require("packages/inputfilter").exports
-
-function uppercase(input)
-  return icu.case(input, SILE.settings.get("document.language"), "upper")
-end
-
-function lowercase(input)
-  return icu.case(input, SILE.settings.get("document.language"), "lower")
-end
-
-function titlecase(input)
-  return icu.case(input, SILE.settings.get("document.language"), "title")
-end
-
-SILE.registerCommand("uppercase", function(options, content)
-  SILE.process(inputfilter.transformContent(content, uppercase))
-end, "Typeset the enclosed text as uppercase")
-
-SILE.registerCommand("lowercase", function(options, content)
-  SILE.process(inputfilter.transformContent(content, lowercase))
-end, "Typeset the enclosed text as lowercase")
-
-SILE.registerCommand("titlecase", function(options, content)
-  SILE.process(inputfilter.transformContent(content, titlecase))
-end, "Typeset the enclosed text as titlecase")
 
 local function tr_num2text (num, ordinal)
   local ord = ordinal or false
@@ -254,9 +229,9 @@ local originalFormatter = SILE.formatCounter
 SILE.formatCounter = function (options)
   if (options.display == "string") then return tr_num2text(options.value):lower() end
   if (options.display == "String") then return tr_num2text(options.value) end
-  if (options.display == "STRING") then return uppercase(tr_num2text(options.value)) end
+  if (options.display == "STRING") then return textcase.uppercase(tr_num2text(options.value)) end
   if (options.display == "Ordinal") then return tr_num2text(options.value, true) end
-  if (options.display == "ORDINAL") then return uppercase(tr_num2text(options.value, true)) end
+  if (options.display == "ORDINAL") then return textcase.uppercase(tr_num2text(options.value, true)) end
   return originalFormatter(options)
 end
 
