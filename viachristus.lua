@@ -5,6 +5,7 @@ SILE.require("packages/raiselower")
 SILE.require("packages/rebox");
 SILE.require("packages/rules")
 SILE.require("packages/image")
+SILE.require("packages/date")
 
 SILE.require("imprint");
 SILE.require("hyphenation_exceptions");
@@ -546,17 +547,13 @@ SILE.registerCommand("addDiscressionaryBreaks", function (options, content)
   SILE.process(addDiscressionaryBreaks(options, content))
 end, "Try to find good breakpoints based on punctuation")
 
-if SILE.settings.get("document.language") == "tr" then
-	os.setlocale("tr_TR.utf-8", "time")
-end
-
 SILE.registerCommand("pubDateFormat", function (options, content)
-	local input =  SU.contentToString(content)
+	local input = SU.contentToString(content)
 	local pattern = "(%d+)-(%d+)"
 	local year, month = input:match(pattern)
 	local ts = os.time({ year = year, month = month, day = 1 })
-	SILE.typesetter:typeset(os.date("%B %Y", ts))
-end, "Try to find good breakpoints based on punctuation")
+  SILE.call("date", { format = "%B %Y", time = ts, locale = "tr_TR.utf-8" })
+end, "Output publication dates in proper format for imprint page")
 
 setCommandDefaults = function (command, newOptions)
   local oldCommand = SILE.Commands[command]
