@@ -275,7 +275,20 @@ define preprocess_markdown
 				-e 's#{--#\\criticDel{#g'       -e 's#--}#}#g'
 	fi |
 		renumber_footnotes.pl |
+		$(call markdown_hook) |
 		$(call md_cleanup)
+endef
+
+define markdown_hook
+	cat -
+endef
+
+define preprocess_sile
+	cat - | $(call sile_hook)
+endef
+
+define sile_hook
+	cat -
 endef
 
 define build_sile
@@ -294,7 +307,8 @@ define build_sile
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
 		"$(basename $1)-merged.yml" \
-		<($(call preprocess_markdown,$1)) -o $2-$3.sil
+		--to=sile \
+		<($(call preprocess_markdown,$1)) | $(call preprocess_sile) > $2-$3.sil
 endef
 
 %-a4.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-a4-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua $(MAKEFILE_LIST)
