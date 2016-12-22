@@ -514,15 +514,18 @@ local discressionaryBreaksFilter = function (content, args, options)
     end
   end
   process = function (separator)
-      if options.breakbefore == true then
-        insertText()
-        insertPenalty()
-        currentText = currentText .. separator
-      else
-        currentText = currentText .. separator
-        insertText()
-        insertPenalty()
-      end
+    if options.replace then
+      insertText()
+      insertPenalty()
+    elseif options.breakbefore == true then
+      insertText()
+      insertPenalty()
+      currentText = currentText .. separator
+    else
+      currentText = currentText .. separator
+      insertText()
+      insertPenalty()
+    end
   end
   for token in SU.gtoke(content, options.breakat) do
     if(token.string) then
@@ -540,6 +543,7 @@ addDiscressionaryBreaks = function (options, content)
   if not options.breakopts then options.breakopts = {} end
   if not options.breakall then options.breakall = false end
   if not options.breakbefore then options.breakbefore = false end
+  if not options.replace then options.replace = false end
   return inputfilter.transformContent(content, discressionaryBreaksFilter, options)
 end
 
