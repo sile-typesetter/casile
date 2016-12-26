@@ -582,3 +582,11 @@ dropcapNextLetter = function ()
     end
   end
 end
+
+SILE.registerCommand("dropcap", function (options, content)
+  SILE.call("noindent")
+  SILE.call("float", { bottomboundary = "1.2ex", rightboundary = "1spc" }, function ()
+    SILE.call("book:chapterfont", { size = "5.2ex", weight = 800 }, content)
+  end)
+  SILE.call("indent")
+end)
