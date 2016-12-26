@@ -568,3 +568,17 @@ setCommandDefaults = function (command, newOptions)
     return oldCommand(options, content)
   end
 end
+
+local originalTypesetter = SILE.typesetter.typeset
+dropcapNextLetter = function ()
+  SILE.typesetter.typeset = function (self, text)
+    local first, rest = text:match("([^%w]*%w)(.*)")
+    if load and first and rest then
+      SILE.typesetter.typeset = originalTypesetter
+      SILE.call("dropcap", {}, { first })
+      SILE.typesetter.typeset(self, rest)
+    else
+      originalTypesetter(self, text)
+    end
+  end
+end
