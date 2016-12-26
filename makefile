@@ -442,6 +442,9 @@ endef
 		+repage \
 		$@
 
+%-cilt.pdf: %-cilt.xml teolojiye_giris-merged.yml
+	sile $< -e 'versioninfo="$(shell $(call versioninfo,$<))"' -o $@
+
 %-epub-kapak.png: %-kapak.png $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
 	convert $< -resize 1000x1600 $@
