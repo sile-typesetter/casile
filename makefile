@@ -167,8 +167,8 @@ else
 		tagpath=$$target/$(TAG_NAME)/
 endif
 		mkdir -p $(OUTPUT)/$$tagpath
-		echo -rsync -ctv $(foreach FORMAT,$(FORMATS),$$target.$(FORMAT)) $(OUTPUT)/$$tagpath
-		echo -rsync -ctv $(foreach LAYOUT,$(LAYOUTS),$$target-$(LAYOUT)*.{pdf,info,png,svg}) $(OUTPUT)/$$tagpath
+		-rsync -ctv $(foreach FORMAT,$(FORMATS),$$target.$(FORMAT)) $(OUTPUT)/$$tagpath
+		-rsync -ctv $(foreach LAYOUT,$(LAYOUTS),$$target-$(LAYOUT)*.{pdf,info,png,svg}) $(OUTPUT)/$$tagpath
 	done
 	$(call sync_owncloud)
 
