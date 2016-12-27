@@ -61,7 +61,7 @@ else
 
 # If we are not on the master branch, guess the parent and output to a directory
 ifneq ($(BRANCH),master)
-PARENT ?= $(shell $(TOOLS)/bin/findfirstnonunique.zsh)
+PARENT ?= $(shell git merge-base master $(BRANCH))
 OUTPUT := $(OUTPUT)/$(BRANCH)
 PRE_SYNC = false
 endif
@@ -219,9 +219,9 @@ define versioninfo
 		git describe --tags >/dev/null 2>/dev/null || echo -en "$(BRANCH)-"
 		git describe --long --tags --always --dirty=* | cut -d/ -f2 | xargs echo -en
 	else
-		$(DIFF) && echo -en "$(PARENT)→"
+		$(DIFF) && echo -en "$(shell git rev-parse --short $(PARENT))→"
 		echo -en "$(BRANCH)-"
-		git rev-list --boundary $(PARENT)...HEAD | grep -v - | wc -l | xargs -iX echo -en "X-"
+		git rev-list --boundary $(PARENT)..HEAD | grep -v - | wc -l | xargs -iX echo -en "X-"
 		git describe --always | cut -d/ -f2 | xargs echo -en
 	fi
 endef
