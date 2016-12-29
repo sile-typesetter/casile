@@ -100,3 +100,8 @@ end)
 SILE.registerCommand("strong", function (options, content)
   SILE.call("font", { weight = 600 }, content)
 end)
+
+SILE.registerCommand("em", function (options, content)
+  SILE.call("font", { style = "Italic" }, content)
+  SILE.call("kern", { width = "1pt" })
+end)
