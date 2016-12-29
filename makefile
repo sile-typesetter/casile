@@ -313,6 +313,7 @@ define build_sile
 endef
 
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
+strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 
 %-a4.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-a4-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
@@ -445,7 +446,8 @@ endef
 		+repage \
 		$@
 
-%-cilt.pdf: %-cilt.xml %-merged.yml
+FRAGMANLAR = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE)-fragmanlar.pdf)
+$(FRAGMANLAR): %-fragmanlar.xml %-merged.yml
 	sile $< -e 'versioninfo="$(shell $(call versioninfo,$<))"; layout="$(call parse_layout,$@)"' -o $@
 
 %-epub-kapak.png: %-kapak.png $(MAKEFILE_LIST)
