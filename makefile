@@ -183,11 +183,11 @@ endif
 	if $(DRAFT); then \
 		$(SILE) -d $(SILE_DEBUG) $< -o $@ ;\
 	else \
-		export pg0="$$(test -f $<.toc && ( pdfinfo $@ | grep Pages: | awk '{print $$2}' ) || echo 0)" ;\
+		export pg0="$$(test -f $<.toc && ( pdfinfo $@ | awk '$$1 == "Pages" {print $$2}' ) || echo 0)" ;\
 		$(SILE) $< -o $@ ;\
-		export pg1="$$(pdfinfo $@ | grep Pages: | awk '{print $$2}')" ;\
+		export pg1="$$(pdfinfo $@ | awk '$$1 == "Pages" {print $$2}')" ;\
 		[[ $${pg0} -ne $${pg1} ]] && $(SILE) $< -o $@ ||: ;\
-		export pg2="$$(pdfinfo $@ | grep Pages: | awk '{print $$2}')" ;\
+		export pg2="$$(pdfinfo $@ | awk '$$1 == "Pages" {print $$2}')" ;\
 		[[ $${pg1} -ne $${pg2} ]] && $(SILE) $< -o $@ ||: ;\
 	fi
 	# If we have a special cover page for this format, swap it out for the half title page
@@ -448,7 +448,7 @@ endef
 
 FRAGMANLAR = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE)-fragmanlar.pdf)
 $(FRAGMANLAR): %-fragmanlar.xml %-merged.yml
-	sile $< -e 'versioninfo="$(shell $(call versioninfo,$<))"; layout="$(call parse_layout,$@)"' -o $@
+	$(SILE) $< -e 'versioninfo="$(shell $(call versioninfo,$<))"; layout="$(call parse_layout,$@)"' -o $@
 
 %-epub-kapak.png: %-kapak.png $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
