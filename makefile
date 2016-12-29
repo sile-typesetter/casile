@@ -20,6 +20,7 @@ DEBUG ?= false
 COVERS ?= true
 COVER_GRAVITY ?= Center
 HEAD ?= 0
+PAPERSIZES = a4 a4ciltli octovo halfletter a5 a5trim cep app
 
 SILE ?= sile
 PANDOC ?= pandoc
@@ -311,6 +312,8 @@ define build_sile
 		<($(call preprocess_markdown,$1)) | $(call preprocess_sile) > $2-$3.sil
 endef
 
+parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
+
 %-a4.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-a4-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua $(MAKEFILE_LIST)
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
 
@@ -442,8 +445,8 @@ endef
 		+repage \
 		$@
 
-%-cilt.pdf: %-cilt.xml teolojiye_giris-merged.yml
-	sile $< -e 'versioninfo="$(shell $(call versioninfo,$<))"' -o $@
+%-cilt.pdf: %-cilt.xml %-merged.yml
+	sile $< -e 'versioninfo="$(shell $(call versioninfo,$<))"; layout="$(call parse_layout,$@)"' -o $@
 
 %-epub-kapak.png: %-kapak.png $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
