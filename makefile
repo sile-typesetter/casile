@@ -100,7 +100,7 @@ endif
 
 .ONESHELL:
 .SECONDEXPANSION:
-.PHONY: all ci clean debug list init dependencies sync_pre sync_post $(TARGETS) %.app md_cleanup stats %-stats
+.PHONY: all ci clean debug list force init dependencies sync_pre sync_post $(TARGETS) %.app md_cleanup stats %-stats
 .SECONDARY:
 .PRECIOUS: %.pdf %.sil %.toc
 
@@ -128,6 +128,8 @@ debug:
 	@echo TOOLS: $(TOOLS)
 	@echo SILE: $(SILE)
 	@echo SILE_PATH: $(SILE_PATH)
+
+force: ;
 
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
