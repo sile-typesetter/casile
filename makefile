@@ -453,14 +453,14 @@ FRAGMANLAR = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE)-fragmanlar.pdf)
 $(FRAGMANLAR): %-fragmanlar.xml %-merged.yml
 	$(SILE) $< -e 'versioninfo="$(shell $(call versioninfo,$<))"; layout="$(call parse_layout,$@)"' -o $@
 
-# %-fragman-on.png: %-fragmanlar.pdf
-#     convert -density 600 $<[0] $@
+%-fragman-on.png: %-fragmanlar.pdf
+	convert -density 600 $<[0] $@
 
-# %-fragman-arka.png: %-fragmanlar.pdf
-#     convert -density 600 $<[1] $@
+%-fragman-arka.png: %-fragmanlar.pdf
+	convert -density 600 $<[1] $@
 
-# %-fragman-sirt.png: %-fragmanlar.pdf
-#     convert -density 600 $<[2] $@
+%-fragman-sirt.png: %-fragmanlar.pdf
+	convert -density 600 $<[2] $@
 
 %-epub-kapak.png: %-kapak.png $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
