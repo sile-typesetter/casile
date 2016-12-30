@@ -176,9 +176,9 @@ endif
 	done
 	$(call sync_owncloud)
 
-%.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) $(MAKEFILE_LIST) ;
+%.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) ;
 
-%.pdf: %.sil $(TOOLS)/viachristus.lua $(MAKEFILE_LIST)
+%.pdf: %.sil $(TOOLS)/viachristus.lua
 	@$(shell test -f "$<" || echo exit 0)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
@@ -201,7 +201,7 @@ endif
 		rm $*.tmp.pdf
 	fi
 
-%-kesme.pdf: %.pdf $(MAKEFILE_LIST)
+%-kesme.pdf: %.pdf
 	@if [ ! "" = "$(findstring octavo,$@)$(findstring halfletter,$@)" ]; then\
 		export PAPER_OPTS="paperwidth=210mm,paperheight=297mm" ;\
 	elif [ ! "" = "$(findstring a5trim,$@)" ]; then\
@@ -214,7 +214,7 @@ endif
 	-xelatex -jobname=$(basename $@) -interaction=batchmode \
 		"\documentclass{scrbook}\usepackage[$$PAPER_OPTS,showcrop]{geometry}\usepackage{pdfpages}\begin{document}\includepdf[pages=-,noautoscale,fitpaper=false]{$<}\end{document}"
 
-%-ciftyonlu.pdf: %.pdf $(MAKEFILE_LIST)
+%-ciftyonlu.pdf: %.pdf
 	-pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $<
 
 define versioninfo
@@ -318,30 +318,30 @@ endef
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 
-%-a4.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-a4-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua $(MAKEFILE_LIST)
+%-a4.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-a4-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
 
-%-a4ciltli.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a4ciltli.lua $(MAKEFILE_LIST)
+%-a4ciltli.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a4ciltli.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
 
-%-a5trim.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a5trim.lua $(MAKEFILE_LIST)
+%-a5trim.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a5trim.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),137.878787mm x 195mm,true)
 
-%-octavo.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-octavo.lua $(MAKEFILE_LIST)
+%-octavo.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-octavo.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),432pt x 648pt,true)
 
-%-halfletter.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-halfletter.lua $(MAKEFILE_LIST)
+%-halfletter.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-halfletter.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),halfletter,true)
 
-%-cep.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-cep.lua $(MAKEFILE_LIST)
+%-cep.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-cep.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),110mm x 170mm,true)
 
-%-app.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-app-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-app.lua $(MAKEFILE_LIST)
+%-app.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-app-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-app.lua
 	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),80mm x 128mm,false)
 
 %.sil.toc: %.pdf ;
 
-%.app: %-app.info %-app-kapak-kare.png %-app-kapak-genis.png $(MAKEFILE_LIST);
+%.app: %-app.info %-app-kapak-kare.png %-app-kapak-genis.png;
 
 %-app.info: %-app.sil.toc %-merged.yml
 	$(TOOLS)/bin/toc2breaks.lua $* $^ $@ |\
@@ -367,7 +367,7 @@ define skip_if_tracked
 	git ls-files --error-unmatch -- $1 2>/dev/null && exit 0 ||:
 endef
 
-%-kapak-zemin.png: $(MAKEFILE_LIST)
+%-kapak-zemin.png:
 	$(COVERS) || exit 0
 	$(call skip_if_tracked,$@)
 	convert -size 64x64 xc:darkgray +repage $@
@@ -396,35 +396,35 @@ define draw_title
 		$4
 endef
 
-%-kapak-kare.png: %-kapak-zemin.png $(MAKEFILE_LIST)
+%-kapak-kare.png: %-kapak-zemin.png
 	$(call skip_if_tracked,$@)
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
 	$(call draw_title,$$caption,2048x2048,$<,$@)
 
-%-kapak-genis.png: %-kapak-zemin.png $(MAKEFILE_LIST)
+%-kapak-genis.png: %-kapak-zemin.png
 	$(call skip_if_tracked,$@)
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
 	$(call draw_title,$$caption,3840x2160,$<,$@)
 
-%-kapak.png: %-kapak-zemin.png $(MAKEFILE_LIST)
+%-kapak.png: %-kapak-zemin.png
 	$(call skip_if_tracked,$@)
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
 	$(call draw_title,$$caption,2000x3200,$<,$@)
 
-%-app-kapak-kare.png: %-kapak-kare.png $(MAKEFILE_LIST)
+%-app-kapak-kare.png: %-kapak-kare.png
 	$(COVERS) || exit 0
 	convert $< -resize 1024x1024 $@
 
-%-app-kapak-genis.png: %-kapak-genis.png $(MAKEFILE_LIST)
+%-app-kapak-genis.png: %-kapak-genis.png
 	$(COVERS) || exit 0
 	convert $< -resize 1920x1080 $@
 
-%-kapak-isoa.png: %-kapak-zemin.png $(MAKEFILE_LIST)
+%-kapak-isoa.png: %-kapak-zemin.png
 	$(call skip_if_tracked,$@)
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
 	$(call draw_title,$$caption,4000x5657,$<,$@)
 
-%-a4-kapak.pdf: %-kapak-isoa.png $(MAKEFILE_LIST)
+%-a4-kapak.pdf: %-kapak-isoa.png
 	$(COVERS) || exit 0
 	convert  $< \
 		-bordercolor none -border 300x424 \
@@ -435,7 +435,7 @@ endef
 		+repage \
 		$@
 
-%-app-kapak.pdf: %-kapak.png $(MAKEFILE_LIST)
+%-app-kapak.pdf: %-kapak.png
 	$(COVERS) || exit 0
 	convert $< \
 		-resize x1280 \
@@ -462,27 +462,27 @@ $(FRAGMANLAR): %-fragmanlar.xml %-merged.yml
 %-fragman-sirt.png: %-fragmanlar.pdf
 	convert -density 600 $<[2] $@
 
-%-epub-kapak.png: %-kapak.png $(MAKEFILE_LIST)
+%-epub-kapak.png: %-kapak.png
 	$(call skip_if_tracked,$@)
 	convert $< -resize 1000x1600 $@
 
-%.epub %.odt %.docx: %.md %-merged.yml %-epub-kapak.png $(MAKEFILE_LIST)
+%.epub %.odt %.docx: %.md %-merged.yml %-epub-kapak.png
 	$(PANDOC) \
 		--smart \
 		"$(basename $1)-merged.yml" \
 		<($(call preprocess_markdown,$<)) -o $@
 
-%.mobi: %.epub $(MAKEFILE_LIST)
+%.mobi: %.epub
 	-kindlegen $<
 
 %.json: $(TOOLS)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
 	jq -s 'reduce .[] as $$item({}; . + $$item)' $(foreach YAML,$^,<(yaml2json $(YAML))) > $@
 
-%-merged.yml: $(TOOLS)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml) | $(MAKEFILE_LIST)
+%-merged.yml: $(TOOLS)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $^ |\
 		sed -e '/^--- |/d;$$a...' > $@
 
-%-barkod.svg: %-merged.yml $(MAKEFILE_LIST)
+%-barkod.svg: %-merged.yml
 	zint --directsvg --scale=5 --barcode=69 --height=30 \
 		--data=$(shell $(TOOLS)/bin/isbn_format.py $< print) |\
 		convert - \
@@ -492,10 +492,10 @@ $(FRAGMANLAR): %-fragmanlar.xml %-merged.yml
 			-bordercolor White -border 0x10 \
 			$@
 
-%-url.png: %-url.svg $(MAKEFILE_LIST)
+%-url.png: %-url.svg
 	convert $< $@
 
-%-url.svg: $(MAKEFILE_LIST)
+%-url.svg:
 	zint --directsvg --scale=10 --barcode=58 \
 		--data=$(shell $(call urlinfo,$*)) |\
 		convert - \
@@ -503,18 +503,18 @@ $(FRAGMANLAR): %-fragmanlar.xml %-merged.yml
 			-bordercolor Black -border 4x4 \
 			$@
 
-%-barkod.png: %-barkod.svg $(MAKEFILE_LIST)
+%-barkod.png: %-barkod.svg
 	convert $< $@
 
 stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
 
-%-stats: $(MAKEFILE_LIST)
+%-stats:
 	@$(TOOLS)/stats.zsh $* $(STATS_MONTHS)
 
 NAMELANGS = en tr und part xx
 NAMESFILES = $(foreach LANG,$(NAMELANGS),$(TOOLS)/names.$(LANG).txt)
 
-proper_names.txt: $(SOURCES) $(NAMESFILES) | $(TOOLS)/bin/extract_names.pl $(MAKEFILE_LIST)
+proper_names.txt: $(SOURCES) $(NAMESFILES) | $(TOOLS)/bin/extract_names.pl
 	$(call skip_if_tracked,$@)
 	$(TOOLS)/bin/extract_names.pl < $(SOURCES) |\
 		sort -u |\
@@ -523,7 +523,7 @@ proper_names.txt: $(SOURCES) $(NAMESFILES) | $(TOOLS)/bin/extract_names.pl $(MAK
 sort_names: proper_names.txt | $(TOOLS)/bin/sort_names.zsh $(NAMESFILES)
 	sort_names.zsh < $^
 
-tag_names: $(SOURCES) | $(TOOLS)/bin/tag_names.zsh $(NAMESFILES) $(MAKEFILE_LIST)
+tag_names: $(SOURCES) | $(TOOLS)/bin/tag_names.zsh $(NAMESFILES)
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
 	git diff-files --quiet -- $^ || exit 1 # die if input files have uncommitted changes
 	tag_names.zsh la avadanlik/names.la.txt $^
@@ -533,7 +533,7 @@ avadanlik/names.%.txt:
 	test -f $@ || touch $@
 	sort -u $@ | sponge $@
 
-%-ayetler.json: %.md | $(MAKEFILE_LIST)
+%-ayetler.json: %.md
 	# cd $(TOOLS)
 	# yarn add bible-passage-reference-parser
 	extract_references.js < $^ > $@
