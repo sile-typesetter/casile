@@ -100,7 +100,7 @@ endif
 
 .ONESHELL:
 .SECONDEXPANSION:
-.PHONY: all ci clean init dependencies sync_pre sync_post $(TARGETS) %.app md_cleanup
+.PHONY: all ci clean init dependencies sync_pre sync_post $(TARGETS) %.app md_cleanup stats %-stats
 .SECONDARY:
 .PRECIOUS: %.pdf %.sil %.toc
 
@@ -503,10 +503,10 @@ $(FRAGMANLAR): %-fragmanlar.xml %-merged.yml
 %-barkod.png: %-barkod.svg $(MAKEFILE_LIST)
 	convert $< $@
 
-stats: $(foreach SOURCE,$(SOURCES),$(SOURCE)-stats)
+stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
 
 %-stats: $(MAKEFILE_LIST)
-	@$(TOOLS)/stats.zsh $(@:-stats=) $(STATS_MONTHS)
+	@$(TOOLS)/stats.zsh $* $(STATS_MONTHS)
 
 NAMELANGS = en tr und part xx
 NAMESFILES = $(foreach LANG,$(NAMELANGS),$(TOOLS)/names.$(LANG).txt)
