@@ -99,7 +99,9 @@ difference {
 		translate <0,0,(bookthickness/2)>
 		finish { bookfinish }
 	}
-	box { <0,0,0> <1,1,1> }
+	box {
+		<0,-0.001,0> <1,1.001,bookthickness>
+	}
 }
 
 // dimensions of pages
