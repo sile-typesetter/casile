@@ -496,10 +496,13 @@ tt:
 	@echo $(call scale,3)
 
 %-a5trim-3b-on.pov: $(TOOLS)/kapak.pov %-a5trim-cilt-on.png %-a5trim-cilt-arka.png %-a5trim-cilt-sirt.png
+	w=$(shell identify $(word 2,$^) | cut -d\  -f3 | cut -dx -f1)
+	h=$(shell identify $(word 2,$^) | cut -d\  -f3 | cut -dx -f2)
+	s=$(shell identify $(word 4,$^) | cut -d\  -f3 | cut -dx -f1)
 	cat <<- EOF > $@
-		#declare coverwidth = $(call scale,592);
-		#declare coverheight = $(call scale,840);
-		#declare spinewidth = $(call scale,80);
+		#declare coverwidth = $$w;
+		#declare coverheight = $$h;
+		#declare spinewidth = $$s;
 		#declare outputwidth = $(call scale,6000);
 		#declare outputheight = $(call scale,8000);
 		#declare frontimg = "$(word 2,$^)";
