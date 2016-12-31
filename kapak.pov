@@ -1,9 +1,3 @@
-#declare coverwidth = 592;
-#declare coverheight = 840;
-#declare spinewidth = 80;
-#declare outputwidth = 600;
-#declare outputheight = 800;
-
 #declare outputaspect = outputwidth / outputheight;
 #declare coveraspectratio = coverwidth / coverheight;
 #declare bookthickness = (spinewidth/coverwidth)/2;
@@ -46,7 +40,7 @@ light_source { <-2,1,-2> color rgb<1,1,1> }
 box { <0,0,0> <1,1,coverthickness>
 	pigment {
 		image_map {
-			png "front.png"
+			png frontimg
 			map_type 0
 			interpolate 2
 		}
@@ -60,7 +54,7 @@ box {
 	<0,0,0> <1,1,coverthickness>
 	pigment {
 		image_map {
-			png "back.png"
+			png backimg
 			map_type 0
 			interpolate 2
 		}
@@ -76,7 +70,7 @@ difference {
 	cylinder { <0,0,0>,<0,1,0>,(bookthickness/2)
 		pigment {
 			image_map {
-				png "spine.png"
+				png spineimg
 				map_type 2
 				interpolate 2
 			}

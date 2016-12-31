@@ -460,20 +460,56 @@ $(FRAGMANLAR): %-fragmanlar.xml %-merged.yml
 	$(SILE) $< -e 'versioninfo="$(shell $(call versioninfo,$<))"; layout="$(call parse_layout,$@)"' -o $@
 
 %-fragman-on.png: %-fragmanlar.pdf
-	convert -density 600 $<[0] $@
+	convert -density $(call scale,600) $<[0] $@
 
 %-fragman-arka.png: %-fragmanlar.pdf
-	convert -density 600 $<[1] $@
+	convert -density $(call scale,600) $<[1] $@
 
 %-fragman-sirt.png: %-fragmanlar.pdf
-	convert -density 600 $<[2] $@
+	convert -density $(call scale,600) $<[2] $@
 
 %-epub-kapak.png: %-kapak.png
 	$(call skip_if_tracked,$@)
-	convert $< -resize 1000x1600 $@
+	convert $< -resize $(call scale,1000)x$(call scale,1600) $@
 
-%-a5trim-3d-on.png: $(TOOLS)/kapak.pov force
-	povray -I$< -W600 -H800 -O$@
+%-a5trim-cilt-on.png: %-a5trim-cilt.png %-a5trim-fragman-on.png
+	w=$(shell identify $(word 2,$^) | cut -d\  -f3 | cut -dx -f1)
+	h=$(shell identify $(word 2,$^) | cut -d\  -f3 | cut -dx -f2)
+	convert $< -gravity east -crop $${w}x$${h}+0+0! $@
+
+%-a5trim-cilt-arka.png: %-a5trim-cilt.png %-a5trim-fragman-arka.png
+	w=$(shell identify $(word 2,$^) | cut -d\  -f3 | cut -dx -f1)
+	h=$(shell identify $(word 2,$^) | cut -d\  -f3 | cut -dx -f2)
+	convert $< -gravity west -crop $${w}x$${h}+0+0! $@
+
+%-a5trim-cilt-sirt.png: %-a5trim-cilt.png %-a5trim-fragman-sirt.png
+	w=$(shell identify $(word 2,$^) | cut -d\  -f3 | cut -dx -f1)
+	h=$(shell identify $(word 2,$^) | cut -d\  -f3 | cut -dx -f2)
+	convert $< -gravity center -crop $${w}x$${h}+0+0! $@
+
+tt:
+	@echo $(call scale,1600)
+	@echo $(call scale,600)
+	@echo $(call scale,60)
+	@echo $(call scale,20)
+	@echo $(call scale,15)
+	@echo $(call scale,3)
+
+%-a5trim-3b-on.pov: $(TOOLS)/kapak.pov %-a5trim-cilt-on.png %-a5trim-cilt-arka.png %-a5trim-cilt-sirt.png
+	cat <<- EOF > $@
+		#declare coverwidth = $(call scale,592);
+		#declare coverheight = $(call scale,840);
+		#declare spinewidth = $(call scale,80);
+		#declare outputwidth = $(call scale,6000);
+		#declare outputheight = $(call scale,8000);
+		#declare frontimg = "$(word 2,$^)";
+		#declare backimg = "$(word 3,$^)";
+		#declare spineimg = "$(word 4,$^)";
+	EOF
+
+%-a5trim-3b-on.png: %-a5trim-3b-on.pov $(TOOLS)/kapak.pov
+	povray -HI$< -I$(word 2,$^) -W$(call scale,6000) -H$(call scale,8000) -O$@
+	# convert -trim $@
 
 %.epub %.odt %.docx: %.md %-merged.yml %-epub-kapak.png
 	$(PANDOC) \
