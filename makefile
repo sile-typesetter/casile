@@ -160,7 +160,9 @@ define sync_owncloud
 		owncloudcmd -n -s $(INPUT) $(OWNCLOUD) 2>/dev/null
 endef
 
-scale = $(strip $(shell $(DRAFT) && echo "($1 + 9) /10" | bc || echo $1))
+define scale
+$(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + 9) / 10" | bc) || echo $1))
+endef
 
 sync_pre:
 	$(call sync_owncloud)
