@@ -1,9 +1,9 @@
 #declare outputaspect = outputwidth / outputheight;
 #declare coveraspectratio = coverwidth / coverheight;
 #declare bookthickness = (spinewidth/coverwidth)/2;
-#declare coverthickness = 0.005;
-#declare paperinset = 0.005;
-#declare halfthick = coverthickness / 2;
+#declare coverthickness = 0.0*5;
+#declare paperinset = 0.001;
+#declare halfthick = bookthickness / 2;
 
 #declare paperpigment = pigment {
 	gradient <0,1,0>
@@ -18,8 +18,8 @@
 }
 
 #declare bookfinish = finish {
-	diffuse 0.9
-	reflection {0.25}
+	diffuse 0.5
+	reflection { 0.15 }
 	specular 0.75
 	roughness 0.05
 }
@@ -27,8 +27,8 @@
 background { color rgb<1,1,1> }
 
 camera {
-	location <-0.25,1.15,-0.75>
-	look_at  <0.25,0.60,halfthick>
+	location <-1,1.50,-1>
+	look_at  <.4*coveraspectratio,0.60,halfthick>
 	right x*outputaspect
 }
 
@@ -75,15 +75,11 @@ difference {
 				interpolate 2
 			}
 		}
-		scale <0.5,1,1>
+		scale <0.1,1,1>
 		translate <0,0,(bookthickness/2)>
 		finish { bookfinish }
 	}
-	box { <0,-0.001,0> <1,1.001,bookthickness>
-		pigment { color rgb <1,1,1> }
-		scale <coveraspectratio,1,1>
-		translate <0,0,0>
-	}
+	box { <0,0,0> <1,1,1> }
 }
 
 // dimensions of pages
