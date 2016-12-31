@@ -496,10 +496,16 @@ tt:
 	@echo $(call scale,3)
 
 %-a5trim-on-pov.png: %-a5trim-cilt-on.png
-	convert $< -resize x800 $@
+	h=$(shell identify $(word 1,$^) | cut -d\  -f3 | cut -dx -f2)
+	convert $< \
+		\( +clone -stroke white -strokewidth 4 -draw "line 20,0 20,$$h" -blur 0x3 \) \
+		-compose softlight -composite $@
 
 %-a5trim-arka-pov.png: %-a5trim-cilt-on.png
-	convert $< -resize x800 $@
+	h=$(shell identify $(word 1,$^) | cut -d\  -f3 | cut -dx -f2)
+	convert $< \
+		\( +clone -stroke white -strokewidth 4 -draw "line -20,0 -20,$$h" -blur 0x3 \) \
+		-compose softlight -composite $@
 
 %-a5trim-sirt-pov.png: %-a5trim-cilt-sirt.png
 	convert $< -resize x800 -gravity center -extent 200%x100% $@
@@ -522,7 +528,9 @@ tt:
 
 %-a5trim-3b-on.png: %-a5trim-3b-on.pov $(TOOLS)/kapak.pov
 	povray -HI$< -I$(word 2,$^) -W$(call scale,6000) -H$(call scale,8000) -O$@
-	# convert -trim $@
+	# magick $@ \
+		# \( +clone -virtual-pixel edge -blur 0x15 -fuzz 20% -trim -set option:fuzzy_trim '%[fx:w+20]x%[fx:h+20]+%[fx:page.x-10]+%[fx:page.y-10]' +delete \) \
+		# -crop %[fuzzy_trim] $@
 
 %.epub %.odt %.docx: %.md %-merged.yml %-epub-kapak.png
 	$(PANDOC) \

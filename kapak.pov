@@ -34,14 +34,12 @@ camera {
 
 plane
 {
-    y, 0
-    pigment {
+	y, 0
+	pigment {
 		color rgb<0.9,0.9,0.9>
 	}
 	finish {
-		reflection 0.15
-		roughness 0.8
-		diffuse 0.8
+		reflection 0.05
 		emission rgb<0.2,0.2,0.2>
 	}
 }
