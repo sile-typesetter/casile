@@ -1,10 +1,15 @@
 #declare coverwidth = 592;
 #declare coverheight = 840;
 #declare spinewidth = 80;
+#declare outputwidth = 600;
+#declare outputheight = 800;
+
+#declare outputaspect = outputwidth / outputheight;
 #declare coveraspectratio = coverwidth / coverheight;
 #declare bookthickness = (spinewidth/coverwidth)/2;
 #declare coverthickness = 0.005;
 #declare paperinset = 0.005;
+#declare halfthick = coverthickness / 2;
 
 #declare paperpigment = pigment {
 	gradient <0,1,0>
@@ -27,7 +32,11 @@
 
 background { color rgb<1,1,1> }
 
-camera { location <-0.25,1.25,-0.75> look_at  <0.2,0.65,0> }
+camera {
+	location <-0.25,1.15,-0.75>
+	look_at  <0.25,0.60,halfthick>
+	right x*outputaspect
+}
 
 light_source { <2,3,-1>	color rgb<1,1,1> }
 

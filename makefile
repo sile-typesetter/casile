@@ -472,6 +472,9 @@ $(FRAGMANLAR): %-fragmanlar.xml %-merged.yml
 	$(call skip_if_tracked,$@)
 	convert $< -resize 1000x1600 $@
 
+%-a5trim-3d-on.png: $(TOOLS)/kapak.pov force
+	povray -I$< -W600 -H800 -O$@
+
 %.epub %.odt %.docx: %.md %-merged.yml %-epub-kapak.png
 	$(PANDOC) \
 		--smart \
