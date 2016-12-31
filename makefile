@@ -160,6 +160,8 @@ define sync_owncloud
 		owncloudcmd -n -s $(INPUT) $(OWNCLOUD) 2>/dev/null
 endef
 
+scale = $(strip $(shell $(DRAFT) && echo "($1 + 9) /10" | bc || echo $1))
+
 sync_pre:
 	$(call sync_owncloud)
 	-$(PRE_SYNC) && rsync -ctv \
