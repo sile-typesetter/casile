@@ -1,7 +1,7 @@
 #declare outputaspect = outputwidth / outputheight;
 #declare coveraspectratio = coverwidth / coverheight;
 #declare bookthickness = (spinewidth/coverwidth)/2;
-#declare coverthickness = 0.0*5;
+#declare coverthickness = 0.005;
 #declare paperinset = 0.001;
 #declare halfthick = bookthickness / 2;
 
@@ -27,14 +27,36 @@
 background { color rgb<1,1,1> }
 
 camera {
-	location <-1,1.50,-1>
+	location <-1,1.50,-1.2>
 	look_at  <.4*coveraspectratio,0.60,halfthick>
 	right x*outputaspect
 }
 
-light_source { <2,3,-1>	color rgb<1,1,1> }
+plane
+{
+    y, 0
+    pigment {
+		color rgb<0.9,0.9,0.9>
+	}
+	finish {
+		reflection 0.15
+		roughness 0.8
+		diffuse 0.8
+		emission rgb<0.2,0.2,0.2>
+	}
+}
 
-light_source { <-2,1,-2> color rgb<1,1,1> }
+light_source {
+	<-0.2,4,-1>
+	color rgb<1,1,1>
+	area_light <0.4, 0, 0>, <0, 0, 0.4>, lights, lights
+	circular
+}
+
+light_source {
+	<-3,0,-halfthick>
+	color rgb<1,1,1>
+}
 
 // front cover
 box { <0,0,0> <1,1,coverthickness>
