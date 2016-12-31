@@ -487,14 +487,6 @@ $(FRAGMANLAR): %-fragmanlar.xml %-merged.yml
 	h=$(shell identify $(word 2,$^) | cut -d\  -f3 | cut -dx -f2)
 	convert $< -gravity center -crop $${w}x$${h}+0+0! $@
 
-tt:
-	@echo $(call scale,1600)
-	@echo $(call scale,600)
-	@echo $(call scale,60)
-	@echo $(call scale,20)
-	@echo $(call scale,15)
-	@echo $(call scale,3)
-
 %-a5trim-on-pov.png: %-a5trim-cilt-on.png
 	h=$(shell identify $(word 1,$^) | cut -d\  -f3 | cut -dx -f2)
 	convert $< \
@@ -523,7 +515,7 @@ tt:
 		#declare frontimg = "$(word 1,$^)";
 		#declare backimg = "$(word 2,$^)";
 		#declare spineimg = "$(word 3,$^)";
-		#declare lights = $(call scale,20);
+		#declare lights = $(call scale,8,2);
 	EOF
 
 %-a5trim-3b-on.png: %-a5trim-3b-on.pov $(TOOLS)/kapak.pov
