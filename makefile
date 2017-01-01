@@ -500,7 +500,7 @@ $(FRAGMANLAR): %-fragmanlar.xml %-merged.yml
 		-compose softlight -composite $@
 
 %-a5trim-sirt-pov.png: %-a5trim-cilt-sirt.png
-	convert $< -resize x800 -gravity center -extent 200%x100% $@
+	convert $< -gravity center -extent 200%x100% $@
 
 %-a5trim-3b-on.pov: %-a5trim-on-pov.png %-a5trim-arka-pov.png %-a5trim-sirt-pov.png
 	w=$(shell identify $(word 1,$^) | cut -d\  -f3 | cut -dx -f1)
