@@ -603,7 +603,8 @@ endef
 %-a5trim-3b-on.png: %-a5trim-3b-on.pov $(TOOLS)/kapak.pov
 	povray -HI$< -I$(word 2,$^) -W$(call scale,6000) -H$(call scale,8000) -O$@
 	magick $@ \
-		\( +clone -virtual-pixel edge -blur 0x15 -fuzz 20% -trim -set option:fuzzy_trim '%[fx:w+20]x%[fx:h+20]+%[fx:page.x-10]+%[fx:page.y-10]' +delete \) \
+		\( +clone -virtual-pixel edge -blur 0x20 -fuzz 30% -trim -trim -set option:fuzzy_trim '%[fx:w+w*80/100]x%[fx:h+h*20/100]+%[fx:page.x-w*50/100]+%[fx:page.y-h*10/100]' +delete \) \
+		-print %[fuzzy_trim] \
 		-crop %[fuzzy_trim] $@
 
 %.epub %.odt %.docx: %.md %-merged.yml %-epub-kapak.png
