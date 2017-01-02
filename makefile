@@ -150,6 +150,7 @@ dependencies:
 	hash povray
 	hash yaml2json
 	hash jq
+
 # lua-yaml
 # perl-yaml-merge simple
 # perl-yaml
@@ -570,15 +571,15 @@ define magick_barkod
 	-compose over -composite
 endef
 
-%-a5trim-cilt-on.png: %-a5trim-cilt.png %-a5trim-fragman-on.png
-	bleed=$(call mmtopx,3) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
+%-cilt-on.png: %-cilt.png %-fragman-on.png
+	bleed=$(call scale,50) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
 	convert $< -gravity east -crop $${w}x$${h}+$${bleed}+0! $@
 
-%-a5trim-cilt-arka.png: %-a5trim-cilt.png %-a5trim-fragman-arka.png
-	bleed=$(call mmtopx,3) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
+%-cilt-arka.png: %-cilt.png %-fragman-arka.png
+	bleed=$(call scale,50) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
 	convert $< -gravity west -crop $${w}x$${h}+$${bleed}+0! $@
 
-%-a5trim-cilt-sirt.png: %-a5trim-cilt.png %-a5trim-fragman-sirt.png
+%-cilt-sirt.png: %-cilt.png %-fragman-sirt.png
 	w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
 	convert $< -gravity center -crop $${w}x$${h}+0+0! $@
 
