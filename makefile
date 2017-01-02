@@ -373,10 +373,16 @@ define skip_if_tracked
 	git ls-files --error-unmatch -- $1 2>/dev/null && exit 0 ||:
 endef
 
-%-kapak-zemin.png:
+pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}')
+spinemm = $(shell echo "($(call pagecount,$1) * 0.06 + 1 ) / 1 + 1 " | bc)
+mmtopx = $(shell echo "$1 * $(call scale,600) * 0.0393701 / 1" | bc)
+width = $(shell identify -density $(call scale,600) $1 | cut -d\  -f3 | cut -dx -f1)
+height = $(shell identify -density $(call scale,600) $1 | cut -d\  -f3 | cut -dx -f2)
+
+%-kapak-zemin.png: %.pdf
 	$(COVERS) || exit 0
 	$(call skip_if_tracked,$@)
-	convert -size 64x64 xc:darkgray +repage $@
+	magick -size $(call width,$<)x$(call height,$<) $(call zemin) $@
 
 define draw_title
 	convert  \
@@ -488,6 +494,54 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml $$(subst -fragmanlar,,$$@) %-merged.yml
 %-epub-kapak.png: %-kapak.png
 	$(call skip_if_tracked,$@)
 	convert $< -resize $(call scale,1000)x$(call scale,1600) $@
+
+%-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.svg) $(TOOLS)/vc_sembol_renkli.svg $(TOOLS)/vc_logo_renkli.svg $(MAKEFILE_LIST)
+	wide=$(call width,$(word 1,$^))
+	tall=$(call height,$(word 1,$^))
+	spine=$(call width,$(word 3,$^))
+	bleed=$(call scale,50)
+	w=$$(($$wide + $$wide + $$spine + $$bleed + $$bleed))
+	h=$$(($$tall + $$bleed + $$bleed))
+	cw=$$(($$wide + $$wide + $$spine))
+	ch=$$tall
+	texturew="$$(bc <<< "$$w / $(call scale,4,4)")"
+	textureh="$$(bc <<< "$$h / $(call scale,4,4)")"
+	magick -size $${w}x$${h} \
+		$(call magick_zemin) \
+		$(call magick_kenar) \
+		$(call magick_sembol,$(word 5,$^))\
+		$(call magick_barkod,$(word 4,$^)) \
+		$(call magick_logo,$(word 6,$^)) \
+		-composite +repage $@
+
+define magick_zemin
+	xc:darkgray
+endef
+
+define magick_kenar
+	-fill none -strokewidth 1 \
+	$(shell $(DRAFT) && echo -n '-stroke gray50' || echo -n '-stroke transparent') \
+	-draw "rectangle $$bleed,$$bleed %[fx:w-$$bleed],%[fx:h-$$bleed]" \
+	-draw "rectangle %[fx:$$bleed+$$wide],$$bleed %[fx:w-$$bleed-$$wide],%[fx:h-$$bleed]"
+endef
+
+define magick_sembol
+	-gravity south \
+	\( -background none $1 -resize %[fx:$$spine*0.8]x -splice x$(call mmtopx,5) \) \
+	-compose hardlight -composite
+endef
+
+define magick_logo
+	-gravity southwest \
+		\( -background none $1 -resize $(call mmtopx,300)x -splice %[fx:$$bleed+$(call mmtopx,10)x%[fx:$$bleed+$(call mmtobx,10)] \) \
+	-compose hardlight -composite
+endef
+
+define magick_barkod
+	-gravity southeast \
+	\( -background white $1 -resize $(call mmtopx,30)x -bordercolor white -border $(call mmtopx,2) -background none -splice %[fx:$$bleed+$$spine+$$wide+$(call mmtopx,10)]x%[fx:$$bleed+$(call mmtopx,10)] \) \
+	-compose over -composite
+endef
 
 %-a5trim-cilt-on.png: %-a5trim-cilt.png %-a5trim-fragman-on.png
 	w=$(shell identify $(word 2,$^) | cut -d\  -f3 | cut -dx -f1)
