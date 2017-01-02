@@ -584,7 +584,7 @@ endef
 %-a5trim-sirt-pov.png: %-a5trim-cilt-sirt.png
 	convert $< -gravity center -extent 200%x100% $@
 
-%-a5trim-3b-on.pov: %-a5trim-on-pov.png %-a5trim-arka-pov.png %-a5trim-sirt-pov.png
+%-a5trim-3b.pov: %-a5trim-on-pov.png %-a5trim-arka-pov.png %-a5trim-sirt-pov.png
 	w=$(call width,$(word 1,$^))
 	h=$(call height,$(word 1,$^))
 	s=$(call width,$(word 3,$^))
@@ -600,7 +600,14 @@ endef
 		#declare lights = $(call scale,8,2);
 	EOF
 
-%-a5trim-3b-on.png: %-a5trim-3b-on.pov $(TOOLS)/kapak.pov
+%-a5trim-3b-on.png: %-a5trim-3b.pov $(TOOLS)/kapak.pov
+	povray -HI$< -I$(word 2,$^) -W$(call scale,6000) -H$(call scale,8000) -O$@
+	magick $@ \
+		\( +clone -virtual-pixel edge -blur 0x20 -fuzz 30% -trim -trim -set option:fuzzy_trim '%[fx:w+w*80/100]x%[fx:h+h*20/100]+%[fx:page.x-w*50/100]+%[fx:page.y-h*10/100]' +delete \) \
+		-print %[fuzzy_trim] \
+		-crop %[fuzzy_trim] $@
+
+%-a5trim-3b-arka.png: %-a5trim-3b.pov $(TOOLS)/kapak.pov
 	povray -HI$< -I$(word 2,$^) -W$(call scale,6000) -H$(call scale,8000) -O$@
 	magick $@ \
 		\( +clone -virtual-pixel edge -blur 0x20 -fuzz 30% -trim -trim -set option:fuzzy_trim '%[fx:w+w*80/100]x%[fx:h+h*20/100]+%[fx:page.x-w*50/100]+%[fx:page.y-h*10/100]' +delete \) \
