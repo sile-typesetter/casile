@@ -576,9 +576,9 @@ endef
 
 %-a5trim-arka-pov.png: %-a5trim-cilt-arka.png
 	h=$(call height,$(word 1,$^)) w=$(call width,$(word 1,$^))
-	convert $< \
+	magick $< \
 		-stroke white -strokewidth $(call mmtopx,1) \
-		\( -size $${w}x$${h} -background none xc: -draw "line -$(call mmtopx,8),0 -$(call mmtopx,8),$$h" -blur $(call scale,10,2) \) \
+		\( -size $${w}x$${h} -background none xc: -draw "line %[fx:w-$(call mmtopx,8)],0 %[fx:w-$(call mmtopx,8)],$$h" -blur $(call scale,10,2) \) \
 		-compose softlight -composite $@
 
 %-a5trim-sirt-pov.png: %-a5trim-cilt-sirt.png
@@ -610,7 +610,7 @@ endef
 %-a5trim-3b-arka.png: %-a5trim-3b.pov $(TOOLS)/kapak.pov
 	povray -HI$< -I$(word 2,$^) -W$(call scale,6000) -H$(call scale,8000) -O$@
 	magick $@ \
-		\( +clone -virtual-pixel edge -blur 0x20 -fuzz 30% -trim -trim -set option:fuzzy_trim '%[fx:w+w*80/100]x%[fx:h+h*20/100]+%[fx:page.x-w*50/100]+%[fx:page.y-h*10/100]' +delete \) \
+		\( +clone -virtual-pixel edge -blur 0x20 -fuzz 30% -trim -trim -set option:fuzzy_trim '%[fx:w+w*80/100]x%[fx:h+h*20/100]+%[fx:page.x-w*30/100]+%[fx:page.y-h*10/100]' +delete \) \
 		-print %[fuzzy_trim] \
 		-crop %[fuzzy_trim] $@
 
