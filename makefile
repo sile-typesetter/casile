@@ -456,8 +456,16 @@ endef
 		$@
 
 FRAGMANLAR = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE)-fragmanlar.pdf)
-$(FRAGMANLAR): %-fragmanlar.xml %-merged.yml
-	$(SILE) $< -e 'versioninfo="$(shell $(call versioninfo,$<))"; layout="$(call parse_layout,$@)"' -o $@
+$(FRAGMANLAR): $(TOOLS)/fragmanlar.xml $$(subst -fragmanlar,,$$@) %-merged.yml $(MAKEFILE_LIST)
+	echo $^
+	cat <<- EOF > $*-fragmanlar.lua
+		versioninfo = "$(shell $(call versioninfo,$<))"
+		layout = "$(call parse_layout,$@)"
+		spine = "$(call spinemm,$(word 2,$^))mm"
+		metadatafile = "$(word 3,$^)"
+		basename = "$*"
+	EOF
+	$(SILE) $< -e 'infofile = "$*-fragmanlar"' -o $@
 
 %-fragman-on.png: %-fragmanlar.pdf
 	convert -density $(call scale,600) $<[0] $@
