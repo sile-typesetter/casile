@@ -146,6 +146,15 @@ dependencies:
 	hash $(SILE)
 	hash $(PANDOC)
 	$(PANDOC) --list-output-formats | grep -q sile
+	hash magick
+	hash povray
+	hash yaml2json
+	hash jq
+# lua-yaml
+# perl-yaml-merge simple
+# perl-yaml
+# python-yaml
+# python-isbnlib
 
 update_app_tags:
 	git tag |
