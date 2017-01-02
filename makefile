@@ -460,17 +460,69 @@ $(FRAGMANLAR): %-fragmanlar.xml %-merged.yml
 	$(SILE) $< -e 'versioninfo="$(shell $(call versioninfo,$<))"; layout="$(call parse_layout,$@)"' -o $@
 
 %-fragman-on.png: %-fragmanlar.pdf
-	convert -density 600 $<[0] $@
+	convert -density $(call scale,600) $<[0] $@
 
 %-fragman-arka.png: %-fragmanlar.pdf
-	convert -density 600 $<[1] $@
+	convert -density $(call scale,600) $<[1] $@
 
 %-fragman-sirt.png: %-fragmanlar.pdf
-	convert -density 600 $<[2] $@
+	convert -density $(call scale,600) $<[2] $@
 
 %-epub-kapak.png: %-kapak.png
 	$(call skip_if_tracked,$@)
-	convert $< -resize 1000x1600 $@
+	convert $< -resize $(call scale,1000)x$(call scale,1600) $@
+
+%-a5trim-cilt-on.png: %-a5trim-cilt.png %-a5trim-fragman-on.png
+	w=$(shell identify $(word 2,$^) | cut -d\  -f3 | cut -dx -f1)
+	h=$(shell identify $(word 2,$^) | cut -d\  -f3 | cut -dx -f2)
+	convert $< -gravity east -crop $${w}x$${h}+0+0! $@
+
+%-a5trim-cilt-arka.png: %-a5trim-cilt.png %-a5trim-fragman-arka.png
+	w=$(shell identify $(word 2,$^) | cut -d\  -f3 | cut -dx -f1)
+	h=$(shell identify $(word 2,$^) | cut -d\  -f3 | cut -dx -f2)
+	convert $< -gravity west -crop $${w}x$${h}+0+0! $@
+
+%-a5trim-cilt-sirt.png: %-a5trim-cilt.png %-a5trim-fragman-sirt.png
+	w=$(shell identify $(word 2,$^) | cut -d\  -f3 | cut -dx -f1)
+	h=$(shell identify $(word 2,$^) | cut -d\  -f3 | cut -dx -f2)
+	convert $< -gravity center -crop $${w}x$${h}+0+0! $@
+
+%-a5trim-on-pov.png: %-a5trim-cilt-on.png
+	h=$(shell identify $(word 1,$^) | cut -d\  -f3 | cut -dx -f2)
+	convert $< \
+		\( +clone -stroke white -strokewidth 4 -draw "line 20,0 20,$$h" -blur 0x3 \) \
+		-compose softlight -composite $@
+
+%-a5trim-arka-pov.png: %-a5trim-cilt-on.png
+	h=$(shell identify $(word 1,$^) | cut -d\  -f3 | cut -dx -f2)
+	convert $< \
+		\( +clone -stroke white -strokewidth 4 -draw "line -20,0 -20,$$h" -blur 0x3 \) \
+		-compose softlight -composite $@
+
+%-a5trim-sirt-pov.png: %-a5trim-cilt-sirt.png
+	convert $< -gravity center -extent 200%x100% $@
+
+%-a5trim-3b-on.pov: %-a5trim-on-pov.png %-a5trim-arka-pov.png %-a5trim-sirt-pov.png
+	w=$(shell identify $(word 1,$^) | cut -d\  -f3 | cut -dx -f1)
+	h=$(shell identify $(word 1,$^) | cut -d\  -f3 | cut -dx -f2)
+	s=$(shell identify $(word 3,$^) | cut -d\  -f3 | cut -dx -f1)
+	cat <<- EOF > $@
+		#declare coverwidth = $$w;
+		#declare coverheight = $$h;
+		#declare spinewidth = $$s / 2;
+		#declare outputwidth = $(call scale,6000);
+		#declare outputheight = $(call scale,8000);
+		#declare frontimg = "$(word 1,$^)";
+		#declare backimg = "$(word 2,$^)";
+		#declare spineimg = "$(word 3,$^)";
+		#declare lights = $(call scale,8,2);
+	EOF
+
+%-a5trim-3b-on.png: %-a5trim-3b-on.pov $(TOOLS)/kapak.pov
+	povray -HI$< -I$(word 2,$^) -W$(call scale,6000) -H$(call scale,8000) -O$@
+	# magick $@ \
+		# \( +clone -virtual-pixel edge -blur 0x15 -fuzz 20% -trim -set option:fuzzy_trim '%[fx:w+20]x%[fx:h+20]+%[fx:page.x-10]+%[fx:page.y-10]' +delete \) \
+		# -crop %[fuzzy_trim] $@
 
 %.epub %.odt %.docx: %.md %-merged.yml %-epub-kapak.png
 	$(PANDOC) \
