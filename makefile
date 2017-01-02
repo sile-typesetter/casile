@@ -600,19 +600,24 @@ endef
 		#declare lights = $(call scale,8,2);
 	EOF
 
-%-a5trim-3b-on.png: %-a5trim-3b.pov $(TOOLS)/kapak.pov
-	povray -HI$< -I$(word 2,$^) -W$(call scale,6000) -H$(call scale,8000) -O$@
-	magick $@ \
-		\( +clone -virtual-pixel edge -blur 0x20 -fuzz 30% -trim -trim -set option:fuzzy_trim '%[fx:w+w*80/100]x%[fx:h+h*20/100]+%[fx:page.x-w*50/100]+%[fx:page.y-h*10/100]' +delete \) \
-		-print %[fuzzy_trim] \
-		-crop %[fuzzy_trim] $@
+define povray
+	povray -HI$2 -HI$3 -I$1 -W$(call scale,6000) -H$(call scale,8000) -Q$(call scale 11,2) -O$4
+endef
 
-%-a5trim-3b-arka.png: %-a5trim-3b.pov $(TOOLS)/kapak.pov
-	povray -HI$< -I$(word 2,$^) -W$(call scale,6000) -H$(call scale,8000) -O$@
-	magick $@ \
-		\( +clone -virtual-pixel edge -blur 0x20 -fuzz 30% -trim -trim -set option:fuzzy_trim '%[fx:w+w*80/100]x%[fx:h+h*20/100]+%[fx:page.x-w*30/100]+%[fx:page.y-h*10/100]' +delete \) \
+define povcrop
+	magick $1 \
+		\( +clone -virtual-pixel edge -blur 0x20 -fuzz 30% -trim -trim -set option:fuzzy_trim "%[fx:w+w*80/100]x%[fx:h+h*20/100]+%[fx:page.x-w*$2/100]+%[fx:page.y-h*10/100]" +delete \) \
 		-print %[fuzzy_trim] \
-		-crop %[fuzzy_trim] $@
+		-crop %[fuzzy_trim] $1
+endef
+
+%-a5trim-3b-on.png: $(TOOLS)/kapak.pov %-a5trim-3b.pov $(TOOLS)/on.pov
+	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
+	$(call povcrop,$@,50)
+
+%-a5trim-3b-arka.png: $(TOOLS)/kapak.pov %-a5trim-3b.pov $(TOOLS)/arka.pov 
+	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
+	$(call povcrop,$@,30)
 
 %.epub %.odt %.docx: %.md %-merged.yml %-epub-kapak.png
 	$(PANDOC) \

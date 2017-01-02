@@ -27,7 +27,7 @@
 background { color rgb<1,1,1> }
 
 camera {
-	location <-1,1.50,-1.2>
+	location <-1,1.50,1.2*viewz>
 	look_at  <.4*coveraspectratio,0.60,halfthick>
 	right x*outputaspect
 }
@@ -45,7 +45,7 @@ plane
 }
 
 light_source {
-	<-0.2,4,-1>
+	<-0.2,4,1*viewz>
 	color rgb<1,1,1>
 	area_light <0.4, 0, 0>, <0, 0, 0.4>, lights, lights
 	circular
