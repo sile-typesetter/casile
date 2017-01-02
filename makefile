@@ -456,8 +456,7 @@ endef
 		$@
 
 FRAGMANLAR = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE)-fragmanlar.pdf)
-$(FRAGMANLAR): $(TOOLS)/fragmanlar.xml $$(subst -fragmanlar,,$$@) %-merged.yml $(MAKEFILE_LIST)
-	echo $^
+$(FRAGMANLAR): $(TOOLS)/fragmanlar.xml $$(subst -fragmanlar,,$$@) %-merged.yml
 	cat <<- EOF > $*-fragmanlar.lua
 		versioninfo = "$(shell $(call versioninfo,$<))"
 		layout = "$(call parse_layout,$@)"
@@ -468,13 +467,23 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml $$(subst -fragmanlar,,$$@) %-merged.yml $
 	$(SILE) $< -e 'infofile = "$*-fragmanlar"' -o $@
 
 %-fragman-on.png: %-fragmanlar.pdf
-	convert -density $(call scale,600) $<[0] $@
+	magick -density $(call scale,600) $<[0] \
+		-channel RGB -negate \
+		\( +clone -channel A -morphology Dilate:$(call scale,16) Octagon -blur $(call scale,40)x$(call scale,10) \) \
+		-composite $@
 
 %-fragman-arka.png: %-fragmanlar.pdf
-	convert -density $(call scale,600) $<[1] $@
+	magick -density $(call scale,600) $<[1] \
+		-channel RGB -negate \
+		\( +clone -channel A -morphology Dilate:$(call scale,8) Octagon -blur $(call scale,20)x$(call scale,5) \) \
+		-composite $@
 
-%-fragman-sirt.png: %-fragmanlar.pdf
-	convert -density $(call scale,600) $<[2] $@
+%-fragman-sirt.png: %-fragmanlar.pdf %.pdf $(MAKEFILE_LIST)
+	magick -density $(call scale,600) $<[2] \
+		-crop $(call mmtopx,$(call spinemm,$(word 2,$^)))x+0+0 \
+		-channel RGB -negate \
+		\( +clone -channel A -morphology Dilate:$(call scale,12) Octagon -blur $(call scale,20)x$(call scale,5) \) \
+		-composite $@
 
 %-epub-kapak.png: %-kapak.png
 	$(call skip_if_tracked,$@)
