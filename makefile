@@ -576,24 +576,24 @@ endef
 	w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
 	convert $< -gravity center -crop $${w}x$${h}+0+0! $@
 
-%-a5trim-on-pov.png: %-a5trim-cilt-on.png
+%-pov-on.png: %-cilt-on.png
 	h=$(call height,$(word 1,$^)) w=$(call width,$(word 1,$^))
 	magick $< \
 		-stroke white -strokewidth $(call mmtopx,1) \
 		\( -size $${w}x$${h} -background none xc: -draw "line $(call mmtopx,8),0 $(call mmtopx,8),$$h" -blur $(call scale,10,2) \) \
 		-compose softlight -composite $@
 
-%-a5trim-arka-pov.png: %-a5trim-cilt-arka.png
+%-pov-arka.png: %-cilt-arka.png
 	h=$(call height,$(word 1,$^)) w=$(call width,$(word 1,$^))
 	magick $< \
 		-stroke white -strokewidth $(call mmtopx,1) \
 		\( -size $${w}x$${h} -background none xc: -draw "line %[fx:w-$(call mmtopx,8)],0 %[fx:w-$(call mmtopx,8)],$$h" -blur $(call scale,10,2) \) \
 		-compose softlight -composite $@
 
-%-a5trim-sirt-pov.png: %-a5trim-cilt-sirt.png
+%-pov-sirt.png: %-cilt-sirt.png
 	convert $< -gravity center -extent 200%x100% $@
 
-%-a5trim-3b.pov: %-a5trim-on-pov.png %-a5trim-arka-pov.png %-a5trim-sirt-pov.png
+%-3b.pov: %-pov-on.png %-pov-arkav.png %-pov-sirt.png
 	w=$(call width,$(word 1,$^))
 	h=$(call height,$(word 1,$^))
 	s=$(call width,$(word 3,$^))
@@ -620,11 +620,11 @@ define povcrop
 		-crop %[fuzzy_trim] $1
 endef
 
-%-a5trim-3b-on.png: $(TOOLS)/kapak.pov %-a5trim-3b.pov $(TOOLS)/on.pov
+%-3b-on.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/on.pov
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
 	$(call povcrop,$@,50)
 
-%-a5trim-3b-arka.png: $(TOOLS)/kapak.pov %-a5trim-3b.pov $(TOOLS)/arka.pov 
+%-3b-arka.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/arka.pov
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
 	$(call povcrop,$@,30)
 
