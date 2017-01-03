@@ -150,6 +150,7 @@ dependencies:
 	hash povray
 	hash yaml2json
 	hash jq
+	hash zint
 
 # lua-yaml
 # perl-yaml-merge simple
