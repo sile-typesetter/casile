@@ -612,13 +612,15 @@ endef
 	EOF
 
 define povray
-	povray -HI$2 -HI$3 -I$1 -W$(call scale,6000) -H$(call scale,8000) -Q$(call scale 11,2) -O$4
+	headers=$$(mktemp povXXXXXX.inc)
+	cat $2 $3 > $$headers
+	povray -I$1 -HI$$headers -W$(call scale,6000) -H$(call scale,8000) -Q$(call scale 11,2) -O$4
+	rm $$headers
 endef
 
 define povcrop
 	magick $1 \
 		\( +clone -virtual-pixel edge -blur 0x20 -fuzz 30% -trim -trim -set option:fuzzy_trim "%[fx:w+w*80/100]x%[fx:h+h*20/100]+%[fx:page.x-w*$2/100]+%[fx:page.y-h*10/100]" +delete \) \
-		-print %[fuzzy_trim] \
 		-crop %[fuzzy_trim] $1
 endef
 
