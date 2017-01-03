@@ -676,7 +676,7 @@ endef
 			$@
 
 %-barkod.png: %-barkod.svg
-	convert $< -background white -resize 1200x $@
+	convert $< -background white -resize $(call scale,1200)x $@
 
 stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
 
