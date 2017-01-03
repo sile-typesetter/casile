@@ -546,8 +546,8 @@ endef
 
 define magick_sembol
 	-gravity south \
-	\( -background none $1 -resize %[fx:$$spine*0.8]x \
-		-alpha on -channel RGB +level-colors '#ff2222','#550000' \
+	\( -background none $1 -resize "%[fx:min($$spine*0.9-$(call mmtopx,1),$(call mmtopx,12))]"x \
+		-alpha on -channel RGB +level-colors '#ff0000','#550000' \
 		-splice x%[fx:$(call mmtopx,5)+$$bleed] \) \
 	-compose over -composite
 endef
