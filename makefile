@@ -172,6 +172,8 @@ endef
 define scale
 $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + 9) / 10" | bc) || echo $1))
 endef
+# $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + 4) / 5" | bc) || echo $1))
+# $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + 9) / 10" | bc) || echo $1))
 
 sync_pre:
 	$(call sync_owncloud)
@@ -508,7 +510,7 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml $$(subst -fragmanlar,,$$@) %-merged.yml
 	wide=$(call width,$(word 1,$^))
 	tall=$(call height,$(word 1,$^))
 	spine=$(call width,$(word 3,$^))
-	bleed=$(call scale,50)
+	bleed=$(call mmtopx,3)
 	w=$$(($$wide + $$wide + $$spine + $$bleed + $$bleed))
 	h=$$(($$tall + $$bleed + $$bleed))
 	cw=$$(($$wide + $$wide + $$spine))
@@ -565,11 +567,11 @@ define magick_barkod
 endef
 
 %-a5trim-cilt-on.png: %-a5trim-cilt.png %-a5trim-fragman-on.png
-	bleed=$(call scale,50) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
+	bleed=$(call mmtopx,3) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
 	convert $< -gravity east -crop $${w}x$${h}+$${bleed}+0! $@
 
 %-a5trim-cilt-arka.png: %-a5trim-cilt.png %-a5trim-fragman-arka.png
-	bleed=$(call scale,50) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
+	bleed=$(call mmtopx,3) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
 	convert $< -gravity west -crop $${w}x$${h}+$${bleed}+0! $@
 
 %-a5trim-cilt-sirt.png: %-a5trim-cilt.png %-a5trim-fragman-sirt.png
@@ -593,7 +595,7 @@ endef
 %-pov-sirt.png: %-cilt-sirt.png
 	convert $< -gravity center -extent 200%x100% $@
 
-%-3b.pov: %-pov-on.png %-pov-arkav.png %-pov-sirt.png
+%-3b.pov: %-pov-on.png %-pov-arka.png %-pov-sirt.png
 	w=$(call width,$(word 1,$^))
 	h=$(call height,$(word 1,$^))
 	s=$(call width,$(word 3,$^))
