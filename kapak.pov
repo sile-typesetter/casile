@@ -1,27 +1,27 @@
 #declare outputaspect = outputwidth / outputheight;
 #declare coveraspectratio = coverwidth / coverheight;
 #declare bookthickness = (spinewidth/coverwidth)/2;
-#declare coverthickness = 0.005;
-#declare paperinset = 0.001;
+#declare coverthickness = 0.004;
+#declare paperinset = 0.0001;
 #declare halfthick = bookthickness / 2;
 
 #declare paperpigment = pigment {
 	gradient <0,1,0>
 	color_map {
-		[0.0 color rgb<0.9,0.9,0.9>]
-		[0.5 color rgb<0.9,0.9,0.9>]
-		[0.5 color rgb<1,1,1>]
-		[1.0 color rgb<1,1,1>]
+		[0.0 color rgb<0.6,0.6,0.6>]
+		[0.5 color rgb<0.6,0.6,0.6>]
+		[0.5 color rgb<0.7,0.7,0.7>]
+		[1.0 color rgb<0.7,0.7,0.7>]
 	}
-	scale <0.002,0.002,0.002>
+	scale <0.003,0.003,0.003>
 	rotate <90,0,0>
 }
 
 #declare bookfinish = finish {
-	ambient 0.95
-	diffuse 0.5
-	reflection 0.15
-	specular 0.65
+	ambient 0.85
+	diffuse 0.4
+	reflection 0.10
+	specular 0.35
 	roughness 0.05
 }
 
