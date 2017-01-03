@@ -146,6 +146,16 @@ dependencies:
 	hash $(SILE)
 	hash $(PANDOC)
 	$(PANDOC) --list-output-formats | grep -q sile
+	hash magick
+	hash povray
+	hash yaml2json
+	hash jq
+
+# lua-yaml
+# perl-yaml-merge simple
+# perl-yaml
+# python-yaml
+# python-isbnlib
 
 update_app_tags:
 	git tag |
@@ -163,6 +173,8 @@ endef
 define scale
 $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + 9) / 10" | bc) || echo $1))
 endef
+# $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + 4) / 5" | bc) || echo $1))
+# $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + 9) / 10" | bc) || echo $1))
 
 sync_pre:
 	$(call sync_owncloud)
@@ -373,10 +385,16 @@ define skip_if_tracked
 	git ls-files --error-unmatch -- $1 2>/dev/null && exit 0 ||:
 endef
 
-%-kapak-zemin.png:
+pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}')
+spinemm = $(shell echo "($(call pagecount,$1) * 0.06 + 1 ) / 1 + 1 " | bc)
+mmtopx = $(shell echo "$1 * $(call scale,600) * 0.0393701 / 1" | bc)
+width = $(shell identify -density $(call scale,600) -format %[fx:w] $1)
+height = $(shell identify -density $(call scale,600) -format %[fx:h] $1)
+
+%-kapak-zemin.png: %.pdf
 	$(COVERS) || exit 0
 	$(call skip_if_tracked,$@)
-	convert -size 64x64 xc:darkgray +repage $@
+	magick -size $(call width,$<)x$(call height,$<) $(call zemin) $@
 
 define draw_title
 	convert  \
@@ -456,21 +474,168 @@ endef
 		$@
 
 FRAGMANLAR = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE)-fragmanlar.pdf)
-$(FRAGMANLAR): %-fragmanlar.xml %-merged.yml
-	$(SILE) $< -e 'versioninfo="$(shell $(call versioninfo,$<))"; layout="$(call parse_layout,$@)"' -o $@
+$(FRAGMANLAR): $(TOOLS)/fragmanlar.xml $$(subst -fragmanlar,,$$@) %-merged.yml
+	cat <<- EOF > $*-fragmanlar.lua
+		versioninfo = "$(shell $(call versioninfo,$<))"
+		layout = "$(call parse_layout,$@)"
+		spine = "$(call spinemm,$(word 2,$^))mm"
+		metadatafile = "$(word 3,$^)"
+		basename = "$*"
+	EOF
+	$(SILE) $< -e 'infofile = "$*-fragmanlar"' -o $@
 
 %-fragman-on.png: %-fragmanlar.pdf
-	convert -density 600 $<[0] $@
+	magick -density $(call scale,600) $<[0] \
+		-channel RGB -negate \
+		\( +clone -channel A -morphology Dilate:$(call scale,16) Octagon -blur $(call scale,40)x$(call scale,10) \) \
+		-composite $@
 
 %-fragman-arka.png: %-fragmanlar.pdf
-	convert -density 600 $<[1] $@
+	magick -density $(call scale,600) $<[1] \
+		-channel RGB -negate \
+		\( +clone -channel A -morphology Dilate:$(call scale,8) Octagon -blur $(call scale,20)x$(call scale,5) \) \
+		-composite $@
 
-%-fragman-sirt.png: %-fragmanlar.pdf
-	convert -density 600 $<[2] $@
+%-fragman-sirt.png: %-fragmanlar.pdf %.pdf
+	magick -density $(call scale,600) $<[2] \
+		-crop $(call mmtopx,$(call spinemm,$(word 2,$^)))x+0+0 \
+		-channel RGB -negate \
+		\( +clone -channel A -morphology Dilate:$(call scale,12) Octagon -blur $(call scale,20)x$(call scale,5) \) \
+		-composite $@
 
 %-epub-kapak.png: %-kapak.png
 	$(call skip_if_tracked,$@)
-	convert $< -resize 1000x1600 $@
+	convert $< -resize $(call scale,1000)x$(call scale,1600) $@
+
+%-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(TOOLS)/vc_sembol_renkli.svg $(TOOLS)/vc_logo_renkli.svg
+	wide=$(call width,$(word 1,$^))
+	tall=$(call height,$(word 1,$^))
+	spine=$(call width,$(word 3,$^))
+	bleed=$(call mmtopx,3)
+	w=$$(($$wide + $$wide + $$spine + $$bleed + $$bleed))
+	h=$$(($$tall + $$bleed + $$bleed))
+	cw=$$(($$wide + $$wide + $$spine))
+	ch=$$tall
+	texturew="$$(bc <<< "$$w / $(call scale,4,4)")"
+	textureh="$$(bc <<< "$$h / $(call scale,4,4)")"
+	magick -size $${w}x$${h} \
+		$(call magick_zemin) \
+		$(call magick_kenar) \
+		\( -gravity east -size $${wide}x$${tall} -background none xc: $(call magick_on) -splice $${bleed}x \) -composite \
+		\( -gravity west -size $${wide}x$${tall} -background none xc: $(call magick_arka) -splice $${bleed}x \) -composite \
+		\( -gravity center -size $${spine}x$${tall} -background none xc: $(call magick_sirt) \) -composite \
+		\( -gravity east $(word 1,$^) -splice $${bleed}x \) -compose over -composite \
+		\( -gravity west $(word 2,$^) -splice $${bleed}x \) -compose over -composite \
+		\( -gravity center $(word 3,$^) \) -compose over -composite \
+		$(call magick_sembol,$(word 5,$^))\
+		$(call magick_barkod,$(word 4,$^)) \
+		$(call magick_logo,$(word 6,$^)) \
+		-composite +repage \
+		$(call magick_cilt) \
+		$@
+
+define magick_zemin
+	xc:darkgray
+endef
+
+define magick_kenar
+	-fill none -strokewidth 1 \
+	$(shell $(DRAFT) && echo -n '-stroke gray50' || echo -n '-stroke transparent') \
+	-draw "rectangle $$bleed,$$bleed %[fx:w-$$bleed],%[fx:h-$$bleed]" \
+	-draw "rectangle %[fx:$$bleed+$$wide],$$bleed %[fx:w-$$bleed-$$wide],%[fx:h-$$bleed]"
+endef
+
+define magick_sembol
+	-gravity south \
+	\( -background none $1 -resize "%[fx:min($$spine*0.9-$(call mmtopx,1),$(call mmtopx,12))]"x \
+		-alpha on -channel RGB +level-colors '#ff0000','#550000' \
+		-splice x%[fx:$(call mmtopx,5)+$$bleed] \) \
+	-compose over -composite
+endef
+
+define magick_logo
+	-gravity southwest \
+	\( \
+	-background none $(TOOLS)/vc_logo_renksiz.svg \
+	-channel RGB -negate \
+	-level 20%,60%!  \
+	-resize $(call mmtopx,30)x \
+	-splice %[fx:$$bleed+$$wide*15/100]x%[fx:$$bleed+$(call mmtopx,10)] \
+	\) -compose screen -composite
+endef
+
+
+define magick_barkod
+	-gravity southeast \
+	\( -background white $1 -resize $(call mmtopx,30)x -bordercolor white -border $(call mmtopx,2) -background none -splice %[fx:$$bleed+$$wide+$$spine+$$wide*15/100]x%[fx:$$bleed+$(call mmtopx,10)] \) \
+	-compose over -composite
+endef
+
+%-cilt-on.png: %-cilt.png %-fragman-on.png
+	bleed=$(call scale,50) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
+	convert $< -gravity east -crop $${w}x$${h}+$${bleed}+0! $@
+
+%-cilt-arka.png: %-cilt.png %-fragman-arka.png
+	bleed=$(call scale,50) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
+	convert $< -gravity west -crop $${w}x$${h}+$${bleed}+0! $@
+
+%-cilt-sirt.png: %-cilt.png %-fragman-sirt.png
+	w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
+	convert $< -gravity center -crop $${w}x$${h}+0+0! $@
+
+%-pov-on.png: %-cilt-on.png
+	h=$(call height,$(word 1,$^)) w=$(call width,$(word 1,$^))
+	magick $< \
+		-stroke white -strokewidth $(call mmtopx,1) \
+		\( -size $${w}x$${h} -background none xc: -draw "line $(call mmtopx,8),0 $(call mmtopx,8),$$h" -blur $(call scale,10,2) \) \
+		-compose softlight -composite $@
+
+%-pov-arka.png: %-cilt-arka.png
+	h=$(call height,$(word 1,$^)) w=$(call width,$(word 1,$^))
+	magick $< \
+		-stroke white -strokewidth $(call mmtopx,1) \
+		\( -size $${w}x$${h} -background none xc: -draw "line %[fx:w-$(call mmtopx,8)],0 %[fx:w-$(call mmtopx,8)],$$h" -blur $(call scale,10,2) \) \
+		-compose softlight -composite $@
+
+%-pov-sirt.png: %-cilt-sirt.png
+	convert $< -gravity center -extent 200%x100% $@
+
+%-3b.pov: %-pov-on.png %-pov-arka.png %-pov-sirt.png
+	w=$(call width,$(word 1,$^))
+	h=$(call height,$(word 1,$^))
+	s=$(call width,$(word 3,$^))
+	cat <<- EOF > $@
+		#declare coverwidth = $$w;
+		#declare coverheight = $$h;
+		#declare spinewidth = $$s / 2;
+		#declare outputwidth = $(call scale,6000);
+		#declare outputheight = $(call scale,8000);
+		#declare frontimg = "$(word 1,$^)";
+		#declare backimg = "$(word 2,$^)";
+		#declare spineimg = "$(word 3,$^)";
+		#declare lights = $(call scale,8,2);
+	EOF
+
+define povray
+	headers=$$(mktemp povXXXXXX.inc)
+	cat $2 $3 > $$headers
+	povray -I$1 -HI$$headers -W$(call scale,6000) -H$(call scale,8000) -Q$(call scale,11,4) -O$4
+	rm $$headers
+endef
+
+define povcrop
+	magick $1 \
+		\( +clone -virtual-pixel edge -blur 0x20 -fuzz 30% -trim -trim -set option:fuzzy_trim "%[fx:w+w*80/100]x%[fx:h+h*20/100]+%[fx:page.x-w*$2/100]+%[fx:page.y-h*10/100]" +delete \) \
+		-crop %[fuzzy_trim] $1
+endef
+
+%-3b-on.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/on.pov
+	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
+	$(call povcrop,$@,50)
+
+%-3b-arka.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/arka.pov
+	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
+	$(call povcrop,$@,30)
 
 %.epub %.odt %.docx: %.md %-merged.yml %-epub-kapak.png
 	$(PANDOC) \
@@ -492,10 +657,10 @@ $(FRAGMANLAR): %-fragmanlar.xml %-merged.yml
 	zint --directsvg --scale=5 --barcode=69 --height=30 \
 		--data=$(shell $(TOOLS)/bin/isbn_format.py $< print) |\
 		convert - \
-			-bordercolor White -border 10x10 \
+			-bordercolor white -border 10 \
 			-font Hack-Regular -pointsize 36 \
-			label:"ISBN $(shell $(TOOLS)/bin/isbn_format.py $< print mask)" +swap -gravity Center -append \
-			-bordercolor White -border 0x10 \
+			label:"ISBN $(shell $(TOOLS)/bin/isbn_format.py $< print mask)" +swap -gravity center -append \
+			-bordercolor white -border 0x10 \
 			$@
 
 %-url.png: %-url.svg
@@ -510,7 +675,7 @@ $(FRAGMANLAR): %-fragmanlar.xml %-merged.yml
 			$@
 
 %-barkod.png: %-barkod.svg
-	convert $< $@
+	convert $< -background white -resize 1200x $@
 
 stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
 

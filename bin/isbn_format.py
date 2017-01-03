@@ -17,7 +17,7 @@ for id in yamldata["identifier"]:
         if isbnlib.is_isbn13(isbnlike):
             identifier[id["key"]] = isbnlib.EAN13(isbnlike)
 
-isbn = identifier[sys.argv[2]]
+isbn = identifier[sys.argv[2]] if sys.argv[2] in identifier else "9786056644504"
 
 if len(sys.argv) >= 4 and sys.argv[3] == "mask":
     print(isbnlib.mask(isbn))
