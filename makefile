@@ -529,7 +529,9 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml $$(subst -fragmanlar,,$$@) %-merged.yml
 		$(call magick_sembol,$(word 5,$^))\
 		$(call magick_barkod,$(word 4,$^)) \
 		$(call magick_logo,$(word 6,$^)) \
-		-composite +repage $@
+		-composite +repage \
+		$(call magick_cilt) \
+		$@
 
 define magick_zemin
 	xc:darkgray
