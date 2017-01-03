@@ -523,8 +523,8 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml $$(subst -fragmanlar,,$$@) %-merged.yml
 		\( -gravity east -size $${wide}x$${tall} -background none xc: $(call magick_on) -splice $${bleed}x \) -composite \
 		\( -gravity west -size $${wide}x$${tall} -background none xc: $(call magick_arka) -splice $${bleed}x \) -composite \
 		\( -gravity center -size $${spine}x$${tall} -background none xc: $(call magick_sirt) \) -composite \
-		\( -gravity east $(word 1,$^) \) -compose over -composite \
-		\( -gravity west $(word 2,$^) \) -compose over -composite \
+		\( -gravity east $(word 1,$^) -splice $${bleed}x \) -compose over -composite \
+		\( -gravity west $(word 2,$^) -splice $${bleed}x \) -compose over -composite \
 		\( -gravity center $(word 3,$^) \) -compose over -composite \
 		$(call magick_sembol,$(word 5,$^))\
 		$(call magick_barkod,$(word 4,$^)) \
