@@ -616,7 +616,7 @@ endef
 define povray
 	headers=$$(mktemp povXXXXXX.inc)
 	cat $2 $3 > $$headers
-	povray -I$1 -HI$$headers -W$(call scale,6000) -H$(call scale,8000) -Q$(call scale 11,2) -O$4
+	povray -I$1 -HI$$headers -W$(call scale,6000) -H$(call scale,8000) -Q$(call scale,11,4) -O$4
 	rm $$headers
 endef
 

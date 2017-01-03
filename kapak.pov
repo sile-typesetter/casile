@@ -18,9 +18,10 @@
 }
 
 #declare bookfinish = finish {
+	ambient 0.95
 	diffuse 0.5
-	reflection { 0.15 }
-	specular 0.75
+	reflection 0.15
+	specular 0.65
 	roughness 0.05
 }
 
@@ -45,7 +46,7 @@ plane
 }
 
 light_source {
-	<-0.2,4,1*viewz>
+	<-0.2,4,1.0*viewz>
 	color rgb<1,1,1>
 	area_light <0.4, 0, 0>, <0, 0, 0.4>, lights, lights
 	circular
