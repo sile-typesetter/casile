@@ -507,7 +507,7 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml $$(subst -fragmanlar,,$$@) %-merged.yml
 	$(call skip_if_tracked,$@)
 	convert $< -resize $(call scale,1000)x$(call scale,1600) $@
 
-%-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.svg) $(TOOLS)/vc_sembol_renkli.svg $(TOOLS)/vc_logo_renkli.svg
+%-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(TOOLS)/vc_sembol_renkli.svg $(TOOLS)/vc_logo_renkli.svg
 	wide=$(call width,$(word 1,$^))
 	tall=$(call height,$(word 1,$^))
 	spine=$(call width,$(word 3,$^))
@@ -675,7 +675,7 @@ endef
 			$@
 
 %-barkod.png: %-barkod.svg
-	convert $< $@
+	convert $< -background white -resize 1200x $@
 
 stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
 
