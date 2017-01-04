@@ -26,6 +26,10 @@ SILE ?= sile
 PANDOC ?= pandoc
 SILE_DEBUG ?= viachristus
 
+# Default to running multiple jobs
+JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
+MAKEFLAGS = "-j $(JOBS)"
+
 # For watch targets, treat exta parameters as things to pass to the next make
 ifeq (watch,$(firstword $(MAKECMDGOALS)))
   WATCH_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
