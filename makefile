@@ -51,7 +51,7 @@ endif
 
 # If this commit is tagged, run special rules for it
 ALL_TAGS := $(shell git tag --points-at HEAD | xargs echo)
-LAST_TAG := $(shell git describe --tags)
+LAST_TAG := $(shell git describe --tags 2>/dev/null)
 ifneq ($(ALL_TAGS),)
 
 BRANCH = master
@@ -571,24 +571,34 @@ define magick_logo
 	\) -compose screen -composite
 endef
 
-
 define magick_barkod
 	-gravity southeast \
 	\( -background white $1 -resize $(call mmtopx,30)x -bordercolor white -border $(call mmtopx,2) -background none -splice %[fx:$$bleed+$$wide+$$spine+$$wide*15/100]x%[fx:$$bleed+$(call mmtopx,10)] \) \
 	-compose over -composite
 endef
 
+define magick_crease
+	-stroke white -strokewidth $(call mmtopx,1) \
+	\( -size $${w}x$${h} -background none xc: -draw "line %[fx:$1$(call mmtopx,8)],0 %[fx:$1$(call mmtopx,8)],$${h}" -blur $(call scale,10,2) \) \
+	-compose softlight -composite
+endef
+
+define magick_fray
+	\( +clone -alpha extract -virtual-pixel black -spread 2 -blur 0x4 -threshold 20% -spread 2 -blur 0x0.7 \) \
+	-alpha off -compose copyopacity -composite
+endef
+
 %-cilt-on.png: %-cilt.png %-fragman-on.png
 	bleed=$(call mmtopx,$(BLEED)) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
-	convert $< -gravity east -crop $${w}x$${h}+$${bleed}+0! $@
+	magick $< -gravity east -crop $${w}x$${h}+$${bleed}+0! $@
 
 %-cilt-arka.png: %-cilt.png %-fragman-arka.png
 	bleed=$(call mmtopx,$(BLEED)) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
-	convert $< -gravity west -crop $${w}x$${h}+$${bleed}+0! $@
+	magick $< -gravity west -crop $${w}x$${h}+$${bleed}+0! $@
 
 %-cilt-sirt.png: %-cilt.png %-fragman-sirt.png
 	w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
-	convert $< -gravity center -crop $${w}x$${h}+0+0! $@
+	magick $< -gravity center -crop $${w}x$${h}+0+0! $@
 
 %-pov-on.png: %-cilt-on.png
 	h=$(call height,$(word 1,$^)) w=$(call width,$(word 1,$^))
@@ -604,21 +614,12 @@ endef
 		$(call magick_fray) \
 		$@
 
-define magick_crease
-	-stroke white -strokewidth $(call mmtopx,1) \
-	\( -size $${w}x$${h} -background none xc: -draw "line %[fx:$1$(call mmtopx,8)],0 %[fx:$1$(call mmtopx,8)],$${h}" -blur $(call scale,10,2) \) \
-	-compose softlight -composite
-endef
-
-define magick_fray
-	\( +clone -alpha extract -virtual-pixel black -spread 2 -blur 0x4 -threshold 20% -spread 2 -blur 0x0.7 \) \
-	-alpha off -compose copyopacity -composite
-endef
-
 %-pov-sirt.png: %-cilt-sirt.png
-	convert $< -gravity center -extent 200%x100% $@
+	magick $< -gravity center -extent 200%x100% $@
 
-%-3b.pov: %-pov-on.png %-pov-arka.png %-pov-sirt.png
+povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
+
+%-3b.pov: $(povtextures)
 	w=$(call width,$(word 1,$^))
 	h=$(call height,$(word 1,$^))
 	s=$(call width,$(word 3,$^))
@@ -652,11 +653,11 @@ define povcrop
 		-crop %[fuzzy_trim] $1
 endef
 
-%-3b-on.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/on.pov
+%-3b-on.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/on.pov | $(povtextures)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
 	$(call povcrop,$@,50)
 
-%-3b-arka.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/arka.pov
+%-3b-arka.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/arka.pov | $(povtextures)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
 	$(call povcrop,$@,30)
 
