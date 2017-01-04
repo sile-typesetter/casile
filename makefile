@@ -333,25 +333,25 @@ parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 
 %-a4.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-a4-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
+	$(call build_sile,$<,$*,$(call parse_layout,$@),a4,false)
 
 %-a4ciltli.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a4ciltli.lua
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),a4,false)
+	$(call build_sile,$<,$*,$(call parse_layout,$@),a4,false)
 
 %-a5trim.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a5trim.lua
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),137.878787mm x 195mm,true)
+	$(call build_sile,$<,$*,$(call parse_layout,$@),137.878787mm x 195mm,true)
 
 %-octavo.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-octavo.lua
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),432pt x 648pt,true)
+	$(call build_sile,$<,$*,$(call parse_layout,$@),432pt x 648pt,true)
 
 %-halfletter.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-halfletter.lua
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),halfletter,true)
+	$(call build_sile,$<,$*,$(call parse_layout,$@),halfletter,true)
 
 %-cep.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-cep.lua
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),110mm x 170mm,true)
+	$(call build_sile,$<,$*,$(call parse_layout,$@),110mm x 170mm,true)
 
 %-app.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-app-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-app.lua
-	$(call build_sile,$<,$*,$(patsubst $*-%.sil,%,$@),80mm x 128mm,false)
+	$(call build_sile,$<,$*,$(call parse_layout,$@),80mm x 128mm,false)
 
 %.sil.toc: %.pdf ;
 
