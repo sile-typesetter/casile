@@ -592,16 +592,27 @@ endef
 %-pov-on.png: %-cilt-on.png
 	h=$(call height,$(word 1,$^)) w=$(call width,$(word 1,$^))
 	magick $< \
-		-stroke white -strokewidth $(call mmtopx,1) \
-		\( -size $${w}x$${h} -background none xc: -draw "line $(call mmtopx,8),0 $(call mmtopx,8),$$h" -blur $(call scale,10,2) \) \
-		-compose softlight -composite $@
+		$(call magick_crease,0+) \
+		$(call magick_fray) \
+		$@
 
 %-pov-arka.png: %-cilt-arka.png
 	h=$(call height,$(word 1,$^)) w=$(call width,$(word 1,$^))
 	magick $< \
-		-stroke white -strokewidth $(call mmtopx,1) \
-		\( -size $${w}x$${h} -background none xc: -draw "line %[fx:w-$(call mmtopx,8)],0 %[fx:w-$(call mmtopx,8)],$$h" -blur $(call scale,10,2) \) \
-		-compose softlight -composite $@
+		$(call magick_crease,w-) \
+		$(call magick_fray) \
+		$@
+
+define magick_crease
+	-stroke white -strokewidth $(call mmtopx,1) \
+	\( -size $${w}x$${h} -background none xc: -draw "line %[fx:$1$(call mmtopx,8)],0 %[fx:$1$(call mmtopx,8)],$${h}" -blur $(call scale,10,2) \) \
+	-compose softlight -composite
+endef
+
+define magick_fray
+	\( +clone -alpha extract -virtual-pixel black -spread 2 -blur 0x4 -threshold 20% -spread 2 -blur 0x0.7 \) \
+	-alpha off -compose copyopacity -composite
+endef
 
 %-pov-sirt.png: %-cilt-sirt.png
 	convert $< -gravity center -extent 200%x100% $@
