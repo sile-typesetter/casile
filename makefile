@@ -161,8 +161,8 @@ dependencies:
 	hash pdfinfo
 	hash pdftk
 	lua -v -l yaml
-	perldoc -l YAML
-	perldoc -l YAML::Merge::Simple
+	perl -e ';' -MYAML
+	perl -e ';' -MYAML::Merge::Simple
 	python -c "import yaml"
 	python -c "import isbnlib"
 
