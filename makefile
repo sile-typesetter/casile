@@ -23,6 +23,7 @@ HEAD ?= 0
 PAPERSIZES = a4 a4ciltli octovo halfletter a5 a5trim cep app
 BLEED = 3
 DOWNSCALE = 10
+PAPERWEIGHT = 60
 
 SILE ?= sile
 PANDOC ?= pandoc
@@ -392,7 +393,7 @@ define skip_if_tracked
 endef
 
 pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}')
-spinemm = $(shell echo "($(call pagecount,$1) * 0.06 + 1 ) / 1 + 1 " | bc)
+spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | bc)
 mmtopx = $(shell echo "$1 * $(call scale,600) * 0.0393701 / 1" | bc)
 width = $(shell identify -density $(call scale,600) -format %[fx:w] $1)
 height = $(shell identify -density $(call scale,600) -format %[fx:h] $1)
