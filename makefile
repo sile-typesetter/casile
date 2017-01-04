@@ -158,12 +158,13 @@ dependencies:
 	hash yaml2json
 	hash jq
 	hash zint
-
-# lua-yaml
-# perl-yaml-merge simple
-# perl-yaml
-# python-yaml
-# python-isbnlib
+	hash pdfinfo
+	hash pdftk
+	lua -v -l yaml
+	perldoc -l YAML
+	perldoc -l YAML::Merge::Simple
+	python -c "import yaml"
+	python -c "import isbnlib"
 
 update_app_tags:
 	git tag |
