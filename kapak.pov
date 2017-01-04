@@ -8,10 +8,10 @@
 #declare paperpigment = pigment {
 	gradient <0,1,0>
 	color_map {
-		[0.0 color rgb<0.6,0.6,0.6>]
-		[0.5 color rgb<0.6,0.6,0.6>]
-		[0.5 color rgb<0.7,0.7,0.7>]
-		[1.0 color rgb<0.7,0.7,0.7>]
+		[0.0 color rgb<0.59,0.57,0.55>]
+		[0.5 color rgb<0.59,0.57,0.55>]
+		[0.5 color rgb<0.79,0.76,0.73>]
+		[0.5 color rgb<0.79,0.76,0.73>]
 	}
 	scale <0.003,0.003,0.003>
 	rotate <90,0,0>
