@@ -204,8 +204,8 @@ endif
 PHONYPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
 $(PHONYPDFS): $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) ;
 
-ONPAPERPDFS = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE).pdf)
-$(ONPAPERPDFS): %.sil $(TOOLS)/viachristus.lua
+ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
+$(ONPAPERPDFS): %.pdf: %.sil $(TOOLS)/viachristus.lua
 	@$(shell test -f "$<" || echo exit 0)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
