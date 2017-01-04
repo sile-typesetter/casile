@@ -634,21 +634,22 @@ endef
 define povcrop
 	magick $1 \( +clone \
 		-virtual-pixel edge \
-		-blur 0x%[fx:w/30] \
-		-fuzz 30% \
+		-blur 0x%[fx:w/1000] \
+		-fuzz 40% \
 		-trim -trim \
 		-set option:fuzzy_trim "%[fx:w*1.8]x%[fx:h*1.4]+%[fx:page.x-w*0.4]+%[fx:page.y-h*0.2]" \
 		+delete \) \
-		-crop %[fuzzy_trim] $1
+		-crop %[fuzzy_trim] $2
 endef
+		# -blur 0x%[fx:w/30] \
 
 %-3b-on.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/on.pov | $(povtextures)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
-	$(call povcrop,$@,50)
+	$(call povcrop,$@,$@)
 
 %-3b-arka.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/arka.pov | $(povtextures)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
-	$(call povcrop,$@,30)
+	$(call povcrop,$@,$@)
 
 %.epub %.odt %.docx: %.md %-merged.yml %-epub-kapak.png
 	$(PANDOC) \
