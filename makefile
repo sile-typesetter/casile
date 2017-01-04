@@ -94,7 +94,6 @@ ifdef FORMAT_$(TAG_NAME)
 FORMATS = $(FORMAT_$(TAG_NAME))
 endif
 
-export TEXMFHOME := $(TOOLS)/texmf
 export PATH := $(TOOLS)/bin:$(PATH)
 export HOSTNAME := $(shell hostname)
 export SILE_PATH := $(TOOLS)
@@ -228,19 +227,6 @@ $(ONPAPERPDFS): %.sil $(TOOLS)/viachristus.lua
 		pdftk $*.tmp.pdf update_info_utf8 $*.dat output $@
 		rm $*.tmp.pdf
 	fi
-
-%-kesme.pdf: %.pdf
-	@if [ ! "" = "$(findstring octavo,$@)$(findstring halfletter,$@)" ]; then\
-		export PAPER_OPTS="paperwidth=210mm,paperheight=297mm" ;\
-	elif [ ! "" = "$(findstring a5trim,$@)" ]; then\
-		export PAPER_OPTS="paperheight=210mm,paperwidth=148.5mm,layoutheight=195mm,layoutwidth=135mm,layouthoffset=7.5mm,layoutvoffset=6.75mm" ;\
-	elif [ ! "" = "$(findstring cep,$@)" ]; then\
-		export PAPER_OPTS="paperheight=210mm,paperwidth=148.5mm,layoutheight=170mm,layoutwidth=110mm,layouthoffset=19.35mm,layoutvoffset=20.08mm" ;\
-	else \
-		exit 0 ;\
-	fi
-	-xelatex -jobname=$(basename $@) -interaction=batchmode \
-		"\documentclass{scrbook}\usepackage[$$PAPER_OPTS,showcrop]{geometry}\usepackage{pdfpages}\begin{document}\includepdf[pages=-,noautoscale,fitpaper=false]{$<}\end{document}"
 
 %-ciftyonlu.pdf: %.pdf
 	-pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $<
