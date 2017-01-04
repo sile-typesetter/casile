@@ -481,12 +481,12 @@ endef
 		$@
 
 FRAGMANLAR = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE)-fragmanlar.pdf)
-$(FRAGMANLAR): $(TOOLS)/fragmanlar.xml $$(subst -fragmanlar,,$$@) %-merged.yml
+$(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml | $$(subst -fragmanlar,,$$@)
 	cat <<- EOF > $*-fragmanlar.lua
 		versioninfo = "$(shell $(call versioninfo,$<))"
 		layout = "$(call parse_layout,$@)"
-		spine = "$(call spinemm,$(word 2,$^))mm"
-		metadatafile = "$(word 3,$^)"
+		metadatafile = "$(word 2,$^)"
+		spine = "$(call spinemm,$(word 1,$|))mm"
 		basename = "$*"
 	EOF
 	$(SILE) $< -e 'infofile = "$*-fragmanlar"' -o $@
@@ -503,9 +503,9 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml $$(subst -fragmanlar,,$$@) %-merged.yml
 		\( +clone -channel A -morphology Dilate:$(call scale,8) Octagon -blur $(call scale,20)x$(call scale,5) \) \
 		-composite $@
 
-%-fragman-sirt.png: %-fragmanlar.pdf %.pdf
+%-fragman-sirt.png: %-fragmanlar.pdf | %.pdf
 	magick -density $(call scale,600) $<[2] \
-		-crop $(call mmtopx,$(call spinemm,$(word 2,$^)))x+0+0 \
+		-crop $(call mmtopx,$(call spinemm,$(word 1,$|)))x+0+0 \
 		-channel RGB -negate \
 		\( +clone -channel A -morphology Dilate:$(call scale,12) Octagon -blur $(call scale,20)x$(call scale,5) \) \
 		-composite $@
