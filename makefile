@@ -109,7 +109,7 @@ endif
 .SECONDEXPANSION:
 .PHONY: all ci clean debug list force init dependencies sync_pre sync_post $(TARGETS) %.app md_cleanup stats %-stats
 .SECONDARY:
-.PRECIOUS: %.pdf %.sil %.toc
+.PRECIOUS: %.pdf %.sil %.toc %.dat %.inc
 
 all: $(TARGETS)
 
@@ -201,9 +201,11 @@ endif
 	done
 	$(call sync_owncloud)
 
-%.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) ;
+PHONYPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
+$(PHONYPDFS): $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) ;
 
-%.pdf: %.sil $(TOOLS)/viachristus.lua
+ONPAPERPDFS = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE).pdf)
+$(ONPAPERPDFS): %.sil $(TOOLS)/viachristus.lua
 	@$(shell test -f "$<" || echo exit 0)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
@@ -481,7 +483,7 @@ endef
 		$@
 
 FRAGMANLAR = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE)-fragmanlar.pdf)
-$(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml | $$(subst -fragmanlar,,$$@)
+$(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/viachristus.lua | $$(subst -fragmanlar,,$$@)
 	cat <<- EOF > $*-fragmanlar.lua
 		versioninfo = "$(shell $(call versioninfo,$<))"
 		layout = "$(call parse_layout,$@)"
