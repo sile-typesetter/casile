@@ -580,9 +580,9 @@ define magick_barkod
 endef
 
 define magick_crease
-	-stroke white -strokewidth $(call mmtopx,1) \
-	\( -size $${w}x$${h} -background none xc: -draw "line %[fx:$1$(call mmtopx,8)],0 %[fx:$1$(call mmtopx,8)],$${h}" -blur $(call scale,10,2) \) \
-	-compose softlight -composite
+	-stroke gray95 -strokewidth $(call mmtopx,0.5) \
+	\( -size $${w}x$${h} -background none xc: -draw "line %[fx:$1$(call mmtopx,8)],0 %[fx:$1$(call mmtopx,8)],$${h}" -blur 0x$(call scale,$(call mmtopx,0.2)) -level 0x40%! \) \
+	-compose modulusadd -composite
 endef
 
 define magick_fray
