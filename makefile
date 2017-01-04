@@ -21,6 +21,7 @@ COVERS ?= true
 COVER_GRAVITY ?= Center
 HEAD ?= 0
 PAPERSIZES = a4 a4ciltli octovo halfletter a5 a5trim cep app
+BLEED = 3
 
 SILE ?= sile
 PANDOC ?= pandoc
@@ -516,7 +517,7 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml $$(subst -fragmanlar,,$$@) %-merged.yml
 	wide=$(call width,$(word 1,$^))
 	tall=$(call height,$(word 1,$^))
 	spine=$(call width,$(word 3,$^))
-	bleed=$(call mmtopx,3)
+	bleed=$(call mmtopx,$(BLEED))
 	w=$$(($$wide + $$wide + $$spine + $$bleed + $$bleed))
 	h=$$(($$tall + $$bleed + $$bleed))
 	cw=$$(($$wide + $$wide + $$spine))
@@ -577,11 +578,11 @@ define magick_barkod
 endef
 
 %-cilt-on.png: %-cilt.png %-fragman-on.png
-	bleed=$(call scale,50) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
+	bleed=$(call mmtopx,$(BLEED)) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
 	convert $< -gravity east -crop $${w}x$${h}+$${bleed}+0! $@
 
 %-cilt-arka.png: %-cilt.png %-fragman-arka.png
-	bleed=$(call scale,50) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
+	bleed=$(call mmtopx,$(BLEED)) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
 	convert $< -gravity west -crop $${w}x$${h}+$${bleed}+0! $@
 
 %-cilt-sirt.png: %-cilt.png %-fragman-sirt.png
