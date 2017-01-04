@@ -22,6 +22,7 @@ COVER_GRAVITY ?= Center
 HEAD ?= 0
 PAPERSIZES = a4 a4ciltli octovo halfletter a5 a5trim cep app
 BLEED = 3
+DOWNSCALE = 10
 
 SILE ?= sile
 PANDOC ?= pandoc
@@ -176,11 +177,10 @@ define sync_owncloud
 		owncloudcmd -n -s $(INPUT) $(OWNCLOUD) 2>/dev/null
 endef
 
+# If building in draft mode, scale resolutions down for quick builds
 define scale
-$(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + 9) / 10" | bc) || echo $1))
+$(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(DOWNSCALE) - 1) / $(DOWNSCALE)" | bc) || echo $1))
 endef
-# $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + 4) / 5" | bc) || echo $1))
-# $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + 9) / 10" | bc) || echo $1))
 
 sync_pre:
 	$(call sync_owncloud)
