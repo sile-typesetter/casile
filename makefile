@@ -244,28 +244,39 @@ $(ONPAPERPDFS): %.pdf: %.sil $(TOOLS)/viachristus.lua
 	fi
 
 ONPAPERSILS = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE).sil)
-$(ONPAPERSILS): %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil
-	$(call build_sile,$<,$*,$@)
+$(ONPAPERSILS): %.md %-merged.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/viachristus.lua
+	$(PANDOC) --standalone \
+			--wrap=preserve \
+			-V documentclass="vc" \
+			-V metadatafile="$(word 2,$^)" \
+			-V versioninfo="$(call versioninfo,$*)" \
+			-V urlinfo="$(call urlinfo,$*)" \
+			-V qrimg="./$(word 3,$^)" \
+			$(foreach LUA,$(wordlist 5,$(words $^),$^), -V script=$(basename $(LUA))) \
+			-V script=$(TOOLS)/viachristus \
+			--template=$(word 4,$^) \
+			--to=sile \
+			$(word 2,$^) <($(call preprocess_markdown,$1)) | \
+		$(call preprocess_sile) > $@
 
 %-ciftyonlu.pdf: %.pdf
 	-pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $<
 
 define versioninfo
-	echo -en "$(basename $1)@"
+$(shell
+	echo -en "$1@"
 	if [[ "$(BRANCH)" == master ]]; then
 		git describe --tags >/dev/null 2>/dev/null || echo -en "$(BRANCH)-"
 		git describe --long --tags --always --dirty=* | cut -d/ -f2 | xargs echo -en
 	else
-		$(DIFF) && echo -en "$(shell git rev-parse --short $(PARENT))→"
+		$(DIFF) && echo -en "$$(git rev-parse --short $(PARENT))→"
 		echo -en "$(BRANCH)-"
 		git rev-list --boundary $(PARENT)..HEAD | grep -v - | wc -l | xargs -iX echo -en "X-"
 		git describe --always | cut -d/ -f2 | xargs echo -en
-	fi
+	fi)
 endef
 
-define urlinfo
-	echo -en "https://yayinlar.viachristus.com/$(basename $1)"
-endef
+urlinfo = "https://yayinlar.viachristus.com/$1"
 
 define find_and_munge
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
@@ -326,24 +337,6 @@ endef
 
 define sile_hook
 	cat -
-endef
-
-define build_sile
-	$(PANDOC) --standalone \
-		--wrap=preserve \
-		-V documentclass="vc" \
-		-V metadatafile="$(basename $1)-merged.yml" \
-		-V versioninfo="$(shell $(call versioninfo,$1))" \
-		-V urlinfo="$(shell $(call urlinfo,$1))" \
-		-V qrimg="./$(basename $1)-url.png" \
-		$(shell test -f "$(basename $1).lua" && echo "-V script=$(basename $1)") \
-		$(shell test -f "$(PROJECT).lua" && [[ "$(PROJECT)" != "$(basename $1)" ]] && echo "-V script=$(PROJECT)") \
-		-V script=$(TOOLS)/layout-$(call parse_layout,$@) \
-		-V script=$(TOOLS)/viachristus \
-		--template=$(TOOLS)/template.sil \
-		"$(basename $1)-merged.yml" \
-		--to=sile \
-		<($(call preprocess_markdown,$1)) | $(call preprocess_sile) > $3
 endef
 
 %.sil.toc: %.pdf ;
@@ -467,7 +460,7 @@ endef
 FRAGMANLAR = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE)-fragmanlar.pdf)
 $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/viachristus.lua | $$(subst -fragmanlar,,$$@)
 	cat <<- EOF > $*-fragmanlar.lua
-		versioninfo = "$(shell $(call versioninfo,$<))"
+		versioninfo = "$(call versioninfo,$*)"
 		layout = "$(call parse_layout,$@)"
 		metadatafile = "$(word 2,$^)"
 		spine = "$(call spinemm,$(word 1,$|))mm"
@@ -676,7 +669,7 @@ endef
 
 %-url.svg:
 	zint --directsvg --scale=10 --barcode=58 \
-		--data=$(shell $(call urlinfo,$*)) |\
+		--data=$(call urlinfo,$*) |\
 		$(CONVERT) - \
 			-bordercolor White -border 10x10 \
 			-bordercolor Black -border 4x4 \
