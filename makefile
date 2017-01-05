@@ -1,10 +1,15 @@
+# Initial setup, environment dependent
 BASE := $(shell cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/../" && pwd)
 TOOLS := $(shell cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/" && pwd)
 PROJECT != basename $(BASE)
+SHELL = bash
+
+# Input/Output locations (for CI server)
 OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)
 INPUT  = ${HOME}/ownCloud/viachristus/$(PROJECT)
-SHELL = bash
 OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)
+
+# Find stuff to build
 SOURCES := $(wildcard *.md)
 TARGETS := ${SOURCES:.md=}
 
@@ -23,14 +28,15 @@ DIFF ?= false # Show differences to parent brancd in build
 CROP ?= false # Include bleed margin and crop marks in print builds
 STATS_MONTHS ?= 1 # How far back to look for commits when building stats
 PRE_SYNC ?= true # Start CI builds with a sync _from_ the output folder
-DEBUG ?= false # Use SILE debug flags and the like
+DEBUG ?= false # Use SILE debug flags, set -x, and the like
+SILE_DEBUG ?= viachristus # Specific debug flags to set
 COVERS ?= true # Build covers?
 HEAD ?= 0 # Number of lines of MD input to build from
 SCALE = 10 # Reduction factor for draft builds
 
+# Allow overriding executables used
 SILE ?= sile
 PANDOC ?= pandoc
-SILE_DEBUG ?= viachristus
 
 # List of supported layouts
 PAPERSIZES = a4 a4ciltli octovo halfletter a5 a5trim cep app
