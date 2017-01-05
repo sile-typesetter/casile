@@ -117,9 +117,12 @@ SILE = /home/caleb/projects/sile/sile
 export SILE_PATH = /home/caleb/projects/sile/;$(TOOLS)
 endif
 
+VIRTUALPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
+ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
+
 .ONESHELL:
 .SECONDEXPANSION:
-.PHONY: all ci clean debug list force init dependencies sync_pre sync_post $(TARGETS) %.app md_cleanup stats %-stats
+.PHONY: all ci clean debug list force init dependencies sync_pre sync_post $(TARGETS) $(VIRTUALPDFS) %.app md_cleanup stats %-stats
 .SECONDARY:
 .PRECIOUS: %.pdf %.sil %.toc %.dat %.inc
 
@@ -215,10 +218,8 @@ endif
 	done
 	$(call sync_owncloud)
 
-PHONYPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
-$(PHONYPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) ;
+$(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) ;
 
-ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
 $(ONPAPERPDFS): %.pdf: %.sil $(TOOLS)/viachristus.lua
 	@$(shell test -f "$<" || echo exit 0)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
