@@ -202,7 +202,7 @@ endif
 	$(call sync_owncloud)
 
 PHONYPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
-$(PHONYPDFS): $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) ;
+$(PHONYPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) ;
 
 ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
 $(ONPAPERPDFS): %.pdf: %.sil $(TOOLS)/viachristus.lua
