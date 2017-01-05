@@ -1,4 +1,8 @@
 local book = SILE.require("classes/book");
+
+SILE.documentState.paperSize = SILE.paperSizeParser("432pt x 648pt")
+SILE.documentState.orgPaperSize = SILE.documentState.paperSize
+
 book:loadPackage("masters")
 book:defineMaster({ id = "right", firstContentFrame = "content", frames = {
   content = { left = "22.5mm", right = "100%pw-15mm", top = "20mm", bottom = "top(footnotes)" },

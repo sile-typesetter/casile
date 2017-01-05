@@ -327,7 +327,6 @@ define build_sile
 	$(PANDOC) --standalone \
 		--wrap=preserve \
 		-V documentclass="vc" \
-		-V papersize="$4" \
 		-V metadatafile="$(basename $1)-merged.yml" \
 		-V versioninfo="$(shell $(call versioninfo,$1))" \
 		-V urlinfo="$(shell $(call urlinfo,$1))" \
@@ -346,25 +345,25 @@ parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 
 %-a4.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-a4-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@),a4)
+	$(call build_sile,$<,$*,$(call parse_layout,$@)
 
 %-a4ciltli.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a4ciltli.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@),a4)
+	$(call build_sile,$<,$*,$(call parse_layout,$@)
 
 %-a5trim.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a5trim.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@),137.878787mm x 195mm)
+	$(call build_sile,$<,$*,$(call parse_layout,$@)
 
 %-octavo.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-octavo.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@),432pt x 648pt)
+	$(call build_sile,$<,$*,$(call parse_layout,$@))
 
 %-halfletter.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-halfletter.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@),halfletter)
+	$(call build_sile,$<,$*,$(call parse_layout,$@))
 
 %-cep.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-cep.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@),110mm x 170mm)
+	$(call build_sile,$<,$*,$(call parse_layout,$@))
 
 %-app.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-app-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-app.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@),80mm x 128mm)
+	$(call build_sile,$<,$*,$(call parse_layout,$@))
 
 %.sil.toc: %.pdf ;
 
