@@ -118,7 +118,6 @@ export SILE_PATH = /home/caleb/projects/sile/;$(TOOLS)
 endif
 
 VIRTUALPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
-ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
 
 .ONESHELL:
 .SECONDEXPANSION:
@@ -220,6 +219,7 @@ endif
 
 $(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) ;
 
+ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
 $(ONPAPERPDFS): %.pdf: %.sil $(TOOLS)/viachristus.lua
 	@$(shell test -f "$<" || echo exit 0)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
@@ -242,6 +242,10 @@ $(ONPAPERPDFS): %.pdf: %.sil $(TOOLS)/viachristus.lua
 		pdftk $*.tmp.pdf update_info_utf8 $*.dat output $@
 		rm $*.tmp.pdf
 	fi
+
+ONPAPERSILS = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE).sil)
+$(ONPAPERSILS): %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil
+	$(call build_sile,$<,$*,$@)
 
 %-ciftyonlu.pdf: %.pdf
 	-pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $<
@@ -334,37 +338,13 @@ define build_sile
 		-V qrimg="./$(basename $1)-url.png" \
 		$(shell test -f "$(basename $1).lua" && echo "-V script=$(basename $1)") \
 		$(shell test -f "$(PROJECT).lua" && [[ "$(PROJECT)" != "$(basename $1)" ]] && echo "-V script=$(PROJECT)") \
-		-V script=$(TOOLS)/layout-$3 \
+		-V script=$(TOOLS)/layout-$(call parse_layout,$@) \
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
 		"$(basename $1)-merged.yml" \
 		--to=sile \
-		<($(call preprocess_markdown,$1)) | $(call preprocess_sile) > $2-$3.sil
+		<($(call preprocess_markdown,$1)) | $(call preprocess_sile) > $3
 endef
-
-parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
-strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
-
-%-a4.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-a4-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@)
-
-%-a4ciltli.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a4ciltli.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@)
-
-%-a5trim.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a5trim.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@)
-
-%-octavo.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-octavo.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@))
-
-%-halfletter.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-halfletter.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@))
-
-%-cep.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-cep.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@))
-
-%-app.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-app-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-app.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@))
 
 %.sil.toc: %.pdf ;
 
@@ -399,6 +379,8 @@ spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | bc)
 mmtopx = $(shell echo "$1 * $(call scale,600) * 0.0393701 / 1" | bc)
 width = $(shell identify -density $(call scale,600) -format %[fx:w] $1)
 height = $(shell identify -density $(call scale,600) -format %[fx:h] $1)
+parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
+strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 
 %-kapak-zemin.png: %.pdf
 	$(COVERS) || exit 0
