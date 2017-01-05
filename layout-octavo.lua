@@ -9,3 +9,5 @@ book:defineMaster({ id = "left", firstContentFrame = "content", frames = {} })
 book:loadPackage("twoside", { oddPageMaster = "right", evenPageMaster = "left" });
 book:mirrorMaster("right", "left")
 SILE.call("switch-master-one-page", { id = "right" })
+
+SILE.require("crop")

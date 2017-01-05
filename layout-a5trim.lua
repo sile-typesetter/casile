@@ -36,6 +36,8 @@ class:defineMaster({
 class:mirrorMaster("right", "left")
 SILE.call("switch-master-one-page", { id = "right" })
 
+SILE.require("crop")
+
 setCommandDefaults("imprint:font", { size = "8.5pt" })
 
 SILE.registerCommand("href", function (options, content)

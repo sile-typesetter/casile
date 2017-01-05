@@ -11,6 +11,8 @@ book:loadPackage("twoside", { oddPageMaster = "right", evenPageMaster = "left" }
 book:mirrorMaster("right", "left")
 SILE.call("switch-master-one-page", { id = "right" })
 
+SILE.require("crop")
+
 local oldImprintFont = SILE.Commands["imprint:font"]
 SILE.registerCommand("imprint:font", function (options, content)
   options.size = options.size or "7pt"

@@ -25,7 +25,6 @@ COVER_GRAVITY ?= Center
 # Build mode flags
 DRAFT ?= false # Take shortcuts, scale things down, be quick about it
 DIFF ?= false # Show differences to parent brancd in build
-CROP ?= false # Include bleed margin and crop marks in print builds
 STATS_MONTHS ?= 1 # How far back to look for commits when building stats
 PRE_SYNC ?= true # Start CI builds with a sync _from_ the output folder
 DEBUG ?= false # Use SILE debug flags, set -x, and the like
@@ -335,7 +334,6 @@ define build_sile
 		-V qrimg="./$(basename $1)-url.png" \
 		$(shell test -f "$(basename $1).lua" && echo "-V script=$(basename $1)") \
 		$(shell test -f "$(PROJECT).lua" && [[ "$(PROJECT)" != "$(basename $1)" ]] && echo "-V script=$(PROJECT)") \
-		$(shell $5 || $(CROP) && echo "-V script=$(TOOLS)/crop") \
 		-V script=$(TOOLS)/layout-$3 \
 		-V script=$(TOOLS)/viachristus \
 		--template=$(TOOLS)/template.sil \
@@ -348,25 +346,25 @@ parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 
 %-a4.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-a4-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-a4.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@),a4,false)
+	$(call build_sile,$<,$*,$(call parse_layout,$@),a4)
 
 %-a4ciltli.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a4ciltli.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@),a4,false)
+	$(call build_sile,$<,$*,$(call parse_layout,$@),a4)
 
 %-a5trim.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-a5trim.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@),137.878787mm x 195mm,true)
+	$(call build_sile,$<,$*,$(call parse_layout,$@),137.878787mm x 195mm)
 
 %-octavo.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-octavo.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@),432pt x 648pt,true)
+	$(call build_sile,$<,$*,$(call parse_layout,$@),432pt x 648pt)
 
 %-halfletter.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-halfletter.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@),halfletter,true)
+	$(call build_sile,$<,$*,$(call parse_layout,$@),halfletter)
 
 %-cep.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png $(TOOLS)/template.sil $(TOOLS)/layout-cep.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@),110mm x 170mm,true)
+	$(call build_sile,$<,$*,$(call parse_layout,$@),110mm x 170mm)
 
 %-app.sil: %.md %-merged.yml $$(wildcard $$*.lua) %-url.png %-app-kapak.pdf $(TOOLS)/template.sil $(TOOLS)/layout-app.lua
-	$(call build_sile,$<,$*,$(call parse_layout,$@),80mm x 128mm,false)
+	$(call build_sile,$<,$*,$(call parse_layout,$@),80mm x 128mm)
 
 %.sil.toc: %.pdf ;
 
