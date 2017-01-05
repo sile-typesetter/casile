@@ -9,9 +9,8 @@ OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)
 INPUT  = ${HOME}/ownCloud/viachristus/$(PROJECT)
 OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)
 
-# Find stuff to build
-SOURCES := $(wildcard *.md)
-TARGETS := ${SOURCES:.md=}
+# Find stuff to build that has both a YML and a MD component
+TARGETS := $(filter $(basename $(wildcard *.md)),$(basename $(wildcard *.yml)))
 
 # Default output formats and layouts (often overridden)
 FORMATS ?= pdf epub mobi app
@@ -133,7 +132,6 @@ clean:
 	git clean -xf
 
 debug:
-	@echo SOURCES: $(SOURCES)
 	@echo TARGETS: $(TARGETS)
 	@echo FORMATS: $(FORMATS)
 	@echo LAYOUTS: $(LAYOUTS)
@@ -350,10 +348,10 @@ endef
 		done
 
 issue.info:
-	@for source in $(SOURCES); do
+	@for source in $(TARGETS); do
 		echo -e "# $$source\n"
-		sed -ne "/^# /{s/^# *\(.*\)/ - [ ] [\1]($$source)/g;p}" $$source
-		find $${source%.md}-bolumler -name '*.md' -print |
+		sed -ne "/^# /{s/^# *\(.*\)/ - [ ] [\1]($${source}.md)/g;p}" $$source.md
+		find $${source}-bolumler -name '*.md' -print |
 			sort -n |
 			while read chapter; do
 				number=$${chapter%-*}; number=$${number#*/}
@@ -723,7 +721,8 @@ define split_chapters
 endef
 
 split_chapters:
-	$(foreach SOURCE,$(SOURCES),$(call split_chapters,$(SOURCE)))
+	echo Obsolete, need to find new way to calculate unsplit sources
+	# $(foreach SOURCE,$(SOURCES),$(call split_chapters,$(SOURCE)))
 
 watch:
 	git ls-files --recurse-submodules |
