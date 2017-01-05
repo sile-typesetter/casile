@@ -700,7 +700,7 @@ NAMESFILES = $(foreach LANG,$(NAMELANGS),$(TOOLS)/names.$(LANG).txt)
 
 proper_names.txt: $(SOURCES) $(NAMESFILES) | $(TOOLS)/bin/extract_names.pl
 	$(call skip_if_tracked,$@)
-	$(TOOLS)/bin/extract_names.pl < $(SOURCES) |\
+	find -maxdepth 2 -name '*.md' -execdir cat {} \; | $(TOOLS)/bin/extract_names.pl |\
 		sort -u |\
 		grep -vxf <(cat $(NAMESFILES)) > $@
 
