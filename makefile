@@ -7,27 +7,33 @@ SHELL = bash
 OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)
 SOURCES := $(wildcard *.md)
 TARGETS := ${SOURCES:.md=}
+
+# Default output formats and layouts (often overridden)
 FORMATS ?= pdf epub mobi app
-LAYOUTS ?= a4 a4ciltli a5trim octavo halfletter cep app
+LAYOUTS ?= a4 a4ciltli octavo halfletter a5 a5trim cep app
 PRINTS ?=
 #PRINTS ?= kesme kesme-ciftyonlu
-DRAFT ?= false
-DIFF ?= false
-CROP ?= false
-STATS_MONTHS ?= 1
-PRE_SYNC ?= true
-DEBUG ?= false
-COVERS ?= true
-COVER_GRAVITY ?= Center
-HEAD ?= 0
-PAPERSIZES = a4 a4ciltli octovo halfletter a5 a5trim cep app
 BLEED = 3
-DOWNSCALE = 10
 PAPERWEIGHT = 60
+COVER_GRAVITY ?= Center
+
+# Build mode flags
+DRAFT ?= false # Take shortcuts, scale things down, be quick about it
+DIFF ?= false # Show differences to parent brancd in build
+CROP ?= false # Include bleed margin and crop marks in print builds
+STATS_MONTHS ?= 1 # How far back to look for commits when building stats
+PRE_SYNC ?= true # Start CI builds with a sync _from_ the output folder
+DEBUG ?= false # Use SILE debug flags and the like
+COVERS ?= true # Build covers?
+HEAD ?= 0 # Number of lines of MD input to build from
+SCALE = 10 # Reduction factor for draft builds
 
 SILE ?= sile
 PANDOC ?= pandoc
 SILE_DEBUG ?= viachristus
+
+# List of supported layouts
+PAPERSIZES = a4 a4ciltli octovo halfletter a5 a5trim cep app
 
 # Default to running multiple jobs
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
@@ -180,7 +186,7 @@ endef
 
 # If building in draft mode, scale resolutions down for quick builds
 define scale
-$(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(DOWNSCALE) - 1) / $(DOWNSCALE)" | bc) || echo $1))
+$(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | bc) || echo $1))
 endef
 
 sync_pre:
