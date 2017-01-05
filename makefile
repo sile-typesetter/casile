@@ -242,7 +242,7 @@ $(ONPAPERPDFS): %.pdf: %.sil $(TOOLS)/viachristus.lua
 	fi
 
 ONPAPERSILS = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE).sil)
-$(ONPAPERSILS): %.md %-merged.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/viachristus.lua
+$(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/viachristus.lua
 	$(PANDOC) --standalone \
 			--wrap=preserve \
 			-V documentclass="vc" \
@@ -254,8 +254,22 @@ $(ONPAPERSILS): %.md %-merged.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$
 			-V script=$(TOOLS)/viachristus \
 			--template=$(word 4,$^) \
 			--to=sile \
-			$(word 2,$^) <($(call preprocess_markdown,$1)) | \
-		$(call preprocess_sile) > $@
+			$(word 2,$^) $< |
+		$(call sile_hook) > $@
+
+%-processed.md: $(TOOLS)/viachristus.m4 $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) %.md 
+	if [[ "$(BRANCH)" == master ]]; then
+		m4 $^
+	else
+		$(DIFF) && branch2criticmark.bash $(PARENT) $(lastword $^) || m4 $^ |
+			sed -e 's#{==#\\criticHighlight{#g' -e 's#==}#}#g' \
+				-e 's#{>>#\\criticComment{#g'   -e 's#<<}#}#g' \
+				-e 's#{++#\\criticAdd{#g'       -e 's#++}#}#g' \
+				-e 's#{--#\\criticDel{#g'       -e 's#--}#}#g'
+	fi |
+		renumber_footnotes.pl |
+		$(call md_cleanup) |
+		$(call markdown_hook) > $@
 
 %-ciftyonlu.pdf: %.pdf
 	-pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $<
@@ -310,27 +324,8 @@ define md_cleanup
 	) )
 endef
 
-define preprocess_markdown
-	if [[ "$(BRANCH)" == master ]]; then
-		m4 $(TOOLS)/viachristus.m4 $(wildcard $(PROJECT).m4) $(wildcard $(basename $1).m4) $1
-	else
-		($(DIFF) && branch2criticmark.bash $(PARENT) $1 || m4 $(TOOLS)/viachristus.m4 $(wildcard $(PROJECT).m4) $(wildcard $(basename $1).m4) $1) |
-			sed -e 's#{==#\\criticHighlight{#g' -e 's#==}#}#g' \
-				-e 's#{>>#\\criticComment{#g'   -e 's#<<}#}#g' \
-				-e 's#{++#\\criticAdd{#g'       -e 's#++}#}#g' \
-				-e 's#{--#\\criticDel{#g'       -e 's#--}#}#g'
-	fi |
-		renumber_footnotes.pl |
-		$(call markdown_hook) |
-		$(call md_cleanup)
-endef
-
 define markdown_hook
 	cat -
-endef
-
-define preprocess_sile
-	cat - | $(call sile_hook)
 endef
 
 define sile_hook
@@ -636,11 +631,11 @@ endef
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
 	$(call povcrop,$@,30)
 
-%.epub %.odt %.docx: %.md %-merged.yml %-epub-kapak.png
+%.epub %.odt %.docx: %-processed.md %-merged.yml %-epub-kapak.png
 	$(PANDOC) \
 		--smart \
-		"$(basename $1)-merged.yml" \
-		<($(call preprocess_markdown,$<)) -o $@
+		$(word 2,$^) \
+		$< -o $@
 
 %.mobi: %.epub
 	-kindlegen $<
