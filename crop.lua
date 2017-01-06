@@ -2,8 +2,8 @@ SILE.require("packages/cropmarks");
 
 if not sheetsize then
   local papersize = SILE.documentState.paperSize
-  local w = papersize[1] + 75
-  local h = papersize[2] + 75
+  local w = papersize[1] + 56.6929 -- 10mm trim × 2
+  local h = papersize[2] + 56.6929
   sheetsize = w .. "pt x " .. h .. "pt"
 end
 

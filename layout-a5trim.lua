@@ -1,6 +1,6 @@
 local class = SILE.documentState.documentClass
 
-SILE.documentState.paperSize = SILE.paperSizeParser("137.878787mm x 195mm")
+SILE.documentState.paperSize = SILE.paperSizeParser("135mm x 195mm")
 SILE.documentState.orgPaperSize = SILE.documentState.paperSize
 
 class:defineMaster({
@@ -8,7 +8,7 @@ class:defineMaster({
     firstContentFrame = "content",
     frames = {
       content = {
-        left = "22.5mm",
+        left = "22.25mm",
         right = "100%pw-15mm",
         top = "20mm",
         bottom = "top(footnotes)"
