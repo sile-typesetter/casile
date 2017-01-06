@@ -8,6 +8,7 @@
   "license": "LGPL",
   "dependencies": {
     "bible-passage-reference-parser": "https://github.com/alerque/Bible-Passage-Reference-Parser",
-    "bible-reference-formatter": "https://github.com/alerque/Bible-Reference-Formatter"
+    "bible-reference-formatter": "https://github.com/alerque/Bible-Reference-Formatter",
+    "svg-modify": "^0.0.12"
   }
 }
