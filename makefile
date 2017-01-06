@@ -150,6 +150,7 @@ debug:
 	@echo TOOLS: $(TOOLS)
 	@echo SILE: $(SILE)
 	@echo SILE_PATH: $(SILE_PATH)
+	@echo versioninfo: $(call versioninfo,$(PROJECT))
 
 force: ;
 
@@ -279,7 +280,7 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(TOOLS)/template.sil $$(w
 
 define versioninfo
 $(shell
-	echo -en "$1@"
+	echo -en "$(basename $1)@"
 	if [[ "$(BRANCH)" == master ]]; then
 		git describe --tags >/dev/null 2>/dev/null || echo -en "$(BRANCH)-"
 		git describe --long --tags --always --dirty=* | cut -d/ -f2 | xargs echo -en
@@ -523,6 +524,7 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 	let fh=$${ih}-$${bleed}-$${bleed}
 	let cw=$(call width,$(word 3,$^))
 	let sw=$(call width,$(word 4,$^))
+	ver=$(subst @,\\@,$(call versioninfo,$@))
 	set -x
 	perl -pne "
 			s#IMG#$(word 2,$^)#g;
@@ -534,7 +536,7 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 			s#TRIM#$${trim}#g;
 			s#CW#$${cw}#g;
 			s#SW#$${sw}#g;
-			s#VER#$(call versioninfo,$@)#g;
+			s#VER#$${ver}#g;
 		" $< > $@
 
 %-cilt.pdf:	%-cilt.svg
