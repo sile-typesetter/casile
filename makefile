@@ -21,6 +21,7 @@ BLEED = 3
 TRIM= 10
 PAPERWEIGHT = 60
 COVER_GRAVITY ?= Center
+LAYOUT_app = app
 
 # Build mode flags
 DRAFT ?= false # Take shortcuts, scale things down, be quick about it
