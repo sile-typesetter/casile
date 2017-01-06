@@ -3,6 +3,8 @@ local book = SILE.require("classes/book")
 local plain = SILE.require("classes/plain")
 local vc = book { id = "vc" }
 
+vc:declareOption("crop", "true")
+
 vc.endPage = function (self)
   vc:moveTocNodes()
 
