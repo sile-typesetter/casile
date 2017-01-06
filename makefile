@@ -40,6 +40,7 @@ SILE ?= sile
 PANDOC ?= pandoc
 CONVERT ?= convert
 MAGICK ?= magick
+INKSCAPE ?= inkscape
 
 # List of supported layouts
 PAPERSIZES = a4 a4ciltli octovo halfletter a5 a5trim cep app
@@ -177,6 +178,7 @@ dependencies:
 	hash zint
 	hash pdfinfo
 	hash pdftk
+	hash $(INKSCAPE)
 	lua -v -l yaml
 	perl -e ';' -MYAML
 	perl -e ';' -MYAML::Merge::Simple
@@ -540,7 +542,7 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 		" $< > $@
 
 %-cilt.pdf:	%-cilt.svg
-	inkscape --without-gui \
+	$(INKSCAPE) --without-gui \
 		--select=svg \
 		--export-dpi=$(call scale,$(DPI)) \
 		--export-margin=$(call mmtopx,$(BLEED)) \
