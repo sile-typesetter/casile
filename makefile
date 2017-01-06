@@ -513,32 +513,27 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 		$(call magick_cilt) \
 		$@
 
-# %-a5trim-cilt.pdf: %-kapak.svg %-a5trim-cilt.png $(MAKEFILE_LIST) ./avadanlik/bin/prepare_cilt.py
-# %-a5trim-cilt.pdf: avadanlik/cilt.svg | %-a5trim-cilt.png $(MAKEFILE_LIST) avadanlik/bin/prepare_cilt.py
-#     $(call width,$(word
-#     convert $< -resize 200x svg:- | head -n5
-#     # prepare_cilt.py $< | head -n 2
-	
 %-cilt.svg: $(TOOLS)/cilt.svg %-cilt.png %-cilt-on.png %-cilt-sirt.png $(MAKEFILE_LIST)
-	let fw=$(call width,$(word 2,$^))-$(BLEED)-$(BLEED)
-	let fh=$(call height,$(word 2,$^))-$(BLEED)-$(BLEED)
+	let bleed=$(call mmtopx,$(BLEED))
+	let trim=$(call mmtopx,$(TRIM))
 	let iw=$(call width,$(word 2,$^))
 	let ih=$(call height,$(word 2,$^))
+	let fw=$${iw}-$${bleed}-$${bleed}
+	let fh=$${ih}-$${bleed}-$${bleed}
 	let cw=$(call width,$(word 3,$^))
 	let sw=$(call width,$(word 4,$^))
-	let bl=$(call mmtopx,$(BLEED))
-	let tr=$(call mmtopx,$(TRIM))
+	set -x
 	perl -pne "
-			s#OUTPUT#$@#g;
-			s#INPUT#$(word 2,$^)#g;
-			s#WIDTH#$${fw}px#g;
-			s#HEIGHT#$${fh}px#g;
-			s#BLEED#$${bl}#g;
-			s#TRIM#$${tr}#g;
-			s#WWW#$${iw}#g;
-			s#HHH#$${ih}#g;
+			s#IMG#$(word 2,$^)#g;
+			s#IMW#$${iw}#g;
+			s#IMH#$${ih}#g;
+			s#WWW#$${fw}#g;
+			s#HHH#$${fh}#g;
+			s#BLEED#$${bleed}#g;
+			s#TRIM#$${trim}#g;
 			s#CW#$${cw}#g;
 			s#SW#$${sw}#g;
+			s#VER#$(call versioninfo,$@)#g;
 		" $< > $@
 
 %-cilt.pdf:	%-cilt.svg
