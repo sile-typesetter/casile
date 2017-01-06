@@ -18,6 +18,7 @@ LAYOUTS ?= a4 a4ciltli octavo halfletter a5 a5trim cep app
 PRINTS ?=
 #PRINTS ?= kesme kesme-ciftyonlu
 BLEED = 3
+TRIM= 10
 PAPERWEIGHT = 60
 COVER_GRAVITY ?= Center
 
@@ -31,6 +32,7 @@ SILE_DEBUG ?= viachristus # Specific debug flags to set
 COVERS ?= true # Build covers?
 HEAD ?= 0 # Number of lines of MD input to build from
 SCALE = 10 # Reduction factor for draft builds
+DPI = 600 # Default DPI for generated press resources
 
 # Allow overriding executables used
 SILE ?= sile
@@ -362,9 +364,9 @@ endef
 
 pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}')
 spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | bc)
-mmtopx = $(shell echo "$1 * $(call scale,600) * 0.0393701 / 1" | bc)
-width = $(shell identify -density $(call scale,600) -format %[fx:w] $1)
-height = $(shell identify -density $(call scale,600) -format %[fx:h] $1)
+mmtopx = $(shell echo "$1 * $(call scale,$(DPI)) * 0.0393701 / 1" | bc)
+width = $(shell identify -density $(call scale,$(DPI)) -format %[fx:w] $1)
+height = $(shell identify -density $(call scale,$(DPI)) -format %[fx:h] $1)
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 
@@ -462,19 +464,19 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 	$(SILE) $< -e 'infofile = "$*-fragmanlar"' -o $@
 
 %-fragman-on.png: %-fragmanlar.pdf
-	$(MAGICK) -density $(call scale,600) $<[0] \
+	$(MAGICK) -density $(call scale,$(DPI)) $<[0] \
 		-channel RGB -negate \
 		\( +clone -channel A -morphology Dilate:$(call scale,16) Octagon -blur $(call scale,40)x$(call scale,10) \) \
 		-composite $@
 
 %-fragman-arka.png: %-fragmanlar.pdf
-	$(MAGICK) -density $(call scale,600) $<[1] \
+	$(MAGICK) -density $(call scale,$(DPI)) $<[1] \
 		-channel RGB -negate \
 		\( +clone -channel A -morphology Dilate:$(call scale,8) Octagon -blur $(call scale,20)x$(call scale,5) \) \
 		-composite $@
 
 %-fragman-sirt.png: %-fragmanlar.pdf | %.pdf
-	$(MAGICK) -density $(call scale,600) $<[2] \
+	$(MAGICK) -density $(call scale,$(DPI)) $<[2] \
 		-crop $(call mmtopx,$(call spinemm,$(word 1,$|)))x+0+0 \
 		-channel RGB -negate \
 		\( +clone -channel A -morphology Dilate:$(call scale,12) Octagon -blur $(call scale,20)x$(call scale,5) \) \
@@ -510,6 +512,41 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 		-composite +repage \
 		$(call magick_cilt) \
 		$@
+
+# %-a5trim-cilt.pdf: %-kapak.svg %-a5trim-cilt.png $(MAKEFILE_LIST) ./avadanlik/bin/prepare_cilt.py
+# %-a5trim-cilt.pdf: avadanlik/cilt.svg | %-a5trim-cilt.png $(MAKEFILE_LIST) avadanlik/bin/prepare_cilt.py
+#     $(call width,$(word
+#     convert $< -resize 200x svg:- | head -n5
+#     # prepare_cilt.py $< | head -n 2
+	
+%-cilt.svg: $(TOOLS)/cilt.svg %-cilt.png %-cilt-on.png %-cilt-sirt.png $(MAKEFILE_LIST)
+	let fw=$(call width,$(word 2,$^))-$(BLEED)-$(BLEED)
+	let fh=$(call height,$(word 2,$^))-$(BLEED)-$(BLEED)
+	let iw=$(call width,$(word 2,$^))
+	let ih=$(call height,$(word 2,$^))
+	let cw=$(call width,$(word 3,$^))
+	let sw=$(call width,$(word 4,$^))
+	let bl=$(call mmtopx,$(BLEED))
+	let tr=$(call mmtopx,$(TRIM))
+	perl -pne "
+			s#OUTPUT#$@#g;
+			s#INPUT#$(word 2,$^)#g;
+			s#WIDTH#$${fw}px#g;
+			s#HEIGHT#$${fh}px#g;
+			s#BLEED#$${bl}#g;
+			s#TRIM#$${tr}#g;
+			s#WWW#$${iw}#g;
+			s#HHH#$${ih}#g;
+			s#CW#$${cw}#g;
+			s#SW#$${sw}#g;
+		" $< > $@
+
+%-cilt.pdf:	%-cilt.svg
+	inkscape --without-gui \
+		--select=svg \
+		--export-dpi=$(call scale,$(DPI)) \
+		--export-margin=$(call mmtopx,$(BLEED)) \
+		--file $< --export-pdf=$@
 
 define magick_zemin
 	xc:darkgray

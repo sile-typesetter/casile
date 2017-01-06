@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   width="WIDTH"
+   height="HEIGHT"
+   viewBox="0 0 WIDTH HEIGHT"
+   id="svg"
+   version="1.1"
+   style="enable-background:new"
+   enable-background="new">
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <image
+      id="cilt"
+      absref="INPUT"
+      xlink:href="INPUT"
+      width="WWW"
+      height="HHH"
+      preserveAspectRatio="xMaxYMak"
+      style="image-rendering:optimizeQuality"
+      x="-BLEED"
+      y="-BLEED" />
+  <g
+     id="printing-marks"
+     style="display:inline"
+     sodipodi:insensitive="true">
+    <g
+       id="CropMarks">
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.25"
+         id="cropTL1"
+         d="M 0,0 V -TRIM"
+         transform="translate(0 -BLEED)"
+         />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.25"
+         id="cropTL2"
+         d="M 0,0 H -TRIM"
+         transform="translate(-BLEED 0)"
+         />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.25"
+         id="cropTR1"
+         d="M WWW,0 V -TRIM"
+         transform="translate(0 -BLEED)"
+         />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.25"
+         id="cropTR2"
+         d="m WWW,0 h TRIM"
+         transform="translate(BLEED 0)"
+         />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.25"
+         id="cropBL1"
+         d="m 0,HHH v TRIM"
+         transform="translate(0 BLEED)"
+         />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.25"
+         id="cropBL2"
+         d="M 0,HHH H -TRIM"
+         transform="translate(-BLEED 0)"
+         />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.25"
+         id="cropBR1"
+         d="m WWW,HHH v TRIM"
+         transform="translate(0 BLEED)"
+         />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.25"
+         id="cropBR2"
+         d="m WWW,HHH h TRIM"
+         transform="translate(BLEED 0)"
+         />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.25"
+         id="cropTL2"
+         d="M CW,0 v -TRIM"
+         transform="translate(0 -BLEED)"
+         />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.25"
+         id="cropTL2"
+         d="M CW,0 v -TRIM"
+         transform="translate(SW -BLEED)"
+         />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.25"
+         id="cropTL2"
+         d="M CW,HHH v TRIM"
+         transform="translate(0 BLEED)"
+         />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.25"
+         id="cropTL2"
+         d="M CW,HHH v TRIM"
+         transform="translate(SW BLEED)"
+         />
+    </g>
+  </g>
+</svg>
