@@ -8,7 +8,7 @@ class:defineMaster({
     firstContentFrame = "content",
     frames = {
       content = {
-        left = "22.25mm",
+        left = "22.5mm",
         right = "100%pw-15mm",
         top = "20mm",
         bottom = "top(footnotes)"
