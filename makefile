@@ -263,7 +263,7 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(TOOLS)/template.sil $$(w
 			$(word 2,$^) $< |
 		$(call sile_hook) > $@
 
-%-processed.md: $(TOOLS)/viachristus.m4 $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) %.md 
+%-processed.md: $(TOOLS)/viachristus.m4 $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) %.md
 	if [[ "$(BRANCH)" == master ]]; then
 		m4 $^
 	else
@@ -458,7 +458,7 @@ endef
 		$@
 
 FRAGMANLAR = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE)-fragmanlar.pdf)
-$(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/viachristus.lua %-geometry.sh
+$(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/viachristus.lua $$(subst fragmanlar.pdf,geometry.sh,$$@)
 	source $(lastword $^)
 	cat <<- EOF > $*-fragmanlar.lua
 		versioninfo = "$(call versioninfo,$*)"
@@ -492,22 +492,23 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 	$(call skip_if_tracked,$@)
 	$(CONVERT) $< -resize $(call scale,1000)x$(call scale,1600) $@
 
-%-cilt.png: %-geometry.sh %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(TOOLS)/vc_sembol_renkli.svg $(TOOLS)/vc_logo_renkli.svg
-	source $(word 1,$^)
+%-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(TOOLS)/vc_sembol_renkli.svg $(TOOLS)/vc_logo_renkli.svg %-geometry.sh
+	source $(lastword $^)
 	texturew="$$(bc <<< "$$imgwpx / $(call scale,4,4)")"
 	textureh="$$(bc <<< "$$imghpx / $(call scale,4,4)")"
-	$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(DPI) \
+	set -x
+	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(DPI) \
 		$(call magick_zemin) \
 		$(call magick_kenar) \
 		\( -gravity east -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_on) -splice $${bleedpx}x \) -composite \
 		\( -gravity west -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_arka) -splice $${bleedpx}x \) -composite \
 		\( -gravity center -size $${spinepx}x$${coverhpx} -background none xc: $(call magick_sirt) \) -composite \
-		\( -gravity east $(word 2,$^) -splice $${bleedpx}x \) -compose over -composite \
-		\( -gravity west $(word 3,$^) -splice $${bleedpx}x \) -compose over -composite \
-		\( -gravity center $(word 4,$^) \) -compose over -composite \
-		$(call magick_sembol,$(word 6,$^))\
-		$(call magick_barkod,$(word 5,$^)) \
-		$(call magick_logo,$(word 7,$^)) \
+		\( -gravity east $(word 1,$^) -splice $${bleedpx}x \) -compose over -composite \
+		\( -gravity west $(word 2,$^) -splice $${bleedpx}x \) -compose over -composite \
+		\( -gravity center $(word 3,$^) \) -compose over -composite \
+		$(call magick_sembol,$(word 5,$^))\
+		$(call magick_barkod,$(word 4,$^)) \
+		$(call magick_logo,$(word 6,$^)) \
 		-composite +repage \
 		$(call magick_cilt) \
 		$@
@@ -622,7 +623,7 @@ define magick_fray
 	-alpha off -compose copyopacity -composite
 endef
 
-%-cilt-on.png: %-cilt.png %-geometry.sh 
+%-cilt-on.png: %-cilt.png %-geometry.sh
 	source $(word 2,$^)
 	$(MAGICK) $< -gravity east -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
 
