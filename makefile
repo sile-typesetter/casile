@@ -369,6 +369,7 @@ endef
 pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}')
 spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | bc)
 mmtopx = $(shell echo "$1 * $(call scale,$(DPI)) * 0.0393701 / 1" | bc)
+pxtomm = $(shell echo "$1 / $(call scale,$(DPI)) * 25.399986 / 1" | bc)
 width = $(shell identify -density $(call scale,$(DPI)) -format %[fx:w] $1)
 height = $(shell identify -density $(call scale,$(DPI)) -format %[fx:h] $1)
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
@@ -518,16 +519,15 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 		$@
 
 %-cilt.svg: $(TOOLS)/cilt.svg %-cilt.png %-cilt-on.png %-cilt-sirt.png $(MAKEFILE_LIST)
-	let bleed=$(call mmtopx,$(BLEED))
-	let trim=$(call mmtopx,$(TRIM))
-	let iw=$(call width,$(word 2,$^))
-	let ih=$(call height,$(word 2,$^))
+	let bleed=$(BLEED)
+	let trim=$(TRIM)
+	let iw=$(call pxtomm,$(call width,$(word 2,$^)))
+	let ih=$(call pxtomm,$(call height,$(word 2,$^)))
 	let fw=$${iw}-$${bleed}-$${bleed}
 	let fh=$${ih}-$${bleed}-$${bleed}
-	let cw=$(call width,$(word 3,$^))
-	let sw=$(call width,$(word 4,$^))
+	let cw=$(call pxtomm,$(call width,$(word 3,$^)))
+	let sw=$(call pxtomm,$(call width,$(word 4,$^)))
 	ver=$(subst @,\\@,$(call versioninfo,$@))
-	set -x
 	perl -pne "
 			s#IMG#$(word 2,$^)#g;
 			s#IMW#$${iw}#g;
@@ -543,10 +543,10 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 
 %-cilt.pdf:	%-cilt.svg
 	$(INKSCAPE) --without-gui \
-		--select=svg \
 		--export-dpi=$(call scale,$(DPI)) \
 		--export-margin=$(call mmtopx,$(BLEED)) \
-		--file $< --export-pdf=$@
+		--file=$< \
+		--export-pdf=$@
 
 define magick_zemin
 	xc:darkgray
