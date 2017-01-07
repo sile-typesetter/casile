@@ -458,13 +458,12 @@ endef
 		$@
 
 FRAGMANLAR = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE)-fragmanlar.pdf)
-$(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/viachristus.lua $$(subst fragmanlar.pdf,geometry.sh,$$@)
-	source $(lastword $^)
+$(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/viachristus.lua $$(subst -fragmanlar,,$$@)
 	cat <<- EOF > $*-fragmanlar.lua
 		versioninfo = "$(call versioninfo,$*)"
 		layout = "$(call parse_layout,$@)"
 		metadatafile = "$(word 2,$^)"
-		spine = "$${spinemm}mm"
+		spine = "$(call spinemm,$(lastword $^))mm"
 		basename = "$*"
 	EOF
 	$(SILE) $< -e 'infofile = "$*-fragmanlar"' -o $@
@@ -537,7 +536,9 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 		--file=$< \
 		--export-pdf=$@
 
-%-geometry.sh: %.pdf
+newgeometry = $(shell grep -qx "dpi=$(DPI)" $1 || echo force)
+
+%-geometry.sh: %.pdf %-fragmanlar.pdf $$(call newgeometry,$$@)
 	bleedmm=$(BLEED)
 	bleedpx=$(call mmtopx,$(BLEED))
 	trimmm=$(TRIM)
@@ -547,8 +548,8 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 			coverhmm=%[fx:round(h/$(DPI)*25.399986)]
 			coverwpx=%[fx:w]
 			coverhpx=%[fx:h]
-		' $<[0])
-	spinemm=$(call spinemm,$<)
+		' $(word 2,$^)[0])
+	spinemm=$(call spinemm,$(word 1,$^))
 	spinepx=$(call mmtopx,$(call spinemm,$<))
 	ciltwmm=$$(($$coverwmm+$$spinemm+$$coverwmm))
 	ciltwpx=$$(($$coverwpx+$$spinepx+$$coverwpx))
