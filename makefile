@@ -538,7 +538,7 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 
 newgeometry = $(shell grep -qx dpi=$(DPI) $1 || echo force)
 
-%-geometry.sh: %.pdf %-fragmanlar.pdf $$(call newgeometry,$$@)
+%-geometry.sh: $$(call newgeometry,$$@) | %.pdf %-fragmanlar.pdf
 	set -x ; exec 2> >(cut -c3- > $@) # black magic to output the finished math
 	dpi=$(DPI)
 	bleedmm=$(BLEED)
@@ -554,8 +554,8 @@ newgeometry = $(shell grep -qx dpi=$(DPI) $1 || echo force)
 			coverhmm=%[fx:round(h/$(DPI)*25.399986)]
 			coverhpx=%[fx:h]
 			coverhpm=%[fx:round(h/$(DPI)*90*$(call scale,$(SCALE),1))]
-		' $(word 2,$^)[0])
-	spinemm=$(call spinemm,$(word 1,$^))
+		' $(word 2,$|)[0])
+	spinemm=$(call spinemm,$(word 1,$|))
 	spinepx=$(call mmtopx,$(call spinemm,$<))
 	spinepm=$(call mmtopm,$(call spinemm,$<))
 	ciltwmm=$$(($$coverwmm+$$spinemm+$$coverwmm))
@@ -646,17 +646,17 @@ endef
 
 povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
 
-%-3b.pov: $(povtextures) %-geometry.sh
-	source $(lastword $^)
+%-3b.pov: %-geometry.sh | $(povtextures)
+	source $<
 	cat <<- EOF > $@
 		#declare coverwidth = $$coverwmm;
 		#declare coverheight = $$coverhmm;
 		#declare spinewidth = $$spinemm / 2;
 		#declare outputwidth = $(call scale,6000);
 		#declare outputheight = $(call scale,8000);
-		#declare frontimg = "$(word 1,$^)";
-		#declare backimg = "$(word 2,$^)";
-		#declare spineimg = "$(word 3,$^)";
+		#declare frontimg = "$(word 1,$|)";
+		#declare backimg = "$(word 2,$|)";
+		#declare spineimg = "$(word 3,$|)";
 		#declare lights = $(call scale,8,2);
 	EOF
 
