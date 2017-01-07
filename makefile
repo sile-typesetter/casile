@@ -33,7 +33,7 @@ SILE_DEBUG ?= viachristus # Specific debug flags to set
 COVERS ?= true # Build covers?
 HEAD ?= 0 # Number of lines of MD input to build from
 SCALE = 10 # Reduction factor for draft builds
-DPI = 600 # Default DPI for generated press resources
+DPI = $(call scale,600) # Default DPI for generated press resources
 
 # Allow overriding executables used
 SILE ?= sile
@@ -263,7 +263,7 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(TOOLS)/template.sil $$(w
 			$(word 2,$^) $< |
 		$(call sile_hook) > $@
 
-%-processed.md: $(TOOLS)/viachristus.m4 $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) %.md 
+%-processed.md: $(TOOLS)/viachristus.m4 $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) %.md
 	if [[ "$(BRANCH)" == master ]]; then
 		m4 $^
 	else
@@ -368,9 +368,10 @@ endef
 
 pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}')
 spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | bc)
-mmtopx = $(shell echo "$1 * $(call scale,$(DPI)) * 0.0393701 / 1" | bc)
-width = $(shell identify -density $(call scale,$(DPI)) -format %[fx:w] $1)
-height = $(shell identify -density $(call scale,$(DPI)) -format %[fx:h] $1)
+mmtopx = $(shell echo "$1 * $(DPI) * 0.0393701 / 1" | bc)
+mmtopm = $(shell echo "$1 * 90 * .0393701 / 1" | bc)
+width = $(shell identify -density $(DPI) -format %[fx:w] $1)
+height = $(shell identify -density $(DPI) -format %[fx:h] $1)
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 
@@ -457,30 +458,30 @@ endef
 		$@
 
 FRAGMANLAR = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE)-fragmanlar.pdf)
-$(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/viachristus.lua | $$(subst -fragmanlar,,$$@)
+$(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/viachristus.lua $$(subst -fragmanlar,,$$@)
 	cat <<- EOF > $*-fragmanlar.lua
 		versioninfo = "$(call versioninfo,$*)"
 		layout = "$(call parse_layout,$@)"
 		metadatafile = "$(word 2,$^)"
-		spine = "$(call spinemm,$(word 1,$|))mm"
+		spine = "$(call spinemm,$(lastword $^))mm"
 		basename = "$*"
 	EOF
 	$(SILE) $< -e 'infofile = "$*-fragmanlar"' -o $@
 
 %-fragman-on.png: %-fragmanlar.pdf
-	$(MAGICK) -density $(call scale,$(DPI)) $<[0] \
+	$(MAGICK) -density $(DPI) $<[0] \
 		-channel RGB -negate \
 		\( +clone -channel A -morphology Dilate:$(call scale,16) Octagon -blur $(call scale,40)x$(call scale,10) \) \
 		-composite $@
 
 %-fragman-arka.png: %-fragmanlar.pdf
-	$(MAGICK) -density $(call scale,$(DPI)) $<[1] \
+	$(MAGICK) -density $(DPI) $<[1] \
 		-channel RGB -negate \
 		\( +clone -channel A -morphology Dilate:$(call scale,8) Octagon -blur $(call scale,20)x$(call scale,5) \) \
 		-composite $@
 
 %-fragman-sirt.png: %-fragmanlar.pdf | %.pdf
-	$(MAGICK) -density $(call scale,$(DPI)) $<[2] \
+	$(MAGICK) -density $(DPI) $<[2] \
 		-crop $(call mmtopx,$(call spinemm,$(word 1,$|)))x+0+0 \
 		-channel RGB -negate \
 		\( +clone -channel A -morphology Dilate:$(call scale,12) Octagon -blur $(call scale,20)x$(call scale,5) \) \
@@ -490,25 +491,19 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 	$(call skip_if_tracked,$@)
 	$(CONVERT) $< -resize $(call scale,1000)x$(call scale,1600) $@
 
-%-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(TOOLS)/vc_sembol_renkli.svg $(TOOLS)/vc_logo_renkli.svg
-	wide=$(call width,$(word 1,$^))
-	tall=$(call height,$(word 1,$^))
-	spine=$(call width,$(word 3,$^))
-	bleed=$(call mmtopx,$(BLEED))
-	w=$$(($$wide + $$wide + $$spine + $$bleed + $$bleed))
-	h=$$(($$tall + $$bleed + $$bleed))
-	cw=$$(($$wide + $$wide + $$spine))
-	ch=$$tall
-	texturew="$$(bc <<< "$$w / $(call scale,4,4)")"
-	textureh="$$(bc <<< "$$h / $(call scale,4,4)")"
-	$(MAGICK) -size $${w}x$${h} \
+%-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(TOOLS)/vc_sembol_renkli.svg $(TOOLS)/vc_logo_renkli.svg %-geometry.sh
+	source $(lastword $^)
+	texturew="$$(bc <<< "$$imgwpx / $(call scale,4,4)")"
+	textureh="$$(bc <<< "$$imghpx / $(call scale,4,4)")"
+	set -x
+	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(DPI) \
 		$(call magick_zemin) \
 		$(call magick_kenar) \
-		\( -gravity east -size $${wide}x$${tall} -background none xc: $(call magick_on) -splice $${bleed}x \) -composite \
-		\( -gravity west -size $${wide}x$${tall} -background none xc: $(call magick_arka) -splice $${bleed}x \) -composite \
-		\( -gravity center -size $${spine}x$${tall} -background none xc: $(call magick_sirt) \) -composite \
-		\( -gravity east $(word 1,$^) -splice $${bleed}x \) -compose over -composite \
-		\( -gravity west $(word 2,$^) -splice $${bleed}x \) -compose over -composite \
+		\( -gravity east -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_on) -splice $${bleedpx}x \) -composite \
+		\( -gravity west -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_arka) -splice $${bleedpx}x \) -composite \
+		\( -gravity center -size $${spinepx}x$${coverhpx} -background none xc: $(call magick_sirt) \) -composite \
+		\( -gravity east $(word 1,$^) -splice $${bleedpx}x \) -compose over -composite \
+		\( -gravity west $(word 2,$^) -splice $${bleedpx}x \) -compose over -composite \
 		\( -gravity center $(word 3,$^) \) -compose over -composite \
 		$(call magick_sembol,$(word 5,$^))\
 		$(call magick_barkod,$(word 4,$^)) \
@@ -517,36 +512,63 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 		$(call magick_cilt) \
 		$@
 
-%-cilt.svg: $(TOOLS)/cilt.svg %-cilt.png %-cilt-on.png %-cilt-sirt.png $(MAKEFILE_LIST)
-	let bleed=$(call mmtopx,$(BLEED))
-	let trim=$(call mmtopx,$(TRIM))
-	let iw=$(call width,$(word 2,$^))
-	let ih=$(call height,$(word 2,$^))
-	let fw=$${iw}-$${bleed}-$${bleed}
-	let fh=$${ih}-$${bleed}-$${bleed}
-	let cw=$(call width,$(word 3,$^))
-	let sw=$(call width,$(word 4,$^))
+%-cilt.svg: $(TOOLS)/cilt.svg %-cilt.png %-geometry.sh
+	source $(word 3,$^)
 	ver=$(subst @,\\@,$(call versioninfo,$@))
-	set -x
 	perl -pne "
 			s#IMG#$(word 2,$^)#g;
-			s#IMW#$${iw}#g;
-			s#IMH#$${ih}#g;
-			s#WWW#$${fw}#g;
-			s#HHH#$${fh}#g;
-			s#BLEED#$${bleed}#g;
-			s#TRIM#$${trim}#g;
-			s#CW#$${cw}#g;
-			s#SW#$${sw}#g;
 			s#VER#$${ver}#g;
+			s#CANVASX#$${ciltwmm}mm#g;
+			s#CANVASY#$${coverhmm}mm#g;
+			s#IMW#$${imgwpm}#g;
+			s#IMH#$${imghpm}#g;
+			s#WWW#$${ciltwpm}#g;
+			s#HHH#$${coverhpm}#g;
+			s#BLEED#$${bleedpm}#g;
+			s#TRIM#$${trimpm}#g;
+			s#CW#$${coverwpm}#g;
+			s#SW#$${spinepm}#g;
 		" $< > $@
 
-%-cilt.pdf:	%-cilt.svg
+%-cilt.pdf:	%-cilt.svg %-cilt.png %-geometry.sh
+	source $(lastword $^)
 	$(INKSCAPE) --without-gui \
-		--select=svg \
-		--export-dpi=$(call scale,$(DPI)) \
-		--export-margin=$(call mmtopx,$(BLEED)) \
-		--file $< --export-pdf=$@
+		--export-dpi=$$dpi \
+		--export-margin=$$trimmm \
+		--file=$< \
+		--export-pdf=$@
+
+newgeometry = $(shell grep -qx "dpi=$(DPI)" $1 || echo force)
+
+%-geometry.sh: %.pdf %-fragmanlar.pdf $$(call newgeometry,$$@)
+	set -x ; exec 2> >(cut -c3- > $@) # black magic to output the finished math
+	dpi=$(DPI)
+	bleedmm=$(BLEED)
+	bleedpx=$(call mmtopx,$(BLEED))
+	bleedpm=$(call mmtopm,$(BLEED))
+	trimmm=$(TRIM)
+	trimpx=$(call mmtopx,$(TRIM))
+	trimpm=$(call mmtopm,$(TRIM))
+	$(shell identify -density $(DPI) -format '
+			coverwmm=%[fx:round(w/$(DPI)*25.399986)]
+			coverwpx=%[fx:w]
+			coverwpm=%[fx:round(w/$(DPI)*90*$(call scale,$(SCALE),1))]
+			coverhmm=%[fx:round(h/$(DPI)*25.399986)]
+			coverhpx=%[fx:h]
+			coverhpm=%[fx:round(h/$(DPI)*90*$(call scale,$(SCALE),1))]
+		' $(word 2,$^)[0])
+	spinemm=$(call spinemm,$(word 1,$^))
+	spinepx=$(call mmtopx,$(call spinemm,$<))
+	spinepm=$(call mmtopm,$(call spinemm,$<))
+	ciltwmm=$$(($$coverwmm+$$spinemm+$$coverwmm))
+	ciltwpx=$$(($$coverwpx+$$spinepx+$$coverwpx))
+	ciltwpm=$$(($$coverwpm+$$spinepm+$$coverwpm))
+	imgwmm=$$(($$ciltwmm+$$bleedmm*2))
+	imgwpx=$$(($$ciltwpx+$$bleedpx*2))
+	imgwpm=$$(($$ciltwpm+$$bleedpm*2))
+	imghmm=$$(($$coverhmm+$$bleedmm*2))
+	imghpx=$$(($$coverhpx+$$bleedpx*2))
+	imghpm=$$(($$coverhpm+$$bleedpm*2))
 
 define magick_zemin
 	xc:darkgray
@@ -555,15 +577,15 @@ endef
 define magick_kenar
 	-fill none -strokewidth 1 \
 	$(shell $(DRAFT) && echo -n '-stroke gray50' || echo -n '-stroke transparent') \
-	-draw "rectangle $$bleed,$$bleed %[fx:w-$$bleed],%[fx:h-$$bleed]" \
-	-draw "rectangle %[fx:$$bleed+$$wide],$$bleed %[fx:w-$$bleed-$$wide],%[fx:h-$$bleed]"
+	-draw "rectangle $$bleedpx,$$bleedpx %[fx:w-$$bleedpx],%[fx:h-$$bleedpx]" \
+	-draw "rectangle %[fx:$$bleedpx+$$coverwpx],$$bleedpx %[fx:w-$$bleedpx-$$coverwpx],%[fx:h-$$bleedpx]"
 endef
 
 define magick_sembol
 	-gravity south \
-	\( -background none $1 -resize "%[fx:min($$spine*0.9-$(call mmtopx,1),$(call mmtopx,12))]"x \
+	\( -background none $1 -resize "%[fx:min($$spinepx*0.9-$(call mmtopx,1),$(call mmtopx,12))]"x \
 		-alpha on -channel RGB +level-colors '#ff0000','#550000' \
-		-splice x%[fx:$(call mmtopx,5)+$$bleed] \) \
+		-splice x%[fx:$(call mmtopx,5)+$$bleedpx] \) \
 	-compose over -composite
 endef
 
@@ -574,19 +596,19 @@ define magick_logo
 	-channel RGB -negate \
 	-level 20%,60%!  \
 	-resize $(call mmtopx,30)x \
-	-splice %[fx:$$bleed+$$wide*15/100]x%[fx:$$bleed+$(call mmtopx,10)] \
+	-splice %[fx:$$bleedpx+$$coverwpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
 	\) -compose screen -composite
 endef
 
 define magick_barkod
 	-gravity southeast \
-	\( -background white $1 -resize $(call mmtopx,30)x -bordercolor white -border $(call mmtopx,2) -background none -splice %[fx:$$bleed+$$wide+$$spine+$$wide*15/100]x%[fx:$$bleed+$(call mmtopx,10)] \) \
+	\( -background white $1 -resize $(call mmtopx,30)x -bordercolor white -border $(call mmtopx,2) -background none -splice %[fx:$$bleedpx+$$coverwpx+$$spinepx+$$coverwpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \) \
 	-compose over -composite
 endef
 
 define magick_crease
 	-stroke gray95 -strokewidth $(call mmtopx,0.5) \
-	\( -size $${w}x$${h} -background none xc: -draw "line %[fx:$1$(call mmtopx,8)],0 %[fx:$1$(call mmtopx,8)],$${h}" -blur 0x$(call scale,$(call mmtopx,0.2)) -level 0x40%! \) \
+	\( -size $${coverwpx}x$${coverhpx} -background none xc: -draw "line %[fx:$1$(call mmtopx,8)],0 %[fx:$1$(call mmtopx,8)],$${coverhpx}" -blur 0x$(call scale,$(call mmtopx,0.2)) -level 0x40%! \) \
 	-compose modulusadd -composite
 endef
 
@@ -595,17 +617,17 @@ define magick_fray
 	-alpha off -compose copyopacity -composite
 endef
 
-%-cilt-on.png: %-cilt.png %-fragman-on.png
-	bleed=$(call mmtopx,$(BLEED)) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
-	$(MAGICK) $< -gravity east -crop $${w}x$${h}+$${bleed}+0! $@
+%-cilt-on.png: %-cilt.png %-geometry.sh
+	source $(word 2,$^)
+	$(MAGICK) $< -gravity east -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
 
-%-cilt-arka.png: %-cilt.png %-fragman-arka.png
-	bleed=$(call mmtopx,$(BLEED)) w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
-	$(MAGICK) $< -gravity west -crop $${w}x$${h}+$${bleed}+0! $@
+%-cilt-arka.png: %-cilt.png %-geometry.sh
+	source $(word 2,$^)
+	$(MAGICK) $< -gravity west -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
 
-%-cilt-sirt.png: %-cilt.png %-fragman-sirt.png
-	w=$(call width,$(word 2,$^)) h=$(call height,$(word 2,$^))
-	$(MAGICK) $< -gravity center -crop $${w}x$${h}+0+0! $@
+%-cilt-sirt.png: %-cilt.png %-geometry.sh
+	source $(word 2,$^)
+	$(MAGICK) $< -gravity center -crop $${spinepx}x$${coverhpx}+0+0! $@
 
 %-pov-on.png: %-cilt-on.png
 	h=$(call height,$(word 1,$^)) w=$(call width,$(word 1,$^))
@@ -626,14 +648,12 @@ endef
 
 povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
 
-%-3b.pov: $(povtextures)
-	w=$(call width,$(word 1,$^))
-	h=$(call height,$(word 1,$^))
-	s=$(call width,$(word 3,$^))
+%-3b.pov: $(povtextures) %-geometry.sh
+	source $(lastword $^)
 	cat <<- EOF > $@
-		#declare coverwidth = $$w;
-		#declare coverheight = $$h;
-		#declare spinewidth = $$s / 2;
+		#declare coverwidth = $$coverwmm;
+		#declare coverheight = $$coverhmm;
+		#declare spinewidth = $$spinemm / 2;
 		#declare outputwidth = $(call scale,6000);
 		#declare outputheight = $(call scale,8000);
 		#declare frontimg = "$(word 1,$^)";
