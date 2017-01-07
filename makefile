@@ -556,8 +556,8 @@ newgeometry = $(shell grep -qx dpi=$(DPI) $1 || echo force)
 			coverhpm=%[fx:round(h/$(DPI)*90*$(call scale,$(SCALE),1))]
 		' $(word 2,$|)[0])
 	spinemm=$(call spinemm,$(word 1,$|))
-	spinepx=$(call mmtopx,$(call spinemm,$<))
-	spinepm=$(call mmtopm,$(call spinemm,$<))
+	spinepx=$(call mmtopx,$(call spinemm,$(word 1,$|)))
+	spinepm=$(call mmtopm,$(call spinemm,$(word 1,$|)))
 	ciltwmm=$$(($$coverwmm+$$spinemm+$$coverwmm))
 	ciltwpx=$$(($$coverwpx+$$spinepx+$$coverwpx))
 	ciltwpm=$$(($$coverwpm+$$spinepm+$$coverwpm))
@@ -649,11 +649,11 @@ povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
 %-3b.pov: %-geometry.sh | $(povtextures)
 	source $<
 	cat <<- EOF > $@
-		#declare coverwidth = $$coverwmm;
-		#declare coverheight = $$coverhmm;
-		#declare spinewidth = $$spinemm / 2;
-		#declare outputwidth = $(call scale,6000);
-		#declare outputheight = $(call scale,8000);
+		#declare coverwmm = $$coverwmm;
+		#declare coverhmm = $$coverhmm;
+		#declare spinemm = $$spinemm;
+		#declare coverhwx = $$coverwmm;
+		#declare coverhpx = $$coverhmm;
 		#declare frontimg = "$(word 1,$|)";
 		#declare backimg = "$(word 2,$|)";
 		#declare spineimg = "$(word 3,$|)";
@@ -685,6 +685,10 @@ endef
 %-3b-arka.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/arka.pov | $(povtextures)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
 	$(call povcrop,$@,30)
+
+%-3b-istif.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/istif.pov | $(povtextures)
+	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
+	$(call povcrop,$@,50)
 
 %.epub %.odt %.docx: %-processed.md %-merged.yml %-epub-kapak.png
 	$(PANDOC) \
