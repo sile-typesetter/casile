@@ -224,20 +224,19 @@ endif
 $(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) ;
 
 ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
-$(ONPAPERPDFS): %.pdf: %.sil $(TOOLS)/viachristus.lua
-	@$(shell test -f "$<" || echo exit 0)
+$(ONPAPERPDFS): %.pdf: %.sil
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
 	# account for TOC issue: https://github.com/simoncozens/sile/issues/230
-	if $(DRAFT); then \
-		$(SILE) -d $(SILE_DEBUG) $< -o $@ ;\
-	else \
-		export pg0="$$(test -f $<.toc && ( pdfinfo $@ | awk '$$1 == "Pages" {print $$2}' ) || echo 0)" ;\
-		$(SILE) $< -o $@ ;\
-		export pg1="$$(pdfinfo $@ | awk '$$1 == "Pages" {print $$2}')" ;\
-		[[ $${pg0} -ne $${pg1} ]] && $(SILE) $< -o $@ ||: ;\
-		export pg2="$$(pdfinfo $@ | awk '$$1 == "Pages" {print $$2}')" ;\
-		[[ $${pg1} -ne $${pg2} ]] && $(SILE) $< -o $@ ||: ;\
+	if $(DRAFT); then
+		$(SILE) -d $(SILE_DEBUG) $< -o $@
+	else
+		export pg0=$(call pagecount,$<)
+		$(SILE) $< -o $@
+		export pg1=$(call pagecount,$<)
+		[[ $${pg0} -ne $${pg1} ]] && $(SILE) $< -o $@ ||:
+		export pg2=$(call pagecount,$<)
+		[[ $${pg1} -ne $${pg2} ]] && $(SILE) $< -o $@ ||:
 	fi
 	# If we have a special cover page for this format, swap it out for the half title page
 	if $(COVERS) && [[ -f $*-kapak.pdf ]]; then
@@ -366,7 +365,7 @@ define skip_if_tracked
 	git ls-files --error-unmatch -- $1 2>/dev/null && exit 0 ||:
 endef
 
-pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}')
+pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}' || echo 0)
 spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | bc)
 mmtopx = $(shell echo "$1 * $(DPI) * 0.0393701 / 1" | bc)
 mmtopm = $(shell echo "$1 * 90 * .0393701 / 1" | bc)
