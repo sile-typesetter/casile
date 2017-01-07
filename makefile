@@ -225,7 +225,7 @@ else
 endif
 		mkdir -p $(OUTPUT)/$$tagpath
 		while read file; do
-			-rsync -ct $$file $(OUTPUT)/$$tagpath
+			test -f $$file && -rsync -ct $$file $(OUTPUT)/$$tagpath
 		done < $<
 	done
 	$(call sync_owncloud)
