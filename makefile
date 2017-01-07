@@ -686,6 +686,10 @@ endef
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
 	$(call povcrop,$@,30)
 
+%-3b-istif.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/istif.pov | $(povtextures)
+	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
+	$(call povcrop,$@,50)
+
 %.epub %.odt %.docx: %-processed.md %-merged.yml %-epub-kapak.png
 	$(PANDOC) \
 		--smart \

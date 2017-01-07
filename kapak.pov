@@ -28,8 +28,8 @@
 background { color rgb<1,1,1> }
 
 camera {
-	location <-2.3,3.00,1.8*viewz>
-	look_at  <-0.2,0.6,0>
+	location <-1,1.50,1.2*viewz>
+    look_at <.4*coveraspectratio,0.60,halfthick>
 	right x*outputaspect
 }
 
@@ -125,40 +125,4 @@ box { min_extent(paper) max_extent(paper)-((paperinset*2)*y)-(paperinset*x)
 
 #end
 
-union {
-	#declare i = 0;
-	#while(i <= 6)
-		union {
-			book()
-			translate <0+i*0.02,0,i*bookthickness>
-		}
-		#declare i = i + 1;
-	#end
-}
-union {
-	#declare i = 0;
-	#while(i <= 3)
-		union {
-			book()
-			rotate <15,0,0>
-			translate <0,0,-0.3>
-			translate <0+i*.02,0,-i*bookthickness>
-		}
-		#declare i = i + 1;
-	#end
-	translate <-0.2,0,-0.05>
-	rotate <0,30,0>
-}
-union {
-	#declare i = 0;
-	#while(i <= 6)
-		union {
-			book()
-			rotate <-90,170,00>
-			rotate <0,20+i*6,0>
-			translate <0-i*0.03,i*bookthickness,0>
-		}
-		#declare i = i + 1;
-	#end
-	translate <-0.1,0,0.15>
-}
+scene()
