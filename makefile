@@ -649,11 +649,11 @@ povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
 %-3b.pov: %-geometry.sh | $(povtextures)
 	source $<
 	cat <<- EOF > $@
-		#declare coverwidth = $$coverwmm;
-		#declare coverheight = $$coverhmm;
-		#declare spinewidth = $$spinemm / 2;
-		#declare outputwidth = $(call scale,6000);
-		#declare outputheight = $(call scale,8000);
+		#declare coverwmm = $$coverwmm;
+		#declare coverhmm = $$coverhmm;
+		#declare spinemm = $$spinemm;
+		#declare coverhwx = $$coverwmm;
+		#declare coverhpx = $$coverhmm;
 		#declare frontimg = "$(word 1,$|)";
 		#declare backimg = "$(word 2,$|)";
 		#declare spineimg = "$(word 3,$|)";

@@ -1,10 +1,10 @@
-#declare outputaspect = outputwidth / outputheight;
-#declare coveraspectratio = coverwidth / coverheight;
-#declare bookthickness = (spinewidth/coverwidth)/2;
+#declare outputaspect = coverwmm / coverhmm;
+#declare bookaspect = coverwmm / coverhmm;
+#declare bookthickness = spinemm / coverwmm;
 #declare coverthickness = 0.004;
 #declare paperinset = 0.0001;
 #declare halfthick = bookthickness / 2;
-#declare bx = 1 * outputaspect;
+#declare bx = 1 / bookaspect;
 #declare by = 1;
 #declare bz = bookthickness;
 
@@ -32,7 +32,7 @@ background { color rgb<1,1,1> }
 
 camera {
 	location <-1,1.50,1.2*viewz>
-	look_at <.4*coveraspectratio,0.60,halfthick>
+	look_at <.4*bookaspect,0.60,halfthick>
 	right x*outputaspect
 }
 
@@ -71,7 +71,7 @@ box { <0,0,0> <1,1,coverthickness>
 			interpolate 2
 		}
 	}
-	scale <coveraspectratio,1,1>
+	scale <bookaspect,1,1>
 	finish { bookfinish }
 }
 
@@ -86,7 +86,7 @@ box {
 		}
 		rotate <0,180,0>
 	}
-	scale <coveraspectratio,1,1>
+	scale <bookaspect,1,1>
 	finish { bookfinish }
 	translate <0,0,bz-coverthickness>
 }
@@ -114,7 +114,7 @@ difference {
 #declare paper = object {
 	box {
 		<0,0,0> <1,1,bz-(coverthickness*2)>
-		scale <coveraspectratio,1,1>
+		scale <bookaspect,1,1>
 		translate <0,0,coverthickness>
 	}
 }
