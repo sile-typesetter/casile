@@ -536,7 +536,7 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 		--file=$< \
 		--export-pdf=$@
 
-newgeometry = $(shell grep -qx "dpi=$(DPI)" $1 || echo force)
+newgeometry = $(shell grep -qx dpi=$(DPI) $1 || echo force)
 
 %-geometry.sh: %.pdf %-fragmanlar.pdf $$(call newgeometry,$$@)
 	set -x ; exec 2> >(cut -c3- > $@) # black magic to output the finished math
@@ -627,15 +627,15 @@ endef
 	source $(word 2,$^)
 	$(MAGICK) $< -gravity center -crop $${spinepx}x$${coverhpx}+0+0! $@
 
-%-pov-on.png: %-cilt-on.png
-	h=$(call height,$(word 1,$^)) w=$(call width,$(word 1,$^))
+%-pov-on.png: %-cilt-on.png %-geometry.sh
+	source $(lastword $^)
 	$(MAGICK) $< \
 		$(call magick_crease,0+) \
 		$(call magick_fray) \
 		$@
 
-%-pov-arka.png: %-cilt-arka.png
-	h=$(call height,$(word 1,$^)) w=$(call width,$(word 1,$^))
+%-pov-arka.png: %-cilt-arka.png %-geometry.sh
+	source $(lastword $^)
 	$(MAGICK) $< \
 		$(call magick_crease,w-) \
 		$(call magick_fray) \
