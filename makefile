@@ -247,7 +247,7 @@ $(ONPAPERPDFS): %.pdf: %.sil
 	fi
 
 ONPAPERSILS = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE).sil)
-$(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(TOOLS)/template.sil $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/viachristus.lua
+$(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(TOOLS)/template.sil | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/viachristus.lua
 	$(PANDOC) --standalone \
 			--wrap=preserve \
 			-V documentclass="vc" \
@@ -255,8 +255,7 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(TOOLS)/template.sil $$(w
 			-V versioninfo="$(call versioninfo,$*)" \
 			-V urlinfo="$(call urlinfo,$*)" \
 			-V qrimg="./$(word 3,$^)" \
-			$(foreach LUA,$(wordlist 5,$(words $^),$^), -V script=$(basename $(LUA))) \
-			-V script=$(TOOLS)/viachristus \
+			$(foreach LUA,$|, -V script=$(basename $(LUA))) \
 			--template=$(word 4,$^) \
 			--to=sile \
 			$(word 2,$^) $< |
