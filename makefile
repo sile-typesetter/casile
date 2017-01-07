@@ -28,6 +28,7 @@ DRAFT ?= false # Take shortcuts, scale things down, be quick about it
 DIFF ?= false # Show differences to parent brancd in build
 STATS_MONTHS ?= 1 # How far back to look for commits when building stats
 PRE_SYNC ?= true # Start CI builds with a sync _from_ the output folder
+SYNCONLY ?= false # Skip builds and just sync what would have been built
 DEBUG ?= false # Use SILE debug flags, set -x, and the like
 SILE_DEBUG ?= viachristus # Specific debug flags to set
 COVERS ?= true # Build covers?
@@ -151,6 +152,8 @@ debug:
 	@echo TOOLS: $(TOOLS)
 	@echo SILE: $(SILE)
 	@echo SILE_PATH: $(SILE_PATH)
+	@echo PRE_SYNC: $(PRE_SYNC)
+	@echo SYNCONLY: $(SYNCONLY)
 	@echo versioninfo: $(call versioninfo,$(PROJECT))
 
 force: ;
@@ -193,6 +196,11 @@ update_app_tags:
 			git tag $$tag
 		done
 
+define addtosync
+	echo $@ >> sync_files.dat
+	-$(SYNCONLY) && exit 0
+endef
+
 define sync_owncloud
 	-pgrep -u $(USER) -x owncloud || \
 		owncloudcmd -n -s $(INPUT) $(OWNCLOUD) 2>/dev/null
@@ -208,7 +216,7 @@ sync_pre:
 	-$(PRE_SYNC) && rsync -ctv \
 		$(OUTPUT)/* $(BASE)/
 
-sync_post:
+sync_post: sync_files.dat
 	for target in $(TARGETS); do
 ifeq ($(ALL_TAGS),)
 		tagpath=
@@ -216,8 +224,9 @@ else
 		tagpath=$$target/$(TAG_NAME)/
 endif
 		mkdir -p $(OUTPUT)/$$tagpath
-		-rsync -ctv $(foreach FORMAT,$(FORMATS),$$target.$(FORMAT)) $(OUTPUT)/$$tagpath
-		-rsync -ctv $(foreach LAYOUT,$(LAYOUTS),$$target-$(LAYOUT)*.{pdf,info,png,svg}) $(OUTPUT)/$$tagpath
+		while read file; do
+			-rsync -ct $$file $(OUTPUT)/$$tagpath
+		done < $<
 	done
 	$(call sync_owncloud)
 
@@ -226,6 +235,7 @@ $(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach 
 ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
 $(ONPAPERPDFS): %.pdf: %.sil
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
+	$(addtosync)
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
 	# account for TOC issue: https://github.com/simoncozens/sile/issues/230
 	if $(DRAFT); then
@@ -341,12 +351,14 @@ endef
 %.app: %-app.info %-app-kapak-kare.png %-app-kapak-genis.png;
 
 %-app.info: %-app.sil.toc %-merged.yml
+	$(addtosync)
 	$(TOOLS)/bin/toc2breaks.lua $* $^ $@ |\
 		while read range out; do \
 			pdftk $*-app.pdf cat $$range output $$out ;\
 		done
 
 issue.info:
+	$(addtosync)
 	@for source in $(TARGETS); do
 		echo -e "# $$source\n"
 		sed -ne "/^# /{s/^# *\(.*\)/ - [ ] [\1]($${source}.md)/g;p}" $$source.md
@@ -403,6 +415,7 @@ define draw_title
 endef
 
 %-kapak-kare.png: %-kapak-zemin.png
+	$(addtosync)
 	$(call skip_if_tracked,$@)
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
 	$(call draw_title,$$caption,2048x2048,$<,$@)
@@ -413,15 +426,16 @@ endef
 	$(call draw_title,$$caption,3840x2160,$<,$@)
 
 %-kapak.png: %-kapak-zemin.png
-	$(call skip_if_tracked,$@)
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
 	$(call draw_title,$$caption,2000x3200,$<,$@)
 
 %-app-kapak-kare.png: %-kapak-kare.png
+	$(addtosync)
 	$(COVERS) || exit 0
 	$(CONVERT) $< -resize 1024x1024 $@
 
 %-app-kapak-genis.png: %-kapak-genis.png
+	$(addtosync)
 	$(COVERS) || exit 0
 	$(CONVERT) $< -resize 1920x1080 $@
 
@@ -529,6 +543,7 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 		" $< > $@
 
 %-cilt.pdf:	%-cilt.svg %-cilt.png %-geometry.sh
+	$(addtosync)
 	source $(lastword $^)
 	$(INKSCAPE) --without-gui \
 		--export-dpi=$$dpi \
@@ -679,24 +694,29 @@ define povcrop
 endef
 
 %-3b-on.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/on.pov | $(povtextures)
+	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
 	$(call povcrop,$@,50)
 
 %-3b-arka.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/arka.pov | $(povtextures)
+	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
 	$(call povcrop,$@,30)
 
 %-3b-istif.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/istif.pov | $(povtextures)
+	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
 	$(call povcrop,$@,50)
 
 %.epub %.odt %.docx: %-processed.md %-merged.yml %-epub-kapak.png
+	$(addtosync)
 	$(PANDOC) \
 		--smart \
 		$(word 2,$^) \
 		$< -o $@
 
 %.mobi: %.epub
+	$(call addtosync,$@)
 	-kindlegen $<
 
 %.json: $(TOOLS)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
