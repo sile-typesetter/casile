@@ -548,13 +548,13 @@ newgeometry = $(shell grep -qx "dpi=$(DPI)" $1 || echo force)
 	bleedpm=$(call mmtopm,$(BLEED))
 	trimmm=$(TRIM)
 	trimpx=$(call mmtopx,$(TRIM))
-	trimpx=$(call mmtopm,$(TRIM))
+	trimpm=$(call mmtopm,$(TRIM))
 	$(shell identify -density $(DPI) -format '
 			coverwmm=%[fx:round(w/$(DPI)*25.399986)]
-			coverhmm=%[fx:round(h/$(DPI)*25.399986)]
 			coverwpx=%[fx:w]
-			coverhpx=%[fx:h]
 			coverwpm=%[fx:round(w/$(DPI)*90*$(call scale,$(SCALE),1))]
+			coverhmm=%[fx:round(h/$(DPI)*25.399986)]
+			coverhpx=%[fx:h]
 			coverhpm=%[fx:round(h/$(DPI)*90*$(call scale,$(SCALE),1))]
 		' $(word 2,$^)[0])
 	spinemm=$(call spinemm,$(word 1,$^))
@@ -564,10 +564,10 @@ newgeometry = $(shell grep -qx "dpi=$(DPI)" $1 || echo force)
 	ciltwpx=$$(($$coverwpx+$$spinepx+$$coverwpx))
 	ciltwpm=$$(($$coverwpm+$$spinepm+$$coverwpm))
 	imgwmm=$$(($$ciltwmm+$$bleedmm*2))
-	imghmm=$$(($$coverhmm+$$bleedmm*2))
 	imgwpx=$$(($$ciltwpx+$$bleedpx*2))
-	imghpx=$$(($$coverhpx+$$bleedpx*2))
 	imgwpm=$$(($$ciltwpm+$$bleedpm*2))
+	imghmm=$$(($$coverhmm+$$bleedmm*2))
+	imghpx=$$(($$coverhpx+$$bleedpx*2))
 	imghpm=$$(($$coverhpm+$$bleedpm*2))
 
 define magick_zemin
