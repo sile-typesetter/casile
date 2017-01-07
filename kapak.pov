@@ -4,6 +4,9 @@
 #declare coverthickness = 0.004;
 #declare paperinset = 0.0001;
 #declare halfthick = bookthickness / 2;
+#declare bx = 1 * outputaspect;
+#declare by = 1;
+#declare bz = bookthickness;
 
 #declare paperpigment = pigment {
 	gradient <0,1,0>
@@ -29,7 +32,7 @@ background { color rgb<1,1,1> }
 
 camera {
 	location <-1,1.50,1.2*viewz>
-    look_at <.4*coveraspectratio,0.60,halfthick>
+	look_at <.4*coveraspectratio,0.60,halfthick>
 	right x*outputaspect
 }
 
@@ -46,7 +49,7 @@ plane
 }
 
 light_source {
-	<-0.2,4,1.0*viewz>
+	<-0.2,8,3.0*viewz>
 	color rgb<1,1,1>
 	area_light <0.4, 0, 0>, <0, 0, 0.4>, lights, lights
 	circular
@@ -54,7 +57,7 @@ light_source {
 
 light_source {
 	<-3,0,-halfthick>
-	color rgb<1,1,1>
+	color rgb<0.5,0.5,0.5>
 }
 
 #macro book ()
@@ -85,12 +88,12 @@ box {
 	}
 	scale <coveraspectratio,1,1>
 	finish { bookfinish }
-	translate <0,0,bookthickness-coverthickness>
+	translate <0,0,bz-coverthickness>
 }
 
 // spine
 difference {
-	cylinder { <0,0,0>,<0,1,0>,(bookthickness/2)
+	cylinder { <0,0,0>,<0,1,0>,(bz/2)
 		pigment {
 			image_map {
 				png spineimg
@@ -99,18 +102,18 @@ difference {
 			}
 		}
 		scale <0.1,1,1>
-		translate <0,0,(bookthickness/2)>
+		translate <0,0,(bz/2)>
 		finish { bookfinish }
 	}
 	box {
-		<0,-0.001,0> <1,1.001,bookthickness>
+		<0,-0.001,0> <1,1.001,bz>
 	}
 }
 
 // dimensions of pages
 #declare paper = object {
 	box {
-		<0,0,0> <1,1,bookthickness-(coverthickness*2)>
+		<0,0,0> <1,1,bz-(coverthickness*2)>
 		scale <coveraspectratio,1,1>
 		translate <0,0,coverthickness>
 	}
@@ -121,6 +124,16 @@ box { min_extent(paper) max_extent(paper)-((paperinset*2)*y)-(paperinset*x)
 	translate <0,paperinset,0>
 	pigment {paperpigment}
 	finish {ambient 0.5}
+}
+
+#end
+
+#macro bookflip ()
+
+union {
+	book()
+	rotate <0,180,0>
+	translate <bx,0,bz>
 }
 
 #end
