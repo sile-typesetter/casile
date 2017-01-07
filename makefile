@@ -15,7 +15,7 @@ TARGETS := $(filter $(basename $(wildcard *.md)),$(basename $(wildcard *.yml)))
 # Default output formats and layouts (often overridden)
 FORMATS ?= pdf epub mobi app
 LAYOUTS ?= a4 a4ciltli octavo halfletter a5 a5trim cep app
-PRINTS ?=
+RESOURCES ?= cilt 3b-on 3b-arka
 #PRINTS ?= kesme kesme-ciftyonlu
 BLEED = 3
 TRIM= 10
@@ -221,7 +221,7 @@ endif
 	done
 	$(call sync_owncloud)
 
-$(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach PRINT,$(PRINTS),$$*-$(LAYOUT)-$(PRINT).pdf)) ;
+$(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach RESOURCE,$(RESOURCES),$$*-$(LAYOUT)-$(RESOURCE).pdf)) ;
 
 ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
 $(ONPAPERPDFS): %.pdf: %.sil
