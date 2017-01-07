@@ -369,7 +369,7 @@ endef
 pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}')
 spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | bc)
 mmtopx = $(shell echo "$1 * $(DPI) * 0.0393701 / 1" | bc)
-pxtomm = $(shell echo "$1 / $(DPI) * 25.399986 / 1" | bc)
+mmtopm = $(shell echo "$1 * 90 * .0393701 / 1" | bc)
 width = $(shell identify -density $(DPI) -format %[fx:w] $1)
 height = $(shell identify -density $(DPI) -format %[fx:h] $1)
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
@@ -517,15 +517,17 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 	ver=$(subst @,\\@,$(call versioninfo,$@))
 	perl -pne "
 			s#IMG#$(word 2,$^)#g;
-			s#IMW#$${imgwmm}#g;
-			s#IMH#$${imghmm}#g;
-			s#WWW#$${ciltwmm}#g;
-			s#HHH#$${coverhmm}#g;
-			s#BLEED#$${bleedmm}#g;
-			s#TRIM#$${trimmm}#g;
-			s#CW#$${coverwmm}#g;
-			s#SW#$${spinemm}#g;
 			s#VER#$${ver}#g;
+			s#CANVASX#$${ciltwmm}mm#g;
+			s#CANVASY#$${coverhmm}mm#g;
+			s#IMW#$${imgwpm}#g;
+			s#IMH#$${imghpm}#g;
+			s#WWW#$${ciltwpm}#g;
+			s#HHH#$${coverhpm}#g;
+			s#BLEED#$${bleedpm}#g;
+			s#TRIM#$${trimpm}#g;
+			s#CW#$${coverwpm}#g;
+			s#SW#$${spinepm}#g;
 		" $< > $@
 
 %-cilt.pdf:	%-cilt.svg %-cilt.png %-geometry.sh
@@ -539,43 +541,34 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 newgeometry = $(shell grep -qx "dpi=$(DPI)" $1 || echo force)
 
 %-geometry.sh: %.pdf %-fragmanlar.pdf $$(call newgeometry,$$@)
+	set -x ; exec 2> >(cut -c3- > $@) # black magic to output the finished math
+	dpi=$(DPI)
 	bleedmm=$(BLEED)
 	bleedpx=$(call mmtopx,$(BLEED))
+	bleedpm=$(call mmtopm,$(BLEED))
 	trimmm=$(TRIM)
 	trimpx=$(call mmtopx,$(TRIM))
+	trimpx=$(call mmtopm,$(TRIM))
 	$(shell identify -density $(DPI) -format '
 			coverwmm=%[fx:round(w/$(DPI)*25.399986)]
 			coverhmm=%[fx:round(h/$(DPI)*25.399986)]
 			coverwpx=%[fx:w]
 			coverhpx=%[fx:h]
+			coverwpm=%[fx:round(w/$(DPI)*90*$(call scale,$(SCALE),1))]
+			coverhpm=%[fx:round(h/$(DPI)*90*$(call scale,$(SCALE),1))]
 		' $(word 2,$^)[0])
 	spinemm=$(call spinemm,$(word 1,$^))
 	spinepx=$(call mmtopx,$(call spinemm,$<))
+	spinepm=$(call mmtopm,$(call spinemm,$<))
 	ciltwmm=$$(($$coverwmm+$$spinemm+$$coverwmm))
 	ciltwpx=$$(($$coverwpx+$$spinepx+$$coverwpx))
+	ciltwpm=$$(($$coverwpm+$$spinepm+$$coverwpm))
 	imgwmm=$$(($$ciltwmm+$$bleedmm*2))
 	imghmm=$$(($$coverhmm+$$bleedmm*2))
 	imgwpx=$$(($$ciltwpx+$$bleedpx*2))
 	imghpx=$$(($$coverhpx+$$bleedpx*2))
-	@cat <<- EOF > $@
-		dpi=$(DPI)
-		coverwmm=$$coverwmm
-		coverhmm=$$coverhmm
-		coverwpx=$$coverwpx
-		coverhpx=$$coverhpx
-		bleedmm=$$bleedmm
-		bleedpx=$$bleedpx
-		trimmm=$$trimmm
-		trimpx=$$trimpx
-		spinemm=$$spinemm
-		spinepx=$$spinepx
-		ciltwmm=$$ciltwmm
-		ciltwpx=$$ciltwpx
-		imgwmm=$$imgwmm
-		imghmm=$$imghmm
-		imgwpx=$$imgwpx
-		imghpx=$$imghpx
-	EOF
+	imgwpm=$$(($$ciltwpm+$$bleedpm*2))
+	imghpm=$$(($$coverhpm+$$bleedpm*2))
 
 define magick_zemin
 	xc:darkgray
