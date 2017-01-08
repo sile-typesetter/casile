@@ -1,10 +1,10 @@
 #declare outputaspect = coverwmm / coverhmm;
 #declare bookaspect = coverwmm / coverhmm;
-#declare bookthickness = spinemm / coverwmm;
+#declare bookthickness = spinemm / coverwmm / 2;
 #declare coverthickness = 0.004;
 #declare paperinset = 0.0001;
 #declare halfthick = bookthickness / 2;
-#declare bx = 1 / bookaspect;
+#declare bx = 1 * bookaspect;
 #declare by = 1;
 #declare bz = bookthickness;
 
