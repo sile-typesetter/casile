@@ -217,6 +217,7 @@ sync_pre:
 		$(OUTPUT)/* $(BASE)/
 
 sync_post: sync_files.dat
+	sort -u $< | sponge $<
 	for target in $(TARGETS); do
 ifeq ($(ALL_TAGS),)
 		tagpath=
