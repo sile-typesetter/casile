@@ -34,6 +34,7 @@ camera {
 	location <-1,1.50,1.2*viewz>
 	look_at <.4*bookaspect,0.60,halfthick>
 	right x*outputaspect
+	angle 35
 }
 
 plane

@@ -678,7 +678,7 @@ povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
 define povray
 	headers=$$(mktemp povXXXXXX.inc)
 	cat $2 $3 > $$headers
-	povray -I$1 -HI$$headers -W$(call scale,6000) -H$(call scale,8000) -Q$(call scale,11,4) -O$4
+	povray -I$1 -HI$$headers -W$(call scale,$5) -H$(call scale,$6) -Q$(call scale,11,4) -O$4
 	rm $$headers
 endef
 
@@ -686,27 +686,28 @@ define povcrop
 	$(MAGICK) $1 \( +clone \
 		-virtual-pixel edge \
 		-blur 0x%[fx:w/50] \
-		-fuzz 10% \
+		-fuzz 15% \
 		-trim -trim \
 		-set option:fuzzy_trim "%[fx:w*1.2]x%[fx:h*1.2]+%[fx:page.x-w*0.1]+%[fx:page.y-h*0.1]" \
 		+delete \) \
-		-crop %[fuzzy_trim] $1
+		-crop %[fuzzy_trim] \
+		-resize $(call scale,4000)x $1
 endef
 
 %-3b-on.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/on.pov | $(povtextures)
 	$(addtosync)
-	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
-	$(call povcrop,$@,50)
+	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
+	$(call povcrop,$@)
 
 %-3b-arka.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/arka.pov | $(povtextures)
 	$(addtosync)
-	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
-	$(call povcrop,$@,30)
+	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
+	$(call povcrop,$@)
 
 %-3b-istif.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/istif.pov | $(povtextures)
 	$(addtosync)
-	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@)
-	$(call povcrop,$@,50)
+	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,8000,6000)
+	$(call povcrop,$@)
 
 %.epub %.odt %.docx: %-processed.md %-merged.yml %-epub-kapak.png
 	$(addtosync)

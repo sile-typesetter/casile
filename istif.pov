@@ -4,11 +4,10 @@
 
 camera {
 	location < -bx*2.5, by*3, -by*3.5 >
-	look_at < 0, 0, 0 >
-	right x*outputaspect
+	look_at < -bx/4, by/2, 0 >
+	right x/outputaspect
+	angle 35
 }
-
-// book()
 
 union {
 	#declare i = 0;
