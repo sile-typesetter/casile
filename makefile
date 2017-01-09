@@ -686,7 +686,7 @@ define povcrop
 	$(MAGICK) $1 \( +clone \
 		-virtual-pixel edge \
 		-blur 0x%[fx:w/50] \
-		-fuzz 20% \
+		-fuzz 10% \
 		-trim -trim \
 		-set option:fuzzy_trim "%[fx:w*1.2]x%[fx:h*1.2]+%[fx:page.x-w*0.1]+%[fx:page.y-h*0.1]" \
 		+delete \) \
