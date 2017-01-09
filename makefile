@@ -294,6 +294,7 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(TOOLS)/template.sil | $$
 	-pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $<
 
 %-kirpilmis.pdf: %.pdf
+	$(addtosync)
 	b=$$(echo "$(TRIM) * 283.465" | bc)
 	w=$$(echo "$(call pagew,$<) * 100 - $$b * 2" | bc)
 	h=$$(echo "$(call pageh,$<) * 100 - $$b * 2" | bc)
