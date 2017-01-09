@@ -246,11 +246,11 @@ $(ONPAPERPDFS): %.pdf: %.sil
 	if $(DRAFT); then
 		$(SILE) -d $(SILE_DEBUG) $< -o $@
 	else
-		export pg0=$(call pagecount,$<)
+		export pg0=$(call pagecount,$@)
 		$(SILE) $< -o $@
-		export pg1=$(call pagecount,$<)
+		export pg1=$(call pagecount,$@)
 		[[ $${pg0} -ne $${pg1} ]] && $(SILE) $< -o $@ ||:
-		export pg2=$(call pagecount,$<)
+		export pg2=$(call pagecount,$@)
 		[[ $${pg1} -ne $${pg2} ]] && $(SILE) $< -o $@ ||:
 	fi
 	# If we have a special cover page for this format, swap it out for the half title page
