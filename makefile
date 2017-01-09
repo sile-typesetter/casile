@@ -185,6 +185,7 @@ dependencies:
 	hash pdfinfo
 	hash pdftk
 	hash $(INKSCAPE)
+	hash podofobox
 	lua -v -l yaml
 	perl -e ';' -MYAML
 	perl -e ';' -MYAML::Merge::Simple
@@ -292,6 +293,12 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(TOOLS)/template.sil | $$
 %-ciftyonlu.pdf: %.pdf
 	-pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $<
 
+%-kirpilmis.pdf: %.pdf
+	b=$$(echo "$(TRIM) * 283.465" | bc)
+	w=$$(echo "$(call pagew,$<) * 100 - $$b * 2" | bc)
+	h=$$(echo "$(call pageh,$<) * 100 - $$b * 2" | bc)
+	podofobox $< $@ media $$b $$b $$w $$h
+
 define versioninfo
 $(shell
 	echo -en "$(basename $1)@"
@@ -381,6 +388,8 @@ define skip_if_tracked
 endef
 
 pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}' || echo 0)
+pagew = $(shell pdfinfo $1 | awk '$$1$$2 == "Pagesize:" {print $$3}' || echo 0)
+pageh = $(shell pdfinfo $1 | awk '$$1$$2 == "Pagesize:" {print $$5}' || echo 0)
 spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | bc)
 mmtopx = $(shell echo "$1 * $(DPI) * 0.0393701 / 1" | bc)
 mmtopm = $(shell echo "$1 * 90 * .0393701 / 1" | bc)
