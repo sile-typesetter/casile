@@ -40,11 +40,12 @@ plane
 {
 	y, 0
 	pigment {
-		color rgb<0.9,0.9,0.9>
+		color rgb< 0.6, 0.6, 0.6 >
 	}
 	finish {
-		reflection 0.05
-		emission rgb<0.2,0.2,0.2>
+		// reflection 0.05
+		// emission rgb< 0.2, 0.2, 0.2 >
+		ambient 0.9
 	}
 }
 
