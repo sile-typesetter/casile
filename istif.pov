@@ -51,7 +51,7 @@ union {
 			rotate < 90, 0, 0 >
 			translate < -bx, bz, 0 >
 			rotate < 0, 8*i, 0 >
-			translate < -bz*i/2, bz*i, 0 >
+			translate < -bx*i/20, bz*i, 0 >
 		}
 		#declare i = i + 1;
 	#end
