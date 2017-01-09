@@ -579,10 +579,10 @@ newgeometry = $(shell grep -qx dpi=$(DPI) $1 || echo force)
 	$(shell identify -density $(DPI) -format '
 			coverwmm=%[fx:round(w/$(DPI)*25.399986)]
 			coverwpx=%[fx:w]
-			coverwpm=%[fx:round(w/$(DPI)*90*$(call scale,$(SCALE),1))]
+			coverwpm=%[fx:round(w/$(DPI)*90)]
 			coverhmm=%[fx:round(h/$(DPI)*25.399986)]
 			coverhpx=%[fx:h]
-			coverhpm=%[fx:round(h/$(DPI)*90*$(call scale,$(SCALE),1))]
+			coverhpm=%[fx:round(h/$(DPI)*90)]
 		' $(word 2,$|)[0])
 	spinemm=$(call spinemm,$(word 1,$|))
 	spinepx=$(call mmtopx,$(call spinemm,$(word 1,$|)))
