@@ -43,8 +43,9 @@ CONVERT ?= convert
 MAGICK ?= magick
 INKSCAPE ?= inkscape
 
-# List of supported layouts
+# List of supported outputs
 PAPERSIZES = a4 a4ciltli octovo halfletter a5 a5trim cep app
+RENDERINGS = 3b-on 3b-arka 3b-istif
 
 # Default to running multiple jobs
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
@@ -132,6 +133,8 @@ VIRTUALPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
 all: $(TARGETS)
 
 ci: | init clean debug sync_pre all sync_post stats
+
+render: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(LAYOUTS),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).png)))
 
 clean:
 	git clean -xf
@@ -226,7 +229,7 @@ else
 endif
 		mkdir -p $(OUTPUT)/$$tagpath
 		while read file; do
-			test -f $$file && -rsync -ct $$file $(OUTPUT)/$$tagpath
+			test -f $$file && rsync -ct $$file $(OUTPUT)/$$tagpath
 		done < $<
 	done
 	$(call sync_owncloud)
