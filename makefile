@@ -46,6 +46,7 @@ INKSCAPE ?= inkscape
 # List of supported outputs
 PAPERSIZES = a4 a4ciltli octovo halfletter a5 a5trim cep app
 RENDERINGS = 3b-on 3b-arka 3b-istif
+CILTLI = a4ciltli octavo halfletter a5trim cep
 
 # Default to running multiple jobs
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
@@ -485,16 +486,16 @@ endef
 		+repage \
 		$@
 
-FRAGMANLAR = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE)-fragmanlar.pdf)
-$(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/viachristus.lua $$(subst -fragmanlar,,$$@)
-	cat <<- EOF > $*-fragmanlar.lua
+CILTFRAGMANLAR = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE)-fragmanlar.pdf)
+$(CILTFRAGMANLAR): $(TOOLS)/cilt.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/viachristus.lua $$(subst -fragmanlar,,$$@)
+	cat <<- EOF > $*-cilt.lua
 		versioninfo = "$(call versioninfo,$*)"
 		layout = "$(call parse_layout,$@)"
 		metadatafile = "$(word 2,$^)"
 		spine = "$(call spinemm,$(lastword $^))mm"
 		basename = "$*"
 	EOF
-	$(SILE) $< -e 'infofile = "$*-fragmanlar"' -o $@
+	$(SILE) $< -e 'infofile = "$*-cilt"' -o $@
 
 %-fragman-on.png: %-fragmanlar.pdf
 	$(MAGICK) -density $(DPI) $<[0] \
