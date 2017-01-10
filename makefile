@@ -186,6 +186,7 @@ dependencies:
 	hash pdftk
 	hash $(INKSCAPE)
 	hash podofobox
+	hash sponge
 	lua -v -l yaml
 	perl -e ';' -MYAML
 	perl -e ';' -MYAML::Merge::Simple
