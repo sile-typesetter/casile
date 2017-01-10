@@ -34,7 +34,7 @@ SILE_DEBUG ?= viachristus # Specific debug flags to set
 COVERS ?= true # Build covers?
 HEAD ?= 0 # Number of lines of MD input to build from
 SCALE = 10 # Reduction factor for draft builds
-DPI = $(call scale,600) # Default DPI for generated press resources
+DPI = $(call scale,1200) # Default DPI for generated press resources
 
 # Allow overriding executables used
 SILE ?= sile
