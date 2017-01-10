@@ -498,21 +498,18 @@ $(FRAGMANLAR): $(TOOLS)/fragmanlar.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS
 
 %-fragman-on.png: %-fragmanlar.pdf
 	$(MAGICK) -density $(DPI) $<[0] \
-		-channel RGB -negate \
-		\( +clone -channel A -morphology Dilate:$(call scale,16) Octagon -blur $(call scale,40)x$(call scale,10) \) \
+		$(call magick_fragman_on) \
 		-composite $@
 
 %-fragman-arka.png: %-fragmanlar.pdf
 	$(MAGICK) -density $(DPI) $<[1] \
-		-channel RGB -negate \
-		\( +clone -channel A -morphology Dilate:$(call scale,8) Octagon -blur $(call scale,20)x$(call scale,5) \) \
+		$(call magick_fragman_arka) \
 		-composite $@
 
 %-fragman-sirt.png: %-fragmanlar.pdf | %.pdf
 	$(MAGICK) -density $(DPI) $<[2] \
 		-crop $(call mmtopx,$(call spinemm,$(word 1,$|)))x+0+0 \
-		-channel RGB -negate \
-		\( +clone -channel A -morphology Dilate:$(call scale,12) Octagon -blur $(call scale,20)x$(call scale,5) \) \
+		$(call magick_fragman_arka) \
 		-composite $@
 
 %-epub-kapak.png: %-kapak.png
