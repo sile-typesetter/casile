@@ -1,0 +1,16 @@
+<sile class="vc" crop="false">
+  <script src="avadanlik/viachristus" />
+  <script>
+    SILE.require(infofile)
+    SILE.registerCommand("meta:surum", function()
+      SILE.typesetter:typeset(versioninfo)
+    end)
+    SILE.metadata = require("readmeta").load(metadatafile)
+  </script>
+  <script src="packages/rotate" />
+  <script src="packages/frametricks" />
+  <nofolios />
+
+  <frontcover />
+
+</sile>

@@ -239,8 +239,10 @@ endif
 
 $(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach RESOURCE,$(RESOURCES),$$*-$(LAYOUT)-$(RESOURCE).pdf)) ;
 
+coverpreq = $(if $(filter $(CILTLI),$(call parse_layout,$1)),,%-kapak.pdf)
+
 ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
-$(ONPAPERPDFS): %.pdf: %.sil
+$(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	$(addtosync)
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
@@ -363,7 +365,7 @@ endef
 
 %.sil.toc: %.pdf ;
 
-%.app: %-app.info %-app-kapak-kare.png %-app-kapak-genis.png;
+%.app: %-app.info %-app-kapak-kare.png %-app-kapak-genis.png ;
 
 %-app.info: %-app.sil.toc %-merged.yml
 	$(addtosync)
@@ -402,7 +404,7 @@ height = $(shell identify -density $(DPI) -format %[fx:h] $1)
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 
-%-kapak-zemin.png: %.pdf
+x%-kapak-zemin.png: %.pdf
 	$(COVERS) || exit 0
 	$(call skip_if_tracked,$@)
 	$(MAGICK) -size $(call width,$<)x$(call height,$<) $(call zemin) $@
@@ -431,37 +433,37 @@ define draw_title
 		$4
 endef
 
-%-kapak-kare.png: %-kapak-zemin.png
+x%-kapak-kare.png: %-kapak-zemin.png
 	$(addtosync)
 	$(call skip_if_tracked,$@)
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
 	$(call draw_title,$$caption,2048x2048,$<,$@)
 
-%-kapak-genis.png: %-kapak-zemin.png
+x%-kapak-genis.png: %-kapak-zemin.png
 	$(call skip_if_tracked,$@)
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
 	$(call draw_title,$$caption,3840x2160,$<,$@)
 
-%-kapak.png: %-kapak-zemin.png
+x%-kapak.png: %-kapak-zemin.png
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
 	$(call draw_title,$$caption,2000x3200,$<,$@)
 
-%-app-kapak-kare.png: %-kapak-kare.png
+x%-app-kapak-kare.png: %-kapak-kare.png
 	$(addtosync)
 	$(COVERS) || exit 0
 	$(CONVERT) $< -resize 1024x1024 $@
 
-%-app-kapak-genis.png: %-kapak-genis.png
+x%-app-kapak-genis.png: %-kapak-genis.png
 	$(addtosync)
 	$(COVERS) || exit 0
 	$(CONVERT) $< -resize 1920x1080 $@
 
-%-kapak-isoa.png: %-kapak-zemin.png
+x%-kapak-isoa.png: %-kapak-zemin.png
 	$(call skip_if_tracked,$@)
 	export caption=$$($(TOOLS)/bin/cover_title.py $@)
 	$(call draw_title,$$caption,4000x5657,$<,$@)
 
-%-a4-kapak.pdf: %-kapak-isoa.png
+x%-a4-kapak.pdf: %-kapak-isoa.png
 	$(COVERS) || exit 0
 	$(CONVERT)  $< \
 		-bordercolor none -border 300x424 \
@@ -472,7 +474,7 @@ endef
 		+repage \
 		$@
 
-%-app-kapak.pdf: %-kapak.png
+x%-app-kapak.pdf: %-kapak.png
 	$(COVERS) || exit 0
 	$(CONVERT) $< \
 		-resize x1280 \
@@ -485,6 +487,23 @@ endef
 		-quality 80 \
 		+repage \
 		$@
+
+%-kapak.pdf: %-kapak.png %-kapakmetin.pdf
+	$(COVERS) || exit 0
+	# | %-geometry.sh
+	# source $(firstword $|)
+	echo XX $^ YY $|
+	# $(MAGICK) $< \
+	#     -resize x1280 \
+	#     -gravity Center \
+	#     -crop 800x1280+0+0! \
+	#     -gravity SouthWest \
+	#     -extent 800x1280 \
+	#     -page 226.772x362.834 \
+	#     -compress jpeg \
+	#     -quality 80 \
+	#     +repage \
+	#     $@
 
 CILTFRAGMANLAR = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE)-fragmanlar.pdf)
 $(CILTFRAGMANLAR): $(TOOLS)/cilt.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/viachristus.lua $$(subst -fragmanlar,,$$@)
@@ -512,6 +531,16 @@ $(CILTFRAGMANLAR): $(TOOLS)/cilt.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/
 		-crop $(call mmtopx,$(call spinemm,$(word 1,$|)))x+0+0 \
 		$(call magick_fragman_arka) \
 		-composite $@
+
+KAPAKMETIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapakmetin.pdf)
+$(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
+	cat <<- EOF > $*-kapak.lua
+		versioninfo = "$(call versioninfo,$*)"
+		layout = "$(call parse_layout,$@)"
+		metadatafile = "$(word 2,$^)"
+		$(foreach LUA,$|, SILE.require("$(basename $(LUA))");)
+	EOF
+	$(SILE) $< -e 'infofile = "$*-kapak"' -o $@
 
 %-epub-kapak.png: %-kapak.png
 	$(call skip_if_tracked,$@)
