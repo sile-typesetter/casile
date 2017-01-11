@@ -404,10 +404,10 @@ height = $(shell identify -density $(DPI) -format %[fx:h] $1)
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 
-x%-kapak-zemin.png: %.pdf
-	$(COVERS) || exit 0
+%-kapak-zemin.png: | %-geometry.sh
 	$(call skip_if_tracked,$@)
-	$(MAGICK) -size $(call width,$<)x$(call height,$<) $(call zemin) $@
+	source $(firstword $|)
+	$(MAGICK) -size $(call width,$<)x$(call height,$<) $(call magick_zemin) $@
 
 define draw_title
 	$(CONVERT)  \
@@ -488,7 +488,15 @@ x%-app-kapak.pdf: %-kapak.png
 		+repage \
 		$@
 
-%-kapak.pdf: %-kapak.png %-kapakmetin.pdf
+%-kapak.png: %-kapak-zemin.png | %-geometry.sh
+	source $(firstword $|)
+	$(MAGICK) $< \
+		-gravity $(COVER_GRAVITY) \
+		-resize $${coverwpm}x$$(coverhpm}^ \
+		-extent $${coverwpm}x$$(coverhpm} \
+		$@
+
+%-kapak.pdf: %-kapak.png %-kapak-metin.pdf
 	$(COVERS) || exit 0
 	# | %-geometry.sh
 	# source $(firstword $|)
@@ -505,8 +513,8 @@ x%-app-kapak.pdf: %-kapak.png
 	#     +repage \
 	#     $@
 
-CILTFRAGMANLAR = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE)-fragmanlar.pdf)
-$(CILTFRAGMANLAR): $(TOOLS)/cilt.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/viachristus.lua $$(subst -fragmanlar,,$$@)
+CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
+$(CILTFRAGMANLAR): $(TOOLS)/cilt.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/viachristus.lua $$(subst -cilt-metin,,$$@)
 	cat <<- EOF > $*-cilt.lua
 		versioninfo = "$(call versioninfo,$*)"
 		layout = "$(call parse_layout,$@)"
@@ -516,23 +524,23 @@ $(CILTFRAGMANLAR): $(TOOLS)/cilt.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/
 	EOF
 	$(SILE) $< -e 'infofile = "$*-cilt"' -o $@
 
-%-fragman-on.png: %-fragmanlar.pdf
+%-fragman-on.png: %-cilt-metin.pdf
 	$(MAGICK) -density $(DPI) $<[0] \
 		$(call magick_fragman_on) \
 		-composite $@
 
-%-fragman-arka.png: %-fragmanlar.pdf
+%-fragman-arka.png: %-cilt-metin.pdf
 	$(MAGICK) -density $(DPI) $<[1] \
 		$(call magick_fragman_arka) \
 		-composite $@
 
-%-fragman-sirt.png: %-fragmanlar.pdf | %.pdf
+%-fragman-sirt.png: %-cilt-metin.pdf | %.pdf
 	$(MAGICK) -density $(DPI) $<[2] \
 		-crop $(call mmtopx,$(call spinemm,$(word 1,$|)))x+0+0 \
 		$(call magick_fragman_arka) \
 		-composite $@
 
-KAPAKMETIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapakmetin.pdf)
+KAPAKMETIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapak-metin.pdf)
 $(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
 	lua=$*-$(call parse_layout,$@)-kapak
 	cat <<- EOF > $$lua.lua
@@ -552,7 +560,6 @@ $(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOL
 	source $(lastword $^)
 	texturew="$$(bc <<< "$$imgwpx / $(call scale,4,4)")"
 	textureh="$$(bc <<< "$$imghpx / $(call scale,4,4)")"
-	set -x
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(DPI) \
 		$(call magick_zemin) \
 		$(call magick_kenar) \
@@ -598,7 +605,7 @@ $(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOL
 
 newgeometry = $(shell grep -qx dpi=$(DPI) $1 || echo force)
 
-%-geometry.sh: $$(call newgeometry,$$@) | %.pdf %-fragmanlar.pdf
+%-geometry.sh: $$(call newgeometry,$$@) | %.pdf %-kapak-metin.pdf
 	set -x ; exec 2> >(cut -c3- > $@) # black magic to output the finished math
 	dpi=$(DPI)
 	bleedmm=$(BLEED)
