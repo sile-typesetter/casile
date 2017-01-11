@@ -534,13 +534,15 @@ $(CILTFRAGMANLAR): $(TOOLS)/cilt.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/
 
 KAPAKMETIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapakmetin.pdf)
 $(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
-	cat <<- EOF > $*-kapak.lua
+	lua=$*-$(call parse_layout,$@)-kapak
+	cat <<- EOF > $$lua.lua
 		versioninfo = "$(call versioninfo,$*)"
 		layout = "$(call parse_layout,$@)"
 		metadatafile = "$(word 2,$^)"
-		$(foreach LUA,$|, SILE.require("$(basename $(LUA))");)
+		$(foreach LUA,$|, SILE.require("$(basename $(LUA))")
+		)
 	EOF
-	$(SILE) $< -e 'infofile = "$*-kapak"' -o $@
+	$(SILE) $< -e "infofile = '$$lua'" -o $@
 
 %-epub-kapak.png: %-kapak.png
 	$(call skip_if_tracked,$@)
