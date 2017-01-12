@@ -399,17 +399,18 @@ pageh = $(shell pdfinfo $1 | awk '$$1$$2 == "Pagesize:" {print $$5}' || echo 0)
 spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | bc)
 mmtopx = $(shell echo "$1 * $(DPI) * 0.0393701 / 1" | bc)
 mmtopm = $(shell echo "$1 * 90 * .0393701 / 1" | bc)
+mmtopt = $(shell echo "$1 * 2.83465 / 1" | bc)
 width = $(shell identify -density $(DPI) -format %[fx:w] $1)
 height = $(shell identify -density $(DPI) -format %[fx:h] $1)
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 
-SIZEDKAPAKLAR = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapak-zemin.png)
+ONPAPERZEMIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapak-zemin.png)
 gitzemin = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
-$(SIZEDKAPAKLAR): $$(call gitzemin,$$@) | $$(subst kapak-metin.png,geometry.sh,$$@)
+$(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,$$@)
 	source $(firstword $|)
-	$(if $^,true,false) && $(MAGICK) -resize $${coverwm}x$${coverhpm}^ $@ ||:
-	$(if $^,false,true) && $(MAGICK) -size $${coverwm}x$${coverhpm}^ $(call magick_zemin) -composite $@ ||:
+	$(if $^,true,false) && $(MAGICK) $^ -gravity $(COVER_GRAVITY) -resize $${coverwpx}x$${coverhpx}^ -extent $${coverwpx}x$${coverhpx} $@ ||:
+	$(if $^,false,true) && $(MAGICK) -size $${coverwpx}x$${coverhpx}^ $(call magick_zemin) -composite $@ ||:
 
 define draw_title
 	$(CONVERT)  \
@@ -490,29 +491,40 @@ x%-app-kapak.pdf: %-kapak.png
 		+repage \
 		$@
 
-%-kapak.png: %-kapak-zemin.png | %-geometry.sh
+%-kapak.png: %-kapak-zemin.png %-kapak-metin.pdf | %-geometry.sh
 	source $(firstword $|)
-	$(MAGICK) $< \
-		-gravity $(COVER_GRAVITY) \
-		-resize $${coverwpm}x$${coverhpm}^ \
+	set -x
+	$(MAGICK) -density $(DPI) $(lastword $^)[0] \
+		-background transparent \
+		\( +clone \
+			-channel A \
+			-morphology Dilate:$(call scale,40) Octagon \
+			-blur 0x$(call scale,60) \
+			-channel RGB \
+			-negate \
+		\) -composite \
+		\( $< \
+		\) +swap -composite \
+		-draw "image over 0,0 $${coverwpx},$${coverhpx} $(lastword $^)" \
+		-resize $${coverwpm}x$${coverhpm} \
 		-extent $${coverwpm}x$${coverhpm} \
-		$@
+		+repage $@
 
 %-kapak.pdf: %-kapak.png %-kapak-metin.pdf | %-geometry.sh
 	$(COVERS) || exit 0
+	metin=$$(mktemp kapakXXXXXX.pdf)
+	bg=$$(mktemp kapakXXXXXX.pdf)
 	source $(firstword $|)
-	echo XX $^ YY $|
-	# $(MAGICK) $< \
-	#     -resize x1280 \
-	#     -gravity Center \
-	#     -crop 800x1280+0+0! \
-	#     -gravity SouthWest \
-	#     -extent 800x1280 \
-	#     -page 226.772x362.834 \
-	#     -compress jpeg \
-	#     -quality 80 \
-	#     +repage \
-	#     $@
+	$(MAGICK) $< \
+		-resize $${coverwpm}x \
+		-page $${coverwpt}x$${coverhpt} \
+		-compress jpg \
+		-quality 80 \
+		+repage \
+		$$bg
+	pdftk $(lastword $^) cat 1 output $$metin
+	pdftk $$metin background $$bg output $@
+	rm $$metin $$bg
 
 CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
 $(CILTFRAGMANLAR): $(TOOLS)/cilt.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/viachristus.lua $$(subst -cilt-metin,,$$@)
@@ -548,7 +560,7 @@ $(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOL
 		versioninfo = "$(call versioninfo,$*)"
 		layout = "$(call parse_layout,$@)"
 		metadatafile = "$(word 2,$^)"
-		$(foreach LUA,$|, SILE.require("$(basename $(LUA))")\n)
+		$(foreach LUA,$|, SILE.require("$(basename $(LUA))");)
 	EOF
 	$(SILE) $< -e "infofile = '$$lua'" -o $@
 
@@ -606,36 +618,43 @@ $(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOL
 newgeometry = $(shell grep -qx dpi=$(DPI) $1 || echo force)
 geometrybase = $(if $(filter $(CILTLI),$(call parse_layout,$1)),%.pdf %-cilt-metin.pdf,%-kapak-metin.pdf)
 
-%-geometry.sh: $$(call newgeometry,$$@) | $$(call geometrybase,$$@)
-	echo MMMMMM $|
+%-geometry.sh: $$(call newgeometry,$$@) | $(call geometrybase,$$@)
 	set -x ; exec 2> >(cut -c3- > $@) # black magic to output the finished math
 	dpi=$(DPI)
 	bleedmm=$(BLEED)
 	bleedpx=$(call mmtopx,$(BLEED))
 	bleedpm=$(call mmtopm,$(BLEED))
+	bleedpt=$(call mmtopt,$(BLEED))
 	trimmm=$(TRIM)
 	trimpx=$(call mmtopx,$(TRIM))
 	trimpm=$(call mmtopm,$(TRIM))
+	trimpt=$(call mmtopt,$(TRIM))
 	$(shell identify -density $(DPI) -format '
 			coverwmm=%[fx:round(w/$(DPI)*25.399986)]
 			coverwpx=%[fx:w]
 			coverwpm=%[fx:round(w/$(DPI)*90)]
+			coverwpt=%[fx:round(w/$(DPI)*72)]
 			coverhmm=%[fx:round(h/$(DPI)*25.399986)]
 			coverhpx=%[fx:h]
 			coverhpm=%[fx:round(h/$(DPI)*90)]
+			coverhpt=%[fx:round(h/$(DPI)*72)]
 		' $(lastword $|)[0])
 	spinemm=$(call spinemm,$(firstword $|))
 	spinepx=$(call mmtopx,$(call spinemm,$(firstword $|)))
 	spinepm=$(call mmtopm,$(call spinemm,$(firstword $|)))
+	spinept=$(call mmtopt,$(call spinemt,$(firstword $|)))
 	ciltwmm=$$(($$coverwmm+$$spinemm+$$coverwmm))
 	ciltwpx=$$(($$coverwpx+$$spinepx+$$coverwpx))
 	ciltwpm=$$(($$coverwpm+$$spinepm+$$coverwpm))
+	ciltwpt=$$(($$coverwpt+$$spinept+$$coverwpt))
 	imgwmm=$$(($$ciltwmm+$$bleedmm*2))
 	imgwpx=$$(($$ciltwpx+$$bleedpx*2))
 	imgwpm=$$(($$ciltwpm+$$bleedpm*2))
+	imgwpt=$$(($$ciltwpt+$$bleedpt*2))
 	imghmm=$$(($$coverhmm+$$bleedmm*2))
 	imghpx=$$(($$coverhpx+$$bleedpx*2))
 	imghpm=$$(($$coverhpm+$$bleedpm*2))
+	imghpt=$$(($$coverhpt+$$bleedpt*2))
 
 define magick_zemin
 	xc:darkgray
