@@ -404,10 +404,12 @@ height = $(shell identify -density $(DPI) -format %[fx:h] $1)
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 
-%-kapak-zemin.png: | %-geometry.sh
-	$(call skip_if_tracked,$@)
+SIZEDKAPAKLAR = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapak-zemin.png)
+gitzemin = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
+$(SIZEDKAPAKLAR): $$(call gitzemin,$$@) | $$(subst kapak-metin.png,geometry.sh,$$@)
 	source $(firstword $|)
-	$(MAGICK) -size $(call width,$<)x$(call height,$<) $(call magick_zemin) $@
+	$(if $^,true,false) && $(MAGICK) -resize $${coverwm}x$${coverhpm}^ $@ ||:
+	$(if $^,false,true) && $(MAGICK) -size $${coverwm}x$${coverhpm}^ $(call magick_zemin) -composite $@ ||:
 
 define draw_title
 	$(CONVERT)  \
@@ -492,14 +494,13 @@ x%-app-kapak.pdf: %-kapak.png
 	source $(firstword $|)
 	$(MAGICK) $< \
 		-gravity $(COVER_GRAVITY) \
-		-resize $${coverwpm}x$$(coverhpm}^ \
-		-extent $${coverwpm}x$$(coverhpm} \
+		-resize $${coverwpm}x$${coverhpm}^ \
+		-extent $${coverwpm}x$${coverhpm} \
 		$@
 
-%-kapak.pdf: %-kapak.png %-kapak-metin.pdf
+%-kapak.pdf: %-kapak.png %-kapak-metin.pdf | %-geometry.sh
 	$(COVERS) || exit 0
-	# | %-geometry.sh
-	# source $(firstword $|)
+	source $(firstword $|)
 	echo XX $^ YY $|
 	# $(MAGICK) $< \
 	#     -resize x1280 \
@@ -547,8 +548,7 @@ $(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOL
 		versioninfo = "$(call versioninfo,$*)"
 		layout = "$(call parse_layout,$@)"
 		metadatafile = "$(word 2,$^)"
-		$(foreach LUA,$|, SILE.require("$(basename $(LUA))")
-		)
+		$(foreach LUA,$|, SILE.require("$(basename $(LUA))")\n)
 	EOF
 	$(SILE) $< -e "infofile = '$$lua'" -o $@
 
@@ -604,8 +604,10 @@ $(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOL
 		--export-pdf=$@
 
 newgeometry = $(shell grep -qx dpi=$(DPI) $1 || echo force)
+geometrybase = $(if $(filter $(CILTLI),$(call parse_layout,$1)),%.pdf %-cilt-metin.pdf,%-kapak-metin.pdf)
 
-%-geometry.sh: $$(call newgeometry,$$@) | %.pdf %-kapak-metin.pdf
+%-geometry.sh: $$(call newgeometry,$$@) | $$(call geometrybase,$$@)
+	echo MMMMMM $|
 	set -x ; exec 2> >(cut -c3- > $@) # black magic to output the finished math
 	dpi=$(DPI)
 	bleedmm=$(BLEED)
@@ -621,10 +623,10 @@ newgeometry = $(shell grep -qx dpi=$(DPI) $1 || echo force)
 			coverhmm=%[fx:round(h/$(DPI)*25.399986)]
 			coverhpx=%[fx:h]
 			coverhpm=%[fx:round(h/$(DPI)*90)]
-		' $(word 2,$|)[0])
-	spinemm=$(call spinemm,$(word 1,$|))
-	spinepx=$(call mmtopx,$(call spinemm,$(word 1,$|)))
-	spinepm=$(call mmtopm,$(call spinemm,$(word 1,$|)))
+		' $(lastword $|)[0])
+	spinemm=$(call spinemm,$(firstword $|))
+	spinepx=$(call mmtopx,$(call spinemm,$(firstword $|)))
+	spinepm=$(call mmtopm,$(call spinemm,$(firstword $|)))
 	ciltwmm=$$(($$coverwmm+$$spinemm+$$coverwmm))
 	ciltwpx=$$(($$coverwpx+$$spinepx+$$coverwpx))
 	ciltwpm=$$(($$coverwpm+$$spinepm+$$coverwpm))
