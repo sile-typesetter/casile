@@ -503,29 +503,32 @@ x%-app-kapak.pdf: %-kapak.png
 
 %-kapak.png: %-kapak-zemin.png %-kapak-metin.pdf | %-geometry.sh
 	source $(firstword $|)
-	set -x
 	$(MAGICK) -density $(LODPI) $(lastword $^)[0] \
-		-background transparent \
-		+duplicate \
-		\( -clone 0 \
+		-fill none \
+		-fuzz 5% \
+		-draw 'color 1,1 replace' \
+		+write mpr:metin \
+		\( mpr:metin \
+			-channel RGBA \
+			-morphology Dilate:$(call scale,5) Octagon \
 			-channel RGB \
 			-negate \
-			-channel RGBA \
-			-morphology Dilate:$(call scale,6) Octagon \
 		\) -composite \
-		\( -clone 0 \
+		\( mpr:metin \
+			-channel RGBA \
+			-morphology Dilate:$(call scale,40) Octagon \
+			-modulate 500% \
+			-resize 20% \
+			-blur 0x$(call scale,20) \
+			-resize 500% \
+			-channel A \
 			-channel RGB \
 			-negate \
-			-channel RGBA \
-			-morphology Dilate:$(call scale,20) Octagon \
-			-resize 25% \
-			-blur 0x$(call scale,30) \
-			-resize 400% \
-			-channel A \
-			-level -60% \
-		\) +swap -composite \
-		\( $< \
-		\) +swap -composite \
+		\) -composite \
+		\( mpr:metin \
+		\) -composite \
+		\( $< -normalize \
+		\) +swap -compose over -composite \
 		+repage $@
 
 %-kapak.pdf: %-kapak.png %-kapak-metin.pdf | %-geometry.sh
