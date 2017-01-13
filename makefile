@@ -546,13 +546,14 @@ x%-app-kapak.pdf: %-kapak.png
 	rm $$metin $$bg
 
 CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
-$(CILTFRAGMANLAR): $(TOOLS)/cilt.xml %-merged.yml $$(wildcard $$*.lua) $(TOOLS)/viachristus.lua $$(subst -cilt-metin,,$$@)
+													
+$(CILTFRAGMANLAR): $(TOOLS)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@) | $(TOOLS)/viachristus.lua $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
 	cat <<- EOF > $*-cilt.lua
 		versioninfo = "$(call versioninfo,$*)"
 		layout = "$(call parse_layout,$@)"
 		metadatafile = "$(word 2,$^)"
 		spine = "$(call spinemm,$(lastword $^))mm"
-		basename = "$*"
+		$(foreach LUA,$|, SILE.require("$(basename $(LUA))");)
 	EOF
 	$(SILE) $< -e 'infofile = "$*-cilt"' -o $@
 

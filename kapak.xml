@@ -7,7 +7,7 @@
     end)
     SILE.metadata = require("readmeta").load(metadatafile)
   </script>
-  <script src="packages/rotate" />
+  <define command="output-right-running-head"></define>
   <script src="packages/frametricks" />
   <nofolios />
 
