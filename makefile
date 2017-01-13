@@ -506,27 +506,27 @@ x%-app-kapak.pdf: %-kapak.png
 	set -x
 	$(MAGICK) -density $(LODPI) $(lastword $^)[0] \
 		-background transparent \
-		\( +clone \
+		+duplicate \
+		\( -clone 0 \
 			-channel RGB \
+			-negate \
+			-channel RGBA \
+			-morphology Dilate:$(call scale,6) Octagon \
+		\) -composite \
+		\( -clone 0 \
+			-channel RGB \
+			-negate \
+			-channel RGBA \
 			-morphology Dilate:$(call scale,20) Octagon \
-			-negate \
-		\) -composite \
-		\( +clone \
-			-channel RGB \
-			-morphology Dilate:$(call scale,40) Octagon \
-			-blur 0x$(call scale,40) \
-			-negate \
+			-resize 25% \
+			-blur 0x$(call scale,30) \
+			-resize 400% \
 			-channel A \
-			-level -50% \
-		\) -composite \
+			-level -60% \
+		\) +swap -composite \
 		\( $< \
 		\) +swap -composite \
-		-draw "image over 0,0 $${coverwpp},$${coverhpp} $(lastword $^)" \
 		+repage $@
-
-x:
-		-resize $${coverwpp}x$${coverhpp} \
-		-extent $${coverwpp}x$${coverhpp} 
 
 %-kapak.pdf: %-kapak.png %-kapak-metin.pdf | %-geometry.sh
 	$(COVERS) || exit 0
@@ -534,7 +534,6 @@ x:
 	bg=$$(mktemp kapakXXXXXX.pdf)
 	source $(firstword $|)
 	$(MAGICK) $< \
-		-page $${coverwpt}x$${coverhpt} \
 		-compress jpeg \
 		-quality 80 \
 		+repage \
