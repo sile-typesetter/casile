@@ -510,18 +510,18 @@ x%-app-kapak.pdf: %-kapak.png
 		+write mpr:metin \
 		\( mpr:metin \
 			-channel RGBA \
-			-morphology Dilate:$(call scale,5) Octagon \
+			-morphology Dilate:$(call scale,2) Octagon \
 			-channel RGB \
 			-negate \
 		\) -composite \
 		\( mpr:metin \
 			-channel RGBA \
-			-morphology Dilate:$(call scale,40) Octagon \
-			-modulate 500% \
-			-resize 20% \
-			-blur 0x$(call scale,20) \
-			-resize 500% \
+			-morphology Dilate:$(call scale,5) Octagon \
+			-resize 25% \
+			-blur 0x$(call scale,5) \
+			-resize 400% \
 			-channel A \
+			-level 0%,250% \
 			-channel RGB \
 			-negate \
 		\) -composite \
