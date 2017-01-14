@@ -377,7 +377,7 @@ endef
 
 issue.info:
 	$(addtosync)
-	@for source in $(TARGETS); do
+	for source in $(TARGETS); do
 		echo -e "# $$source\n"
 		sed -ne "/^# /{s/^# *\(.*\)/ - [ ] [\1]($${source}.md)/g;p}" $$source.md
 		find $${source}-bolumler -name '*.md' -print |
@@ -423,45 +423,6 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,
 		-composite \
 		$@ ||:
 
-define draw_title
-	$(CONVERT)  \
-		-size 2500x2000 xc:none -background none \
-		-gravity Center \
-		-pointsize 128 -kerning -5 \
-		-font Libertinus-Sans-Bold \
-		-fill black -stroke none \
-		-annotate 0 "$1" \
-		-blur 80x20 \
-		-fill white -stroke black -strokewidth 10 \
-		-annotate 0 "$1" \
-		-stroke none \
-		-annotate 0 "$1" \
-		-trim \
-		-resize $2 -resize 95% -extent $2 \
-		$3 +swap \
-		-gravity $(COVER_GRAVITY) \
-		-resize $2^ -extent $2 \
-		-shave 10x10 \
-		-bordercolor black -border 10x10 \
-		-composite \
-		$4
-endef
-
-x%-kapak-kare.png: %-kapak-zemin.png
-	$(addtosync)
-	$(call skip_if_tracked,$@)
-	export caption=$$($(TOOLS)/bin/cover_title.py $@)
-	$(call draw_title,$$caption,2048x2048,$<,$@)
-
-x%-kapak-genis.png: %-kapak-zemin.png
-	$(call skip_if_tracked,$@)
-	export caption=$$($(TOOLS)/bin/cover_title.py $@)
-	$(call draw_title,$$caption,3840x2160,$<,$@)
-
-x%-kapak.png: %-kapak-zemin.png
-	export caption=$$($(TOOLS)/bin/cover_title.py $@)
-	$(call draw_title,$$caption,2000x3200,$<,$@)
-
 x%-app-kapak-kare.png: %-kapak-kare.png
 	$(addtosync)
 	$(COVERS) || exit 0
@@ -471,36 +432,6 @@ x%-app-kapak-genis.png: %-kapak-genis.png
 	$(addtosync)
 	$(COVERS) || exit 0
 	$(CONVERT) $< -resize 1920x1080 $@
-
-x%-kapak-isoa.png: %-kapak-zemin.png
-	$(call skip_if_tracked,$@)
-	export caption=$$($(TOOLS)/bin/cover_title.py $@)
-	$(call draw_title,$$caption,4000x5657,$<,$@)
-
-x%-a4-kapak.pdf: %-kapak-isoa.png
-	$(COVERS) || exit 0
-	$(CONVERT)  $< \
-		-bordercolor none -border 300x424 \
-		-resize 2000x2828 \
-		-page A4  \
-		-compress jpeg \
-		-quality 80 \
-		+repage \
-		$@
-
-x%-app-kapak.pdf: %-kapak.png
-	$(COVERS) || exit 0
-	$(CONVERT) $< \
-		-resize x1280 \
-		-gravity Center \
-		-crop 800x1280+0+0! \
-		-gravity SouthWest \
-		-extent 800x1280 \
-		-page 226.772x362.834 \
-		-compress jpeg \
-		-quality 80 \
-		+repage \
-		$@
 
 %-kapak.png: %-kapak-zemin.png %-kapak-metin.pdf | %-geometry.sh
 	source $(firstword $|)
