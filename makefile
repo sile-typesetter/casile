@@ -45,9 +45,11 @@ MAGICK ?= magick
 INKSCAPE ?= inkscape
 
 # List of supported outputs
-PAPERSIZES = a4 a4ciltli octovo halfletter a5 a5trim cep app
+PAPERSIZES = a4 a4ciltli octovo halfletter a5 a5trim cep app kare genis
 RENDERINGS = 3b-on 3b-arka 3b-istif
 CILTLI = a4ciltli octavo halfletter a5trim cep
+KAPAKLI = a4 a5 app
+PANKARTLI = kare genis
 
 # Default to running multiple jobs
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
@@ -366,7 +368,7 @@ endef
 
 %.sil.toc: %.pdf ;
 
-%.app: %-app.info %-app-kapak-kare.png %-app-kapak-genis.png ;
+%.app: %-app.info %-kare-pankart.png %-genis-pankart.png ;
 
 %-app.info: %-app.sil.toc %-merged.yml
 	$(addtosync)
@@ -410,7 +412,6 @@ ONPAPERZEMIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAP
 gitzemin = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
 $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,$$@)
 	@source $(firstword $|)
-	set -x
 	$(if $^,true,false) && $(MAGICK) $^ \
 		-gravity $(COVER_GRAVITY) \
 		-extent "%[fx:w/h>=$$coveraspect?h*$$coveraspect:w]x" \
@@ -423,15 +424,12 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,
 		-composite \
 		$@ ||:
 
-x%-app-kapak-kare.png: %-kapak-kare.png
+%-pankart.png: %-kapak.png | %-geometry.sh
 	$(addtosync)
-	$(COVERS) || exit 0
-	$(CONVERT) $< -resize 1024x1024 $@
-
-x%-app-kapak-genis.png: %-kapak-genis.png
-	$(addtosync)
-	$(COVERS) || exit 0
-	$(CONVERT) $< -resize 1920x1080 $@
+	@source $(firstword $|)
+	$(MAGICK) $< \
+		-size $${coverwpp}x$${coverhpp}^ \
+		$@
 
 %-kapak.png: %-kapak-zemin.png %-kapak-metin.pdf | %-geometry.sh
 	source $(firstword $|)
