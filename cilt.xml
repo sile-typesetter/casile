@@ -1,4 +1,4 @@
-<sile class="vc" crop="false">
+<sile class="vc" crop="false" background="false">
   <script src="avadanlik/viachristus" />
   <script>
     SILE.require(infofile)

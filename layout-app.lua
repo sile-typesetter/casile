@@ -75,8 +75,10 @@ end)
 SILE.registerCommand("topfill", function (options, content)
 end)
 
-SILE.require("packages/background")
-SILE.call("background", { color = "#e9d8ba" })
+if SILE.documentState.documentClass.options.background() == "true" then
+  SILE.require("packages/background")
+  SILE.call("background", { color = "#e9d8ba" })
 
-local inkColor = SILE.colorparser("#5a4129")
-SILE.outputter:pushColor(inkColor)
+  local inkColor = SILE.colorparser("#5a4129")
+  SILE.outputter:pushColor(inkColor)
+end
