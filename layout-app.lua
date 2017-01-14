@@ -1,5 +1,6 @@
 SILE.scratch.layout = "app"
 local class = SILE.documentState.documentClass
+  
 
 SILE.documentState.paperSize = SILE.paperSizeParser("80mm x 128mm")
 SILE.documentState.orgPaperSize = SILE.documentState.paperSize
