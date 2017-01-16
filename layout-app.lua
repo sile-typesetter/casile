@@ -1,9 +1,10 @@
 SILE.scratch.layout = "app"
+local class = SILE.documentState.documentClass
+  
 
 SILE.documentState.paperSize = SILE.paperSizeParser("80mm x 128mm")
 SILE.documentState.orgPaperSize = SILE.documentState.paperSize
 
-local class = SILE.documentState.documentClass
 class:defineMaster({
     id = "right",
     firstContentFrame = "content",
@@ -32,21 +33,24 @@ class:mirrorMaster("right", "left")
 SILE.call("switch-master-one-page", { id = "right" })
 
 SILE.registerCommand("output-right-running-head", function (options, content)
-  SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
-  SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
-  SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
-  SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
-  SILE.call("center", {}, function()
-    SILE.call("book:left-running-head-font", {}, function ()
-      SILE.call("meta:title")
+  if not SILE.scratch.headers.right then return end
+  SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
+    SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
+    SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
+    SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
+    SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
+    SILE.call("book:right-running-head-font", {}, function ()
+      SILE.call("center", {}, function()
+        SILE.call("meta:title")
+      end)
     end)
+    SILE.call("skip", { height = "2pt" })
+    SILE.call("book:right-running-head-font", {}, SILE.scratch.headers.right)
+    SILE.call("hfill")
+    SILE.call("book:page-number-font", {},  { SILE.formatCounter(SILE.scratch.counters.folio) })
+    SILE.call("skip", { height = "-8pt" })
+    SILE.call("fullrule", { raise = 0 })
   end)
-  SILE.call("skip", { height = "2pt" })
-  SILE.call("book:right-running-head-font", {}, SILE.scratch.headers.right)
-  SILE.call("hfill")
-  SILE.call("book:page-number-font", {},  { SILE.formatCounter(SILE.scratch.counters.folio) })
-  SILE.call("skip", { height = "-4pt" })
-  SILE.call("fullrule")
 end)
 
 SILE.registerCommand("output-left-running-head", function (options, content)
@@ -75,8 +79,10 @@ end)
 SILE.registerCommand("topfill", function (options, content)
 end)
 
-SILE.require("packages/background")
-SILE.call("background", { color = "#e9d8ba" })
+if SILE.documentState.documentClass.options.background() == "true" then
+  SILE.require("packages/background")
+  SILE.call("background", { color = "#e9d8ba" })
 
-local inkColor = SILE.colorparser("#5a4129")
-SILE.outputter:pushColor(inkColor)
+  local inkColor = SILE.colorparser("#5a4129")
+  SILE.outputter:pushColor(inkColor)
+end

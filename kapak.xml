@@ -1,23 +1,16 @@
-<sile class="vc" crop="false">
+<sile class="vc" crop="false" background="false">
   <script src="avadanlik/viachristus" />
   <script>
     SILE.require(infofile)
-    SILE.require("covers")
-    SILE.require(basename)
-    SILE.require("layout-" .. layout)
     SILE.registerCommand("meta:surum", function()
       SILE.typesetter:typeset(versioninfo)
     end)
     SILE.metadata = require("readmeta").load(metadatafile)
   </script>
-  <script src="packages/rotate" />
+  <define command="output-right-running-head"></define>
   <script src="packages/frametricks" />
   <nofolios />
 
   <frontcover />
-
-  <backcover />
-
-  <spine />
 
 </sile>

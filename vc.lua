@@ -4,6 +4,7 @@ local plain = SILE.require("classes/plain")
 local vc = book { id = "vc" }
 
 vc:declareOption("crop", "true")
+vc:declareOption("background", "true")
 
 vc.endPage = function (self)
   vc:moveTocNodes()
