@@ -81,8 +81,8 @@ end)
 
 if SILE.documentState.documentClass.options.background() == "true" then
   SILE.require("packages/background")
-  SILE.call("background", { color = "#e9d8ba" })
+  SILE.call("background", { color = "#e1e2e6" })
 
-  local inkColor = SILE.colorparser("#5a4129")
+  local inkColor = SILE.colorparser("#19191A")
   SILE.outputter:pushColor(inkColor)
 end
