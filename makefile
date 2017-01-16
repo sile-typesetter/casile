@@ -381,13 +381,18 @@ issue.info:
 	$(addtosync)
 	for source in $(TARGETS); do
 		echo -e "# $$source\n"
-		sed -ne "/^# /{s/^# *\(.*\)/ - [ ] [\1]($${source}.md)/g;p}" $$source.md
-		find $${source}-bolumler -name '*.md' -print |
-			sort -n |
-			while read chapter; do
-				number=$${chapter%-*}; number=$${number#*/}
-				sed -ne "/^# /{s/ {.*}$$//;s!^# *\(.*\)! - [ ] $$number — [\1]($$chapter)!g;p}" $$chapter
-			done
+		if test -d $${source}-bolumler; then
+			find $${source}-bolumler -name '*.md' -print |
+				sort -n |
+				while read chapter; do
+					number=$${chapter%-*}; number=$${number#*/}
+					sed -ne "/^# /{s/ {.*}$$//;s!^# *\(.*\)! - [ ] $$number — [\1]($$chapter)!g;p}" $$chapter
+				done
+		elif grep -q '^# ' $$source.md; then
+			sed -ne "/^# /{s/^# *\(.*\)/ - [ ] [\1]($${source}.md)/g;p}" $$source.md
+		else
+			echo -e " - [ ] [$${source}]($${source}.md)"
+		fi
 		echo
 	done > $@
 
