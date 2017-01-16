@@ -33,6 +33,7 @@ class:mirrorMaster("right", "left")
 SILE.call("switch-master-one-page", { id = "right" })
 
 SILE.registerCommand("output-right-running-head", function (options, content)
+  if not SILE.scratch.headers.right then return end
   SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
     SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
@@ -77,6 +78,13 @@ end)
 -- Forgo bottom of page layouts for mobile devices
 SILE.registerCommand("topfill", function (options, content)
   SILE.typesetter:leaveHmode();
+end)
+
+local origToc = SILE.Commands["tableofcontents"]
+SILE.registerCommand("tableofcontents", function (options, content)
+  SILE.scratch.headers.skipthispage = true
+  origToc(options, content)
+  SILE.scratch.headers.right = {}
 end)
 
 if SILE.documentState.documentClass.options.background() == "true" then
