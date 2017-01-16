@@ -570,11 +570,12 @@ $(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOL
 		--file=$< \
 		--export-pdf=$@
 
-newgeometry = $(shell test -f $1 && grep -qx dpi=$(HIDPI) $1 || echo force)
-geometrybase = $(if $(filter $(CILTLI),$(call parse_layout,$1)),%.pdf %-cilt-metin.pdf,%-kapak-metin.pdf)
+newgeometry = $(shell grep -qx dpi=$(HIDPI) $1 || echo force)
+geometrybase = $(if $(filter $(CILTLI),$(call parse_layout,$1)),$1.pdf $1-cilt-metin.pdf,$1-kapak-metin.pdf)
 
-%-geometry.sh: $$(call newgeometry,$$@) | $(call geometrybase,$$@)
-	@set -x ; exec 2> >(cut -c3- > $@) # black magic to output the finished math
+%-geometry.sh: $$(call newgeometry,$$@) | $$(call geometrybase,$$*)
+	stat $(lastword $|)
+	@set -e ; set -x ; exec 2> >(cut -c3- > $@) # black magic to output the finished math
 	dpi=$(HIDPI)
 	bleedmm=$(BLEED)
 	bleedpx=$(call mmtopx,$(BLEED))
@@ -595,8 +596,8 @@ geometrybase = $(if $(filter $(CILTLI),$(call parse_layout,$1)),%.pdf %-cilt-met
 			coverhpm=%[fx:round(h/$(HIDPI)*90)]
 			coverhpt=%[fx:round(h/$(HIDPI)*72)]
 			coverhpp=%[fx:round(h/$(HIDPI)*$(LODPI))]
-		' $(lastword $|)[0])
-	coveraspect=$(shell bc <<< "scale=6; $(call pagew,$(lastword $|)) / $(call pageh,$(lastword $|))")
+			coveraspect=%[fx:w/h]
+		' $(lastword $|)[0] || echo false)
 	spinemm=$(call spinemm,$(firstword $|))
 	spinepx=$(call mmtopx,$(call spinemm,$(firstword $|)))
 	spinepm=$(call mmtopm,$(call spinemm,$(firstword $|)))
