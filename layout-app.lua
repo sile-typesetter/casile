@@ -33,7 +33,6 @@ class:mirrorMaster("right", "left")
 SILE.call("switch-master-one-page", { id = "right" })
 
 SILE.registerCommand("output-right-running-head", function (options, content)
-  if not SILE.scratch.headers.right then return end
   SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
     SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
