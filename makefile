@@ -440,15 +440,15 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,
 		+write mpr:metin \
 		\( mpr:metin \
 			-channel RGBA \
-			-morphology Dilate:$(call scale,2) Octagon \
+			-morphology Dilate:%[fx:w/500] Octagon \
 			-channel RGB \
 			-negate \
 		\) -composite \
 		\( mpr:metin \
 			-channel RGBA \
-			-morphology Dilate:$(call scale,5) Octagon \
+			-morphology Dilate:%[fx:w/200] Octagon \
 			-resize 25% \
-			-blur 0x$(call scale,5) \
+			-blur 0x%[fx:w/200] \
 			-resize 400% \
 			-channel A \
 			-level 0%,250% \
