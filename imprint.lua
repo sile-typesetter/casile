@@ -21,7 +21,7 @@ SILE.registerCommand("imprint", function (options, content)
         SILE.settings.set("linespacing.method", "fixed")
         SILE.settings.set("linespacing.fixed.baselinedistance", SILE.length.parse("2.8ex plus 1pt minus 0.5pt"))
 
-        if SILE.metadata.publisher then
+        if SILE.metadata.publisher and not SILE.scratch.layout == "app" then
           SILE.settings.temporarily(function ()
             SILE.call("img", { src = "avadanlik/vc_sembol_renksiz.pdf", height = "6.5em" })
             SILE.call("skip", { height = "-6.7em" })
@@ -55,7 +55,7 @@ SILE.registerCommand("imprint", function (options, content)
           SILE.call("par")
         end
 
-        if SILE.metadata.publisher then
+        if SILE.metadata.publisher and not SILE.scratch.layout == "app" then
           SILE.call("skip", { height = "5.4em" })
           SILE.settings.temporarily(function ()
             SILE.call("img", { src = qrimg, height = "5.8em" })
@@ -79,6 +79,10 @@ SILE.registerCommand("imprint", function (options, content)
             end
             SILE.call("par")
           end)
+        elseif SILE.scratch.layout == "app" then
+          SILE.call("font", { weight = 600, style = "Bold" }, { "Sürüm: " })
+          SILE.call("font", { family = "Hack", size = "0.8em" }, SILE.Commands["meta:surum"])
+          SILE.call("par")
         end
 
         if SILE.Commands["meta:contributors"] then

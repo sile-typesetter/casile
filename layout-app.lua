@@ -77,6 +77,7 @@ end)
 
 -- Forgo bottom of page layouts for mobile devices
 SILE.registerCommand("topfill", function (options, content)
+  SILE.typesetter:leaveHmode();
 end)
 
 if SILE.documentState.documentClass.options.background() == "true" then
