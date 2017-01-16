@@ -121,9 +121,13 @@ export HOSTNAME := $(shell hostname)
 export SILE_PATH := $(TOOLS)
 export PROJECT := $(PROJECT)
 
+debugprequisites =
+debugrecipies =
 ifeq ($(DEBUG),true)
 SILE = /home/caleb/projects/sile/sile
 export SILE_PATH = /home/caleb/projects/sile/;$(TOOLS)
+debugprequisites = $(shell echo -e ": prerequisite $@" >> debug)
+debugrecipies = $(shell echo -e "----\nrecipe:	$@\nstem:	$*\npreqs:	$^\norders:	$|" >> debug)
 endif
 
 VIRTUALPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
@@ -246,7 +250,8 @@ $(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach 
 coverpreq = $(if $(filter $(CILTLI),$(call parse_layout,$1)),,%-kapak.pdf)
 
 ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
-$(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@)
+$(ONPAPERPDFS): %.pdf: $$(debugprequisites) %.sil $$(call coverpreq,$$@)
+	$(debugrecipies)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	$(addtosync)
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
@@ -271,7 +276,8 @@ $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@)
 	fi
 
 ONPAPERSILS = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE).sil)
-$(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(TOOLS)/template.sil | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/viachristus.lua
+$(ONPAPERSILS): $$(debugprequisites) %-processed.md %-merged.yml %-url.png $(TOOLS)/template.sil | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/viachristus.lua
+	$(debugrecipies)
 	$(PANDOC) --standalone \
 			--wrap=preserve \
 			-V documentclass="vc" \
@@ -285,7 +291,8 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(TOOLS)/template.sil | $$
 			$(word 2,$^) $< |
 		$(call sile_hook) > $@
 
-%-processed.md: $(TOOLS)/viachristus.m4 $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) %.md
+%-processed.md: $$(debugprequisites) $(TOOLS)/viachristus.m4 $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) %.md
+	$(debugrecipies)
 	if [[ "$(BRANCH)" == master ]]; then
 		m4 $^
 	else
@@ -299,10 +306,12 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(TOOLS)/template.sil | $$
 		$(call md_cleanup) |
 		$(call markdown_hook) > $@
 
-%-ciftyonlu.pdf: %.pdf
+%-ciftyonlu.pdf: $$(debugprequisites) %.pdf
+	$(debugrecipies)
 	-pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $<
 
-%-kirpilmis.pdf: %.pdf
+%-kirpilmis.pdf: $$(debugprequisites) %.pdf
+	$(debugrecipies)
 	$(addtosync)
 	b=$$(echo "$(TRIM) * 283.465" | bc)
 	w=$$(echo "$(call pagew,$<) * 100 - $$b * 2" | bc)
@@ -367,9 +376,9 @@ define sile_hook
 	cat -
 endef
 
-%.sil.toc: %.pdf ;
+%.sil.toc: $$(debugprequisites) %.pdf ;
 
-%.app: %-app.info %-kare-pankart.png %-genis-pankart.png ;
+%.app: $$(debugprequisites) %-app.info %-kare-pankart.png %-genis-pankart.png ;
 
 %-app.info: %-app.sil.toc %-merged.yml
 	$(addtosync)
@@ -378,7 +387,8 @@ endef
 			pdftk $*-app.pdf cat $$range output $$out ;\
 		done
 
-issue.info:
+issue.info: $$(debugprequisites)
+	$(debugrecipies)
 	$(addtosync)
 	for source in $(TARGETS); do
 		echo -e "# $$source\n"
@@ -416,7 +426,8 @@ strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPE
 
 ONPAPERZEMIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapak-zemin.png)
 gitzemin = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
-$(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,$$@)
+$(ONPAPERZEMIN): $$(debugprequisites) $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,$$@)
+	$(debugrecipies)
 	@source $(firstword $|)
 	$(if $^,true,false) && $(MAGICK) $^ \
 		-gravity $(COVER_GRAVITY) \
@@ -430,14 +441,16 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,
 		-composite \
 		$@ ||:
 
-%-pankart.png: %-kapak.png | %-geometry.sh
+%-pankart.png: $$(debugprequisites) %-kapak.png | %-geometry.sh
+	$(debugrecipies)
 	$(addtosync)
 	@source $(firstword $|)
 	$(MAGICK) $< \
 		-resize $${coverwpp}x$${coverhpp}^ \
 		$@
 
-%-kapak.png: %-kapak-zemin.png %-kapak-metin.pdf | %-geometry.sh
+%-kapak.png: $$(debugprequisites) %-kapak-zemin.png %-kapak-metin.pdf | %-geometry.sh
+	$(debugrecipies)
 	source $(firstword $|)
 	$(MAGICK) -density $(HIDPI) $(lastword $^)[0] \
 		-fill none \
@@ -467,7 +480,8 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,
 		\) +swap -compose over -composite \
 		+repage $@
 
-%-kapak.pdf: %-kapak.png %-kapak-metin.pdf | %-geometry.sh
+%-kapak.pdf: $$(debugprequisites) %-kapak.png %-kapak-metin.pdf | %-geometry.sh
+	$(debugrecipies)
 	$(COVERS) || exit 0
 	metin=$$(mktemp kapakXXXXXX.pdf)
 	bg=$$(mktemp kapakXXXXXX.pdf)
@@ -484,7 +498,8 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,
 
 CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
 													
-$(CILTFRAGMANLAR): $(TOOLS)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@) | $(TOOLS)/viachristus.lua $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
+$(CILTFRAGMANLAR): $$(debugprequisites) $(TOOLS)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@) | $(TOOLS)/viachristus.lua $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
+	$(debugrecipies)
 	cat <<- EOF > $*-cilt.lua
 		versioninfo = "$(call versioninfo,$*)"
 		metadatafile = "$(word 2,$^)"
@@ -493,24 +508,28 @@ $(CILTFRAGMANLAR): $(TOOLS)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@) | $
 	EOF
 	$(SILE) $< -e 'infofile = "$*-cilt"' -o $@
 
-%-fragman-on.png: %-cilt-metin.pdf
+%-fragman-on.png: $$(debugprequisites) %-cilt-metin.pdf
+	$(debugrecipies)
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		$(call magick_fragman_on) \
 		-composite $@
 
-%-fragman-arka.png: %-cilt-metin.pdf
+%-fragman-arka.png: $$(debugprequisites) %-cilt-metin.pdf
+	$(debugrecipies)
 	$(MAGICK) -density $(HIDPI) $<[1] \
 		$(call magick_fragman_arka) \
 		-composite $@
 
-%-fragman-sirt.png: %-cilt-metin.pdf | %.pdf
+%-fragman-sirt.png: $$(debugprequisites) %-cilt-metin.pdf | %.pdf
+	$(debugrecipies)
 	$(MAGICK) -density $(HIDPI) $<[2] \
 		-crop $(call mmtopx,$(call spinemm,$(word 1,$|)))x+0+0 \
 		$(call magick_fragman_arka) \
 		-composite $@
 
 KAPAKMETIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapak-metin.pdf)
-$(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
+$(KAPAKMETIN): $$(debugprequisites) $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
+	$(debugrecipies)
 	lua=$*-$(call parse_layout,$@)-kapak
 	cat <<- EOF > $$lua.lua
 		versioninfo = "$(call versioninfo,$*)"
@@ -519,11 +538,13 @@ $(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOL
 	EOF
 	$(SILE) $< -e "infofile = '$$lua'" -o $@
 
-%-epub-kapak.png: %-kapak.png
+%-epub-kapak.png: $$(debugprequisites) %-kapak.png
+	$(debugrecipies)
 	$(call skip_if_tracked,$@)
 	$(CONVERT) $< -resize $(call scale,1000)x$(call scale,1600) $@
 
-%-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(TOOLS)/vc_sembol_renkli.svg $(TOOLS)/vc_logo_renkli.svg %-geometry.sh
+%-cilt.png: $$(debugprequisites) %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(TOOLS)/vc_sembol_renkli.svg $(TOOLS)/vc_logo_renkli.svg %-geometry.sh
+	$(debugrecipies)
 	source $(lastword $^)
 	texturew="$$(bc <<< "$$imgwpx / $(call scale,4,4)")"
 	textureh="$$(bc <<< "$$imghpx / $(call scale,4,4)")"
@@ -543,7 +564,8 @@ $(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOL
 		$(call magick_cilt) \
 		$@
 
-%-cilt.svg: $(TOOLS)/cilt.svg %-cilt.png %-geometry.sh
+%-cilt.svg: $$(debugprequisites) $(TOOLS)/cilt.svg %-cilt.png %-geometry.sh
+	$(debugrecipies)
 	source $(word 3,$^)
 	ver=$(subst @,\\@,$(call versioninfo,$@))
 	perl -pne "
@@ -573,7 +595,8 @@ $(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOL
 newgeometry = $(shell grep -qx dpi=$(HIDPI) $1 || echo force)
 geometrybase = $(if $(filter $(CILTLI),$(call parse_layout,$1)),$1.pdf $1-cilt-metin.pdf,$1-kapak-metin.pdf)
 
-%-geometry.sh: $$(call newgeometry,$$@) | $$(call geometrybase,$$*)
+%-geometry.sh: $$(debugprequisites) $$(call newgeometry,$$@) | $$(call geometrybase,$$*)
+	$(debugrecipies)
 	stat $(lastword $|)
 	@set -e ; set -x ; exec 2> >(cut -c3- > $@) # black magic to output the finished math
 	dpi=$(HIDPI)
@@ -662,38 +685,45 @@ define magick_fray
 	-alpha off -compose copyopacity -composite
 endef
 
-%-cilt-on.png: %-cilt.png %-geometry.sh
+%-cilt-on.png: $$(debugprequisites) %-cilt.png %-geometry.sh
+	$(debugrecipies)
 	source $(word 2,$^)
 	$(MAGICK) $< -gravity east -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
 
-%-cilt-arka.png: %-cilt.png %-geometry.sh
+%-cilt-arka.png: $$(debugprequisites) %-cilt.png %-geometry.sh
+	$(debugrecipies)
 	source $(word 2,$^)
 	$(MAGICK) $< -gravity west -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
 
-%-cilt-sirt.png: %-cilt.png %-geometry.sh
+%-cilt-sirt.png: $$(debugprequisites) %-cilt.png %-geometry.sh
+	$(debugrecipies)
 	source $(word 2,$^)
 	$(MAGICK) $< -gravity center -crop $${spinepx}x$${coverhpx}+0+0! $@
 
-%-pov-on.png: %-cilt-on.png %-geometry.sh
+%-pov-on.png: $$(debugprequisites) %-cilt-on.png %-geometry.sh
+	$(debugrecipies)
 	source $(lastword $^)
 	$(MAGICK) $< \
 		$(call magick_crease,0+) \
 		$(call magick_fray) \
 		$@
 
-%-pov-arka.png: %-cilt-arka.png %-geometry.sh
+%-pov-arka.png: $$(debugprequisites) %-cilt-arka.png %-geometry.sh
+	$(debugrecipies)
 	source $(lastword $^)
 	$(MAGICK) $< \
 		$(call magick_crease,w-) \
 		$(call magick_fray) \
 		$@
 
-%-pov-sirt.png: %-cilt-sirt.png
+%-pov-sirt.png: $$(debugprequisites) %-cilt-sirt.png
+	$(debugrecipies)
 	$(MAGICK) $< -gravity center -extent 200%x100% $@
 
 povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
 
-%-3b.pov: %-geometry.sh | $(povtextures)
+%-3b.pov: $$(debugprequisites) %-geometry.sh | $(povtextures)
+	$(debugrecipies)
 	source $<
 	cat <<- EOF > $@
 		#declare coverwmm = $$coverwmm;
@@ -726,40 +756,48 @@ define povcrop
 		-resize $(call scale,4000)x $1
 endef
 
-%-3b-on.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/on.pov | $(povtextures)
+%-3b-on.png: $$(debugprequisites) $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/on.pov | $(povtextures)
+	$(debugrecipies)
 	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
 	$(call povcrop,$@)
 
-%-3b-arka.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/arka.pov | $(povtextures)
+%-3b-arka.png: $$(debugprequisites) $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/arka.pov | $(povtextures)
+	$(debugrecipies)
 	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
 	$(call povcrop,$@)
 
-%-3b-istif.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/istif.pov | $(povtextures)
+%-3b-istif.png: $$(debugprequisites) $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/istif.pov | $(povtextures)
+	$(debugrecipies)
 	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,8000,6000)
 	$(call povcrop,$@)
 
-%.epub %.odt %.docx: %-processed.md %-merged.yml %-epub-kapak.png
+%.epub %.odt %.docx: $$(debugprequisites) %-processed.md %-merged.yml %-epub-kapak.png
+	$(debugrecipies)
 	$(addtosync)
 	$(PANDOC) \
 		--smart \
 		$(word 2,$^) \
 		$< -o $@
 
-%.mobi: %.epub
+%.mobi: $$(debugprequisites) %.epub
+	$(debugrecipies)
 	$(call addtosync,$@)
 	-kindlegen $<
 
-%.json: $(TOOLS)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
+%.json: $$(debugprequisites) $(TOOLS)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
+	$(debugrecipies)
 	jq -s 'reduce .[] as $$item({}; . + $$item)' $(foreach YAML,$^,<(yaml2json $(YAML))) > $@
 
-%-merged.yml: $(TOOLS)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
+%-merged.yml: $$(debugprequisites) $(TOOLS)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
+	$(debugrecipies)
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $^ |\
 		sed -e '/^--- |/d;$$a...' > $@
 
-%-barkod.svg: %-merged.yml
+%-barkod.svg: $$(debugprequisites) %-merged.yml
+	$(debugrecipies)
 	zint --directsvg --scale=5 --barcode=69 --height=30 \
 		--data=$(shell $(TOOLS)/bin/isbn_format.py $< print) |\
 		$(CONVERT) - \
@@ -769,7 +807,8 @@ endef
 			-bordercolor white -border 0x10 \
 			$@
 
-%-url.png: %-url.svg
+%-url.png: $$(debugprequisites) %-url.svg
+	$(debugrecipies)
 	$(CONVERT) $< $@
 
 %-url.svg:
@@ -780,7 +819,8 @@ endef
 			-bordercolor Black -border 4x4 \
 			$@
 
-%-barkod.png: %-barkod.svg
+%-barkod.png: $$(debugprequisites) %-barkod.svg
+	$(debugrecipies)
 	$(CONVERT) $< -background white -resize $(call scale,1200)x $@
 
 stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
