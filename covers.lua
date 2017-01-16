@@ -4,8 +4,8 @@ SILE.registerCommand("frontcover", function ()
   SILE.call("pagetemplate", options, function ()
     SILE.call("frame", {
         id = "front",
-        top = "15%pw",
-        bottom = "100%ph - 15%pw",
+        top = "15%ph",
+        bottom = "100%ph - 15%ph",
         left = "15%pw",
         right = "85%pw"
       })
@@ -13,11 +13,11 @@ SILE.registerCommand("frontcover", function ()
   SILE.call("color", { color = "#FFFFFF" }, function ()
     SILE.call("center", {}, function ()
       SILE.call("hbox")
-      SILE.call("skip", { height = "1cm" })
+      SILE.call("vfill")
       SILE.call("book:partnumfont", { size = "7%pw" }, function ()
         SILE.call("wraptitle", {}, { SILE.metadata.title })
       end)
-      SILE.call("skip", { height = "14%ph" })
+      SILE.call("skip", { height = "7%ph" })
       SILE.call("book:titlepage-title-font", { size = "5%pw" }, function ()
         SILE.call("wrapsubtitle", {}, { SILE.metadata.subtitle })
       end)
@@ -26,8 +26,8 @@ SILE.registerCommand("frontcover", function ()
       SILE.call("book:partnumfont", { size = "6%pw", weight = 300 }, { SILE.metadata.creator[1].text })
     end)
     SILE.call("par")
+    SILE.call("break")
   end)
-  SILE.call("framebreak")
 end)
 
 SILE.registerCommand("backcover", function ()
@@ -67,8 +67,8 @@ SILE.registerCommand("backcover", function ()
       SILE.call("par")
     end)
     SILE.call("skip", { height = "1cm" })
+    SILE.call("break")
   end)
-  SILE.call("framebreak")
 end)
 
 SILE.registerCommand("spine", function ()
