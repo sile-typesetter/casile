@@ -414,8 +414,8 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,
 	@source $(firstword $|)
 	$(if $^,true,false) && $(MAGICK) $^ \
 		-gravity $(COVER_GRAVITY) \
-		-extent "%[fx:w/h>=$$coveraspect?h*$$coveraspect:w]x" \
-		-extent "x%[fx:w/h>=$$coveraspect?w/$$coveraspect:h]" \
+		-extent  "%[fx:w/h>=$$coveraspect?h*$$coveraspect:w]x" \
+		-extent "x%[fx:w/h<=$$coveraspect?w/$$coveraspect:h]" \
 		-resize $${coverwpp}x$${coverhpp} \
 		-normalize \
 		$@ ||:
