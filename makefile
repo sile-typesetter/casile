@@ -133,6 +133,7 @@ VIRTUALPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
 .PHONY: all ci clean debug list force init dependencies sync_pre sync_post $(TARGETS) $(VIRTUALPDFS) %.app md_cleanup stats %-stats
 .SECONDARY:
 .PRECIOUS: %.pdf %.sil %.toc %.dat %.inc
+.DELETE_ON_ERROR:
 
 all: $(TARGETS)
 
@@ -207,7 +208,7 @@ update_app_tags:
 
 define addtosync
 	echo $@ >> sync_files.dat
-	-$(SYNCONLY) && exit 0
+	$(SYNCONLY) && exit 0 ||:
 endef
 
 define sync_owncloud
@@ -486,7 +487,6 @@ CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPER
 $(CILTFRAGMANLAR): $(TOOLS)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@) | $(TOOLS)/viachristus.lua $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
 	cat <<- EOF > $*-cilt.lua
 		versioninfo = "$(call versioninfo,$*)"
-		layout = "$(call parse_layout,$@)"
 		metadatafile = "$(word 2,$^)"
 		spine = "$(call spinemm,$(lastword $^))mm"
 		$(foreach LUA,$|, SILE.require("$(basename $(LUA))");)
@@ -514,7 +514,6 @@ $(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOL
 	lua=$*-$(call parse_layout,$@)-kapak
 	cat <<- EOF > $$lua.lua
 		versioninfo = "$(call versioninfo,$*)"
-		layout = "$(call parse_layout,$@)"
 		metadatafile = "$(word 2,$^)"
 		$(foreach LUA,$|, SILE.require("$(basename $(LUA))");)
 	EOF
