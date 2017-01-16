@@ -416,11 +416,11 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,
 		-gravity $(COVER_GRAVITY) \
 		-extent  "%[fx:w/h>=$$coveraspect?h*$$coveraspect:w]x" \
 		-extent "x%[fx:w/h<=$$coveraspect?w/$$coveraspect:h]" \
-		-resize $${coverwpp}x$${coverhpp} \
+		-resize $${coverwpx}x$${coverhpx} \
 		-normalize \
 		$@ ||:
 	$(if $^,false,true) && $(MAGICK) \
-		-size $${coverwpp}x$${coverhpp}^ $(call magick_zemin) \
+		-size $${coverwpx}x$${coverhpx}^ $(call magick_zemin) \
 		-composite \
 		$@ ||:
 
@@ -428,12 +428,12 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,
 	$(addtosync)
 	@source $(firstword $|)
 	$(MAGICK) $< \
-		-size $${coverwpp}x$${coverhpp}^ \
+		-resize $${coverwpp}x$${coverhpp}^ \
 		$@
 
 %-kapak.png: %-kapak-zemin.png %-kapak-metin.pdf | %-geometry.sh
 	source $(firstword $|)
-	$(MAGICK) -density $(LODPI) $(lastword $^)[0] \
+	$(MAGICK) -density $(HIDPI) $(lastword $^)[0] \
 		-fill none \
 		-fuzz 5% \
 		-draw 'color 1,1 replace' \
@@ -467,8 +467,9 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,
 	bg=$$(mktemp kapakXXXXXX.pdf)
 	source $(firstword $|)
 	$(MAGICK) $< \
+		-density $(LODPI) \
 		-compress jpeg \
-		-quality 80 \
+		-quality 50 \
 		+repage \
 		$$bg
 	pdftk $(lastword $^) cat 1 output $$metin
