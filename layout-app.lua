@@ -87,3 +87,5 @@ if SILE.documentState.documentClass.options.background() == "true" then
   local inkColor = SILE.colorparser("#19191A")
   SILE.outputter:pushColor(inkColor)
 end
+
+SILE.settings.set("linebreak.emergencyStretch", SILE.length.parse("3em"))
