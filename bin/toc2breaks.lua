@@ -41,34 +41,38 @@ infow(meta.abstract, true)
 
 local labels = {}
 
--- Label the first chunk before we skip to the content
-labels[1] = toc[1].label[1]
+if toc[1] then
+  -- Label the first chunk before we skip to the content
+  labels[1] = toc[1].label[1]
 
--- Drop the first TOC entry, the top of the file will be 1
-table.remove(toc, 1)
+  -- Drop the first TOC entry, the top of the file will be 1
+  table.remove(toc, 1)
 
-local lastpage = 1
-local breaks = { 1 }
+  local lastpage = 1
+  local breaks = { 1 }
 
--- Get a table of major (more that 2 pages apart) TOC entries
-for i, tocentry in pairs(toc) do
-  local pageno = tonumber(tocentry.pageno)
-  if pageno > lastpage + 2 then
-    table.insert(breaks, pageno)
-    labels[#breaks] = tocentry.label[1]
-    lastpage = pageno
-  else
-    labels[#breaks] =  labels[#breaks] .. ", " .. tocentry.label[1]
+  -- Get a table of major (more that 2 pages apart) TOC entries
+  for i, tocentry in pairs(toc) do
+    local pageno = tonumber(tocentry.pageno)
+    if pageno > lastpage + 2 then
+      table.insert(breaks, pageno)
+      labels[#breaks] = tocentry.label[1]
+      lastpage = pageno
+    else
+      labels[#breaks] =  labels[#breaks] .. ", " .. tocentry.label[1]
+    end
   end
-end
 
--- Convert the table to page rages suitable for pdftk
-for i, v in pairs(breaks) do
-  if i ~= 1 then
-    breaks[i-1] = breaks[i-1] .. "-" .. v - 1
+  -- Convert the table to page rages suitable for pdftk
+  for i, v in pairs(breaks) do
+    if i ~= 1 then
+      breaks[i-1] = breaks[i-1] .. "-" .. v - 1
+    end
   end
+  breaks[#breaks] = breaks[#breaks] .. "-end"
+else
+  breaks = {}
 end
-breaks[#breaks] = breaks[#breaks] .. "-end"
 
 infow("SINGLE PDF:")
 local out = basename .. "-app.pdf"
