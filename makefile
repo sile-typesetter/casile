@@ -378,7 +378,7 @@ endef
 
 %.sil.toc: $$(debugprequisites) %.pdf ;
 
-%.app: $$(debugprequisites) %-app.info %-kare-pankart.png %-genis-pankart.png ;
+%.app: %-app.info %-kare-pankart.jpg %-genis-pankart.jpg ;
 
 %-app.info: %-app.sil.toc %-merged.yml
 	$(addtosync)
@@ -441,12 +441,13 @@ $(ONPAPERZEMIN): $$(debugprequisites) $$(call gitzemin,$$@) | $$(subst -kapak-ze
 		-composite \
 		$@ ||:
 
-%-pankart.png: $$(debugprequisites) %-kapak.png | %-geometry.sh
+%-pankart.jpg: $$(debugprequisites) %-kapak.png | %-geometry.sh
 	$(debugrecipies)
 	$(addtosync)
 	@source $(firstword $|)
 	$(MAGICK) $< \
 		-resize $${coverwpp}x$${coverhpp}^ \
+		-quality 85 \
 		$@
 
 %-kapak.png: $$(debugprequisites) %-kapak-zemin.png %-kapak-metin.pdf | %-geometry.sh
