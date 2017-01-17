@@ -793,8 +793,8 @@ endef
 
 %-merged.yml: $$(debugprequisites) $(TOOLS)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
 	$(debugrecipies)
-	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $^ |\
-		sed -e '/^--- |/d;$$a...' > $@
+	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $^ |
+		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' > $@
 
 %-barkod.svg: $$(debugprequisites) %-merged.yml
 	$(debugrecipies)
