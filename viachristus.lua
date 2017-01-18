@@ -236,6 +236,32 @@ SILE.formatCounter = function (options)
   return originalFormatter(options)
 end
 
+SILE.registerCommand("tableofcontents", function (options, content)
+  local tocfile,_ = io.open(SILE.masterFilename .. '.toc')
+  if not tocfile then
+    SILE.call("tableofcontents:notocmessage")
+    return
+  end
+  local doc = tocfile:read("*all")
+  local toc = assert(loadstring(doc))()
+  local haschapters = false
+  for i = 1, #toc do
+    if toc[i].level == 1 then
+      haschapters = true
+    end
+  end
+  if not haschapters then return end
+  SILE.call("tableofcontents:header")
+  for i = 1, #toc do
+    local item = toc[i]
+    SILE.call("tableofcontents:item", {
+      level = item.level,
+      pageno = item.pageno
+    }, item.label)
+  end
+  SILE.call("tableofcontents:footer")
+end)
+
 SILE.registerCommand("tableofcontents:item", function (options, content)
   SILE.settings.temporarily(function ()
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
