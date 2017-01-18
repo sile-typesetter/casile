@@ -574,7 +574,9 @@ $(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOL
 newgeometry = $(shell grep -qx dpi=$(HIDPI) $1 || echo force)
 geometrybase = $(if $(filter $(CILTLI),$(call parse_layout,$1)),$1.pdf $1-cilt-metin.pdf,$1-kapak-metin.pdf)
 
-%-geometry.sh: $$(call newgeometry,$$@) | $$(call geometrybase,$$*)
+# Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
+GEOMETRIES = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE)-geometry.sh))
+$(GEOMETRIES): %-geometry.sh: $$(call newgeometry,$$@) | $$(call geometrybase,$$*)
 	@set -e ; set -x ; exec 2> >(cut -c3- > $@) # black magic to output the finished math
 	dpi=$(HIDPI)
 	bleedmm=$(BLEED)
