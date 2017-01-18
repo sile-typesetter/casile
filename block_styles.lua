@@ -82,7 +82,6 @@ SILE.registerCommand("chapter", function (options, content)
   options.numbering = options.numbering or true
   SILE.call("chapter:before", options, content)
   SILE.call("set-counter", { id = "footnote", value = 1 })
-  SILE.scratch.theChapter = content
   SILE.call("center", {}, function ()
     SILE.settings.temporarily(function ()
       SILE.typesetter:typeset(" ")

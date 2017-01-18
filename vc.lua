@@ -24,6 +24,13 @@ vc.endPage = function (self)
   return plain.endPage(vc)
 end
 
+-- VC books sometimes have sections, sometimes don't.
+-- Initialize some sectioning levels to work either way
+SILE.scratch.counters["sectioning"] = {
+  value =  { 0, 0 },
+  display = { "ORDINAL", "STRING" }
+}
+
 -- I can't figure out how or where, but book.endPage() gets run on the last page
 book.endPage = vc.endPage
 
