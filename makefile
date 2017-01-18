@@ -45,11 +45,11 @@ MAGICK ?= magick
 INKSCAPE ?= inkscape
 
 # List of supported outputs
-PAPERSIZES = a4 a4ciltli octovo halfletter a5 a5trim cep app kare genis
 RENDERINGS = 3b-on 3b-arka 3b-istif
 CILTLI = a4ciltli octavo halfletter a5trim cep
 KAPAKLI = a4 a5 app
-PANKARTLI = kare genis
+PANKARTLI = kare genis bant
+PAPERSIZES = $(CILTLI) $(KAPAKLI) $(PANKARTLI)
 
 # Default to running multiple jobs
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
@@ -369,7 +369,7 @@ endef
 
 %.sil.toc: %.pdf ;
 
-%.app: %-app.info %-kare-pankart.jpg %-genis-pankart.jpg ;
+%.app: %-app.info $(foreach PANKART,$(PANKARTLI),%-$(PANKART)-pankart.jpg) ;
 
 %-app.info: %-app.sil.toc %-merged.yml
 	$(addtosync)
