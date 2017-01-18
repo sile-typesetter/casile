@@ -373,9 +373,10 @@ endef
 
 %-app.info: %-app.sil.toc %-merged.yml
 	$(addtosync)
-	$(TOOLS)/bin/toc2breaks.lua $* $^ $@ |\
-		while read range out; do \
-			pdftk $*-app.pdf cat $$range output $$out ;\
+	$(TOOLS)/bin/toc2breaks.lua $* $^ $@ |
+		while read range out; do
+			pdftk $*-app.pdf cat $$range output $$out
+			echo $$out >> sync_files.dat
 		done
 
 issue.info:
