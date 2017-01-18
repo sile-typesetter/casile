@@ -39,9 +39,14 @@ infow(meta.author, true)
 infow("ABSTRACT:")
 infow(meta.abstract, true)
 
-local labels = {}
+infow("SINGLE PDF:")
+local out = basename .. "-app.pdf"
+infow(share .. out, true)
 
-if toc[1] then
+local labels = {}
+local breaks = {}
+
+if #toc > 0 then
   -- Label the first chunk before we skip to the content
   labels[1] = toc[1].label[1]
 
@@ -49,7 +54,7 @@ if toc[1] then
   table.remove(toc, 1)
 
   local lastpage = 1
-  local breaks = { 1 }
+  breaks = { 1 }
 
   -- Get a table of major (more that 2 pages apart) TOC entries
   for i, tocentry in pairs(toc) do
@@ -70,13 +75,7 @@ if toc[1] then
     end
   end
   breaks[#breaks] = breaks[#breaks] .. "-end"
-else
-  breaks = {}
 end
-
-infow("SINGLE PDF:")
-local out = basename .. "-app.pdf"
-infow(share .. out, true)
 
 -- Output a list suitable for shell script parsing
 for i, v in pairs(breaks) do
