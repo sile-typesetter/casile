@@ -21,7 +21,7 @@ CaSILE (pronounced like 'castle') stands for **Caleb’in Avadanlığı / Simon�
 
 I've published a number of books this way but have only just decided to open source the whole thing as a toolkit. As such it needs some adaption to be more generic.
 
-- [ ] Remove [Via Christus Publishers][viachristuus] specific resources such as Logos, default copyright notices, etc.
+- [ ] Remove hard coded resources specific to [Via Christus Publishers][viachristus] such as logos, default copyright notices, etc.
 - [ ] Contribute the changes from my fork of Pandoc upstream.
 - [ ] Make it usable in English (or any language?) instead of having all the options coded in Turkish.
 - [ ] Integrate code from my _other_ toolkit that has Bible specific publishing tools.
