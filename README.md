@@ -2,6 +2,8 @@
 
 The CaSILE toolkit is a collection of tools designed to automate a book publishing pipeline from very simple input to finished product with a little intervention as possible. It transforms plain text document formats and meta data into preses ready PDFs, E-Books, and rendered promotional materials.
 
+CaSILE (pronounced like 'castle') stands for **Caleb’in Avadanlığı / Simon’s Improved Layout Engine**, avadanlık being the Turkish word for toolkit and roughly translating to Caleb's SILE toolkit. Come to think of it, that would have been a simpler way to arrive at the name, but it actually started out live as just *viachristus/avadanlik* and so I'm keeping the name as a nod to its origins.
+
 ## Dependencies
 
 * [SILE][sile]
