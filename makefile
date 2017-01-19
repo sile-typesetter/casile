@@ -428,6 +428,7 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,
 		$@ ||:
 	$(if $^,false,true) && $(MAGICK) \
 		-size $${coverwpx}x$${coverhpx}^ $(call magick_zemin) \
+		$(call magick_kapak) \
 		-composite \
 		$@ ||:
 
