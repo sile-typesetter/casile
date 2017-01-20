@@ -48,7 +48,7 @@ INKSCAPE ?= inkscape
 RENDERINGS = 3b-on 3b-arka 3b-istif
 CILTLI = a4ciltli octavo halfletter a5trim cep
 KAPAKLI = a4 a5 app
-PANKARTLI = kare genis bant
+PANKARTLI = kare genis bant epub
 PAPERSIZES = $(CILTLI) $(KAPAKLI) $(PANKARTLI)
 
 # Default to running multiple jobs
@@ -521,10 +521,6 @@ $(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml | $(CASILEDIR)/viachristus.lu
 	EOF
 	$(SILE) $< -e "infofile = '$$lua'" -o $@
 
-%-epub-kapak.png: %-kapak.png
-	$(call skip_if_tracked,$@)
-	$(CONVERT) $< -resize $(call scale,1000)x$(call scale,1600) $@
-
 %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(CASILEDIR)/vc_sembol_renkli.svg $(CASILEDIR)/vc_logo_renkli.svg %-geometry.sh
 	source $(lastword $^)
 	texturew="$$(bc <<< "$$imgwpx / $(call scale,4,4)")"
@@ -744,10 +740,11 @@ endef
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,8000,6000)
 	$(call povcrop,$@)
 
-%.epub %.odt %.docx: %-processed.md %-merged.yml %-epub-kapak.png
+%.epub %.odt %.docx: %-processed.md %-merged.yml %-epub-pankart.jpg
 	$(addtosync)
 	$(PANDOC) \
 		--smart \
+		--epub-cover-image=$(lastword $^) \
 		$(word 2,$^) \
 		$< -o $@
 
