@@ -1,7 +1,7 @@
 # Initial setup, environment dependent
-BASE := $(shell cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/../" && pwd)
-TOOLS := $(shell cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/" && pwd)
-PROJECT != basename $(BASE)
+PROJECTDIR := $(shell cd "$(shell dirname $(firstword $(MAKEFILE_LIST)))/" && pwd)
+CASILEDIR := $(shell cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/" && pwd)
+PROJECT != basename $(PROJECTDIR)
 SHELL = bash
 
 # Input/Output locations (for CI server)
@@ -116,14 +116,14 @@ ifdef FORMAT_$(TAG_NAME)
 FORMATS = $(FORMAT_$(TAG_NAME))
 endif
 
-export PATH := $(TOOLS)/bin:$(PATH)
+export PATH := $(CASILEDIR)/bin:$(PATH)
 export HOSTNAME := $(shell hostname)
-export SILE_PATH := $(TOOLS)
+export SILE_PATH := $(CASILEDIR)
 export PROJECT := $(PROJECT)
 
 ifeq ($(DEBUG),true)
 SILE = /home/caleb/projects/sile/sile
-export SILE_PATH = /home/caleb/projects/sile/;$(TOOLS)
+export SILE_PATH = /home/caleb/projects/sile/;$(CASILEDIR)
 endif
 
 VIRTUALPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
@@ -157,7 +157,7 @@ debug:
 	@echo DIFF: $(DIFF)
 	@echo DEBUG: $(DEBUG)
 	@echo OUTPUT: $(OUTPUT)
-	@echo TOOLS: $(TOOLS)
+	@echo CASILEDIR: $(CASILEDIR)
 	@echo SILE: $(SILE)
 	@echo SILE_PATH: $(SILE_PATH)
 	@echo PRE_SYNC: $(PRE_SYNC)
@@ -174,7 +174,7 @@ $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
 init: dependencies
 	mkdir -p $(OUTPUT)
 	git submodule update --init --remote
-	cd $(TOOLS) && yarn install
+	cd $(CASILEDIR) && yarn install
 
 dependencies:
 	hash yarn
@@ -224,7 +224,7 @@ endef
 sync_pre:
 	$(call sync_owncloud)
 	-$(PRE_SYNC) && rsync -ctv \
-		$(OUTPUT)/* $(BASE)/
+		$(OUTPUT)/* $(PROJECTDIR)/
 
 sync_post: sync_files.dat
 	sort -u $< | sponge $<
@@ -271,7 +271,7 @@ $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@)
 	fi
 
 ONPAPERSILS = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE).sil)
-$(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(TOOLS)/template.sil | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/viachristus.lua
+$(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(CASILEDIR)/template.sil | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(CASILEDIR)/viachristus.lua
 	$(PANDOC) --standalone \
 			--wrap=preserve \
 			-V documentclass="vc" \
@@ -285,7 +285,7 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(TOOLS)/template.sil | $$
 			$(word 2,$^) $< |
 		$(call sile_hook) > $@
 
-%-processed.md: $(TOOLS)/viachristus.m4 $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) %.md
+%-processed.md: $(CASILEDIR)/viachristus.m4 $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) %.md
 	if [[ "$(BRANCH)" == master ]]; then
 		m4 $^
 	else
@@ -327,7 +327,7 @@ urlinfo = "https://yayinlar.viachristus.com/$1"
 
 define find_and_munge
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
-	find $(BASE) -maxdepth 2 -name '$1' |
+	find $(PROJECTDIR) -maxdepth 2 -name '$1' |
 		while read f; do
 			grep -q 'esyscmd.*cat' $$f && continue # skip compilations that are mostly M4
 			git diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
@@ -373,7 +373,7 @@ endef
 
 %-app.info: %-app.sil.toc %-merged.yml
 	$(addtosync)
-	$(TOOLS)/bin/toc2breaks.lua $* $^ $@ |
+	$(CASILEDIR)/bin/toc2breaks.lua $* $^ $@ |
 		while read range out; do
 			pdftk $*-app.pdf cat $$range output $$out
 			echo $$out >> sync_files.dat
@@ -486,7 +486,7 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,
 
 CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
 													
-$(CILTFRAGMANLAR): $(TOOLS)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@) | $(TOOLS)/viachristus.lua $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
+$(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@) | $(CASILEDIR)/viachristus.lua $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(CASILEDIR)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
 	cat <<- EOF > $*-cilt.lua
 		versioninfo = "$(call versioninfo,$*)"
 		metadatafile = "$(word 2,$^)"
@@ -512,7 +512,7 @@ $(CILTFRAGMANLAR): $(TOOLS)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@) | $
 		-composite $@
 
 KAPAKMETIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapak-metin.pdf)
-$(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOLS)/layout-$$(call parse_layout,$$@).lua $(TOOLS)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
+$(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml | $(CASILEDIR)/viachristus.lua $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(CASILEDIR)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
 	lua=$*-$(call parse_layout,$@)-kapak
 	cat <<- EOF > $$lua.lua
 		versioninfo = "$(call versioninfo,$*)"
@@ -525,7 +525,7 @@ $(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOL
 	$(call skip_if_tracked,$@)
 	$(CONVERT) $< -resize $(call scale,1000)x$(call scale,1600) $@
 
-%-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(TOOLS)/vc_sembol_renkli.svg $(TOOLS)/vc_logo_renkli.svg %-geometry.sh
+%-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(CASILEDIR)/vc_sembol_renkli.svg $(CASILEDIR)/vc_logo_renkli.svg %-geometry.sh
 	source $(lastword $^)
 	texturew="$$(bc <<< "$$imgwpx / $(call scale,4,4)")"
 	textureh="$$(bc <<< "$$imghpx / $(call scale,4,4)")"
@@ -545,7 +545,7 @@ $(KAPAKMETIN): $(TOOLS)/kapak.xml %-merged.yml | $(TOOLS)/viachristus.lua $(TOOL
 		$(call magick_cilt) \
 		$@
 
-%-cilt.svg: $(TOOLS)/cilt.svg %-cilt.png %-geometry.sh
+%-cilt.svg: $(CASILEDIR)/cilt.svg %-cilt.png %-geometry.sh
 	source $(word 3,$^)
 	ver=$(subst @,\\@,$(call versioninfo,$@))
 	perl -pne "
@@ -640,7 +640,7 @@ endef
 define magick_logo
 	-gravity southwest \
 	\( \
-	-background none $(TOOLS)/vc_logo_renksiz.svg \
+	-background none $(CASILEDIR)/vc_logo_renksiz.svg \
 	-channel RGB -negate \
 	-level 20%,60%!  \
 	-resize $(call mmtopx,30)x \
@@ -729,17 +729,17 @@ define povcrop
 		-resize $(call scale,4000)x $1
 endef
 
-%-3b-on.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/on.pov | $(povtextures)
+%-3b-on.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/on.pov | $(povtextures)
 	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
 	$(call povcrop,$@)
 
-%-3b-arka.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/arka.pov | $(povtextures)
+%-3b-arka.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/arka.pov | $(povtextures)
 	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
 	$(call povcrop,$@)
 
-%-3b-istif.png: $(TOOLS)/kapak.pov %-3b.pov $(TOOLS)/istif.pov | $(povtextures)
+%-3b-istif.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/istif.pov | $(povtextures)
 	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,8000,6000)
 	$(call povcrop,$@)
@@ -755,20 +755,20 @@ endef
 	$(call addtosync,$@)
 	-kindlegen $<
 
-%.json: $(TOOLS)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
+%.json: $(CASILEDIR)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
 	jq -s 'reduce .[] as $$item({}; . + $$item)' $(foreach YAML,$^,<(yaml2json $(YAML))) > $@
 
-%-merged.yml: $(TOOLS)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
+%-merged.yml: $(CASILEDIR)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $^ |
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' > $@
 
 %-barkod.svg: %-merged.yml
 	zint --directsvg --scale=5 --barcode=69 --height=30 \
-		--data=$(shell $(TOOLS)/bin/isbn_format.py $< print) |\
+		--data=$(shell $(CASILEDIR)/bin/isbn_format.py $< print) |\
 		$(CONVERT) - \
 			-bordercolor white -border 10 \
 			-font Hack-Regular -pointsize 36 \
-			label:"ISBN $(shell $(TOOLS)/bin/isbn_format.py $< print mask)" +swap -gravity center -append \
+			label:"ISBN $(shell $(CASILEDIR)/bin/isbn_format.py $< print mask)" +swap -gravity center -append \
 			-bordercolor white -border 0x10 \
 			$@
 
@@ -789,21 +789,21 @@ endef
 stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
 
 %-stats:
-	@$(TOOLS)/stats.zsh $* $(STATS_MONTHS)
+	@$(CASILEDIR)/stats.zsh $* $(STATS_MONTHS)
 
 NAMELANGS = en tr und part xx
-NAMESFILES = $(foreach LANG,$(NAMELANGS),$(TOOLS)/names.$(LANG).txt)
+NAMESFILES = $(foreach LANG,$(NAMELANGS),$(CASILEDIR)/names.$(LANG).txt)
 
-proper_names.txt: $(SOURCES) $(NAMESFILES) | $(TOOLS)/bin/extract_names.pl
+proper_names.txt: $(SOURCES) $(NAMESFILES) | $(CASILEDIR)/bin/extract_names.pl
 	$(call skip_if_tracked,$@)
-	find -maxdepth 2 -name '*.md' -execdir cat {} \; | $(TOOLS)/bin/extract_names.pl |\
+	find -maxdepth 2 -name '*.md' -execdir cat {} \; | $(CASILEDIR)/bin/extract_names.pl |\
 		sort -u |\
 		grep -vxf <(cat $(NAMESFILES)) > $@
 
-sort_names: proper_names.txt | $(TOOLS)/bin/sort_names.zsh $(NAMESFILES)
+sort_names: proper_names.txt | $(CASILEDIR)/bin/sort_names.zsh $(NAMESFILES)
 	sort_names.zsh < $^
 
-tag_names: $(SOURCES) | $(TOOLS)/bin/tag_names.zsh $(NAMESFILES)
+tag_names: $(SOURCES) | $(CASILEDIR)/bin/tag_names.zsh $(NAMESFILES)
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
 	git diff-files --quiet -- $^ || exit 1 # die if input files have uncommitted changes
 	tag_names.zsh la avadanlik/names.la.txt $^
@@ -814,7 +814,7 @@ avadanlik/names.%.txt:
 	sort -u $@ | sponge $@
 
 %-ayetler.json: %.md
-	# cd $(TOOLS)
+	# cd $(CASILEDIR)
 	# yarn add bible-passage-reference-parser
 	extract_references.js < $^ > $@
 	cat $@
