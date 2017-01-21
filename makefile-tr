@@ -1,0 +1,3 @@
+LAYOUTS ?= a4 a4ciltli octavo halfletter a5 a5trim cep app
+RESOURCES ?= cilt
+RENDERINGS = 3b-on 3b-arka 3b-istif

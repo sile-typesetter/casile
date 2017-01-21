@@ -1,0 +1,3 @@
+LAYOUTS ?= a4 a4bound octavo halfletter a5 a5trim pocket app
+RESOURCES ?= binding
+RENDERINGS = 3d-front 3d-back 3d-stacks

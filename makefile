@@ -1,3 +1,6 @@
+# Set the language if not otherwise set
+LANGUAGE ?= en
+
 # Initial setup, environment dependent
 PROJECTDIR := $(shell cd "$(shell dirname $(firstword $(MAKEFILE_LIST)))/" && pwd)
 CASILEDIR := $(shell cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/" && pwd)
@@ -12,10 +15,10 @@ OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)
 # Find stuff to build that has both a YML and a MD component
 TARGETS := $(filter $(basename $(wildcard *.md)),$(basename $(wildcard *.yml)))
 
+include $(CASILEDIR)/makefile-$(LANGUAGE)
+
 # Default output formats and layouts (often overridden)
 FORMATS ?= pdf epub mobi app
-LAYOUTS ?= a4 a4ciltli octavo halfletter a5 a5trim cep app
-RESOURCES ?= cilt 3b-on 3b-arka
 #PRINTS ?= kesme kesme-ciftyonlu
 BLEED = 3
 TRIM= 10
@@ -45,7 +48,6 @@ MAGICK ?= magick
 INKSCAPE ?= inkscape
 
 # List of supported outputs
-RENDERINGS = 3b-on 3b-arka 3b-istif
 CILTLI = a4ciltli octavo halfletter a5trim cep
 KAPAKLI = a4 a5 app
 PANKARTLI = kare genis bant epub
