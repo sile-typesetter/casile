@@ -162,6 +162,7 @@ sync_pre:
 	-rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/
 
 sync_post: sync_files.dat
+	$(or $(OUTPUTDIR),exit 0)
 	sort -u $< | sponge $<
 	for target in $(TARGETS); do
 ifeq ($(ALL_TAGS),)
