@@ -31,7 +31,7 @@ SILE.registerCommand("book:chapter:pre:tr", function ()
 end)
 
 SILE.registerCommand("book:chapter:post", function ()
-  SILE.call("font", { filename = "avadanlik/fonts/FeFlow2.otf", size = "9pt" }, function ()
+  SILE.call("font", { filename = lfs.currentdir() .. "/fonts/FeFlow2.otf", size = "9pt" }, function ()
     SILE.call("skip", { height = "-3pt" })
     SILE.typesetter:typeset("a")
     SILE.call("medskip")

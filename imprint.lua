@@ -23,10 +23,10 @@ SILE.registerCommand("imprint", function (options, content)
 
         if SILE.metadata.publisher and not SILE.scratch.layout == "app" then
           SILE.settings.temporarily(function ()
-            SILE.call("img", { src = "avadanlik/vc_sembol_renksiz.pdf", height = "6.5em" })
+            SILE.call("img", { src = lfs.currentdir() .. "/vc_sembol_renksiz.pdf", height = "6.5em" })
             SILE.call("skip", { height = "-6.7em" })
             SILE.settings.set("document.lskip", SILE.nodefactory.newGlue({ width = imgUnit * 6.5 }))
-            SILE.call("font", { filename = "avadanlik/fonts/Mason-Bold.otf", size = "1.25em" }, { SILE.metadata.publisher })
+            SILE.call("font", { filename = lfs.currentdir() .. "/fonts/Mason-Bold.otf", size = "1.25em" }, { SILE.metadata.publisher })
             SILE.call("break")
             SILE.typesetter:typeset("Davutpaşa Cad. Kazım Dinçol San. Sit.")
             SILE.call("break")

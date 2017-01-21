@@ -22,7 +22,7 @@ SILE.registerCommand("titlepage", function (options, content)
     end
     if SILE.metadata.publisher then
       SILE.call("vfill")
-      SILE.call("img", { src = "avadanlik/vc_logo_renksiz.pdf", width = "25%pw" })
+      SILE.call("img", { src = lfs.currentdir() .. "/vc_logo_renksiz.pdf", width = "25%pw" })
     end
   end)
   SILE.call("par")
@@ -137,7 +137,7 @@ SILE.registerCommand("part", function (options, content)
     SILE.call("medskip")
     SILE.Commands["book:partfont"]({ size = "4%pw" }, content);
     SILE.call("medskip")
-    SILE.call("font", { filename = "avadanlik/fonts/FeFlow2.otf", size = "9pt" }, { "a" })
+    SILE.call("font", { filename = lfs.currentdir() .. "/fonts/FeFlow2.otf", size = "9pt" }, { "a" })
     SILE.call("bigskip")
   end)
   SILE.scratch.headers.skipthispage = true
