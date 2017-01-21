@@ -427,7 +427,7 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@)
 		spine = "$(call spinemm,$(lastword $^))mm"
 		$(foreach LUA,$|, SILE.require("$(basename $(LUA))");)
 	EOF
-	$(SILE) $< -e 'infofile = "$*-cilt"' -o $@
+	$(SILE) $< -e 'infofile = "$*-cilt"; casiledir = "$(CASILEDIR)"' -o $@
 
 %-fragman-on.png: %-cilt-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
@@ -453,7 +453,7 @@ $(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml | $(CASILEDIR)/viachristus.lu
 		metadatafile = "$(word 2,$^)"
 		$(foreach LUA,$|, SILE.require("$(basename $(LUA))");)
 	EOF
-	$(SILE) $< -e "infofile = '$$lua'" -o $@
+	$(SILE) $< -e "infofile = '$$lua'; casiledir = '$(CASILEDIR)'" -o $@
 
 %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(CASILEDIR)/vc_sembol_renkli.svg $(CASILEDIR)/vc_logo_renkli.svg %-geometry.sh
 	source $(lastword $^)

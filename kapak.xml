@@ -1,6 +1,6 @@
 <sile class="vc" crop="false" background="false">
-  <script src="avadanlik/viachristus" />
   <script>
+    SILE.require(casiledir .. "/viachristus")
     SILE.require(infofile)
     SILE.registerCommand("meta:surum", function()
       SILE.typesetter:typeset(versioninfo)
