@@ -11,24 +11,20 @@ SHELL = bash
 # Find stuff to build that has both a YML and a MD component
 TARGETS ?= $(filter $(basename $(wildcard *.md)),$(basename $(wildcard *.yml)))
 
-# Default output formats and layouts (often overridden)
+# Default output formats and parameters (often overridden)
 FORMATS ?= pdf epub
-
 BLEED ?= 3
 TRIM ?= 10
 PAPERWEIGHT ?= 60
-COVER_GRAVITY ?= Center
+COVERGRAVITY ?= Center
 
 # Build mode flags
 DRAFT ?= false # Take shortcuts, scale things down, be quick about it
 DIFF ?= false # Show differences to parent brancd in build
-STATS_MONTHS ?= 1 # How far back to look for commits when building stats
-PRE_SYNC ?= true # Start CI builds with a sync _from_ the output folder
-SYNCONLY ?= false # Skip builds and just sync what would have been built
+STATSMONTHS ?= 1 # How far back to look for commits when building stats
 DEBUG ?= false # Use SILE debug flags, set -x, and the like
-SILE_DEBUG ?= viachristus # Specific debug flags to set
+SILEDEBUG ?= casile # Specific debug flags to set
 COVERS ?= true # Build covers?
-HEAD ?= 0 # Number of lines of MD input to build from
 SCALE = 17 # Reduction factor for draft builds
 HIDPI = $(call scale,1200) # Default DPI for generated press resources
 LODPI = $(call scale,300) # Default DPI for generated consumer resources
@@ -88,7 +84,7 @@ else
 ifneq ($(BRANCH),master)
 PARENT ?= $(shell git merge-base master $(BRANCH))
 OUTPUTDIR := $(OUTPUTDIR)/$(BRANCH)
-PRE_SYNC = false
+undefine INPUTDIR
 endif
 
 # If the environment has information about a parent, override the calculated one
@@ -113,12 +109,12 @@ endif
 
 export PATH := $(CASILEDIR)/bin:$(PATH)
 export HOSTNAME := $(shell hostname)
-export SILE_PATH := $(CASILEDIR)
+export SILEPATH := $(CASILEDIR)
 export PROJECT := $(PROJECT)
 
 ifeq ($(DEBUG),true)
 SILE = /home/caleb/projects/sile/sile
-export SILE_PATH = /home/caleb/projects/sile/;$(CASILEDIR)
+export SILEPATH = /home/caleb/projects/sile/;$(CASILEDIR)
 endif
 
 VIRTUALPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
@@ -152,11 +148,10 @@ debug:
 	@echo DIFF: $(DIFF)
 	@echo DEBUG: $(DEBUG)
 	@echo OUTPUTDIR: $(OUTPUTDIR)
+	@echo INPUTDIR: $(INPUTDIR)
 	@echo CASILEDIR: $(CASILEDIR)
 	@echo SILE: $(SILE)
-	@echo SILE_PATH: $(SILE_PATH)
-	@echo PRE_SYNC: $(PRE_SYNC)
-	@echo SYNCONLY: $(SYNCONLY)
+	@echo SILEPATH: $(SILEPATH)
 	@echo versioninfo: $(call versioninfo,$(PROJECT))
 
 force: ;
@@ -187,6 +182,13 @@ dependencies:
 	hash $(INKSCAPE)
 	hash podofobox
 	hash sponge
+	hash m4
+	hash entr
+	hash pcregrep
+	hash node
+	hash perl
+	hash python
+	hash lua
 	lua -v -l yaml
 	perl -e ';' -MYAML
 	perl -e ';' -MYAML::Merge::Simple
@@ -201,14 +203,8 @@ update_app_tags:
 			git tag $$tag
 		done
 
-define addtosync
+define addtosync =
 	echo $@ >> sync_files.dat
-	$(SYNCONLY) && exit 0 ||:
-endef
-
-define sync_owncloud
-	-pgrep -u $(USER) -x owncloud || \
-		owncloudcmd -n -s $(INPUTDIR) $(OWNCLOUD) 2>/dev/null
 endef
 
 # If building in draft mode, scale resolutions down for quick builds
@@ -217,9 +213,9 @@ $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | b
 endef
 
 sync_pre:
+	$(or $(INPUTDIR),exit 0)
 	$(call sync_owncloud)
-	-$(PRE_SYNC) && rsync -ctv \
-		$(OUTPUTDIR)/* $(PROJECTDIR)/
+	-rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/
 
 sync_post: sync_files.dat
 	sort -u $< | sponge $<
@@ -247,7 +243,7 @@ $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@)
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
 	# account for TOC issue: https://github.com/simoncozens/sile/issues/230
 	if $(DRAFT); then
-		$(SILE) -d $(SILE_DEBUG) $< -o $@
+		$(SILE) -d $(SILEDEBUG) $< -o $@
 	else
 		export pg0=$(call pagecount,$@)
 		$(SILE) $< -o $@
@@ -344,7 +340,7 @@ md_cleanup:
 	# call find_and_munge,*.md,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
 
 define md_cleanup
-	cat | ( [[ $(HEAD) -ge 1 ]] && head -n $(HEAD) || cat ) |
+	$(if $(HEAD),head -n$(HEAD),cat) |
 	( $(DIFF) && cat || (
 		smart_quotes.pl |
 		figure_dash.pl |
@@ -415,7 +411,7 @@ gitzemin = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
 $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,$$@)
 	@source $(firstword $|)
 	$(if $^,true,false) && $(MAGICK) $^ \
-		-gravity $(COVER_GRAVITY) \
+		-gravity $(COVERGRAVITY) \
 		-extent  "%[fx:w/h>=$$coveraspect?h*$$coveraspect:w]x" \
 		-extent "x%[fx:w/h<=$$coveraspect?w/$$coveraspect:h]" \
 		-resize $${coverwpx}x$${coverhpx} \
@@ -781,7 +777,7 @@ endef
 stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
 
 %-stats:
-	@$(CASILEDIR)/stats.zsh $* $(STATS_MONTHS)
+	@$(CASILEDIR)/stats.zsh $* $(STATSMONTHS)
 
 NAMELANGS = en tr und part xx
 NAMESFILES = $(foreach LANG,$(NAMELANGS),$(CASILEDIR)/names.$(LANG).txt)
