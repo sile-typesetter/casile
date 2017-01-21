@@ -52,61 +52,6 @@ ifeq (watch,$(firstword $(MAKECMDGOALS)))
   $(eval $(WATCH_ARGS):;@:)
 endif
 
-# CI runners need help getting the branch name because of funky checkouts
-BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
-ifeq ($(BRANCH),HEAD)
-ifeq ($(shell git rev-parse master),$(shell git rev-parse HEAD))
-BRANCH = master
-else
-BRANCH = $(CI_BUILD_REF_NAME)
-endif
-endif
-
-# If this commit is tagged, run special rules for it
-ALL_TAGS := $(shell git tag --points-at HEAD | xargs echo)
-LAST_TAG := $(shell git describe --tags 2>/dev/null)
-ifneq ($(ALL_TAGS),)
-
-BRANCH = master
-DIFF = false
-
-# Use first segment of tags as target names
-TARGETS = $(subst /,,$(dir $(ALL_TAGS)))
-
-# Use last segment of tag names as formats
-FORMATS = $(sort $(notdir $(ALL_TAGS)))
-TAG_NAME = $(firstword $(sort $(notdir $(ALL_TAGS))))
-
-# Else not directly on any tags
-else
-
-# If we are not on the master branch, guess the parent and output to a directory
-ifneq ($(BRANCH),master)
-PARENT ?= $(shell git merge-base master $(BRANCH))
-OUTPUTDIR := $(OUTPUTDIR)/$(BRANCH)
-undefine INPUTDIR
-endif
-
-# If the environment has information about a parent, override the calculated one
-_BRANCH = PARENT_$(subst +,_,$(subst -,_,$(BRANCH)))
-ifneq ($($(_BRANCH)),)
-PARENT = $($(_BRANCH))
-endif
-
-# End non-tagged
-endif
-
-# If there is a layout associated with a tag, only build that layout
-ifdef LAYOUT_$(TAG_NAME)
-LAYOUTS = $(LAYOUT_$(TAG_NAME))
-FORMATS = pdf
-endif
-
-# If there is a format associated with a tag, only build that format
-ifdef FORMAT_$(TAG_NAME)
-FORMATS = $(FORMAT_$(TAG_NAME))
-endif
-
 export PATH := $(CASILEDIR)/bin:$(PATH)
 export HOSTNAME := $(shell hostname)
 export SILEPATH := $(CASILEDIR)
@@ -147,6 +92,8 @@ debug:
 	@echo PARENT: $(PARENT)
 	@echo DIFF: $(DIFF)
 	@echo DEBUG: $(DEBUG)
+	@echo MAKEFILE_LIST: $(MAKEFILE_LIST)
+	@echo MAKECMDGOALS: $(MAKECMDGOALS)
 	@echo OUTPUTDIR: $(OUTPUTDIR)
 	@echo INPUTDIR: $(INPUTDIR)
 	@echo CASILEDIR: $(CASILEDIR)
@@ -196,14 +143,6 @@ dependencies:
 	perl -e ';' -MYAML::Merge::Simple
 	python -c "import yaml"
 	python -c "import isbnlib"
-
-update_app_tags:
-	git tag |
-		grep '/app$$' |
-		while read tag; do
-			git tag -d $$tag
-			git tag $$tag
-		done
 
 define addtosync =
 	echo $@ >> sync_files.dat
@@ -315,8 +254,6 @@ $(shell
 		git describe --always | cut -d/ -f2 | xargs echo -en
 	fi)
 endef
-
-urlinfo = "https://yayinlar.viachristus.com/$1"
 
 define find_and_munge
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
