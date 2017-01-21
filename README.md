@@ -127,9 +127,9 @@ These settings apply to the whole project. To override the defaults set them in 
 
 * `PROJECT` is the name of the overall project (which might contain several books or other works).
 
-   This defaults to the name of the repository directory. Setting it to some other value is mostly useful if you have values such as `OUTPUTDIR` set to references it in a settings file for your organization but want to override it for a project.
+    This defaults to the name of the repository directory. Setting it to some other value is mostly useful if you have values such as `OUTPUTDIR` set to references it in a settings file for your organization but want to override it for a project.
 
-       PROJECT = series_name
+        PROJECT = series_name
 
 * `CASILEDIR` is where CaSILE is located.
 
