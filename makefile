@@ -1,7 +1,9 @@
+SHELL := zsh
+
 # Initial setup, environment dependent
 PROJECTDIR := $(shell cd "$(shell dirname $(firstword $(MAKEFILE_LIST)))/" && pwd)
 CASILEDIR := $(shell cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/" && pwd)
-PROJECT != basename $(PROJECTDIR)
+PROJECT := $(notdir $(PROJECTDIR))
 
 # Set the language if not otherwise set
 LANGUAGE ?= en
@@ -29,7 +31,6 @@ HIDPI = $(call scale,1200) # Default DPI for generated press resources
 LODPI = $(call scale,300) # Default DPI for generated consumer resources
 
 # Allow overriding executables used
-SHELL = zsh
 SILE ?= sile
 PANDOC ?= pandoc
 CONVERT ?= convert
@@ -81,6 +82,7 @@ clean:
 	git clean -xf
 
 debug:
+	@echo PROJECT: $(PROJECT)
 	@echo TARGETS: $(TARGETS)
 	@echo FORMATS: $(FORMATS)
 	@echo LAYOUTS: $(LAYOUTS)
