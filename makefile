@@ -2,7 +2,6 @@
 PROJECTDIR := $(shell cd "$(shell dirname $(firstword $(MAKEFILE_LIST)))/" && pwd)
 CASILEDIR := $(shell cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/" && pwd)
 PROJECT != basename $(PROJECTDIR)
-SHELL = bash
 
 # Set the language if not otherwise set
 LANGUAGE ?= en
@@ -30,6 +29,7 @@ HIDPI = $(call scale,1200) # Default DPI for generated press resources
 LODPI = $(call scale,300) # Default DPI for generated consumer resources
 
 # Allow overriding executables used
+SHELL = zsh
 SILE ?= sile
 PANDOC ?= pandoc
 CONVERT ?= convert
@@ -138,6 +138,7 @@ dependencies:
 	hash lua
 	hash bc
 	hash rsync
+	hash zsh
 	lua -v -l yaml
 	perl -e ';' -MYAML
 	perl -e ';' -MYAML::Merge::Simple
