@@ -131,6 +131,14 @@ These settings apply to the whole project. To override the defaults set them in 
 
        PROJECT = series_name
 
+* `CASILEDIR` is where CaSILE is located.
+
+    Defaults to theh location of the CaSILE makefile as determined by the last makefile in the loaded list (so if you included it from your makefile, do the include after any others or hard code the location yourself. This can also be used to run a version of CaSILE outside of the current project directory.
+
+* `PROJECTDIR` is where your project is located. Sources will be examined here and the build process will run here.
+
+    Defaults to the location of the project makefile as determined by the first makefile in the loaded list. It is unlikely you would ever want to change this.
+
 * `OUTPUTDIR` determines where published files will be placed.
 
     Ouput files are first created in the current project directory alongside sources. Optionally CaSILE can 'pubish' finished resources to some other location.
