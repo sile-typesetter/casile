@@ -99,6 +99,25 @@ In return, CaSILE will output
   * my_book.epub
   * my_book.mobi
 
+### Makefile options
+
+
+* `LANG` sets the language for localized file names.
+
+   The default is English, so you might run `make book-halfletter-3d-front.png`. Changing this to Turkish:
+
+       LANG = tr
+
+   will mean the command you run should be `make kitap-a5-3b-on..png` to generate the same resource for a similar project with localized filenames.
+
+* `OUTPUTDIR` determines where published files will be placed.
+
+    Ouput files are first created in the current project directory alongside sources. Optionally CaSILE can 'pubish' finished resources to some other location.
+
+        OUTPUTDIR = /path/to/pub/folder
+
+    The default is unset so `make publish` will do nothing.
+
 [viachristus]: http://yayinlar.viachristus.com/
 [sile]: http://sile-typesetter.org/
 [pandoc]: http://pandoc.org/
