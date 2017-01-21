@@ -1,5 +1,6 @@
 # Set the language if not otherwise set
 LANGUAGE ?= en
+include $(CASILEDIR)/makefile-$(LANGUAGE)
 
 # Initial setup, environment dependent
 PROJECTDIR := $(shell cd "$(shell dirname $(firstword $(MAKEFILE_LIST)))/" && pwd)
@@ -7,24 +8,16 @@ CASILEDIR := $(shell cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/" && pwd)
 PROJECT != basename $(PROJECTDIR)
 SHELL = bash
 
-# Input/Output locations (for CI server)
-OUTPUTDIR ?= ${HOME}/ownCloud/viachristus/$(PROJECT)
-INPUTDIR  ?= $(OUTPUTDIR)
-OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)
-
 # Find stuff to build that has both a YML and a MD component
-TARGETS := $(filter $(basename $(wildcard *.md)),$(basename $(wildcard *.yml)))
-
-include $(CASILEDIR)/makefile-$(LANGUAGE)
+TARGETS ?= $(filter $(basename $(wildcard *.md)),$(basename $(wildcard *.yml)))
 
 # Default output formats and layouts (often overridden)
-FORMATS ?= pdf epub mobi app
-#PRINTS ?= kesme kesme-ciftyonlu
-BLEED = 3
-TRIM= 10
-PAPERWEIGHT = 60
+FORMATS ?= pdf epub
+
+BLEED ?= 3
+TRIM ?= 10
+PAPERWEIGHT ?= 60
 COVER_GRAVITY ?= Center
-LAYOUT_app = app
 
 # Build mode flags
 DRAFT ?= false # Take shortcuts, scale things down, be quick about it
@@ -174,7 +167,7 @@ list:
 $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
 
 init: dependencies
-	mkdir -p $(OUTPUTDIR)
+	$(and $(OUTPUTDIR),mkdir -p $(OUTPUTDIR))
 	git submodule update --init --remote
 	cd $(CASILEDIR) && yarn install
 
