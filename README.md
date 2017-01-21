@@ -102,13 +102,18 @@ In return, CaSILE will output
 ### Makefile options
 
 
+#### Project parameters
+
+These settings apply to the whole project. To override the defaults set them in your project's `Makefile` (or a shared include!).
+
+
 * `LANGUAGE` sets the language for localized file names.
 
-   The default is English, so you might run `make book-halfletter-3d-front.png`. Changing this to Turkish:
+    The default is English, so you might run `make book-halfletter-3d-front.png`. Changing this to Turkish:
 
-       LANGUAGE = tr
+        LANGUAGE = tr
 
-   will mean the command you run should be `make kitap-a5-3b-on.png` to generate the same resource for a similar project with localized filenames. At this time localizations are only included for Turkish, but they are easy enough to add to your project. Submitting them upstream would also me much appreciated.
+    will mean the command you run should be `make kitap-a5-3b-on.png` to generate the same resource for a similar project with localized filenames. At this time localizations are only included for Turkish, but they are easy enough to add to your project. Submitting them upstream would also me much appreciated.
 
 * `TARGETS` is a list of all the books in a project.
 
@@ -122,13 +127,15 @@ In return, CaSILE will output
 
 * `PROJECT` is the name of the overall project (which might contain several books or other works).
 
-   This defaults to the name of the repository directory.
+   This defaults to the name of the repository directory. Setting it to some other value is mostly useful if you have values such as `OUTPUTDIR` set to references it in a settings file for your organization but want to override it for a project.
+
+       PROJECT = series_name
 
 * `OUTPUTDIR` determines where published files will be placed.
 
     Ouput files are first created in the current project directory alongside sources. Optionally CaSILE can 'pubish' finished resources to some other location.
 
-        OUTPUTDIR = /path/to/pub/folder
+        OUTPUTDIR = /path/to/pub/$(PROJECT)
 
     The default is unset so `make publish` will do nothing.
 
@@ -136,9 +143,9 @@ In return, CaSILE will output
 
     This value is not set by default, but the most common usage would be to use the same value as in `OUTPUTDIR`:
 
-        INPUTDIR := $(OUTPUTDIR)
+        INPUTDIR = $(OUTPUTDIR)
 
-    This will have the effect of copying in files from that location before `make` gets started to save the trouble of regenerating files that may already exist and be up to date.
+    This will have the effect of copying in files from that location to the project folder before `make` gets started to save the trouble of regenerating files that may already exist and be up to date.
 
 * `FORMATS` contains a list of output formats to build for from each input.
 
@@ -146,6 +153,7 @@ In return, CaSILE will output
 
         FORMATS = pdf epub mobi odt docx app
 
+    Note this only affects the formats that get built by default from the `all` target, you can still build individual resources in any format manually.
 
 * `BLEED` sets the bleed margin for press resources in mm.
 
@@ -165,11 +173,101 @@ In return, CaSILE will output
 
         PAPERWEIGHT = 80
 
-* `COVER_GRAVITY` tells the cover generator what direction to crop background images when adjusting for different aspect ration.
+* `COVERGRAVITY` tells the cover generator what direction to crop background images when adjusting for different aspect ration.
 
     Defaults to Center. Possible options are anything that ImageMagick understands, so South, SouthWest, NorthEast, etc.
 
-        COVER_GRAVITY = North
+        COVERGRAVITY = North
+
+#### Build time settings
+
+These settings are usually not changed except at run time. You _may_ set them in your `Makefile` but they would typically be set as environment variables or on the command line to get other-than-default behaviour for a specific build.
+
+* `DRAFT` enables draft mode builds for faster testing.
+
+    This defaults to false, but may be set to true when executing make:
+
+        make DRAFT=true book-a4-binding.pdf
+
+    What this does will depend on the resource type. Books are only typeset in one pass, so TOC's may be out of date, cover images are generated at 17th final resolution, 3D renderings are done with partial lighting for faster ray-tracing, etc.
+
+    Note that `make watch ...` automatically enables this mode.
+
+* `DIFF` enables highlighting differences between git branches.
+
+    Defaults to false.
+
+    Note this works in congunction with the `PARENT` variable. When pre-processing the source of books, the current commit will be comared to the branch (or commit) defined by PARENT. Any differences (at the character level) will be marked up using CriticMarkup sytax. Some output formats (notably PDF) will syntax highlight any additions/removals.
+
+* `STATSMONTHS` sets the default time frame to report on activity.
+
+    Defaults to 1.
+
+    At the end of each month I run `make stats` to run a report of all commit activity on the content of books. This computes the current character and word counts and compares them with each previous commit and shows a report crediting the author of that commit. I use this to pay our translators, editors, etc.
+
+    Override with `make STATSMONTHS=2 stats`.
+
+
+* `DEBUG` enables extra output from various programs showing whats going on durring a build.
+
+    Defaults to false, set to true to enable.
+
+    This will be pretty verbose on the console. Shell scripts will run with `set -x`, programs that have them will be run with debug flags turned on, etc.
+
+* `SILEDEBUG` sets the specific parts of the SILE typesetter to debug. See SILE documentation for details.
+
+    Defaults to casile.
+
+        SILEDEBUG = casile insertions frames
+
+    Usage from the command line might be `make DEBUG=true SILEDEBUG=frames book-a4.pdf`.
+
+* `COVERS` can be used to disable generating cover images. Raster image generation can take time, this skips those steps and just assumes no graphical covers are present.
+
+    Defaults to true, set to false to disable.
+
+* `HEAD` sets how many lines of input books to process.
+
+    Default is unset.
+
+    If setting this to an integer, only that many lines of an input book will be processed. This is useful when styling a book. You can work on the first chapter worth of lines and rebuild the book quickly, then turn it off to regenerate the whole book.
+
+        make HEAD=50 book-octavo.pdf
+
+* `SCALE` sets the factor by which to downsample resources while in draft mode.
+
+    Defaults to 17. This brings 1200 dpi print resources down to 70 dpi.
+
+* `HIDPI` sets the output resolution for press resources.
+
+    Defaults to 1200 with scaling for draft mode enabled.
+
+    This may be set to an another value with or without scaling. For example for a one off command you might run:
+
+        make HIDPI=600 book-octavo-binding.pdf
+
+    But to change the project default you might set this in your `Makefile`:
+
+        HIDPI = \$(call scale,600)
+
+* `LODPI` is much the same as `HIDPI` but used for regular discribution resources.
+
+    Defaults to 300 dpi with scaling for draft mode.
+
+#### Hooks
+
+These are functions that can be defined in your project's `Makefile` to add additionaly funtionality at various points in the process. You make use either single or multiline syntax as desired, but note the input, output, and variables passed will be the same either way. On the other hand each hook has its own usage so note the context it runs in.
+
+* `pre_sync` and `post_sync` can be used to run an external application before
+
+    Default is unset. The context is a recipie line.
+
+    For example, I use this on my CI server to update an ownCloud share before and after publishing to it:
+
+        pre_sync = owncloudcmd -n -s $(OUTPUTDIR) $(OWNCLOUD) 2>/dev/null
+        post_sync = $(pre_sync)
+
+
 
 [viachristus]: http://yayinlar.viachristus.com/
 [sile]: http://sile-typesetter.org/
