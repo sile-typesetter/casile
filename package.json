@@ -1,9 +1,9 @@
 {
-  "name": "avadanlik",
-  "version": "1.0.0",
-  "description": "Book Publishing Toolkit from Via Christus Publications",
+  "name": "casile",
+  "version": "0.1.0",
+  "description": "The CaSILE toolkit, a book publishing workflow employing SILE and other wizardry.",
   "main": "index.js",
-  "repository": "gitlab@gitlab.alerque.com:viachristus/avadanlik.git",
+  "repository": "https://github.com/alerque/casile.git",
   "author": "Caleb Maclennan <caleb@alerque.com>",
   "license": "LGPL",
   "dependencies": {
