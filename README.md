@@ -40,7 +40,9 @@ Major TODO items include:
 
 1. Include as a submodule to your book project's git repository.
 
-        git submodule add https://github.com/alerque/casile.git
+        git submodule add -b master https://github.com/alerque/casile.git
+
+    Note the `-b master` here tells git you want to track the master branch and update to that whenever it changes. This is what I use for my books while I'm working on them. When I publish (and want to be able to regenerate the same output again even if the toolkit changes) I commit the current version sha to the book repo and stop tracking the master branch.
 
 2. Include the Makefile from your project's Makefile.
 
@@ -58,7 +60,11 @@ Major TODO items include:
 
         make my_book-halfletter-3d-front.jpg
 
+See also the [CaSILE demos][demos] repository for a sample book project layout.
+
 ### Input
+
+CaSILE makes a number of assumptions about the content of your repository, but how exactly you organize your git repos is still flexible. For example I have some single books in their own repositoryies, some series of books where the repository hold the whole series, others with different books with the same publisher/copyright status lumped together (and worked on in branches), a set of tracts by assorted authors but published together in another repository, etc. CaSILE assumes there is some relation between sources in each repository so granular is going to be better, but do keep things together than share resources. Note that common publisher resources can be shared in another submodule (more documentation on this to come).
 
 A book project would typically consist of at least the following:
 
@@ -108,3 +114,4 @@ In return, CaSILE will output
 [nmcnmm]: https://duckduckgo.com/?q=%22Not+My+Circus%2C+Not+My+Monkeys%22&ia=images
 [zathura]: https://pwmt.org/projects/zathura/
 [calibre]: http://calibre-ebook.com/
+[demos]: https://github.com/alerque/casile-demos
