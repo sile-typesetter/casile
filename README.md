@@ -102,13 +102,27 @@ In return, CaSILE will output
 ### Makefile options
 
 
-* `LANG` sets the language for localized file names.
+* `LANGUAGE` sets the language for localized file names.
 
    The default is English, so you might run `make book-halfletter-3d-front.png`. Changing this to Turkish:
 
-       LANG = tr
+       LANGUAGE = tr
 
-   will mean the command you run should be `make kitap-a5-3b-on..png` to generate the same resource for a similar project with localized filenames.
+   will mean the command you run should be `make kitap-a5-3b-on.png` to generate the same resource for a similar project with localized filenames. At this time localizations are only included for Turkish, but they are easy enough to add to your project. Submitting them upstream would also me much appreciated.
+
+* `TARGETS` is a list of all the books in a project.
+
+    By default this is set by scanning the project directory and finding all the Markdown files that have matching YAML meta data files of the same name. This helps dodge things like `README.md` files that are not the focus of the meat of a project. You can manually set this with a list:
+
+        TARGETS = book_1 book_2
+
+    Or perhaps populate it with a list of _all_ markdown files. You don't want the extentions here, just the basenames of books to be built:
+
+        TARGETS = $(basename $(wildcard *.md))
+
+* `PROJECT` is the name of the overall project (which might contain several books or other works).
+
+   This defaults to the name of the repository directory.
 
 * `OUTPUTDIR` determines where published files will be placed.
 
@@ -117,6 +131,14 @@ In return, CaSILE will output
         OUTPUTDIR = /path/to/pub/folder
 
     The default is unset so `make publish` will do nothing.
+
+* `INPUTDIR` determines where to check for pre-built resources before getting started.
+
+    This value is not set by default, but the most common usage would be to use the same value as in `OUTPUTDIR`:
+
+        INPUTDIR := $(OUTPUTDIR)
+
+    This will have the effect of copying in files from that location before `make` gets started to save the trouble of regenerating files that may already exist and be up to date.
 
 [viachristus]: http://yayinlar.viachristus.com/
 [sile]: http://sile-typesetter.org/
