@@ -140,6 +140,37 @@ In return, CaSILE will output
 
     This will have the effect of copying in files from that location before `make` gets started to save the trouble of regenerating files that may already exist and be up to date.
 
+* `FORMATS` contains a list of output formats to build for from each input.
+
+    By default this is set to `pdf epub`, but you may want to build less or more that this. To built "the works":
+
+        FORMATS = pdf epub mobi odt docx app
+
+
+* `BLEED` sets the bleed margin for press resources in mm.
+
+    Defaults to 3.
+
+        BLEED = 5
+
+* `TRIM` sets the trim margin for press resources in mm.
+
+    Defaults to 10.
+
+        TRIM = 15
+
+* `PAPERWEIGHT` sets the paperweight (in grams) used to calculate book thickness and hence spine width.
+
+    Defaults to 60.
+
+        PAPERWEIGHT = 80
+
+* `COVER_GRAVITY` tells the cover generator what direction to crop background images when adjusting for different aspect ration.
+
+    Defaults to Center. Possible options are anything that ImageMagick understands, so South, SouthWest, NorthEast, etc.
+
+        COVER_GRAVITY = North
+
 [viachristus]: http://yayinlar.viachristus.com/
 [sile]: http://sile-typesetter.org/
 [pandoc]: http://pandoc.org/
