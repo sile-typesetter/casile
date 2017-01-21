@@ -248,11 +248,11 @@ These settings are usually not changed except at run time. You _may_ set them in
 
     But to change the project default you might set this in your `Makefile`:
 
-        HIDPI = \$(call scale,600)
+        HIDPI = $(call scale,600)
 
 * `LODPI` is much the same as `HIDPI` but used for regular discribution resources.
 
-    Defaults to 300 dpi with scaling for draft mode.
+    Defaults to 300 with scaling for draft mode enabled.
 
 #### Hooks
 

@@ -189,6 +189,8 @@ dependencies:
 	hash perl
 	hash python
 	hash lua
+	hash bc
+	hash rsync
 	lua -v -l yaml
 	perl -e ';' -MYAML
 	perl -e ';' -MYAML::Merge::Simple
@@ -208,13 +210,13 @@ define addtosync =
 endef
 
 # If building in draft mode, scale resolutions down for quick builds
-define scale
+define scale =
 $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | bc) || echo $1))
 endef
 
 sync_pre:
 	$(or $(INPUTDIR),exit 0)
-	$(call sync_owncloud)
+	$(call pre_sync)
 	-rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/
 
 sync_post: sync_files.dat
@@ -230,7 +232,7 @@ endif
 			test -f $$file && rsync -ct $$file $(OUTPUTDIR)/$$tagpath
 		done < $<
 	done
-	$(call sync_owncloud)
+	$(call post_sync)
 
 $(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach RESOURCE,$(RESOURCES),$$*-$(LAYOUT)-$(RESOURCE).pdf)) ;
 
