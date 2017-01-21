@@ -1,5 +1,7 @@
 #!/bin/zsh
 
+CASILEDIR=$(cd "$(dirname $0)/../" && pwd)
+
 basename="$1"
 : ${2:=2}
 let months=$2-1
@@ -66,7 +68,7 @@ function inrange () {
 }
 
 function itemwords () {
-	m4 avadanlik/viachristus.m4 <(cat $1.md) |
+	m4 ${CASILEDIR}/viachristus.m4 <(cat $1.md) |
 		countwords
 }
 

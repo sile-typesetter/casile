@@ -720,7 +720,7 @@ endef
 stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
 
 %-stats:
-	@$(CASILEDIR)/stats.zsh $* $(STATSMONTHS)
+	stats.zsh $* $(STATSMONTHS)
 
 %-ayetler.json: %.md
 	# cd $(CASILEDIR)

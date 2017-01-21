@@ -1,12 +1,14 @@
 #!/usr/bin/env zsh
 
+CASILEDIR=$(cd "$(dirname $0)/../" && pwd)
+
 BRANCH=${1}
 FILE=${2}
 WT=$(mktemp -d -u worktree-diff.XXXXXX)
 
 trap 'rm -rf ${WT}' EXIT SIGHUP SIGTERM
 
-macros=avadanlik/viachristus.m4
+macros=${CASILEDIR}/viachristus.m4
 
 git worktree prune > /dev/null
 git worktree add --detach ${WT} ${BRANCH} > /dev/null
