@@ -5,8 +5,8 @@ PROJECT != basename $(PROJECTDIR)
 SHELL = bash
 
 # Input/Output locations (for CI server)
-OUTPUTDIR = ${HOME}/ownCloud/viachristus/$(PROJECT)
-INPUTDIR  = $(OUTPUTDIR)
+OUTPUTDIR ?= ${HOME}/ownCloud/viachristus/$(PROJECT)
+INPUTDIR  ?= $(OUTPUTDIR)
 OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)
 
 # Find stuff to build that has both a YML and a MD component
