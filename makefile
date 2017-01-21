@@ -5,8 +5,8 @@ PROJECT != basename $(PROJECTDIR)
 SHELL = bash
 
 # Input/Output locations (for CI server)
-OUTPUT = ${HOME}/ownCloud/viachristus/$(PROJECT)
-INPUT  = ${HOME}/ownCloud/viachristus/$(PROJECT)
+OUTPUTDIR = ${HOME}/ownCloud/viachristus/$(PROJECT)
+INPUTDIR  = $(OUTPUTDIR)
 OWNCLOUD = https://owncloud.alerque.com/remote.php/webdav/viachristus/$(PROJECT)
 
 # Find stuff to build that has both a YML and a MD component
@@ -92,7 +92,7 @@ else
 # If we are not on the master branch, guess the parent and output to a directory
 ifneq ($(BRANCH),master)
 PARENT ?= $(shell git merge-base master $(BRANCH))
-OUTPUT := $(OUTPUT)/$(BRANCH)
+OUTPUTDIR := $(OUTPUTDIR)/$(BRANCH)
 PRE_SYNC = false
 endif
 
@@ -156,7 +156,7 @@ debug:
 	@echo PARENT: $(PARENT)
 	@echo DIFF: $(DIFF)
 	@echo DEBUG: $(DEBUG)
-	@echo OUTPUT: $(OUTPUT)
+	@echo OUTPUTDIR: $(OUTPUTDIR)
 	@echo CASILEDIR: $(CASILEDIR)
 	@echo SILE: $(SILE)
 	@echo SILE_PATH: $(SILE_PATH)
@@ -172,7 +172,7 @@ list:
 $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
 
 init: dependencies
-	mkdir -p $(OUTPUT)
+	mkdir -p $(OUTPUTDIR)
 	git submodule update --init --remote
 	cd $(CASILEDIR) && yarn install
 
@@ -213,7 +213,7 @@ endef
 
 define sync_owncloud
 	-pgrep -u $(USER) -x owncloud || \
-		owncloudcmd -n -s $(INPUT) $(OWNCLOUD) 2>/dev/null
+		owncloudcmd -n -s $(INPUTDIR) $(OWNCLOUD) 2>/dev/null
 endef
 
 # If building in draft mode, scale resolutions down for quick builds
@@ -224,7 +224,7 @@ endef
 sync_pre:
 	$(call sync_owncloud)
 	-$(PRE_SYNC) && rsync -ctv \
-		$(OUTPUT)/* $(PROJECTDIR)/
+		$(OUTPUTDIR)/* $(PROJECTDIR)/
 
 sync_post: sync_files.dat
 	sort -u $< | sponge $<
@@ -234,9 +234,9 @@ ifeq ($(ALL_TAGS),)
 else
 		tagpath=$$target/$(TAG_NAME)/
 endif
-		mkdir -p $(OUTPUT)/$$tagpath
+		mkdir -p $(OUTPUTDIR)/$$tagpath
 		while read file; do
-			test -f $$file && rsync -ct $$file $(OUTPUT)/$$tagpath
+			test -f $$file && rsync -ct $$file $(OUTPUTDIR)/$$tagpath
 		done < $<
 	done
 	$(call sync_owncloud)
