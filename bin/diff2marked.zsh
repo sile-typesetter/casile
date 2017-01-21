@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 cd $MARKED_ORIGIN
 if git diff --quiet -- $MARKED_PATH; then

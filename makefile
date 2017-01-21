@@ -225,7 +225,7 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(CASILEDIR)/template.sil 
 	if [[ "$(BRANCH)" == master ]]; then
 		m4 $^
 	else
-		$(DIFF) && branch2criticmark.bash $(PARENT) $(lastword $^) || m4 $^ |
+		$(DIFF) && branch2criticmark.zsh $(PARENT) $(lastword $^) || m4 $^ |
 			sed -e 's#{==#\\criticHighlight{#g' -e 's#==}#}#g' \
 				-e 's#{>>#\\criticComment{#g'   -e 's#<<}#}#g' \
 				-e 's#{++#\\criticAdd{#g'       -e 's#++}#}#g' \
