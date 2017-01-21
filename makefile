@@ -1,12 +1,12 @@
-# Set the language if not otherwise set
-LANGUAGE ?= en
-include $(CASILEDIR)/makefile-$(LANGUAGE)
-
 # Initial setup, environment dependent
 PROJECTDIR := $(shell cd "$(shell dirname $(firstword $(MAKEFILE_LIST)))/" && pwd)
 CASILEDIR := $(shell cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/" && pwd)
 PROJECT != basename $(PROJECTDIR)
 SHELL = bash
+
+# Set the language if not otherwise set
+LANGUAGE ?= en
+include $(CASILEDIR)/makefile-$(LANGUAGE)
 
 # Find stuff to build that has both a YML and a MD component
 TARGETS ?= $(filter $(basename $(wildcard *.md)),$(basename $(wildcard *.yml)))
