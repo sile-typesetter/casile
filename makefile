@@ -722,28 +722,6 @@ stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
 %-stats:
 	@$(CASILEDIR)/stats.zsh $* $(STATSMONTHS)
 
-NAMELANGS = en tr und part xx
-NAMESFILES = $(foreach LANG,$(NAMELANGS),$(CASILEDIR)/names.$(LANG).txt)
-
-proper_names.txt: $(SOURCES) $(NAMESFILES) | $(CASILEDIR)/bin/extract_names.pl
-	$(call skip_if_tracked,$@)
-	find -maxdepth 2 -name '*.md' -execdir cat {} \; | $(CASILEDIR)/bin/extract_names.pl |\
-		sort -u |\
-		grep -vxf <(cat $(NAMESFILES)) > $@
-
-sort_names: proper_names.txt | $(CASILEDIR)/bin/sort_names.zsh $(NAMESFILES)
-	sort_names.zsh < $^
-
-tag_names: $(SOURCES) | $(CASILEDIR)/bin/tag_names.zsh $(NAMESFILES)
-	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
-	git diff-files --quiet -- $^ || exit 1 # die if input files have uncommitted changes
-	tag_names.zsh la avadanlik/names.la.txt $^
-	tag_names.zsh en avadanlik/names.en.txt $^
-
-avadanlik/names.%.txt:
-	test -f $@ || touch $@
-	sort -u $@ | sponge $@
-
 %-ayetler.json: %.md
 	# cd $(CASILEDIR)
 	# yarn add bible-passage-reference-parser
