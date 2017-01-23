@@ -47,6 +47,9 @@ PAPERSIZES = $(CILTLI) $(KAPAKLI) $(PANKARTLI)
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
 MAKEFLAGS = "-j $(JOBS)"
 
+# List of extra m4 macro files to apply to every source
+M4MACROS ?=
+
 # For watch targets, treat exta parameters as things to pass to the next make
 ifeq (watch,$(firstword $(MAKECMDGOALS)))
   WATCH_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -221,15 +224,15 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(CASILEDIR)/template.sil 
 			$(word 2,$^) $< |
 		$(call sile_hook) > $@
 
-%-processed.md: $(CASILEDIR)/viachristus.m4 $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) %.md
-	if [[ "$(BRANCH)" == master ]]; then
-		m4 $^
-	else
-		$(DIFF) && branch2criticmark.zsh $(PARENT) $(lastword $^) || m4 $^ |
+%-processed.md: $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) %.md
+	if $(DIFF) && $(if $(PARENT),true,false); then
+		branch2criticmark.zsh $(PARENT) $(lastword $^) |
 			sed -e 's#{==#\\criticHighlight{#g' -e 's#==}#}#g' \
 				-e 's#{>>#\\criticComment{#g'   -e 's#<<}#}#g' \
 				-e 's#{++#\\criticAdd{#g'       -e 's#++}#}#g' \
 				-e 's#{--#\\criticDel{#g'       -e 's#--}#}#g'
+	else
+		m4 $^
 	fi |
 		renumber_footnotes.pl |
 		$(call md_cleanup) |
