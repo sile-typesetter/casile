@@ -1,18 +1,18 @@
 publisher = "viachristus"
 local book = SILE.require("classes/book")
 local plain = SILE.require("classes/plain")
-local vc = book { id = "vc" }
+local cabook = book { id = "cabook" }
 
-vc:declareOption("crop", "true")
-vc:declareOption("background", "true")
+cabook:declareOption("crop", "true")
+cabook:declareOption("background", "true")
 
-vc.endPage = function (self)
-  vc:moveTocNodes()
+cabook.endPage = function (self)
+  cabook:moveTocNodes()
 
   if not SILE.scratch.headers.skipthispage then
     SILE.settings.pushState()
     SILE.settings.reset()
-    if vc:oddPage() then
+    if cabook:oddPage() then
       SILE.call("output-right-running-head")
     else
       SILE.call("output-left-running-head")
@@ -21,10 +21,10 @@ vc.endPage = function (self)
   end
   SILE.scratch.headers.skipthispage = false
 
-  return plain.endPage(vc)
+  return plain.endPage(cabook)
 end
 
--- VC books sometimes have sections, sometimes don't.
+-- CaSILE books sometimes have sections, sometimes don't.
 -- Initialize some sectioning levels to work either way
 SILE.scratch.counters["sectioning"] = {
   value =  { 0, 0 },
@@ -32,6 +32,6 @@ SILE.scratch.counters["sectioning"] = {
 }
 
 -- I can't figure out how or where, but book.endPage() gets run on the last page
-book.endPage = vc.endPage
+book.endPage = cabook.endPage
 
-return vc
+return cabook

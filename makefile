@@ -53,6 +53,8 @@ M4MACROS ?=
 # List of exta YAML meta data files to splice into each book
 METADATA ?=
 
+# Set default document class
+DOCUMENTCLASS ?= cabook
 
 # Utility variables for later, http://blog.jgc.org/2007/06/escaping-comma-and-space-in-gnu-make.html
 , := ,
@@ -225,7 +227,7 @@ ONPAPERSILS = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE).sil)
 $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(CASILEDIR)/template.sil | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(CASILEDIR)/viachristus.lua
 	$(PANDOC) --standalone \
 			--wrap=preserve \
-			-V documentclass="vc" \
+			-V documentclass="$(DOCUMENTCLASS)" \
 			-V metadatafile="$(word 2,$^)" \
 			-V versioninfo="$(call versioninfo,$*)" \
 			-V urlinfo="$(call urlinfo,$*)" \
