@@ -1,4 +1,5 @@
 SHELL := zsh
+.SHELLFLAGS = +o nomatch -e -c
 
 # Initial setup, environment dependent
 PROJECTDIR := $(shell cd "$(shell dirname $(firstword $(MAKEFILE_LIST)))/" && pwd)
@@ -64,6 +65,7 @@ export PROJECT := $(PROJECT)
 ifeq ($(DEBUG),true)
 SILE = /home/caleb/projects/sile/sile
 export SILEPATH = /home/caleb/projects/sile/;$(CASILEDIR)
+.SHELLFLAGS = +o nomatch -e -x -c
 endif
 
 .ONESHELL:
@@ -362,7 +364,7 @@ endef
 
 ONPAPERZEMIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapak-zemin.png)
 gitzemin = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
-$(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,$$@)
+$(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.zsh,$$@)
 	@source $(firstword $|)
 	$(if $^,true,false) && $(MAGICK) $^ \
 		-gravity $(COVERGRAVITY) \
@@ -376,7 +378,7 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,
 		\( -background none xc: $(call magick_kapak) \) -composite \
 		$@ ||:
 
-%-pankart.jpg: %-kapak.png | %-geometry.sh
+%-pankart.jpg: %-kapak.png | %-geometry.zsh
 	$(addtosync)
 	@source $(firstword $|)
 	$(MAGICK) $< \
@@ -384,7 +386,7 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,
 		-quality 85 \
 		$@
 
-%-kapak.png: %-kapak-zemin.png %-kapak-metin.pdf | %-geometry.sh
+%-kapak.png: %-kapak-zemin.png %-kapak-metin.pdf | %-geometry.zsh
 	source $(firstword $|)
 	$(MAGICK) -density $(HIDPI) $(lastword $^)[0] \
 		-fill none \
@@ -414,7 +416,7 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,
 		\) +swap -compose over -composite \
 		+repage $@
 
-%-kapak.pdf: %-kapak.png %-kapak-metin.pdf | %-geometry.sh
+%-kapak.pdf: %-kapak.png %-kapak-metin.pdf | %-geometry.zsh
 	$(COVERS) || exit 0
 	metin=$$(mktemp kapakXXXXXX.pdf)
 	bg=$$(mktemp kapakXXXXXX.pdf)
@@ -466,7 +468,7 @@ $(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml | $(CASILEDIR)/viachristus.lu
 	EOF
 	$(SILE) $< -e "infofile = '$$lua'; casiledir = '$(CASILEDIR)'" -o $@
 
-%-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(CASILEDIR)/vc_sembol_renkli.svg $(CASILEDIR)/vc_logo_renkli.svg %-geometry.sh
+%-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(CASILEDIR)/vc_sembol_renkli.svg $(CASILEDIR)/vc_logo_renkli.svg %-geometry.zsh
 	source $(lastword $^)
 	texturew="$$(bc <<< "$$imgwpx / $(call scale,4,4)")"
 	textureh="$$(bc <<< "$$imghpx / $(call scale,4,4)")"
@@ -486,7 +488,7 @@ $(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml | $(CASILEDIR)/viachristus.lu
 		$(call magick_cilt) \
 		$@
 
-%-cilt.svg: $(CASILEDIR)/cilt.svg %-cilt.png %-geometry.sh
+%-cilt.svg: $(CASILEDIR)/cilt.svg %-cilt.png %-geometry.zsh
 	source $(word 3,$^)
 	ver=$(subst @,\\@,$(call versioninfo,$@))
 	perl -pne "
@@ -504,7 +506,7 @@ $(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml | $(CASILEDIR)/viachristus.lu
 			s#SW#$${spinepm}#g;
 		" $< > $@
 
-%-cilt.pdf:	%-cilt.svg %-cilt.png %-geometry.sh
+%-cilt.pdf:	%-cilt.svg %-cilt.png %-geometry.zsh
 	$(addtosync)
 	source $(lastword $^)
 	$(INKSCAPE) --without-gui \
@@ -517,9 +519,9 @@ newgeometry = $(shell grep -qx dpi=$(HIDPI) $1 || echo force)
 geometrybase = $(if $(filter $(CILTLI),$(call parse_layout,$1)),$1.pdf $1-cilt-metin.pdf,$1-kapak-metin.pdf)
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
-GEOMETRIES = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE)-geometry.sh))
-$(GEOMETRIES): %-geometry.sh: $$(call newgeometry,$$@) | $$(call geometrybase,$$*)
-	@set -e ; set -x ; exec 2> >(cut -c3- > $@) # black magic to output the finished math
+GEOMETRIES = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE)-geometry.zsh))
+$(GEOMETRIES): %-geometry.zsh: $$(call newgeometry,$$@) | $$(call geometrybase,$$*)
+	set -x ; exec 2> >(cut -c3- > $@) # black magic to output the finished math
 	dpi=$(HIDPI)
 	bleedmm=$(BLEED)
 	bleedpx=$(call mmtopx,$(BLEED))
@@ -606,26 +608,26 @@ define magick_fray
 	-alpha off -compose copyopacity -composite
 endef
 
-%-cilt-on.png: %-cilt.png %-geometry.sh
+%-cilt-on.png: %-cilt.png %-geometry.zsh
 	source $(word 2,$^)
 	$(MAGICK) $< -gravity east -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
 
-%-cilt-arka.png: %-cilt.png %-geometry.sh
+%-cilt-arka.png: %-cilt.png %-geometry.zsh
 	source $(word 2,$^)
 	$(MAGICK) $< -gravity west -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
 
-%-cilt-sirt.png: %-cilt.png %-geometry.sh
+%-cilt-sirt.png: %-cilt.png %-geometry.zsh
 	source $(word 2,$^)
 	$(MAGICK) $< -gravity center -crop $${spinepx}x$${coverhpx}+0+0! $@
 
-%-pov-on.png: %-cilt-on.png %-geometry.sh
+%-pov-on.png: %-cilt-on.png %-geometry.zsh
 	source $(lastword $^)
 	$(MAGICK) $< \
 		$(call magick_crease,0+) \
 		$(call magick_fray) \
 		$@
 
-%-pov-arka.png: %-cilt-arka.png %-geometry.sh
+%-pov-arka.png: %-cilt-arka.png %-geometry.zsh
 	source $(lastword $^)
 	$(MAGICK) $< \
 		$(call magick_crease,w-) \
@@ -637,7 +639,7 @@ endef
 
 povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
 
-%-3b.pov: %-geometry.sh | $(povtextures)
+%-3b.pov: %-geometry.zsh | $(povtextures)
 	source $<
 	cat <<- EOF > $@
 		#declare coverwmm = $$coverwmm;
