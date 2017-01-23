@@ -748,8 +748,8 @@ define split_chapters
 endef
 
 split_chapters:
-	echo Obsolete, need to find new way to calculate unsplit sources
-	# $(foreach SOURCE,$(SOURCES),$(call split_chapters,$(SOURCE)))
+	$(if $(SOURCES),,exit 0)
+	$(foreach SOURCE,$(SOURCES),$(call split_chapters,$(SOURCE)))
 
 watch:
 	git ls-files --recurse-submodules |
