@@ -157,12 +157,12 @@ $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | b
 endef
 
 sync_pre:
-	$(or $(INPUTDIR),exit 0)
+	$(if $(INPUTDIR),,exit 0)
 	$(call pre_sync)
 	-rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/
 
 sync_post: sync_files.dat
-	$(or $(OUTPUTDIR),exit 0)
+	$(if $(OUTPUTDIR),,exit 0)
 	sort -u $< | sponge $<
 	for target in $(TARGETS); do
 ifeq ($(ALL_TAGS),)
