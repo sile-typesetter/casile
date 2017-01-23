@@ -50,6 +50,9 @@ MAKEFLAGS = "-j $(JOBS)"
 
 # List of extra m4 macro files to apply to every source
 M4MACROS ?=
+# List of exta YAML meta data files to splice into each book
+METADATA ?=
+
 
 # Utility variables for later, http://blog.jgc.org/2007/06/escaping-comma-and-space-in-gnu-make.html
 , := ,
@@ -706,10 +709,10 @@ endef
 	$(call addtosync,$@)
 	-kindlegen $<
 
-%.json: $(CASILEDIR)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
+%.json: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml)
 	jq -s 'reduce .[] as $$item({}; . + $$item)' $(foreach YAML,$^,<(yaml2json $(YAML))) > $@
 
-%-merged.yml: $(CASILEDIR)/viachristus.yml $$(wildcard $(PROJECT).yml $$*.yml)
+%-merged.yml: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml)
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $^ |
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' > $@
 
