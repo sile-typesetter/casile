@@ -349,6 +349,14 @@ height = $(shell identify -density $(HIDPI) -format %[fx:h] $1)
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 
+# Utility to modify recursive variables, see http://stackoverflow.com/a/36863261/313192
+define prepend
+$(eval $(1) = $(2)$(value $(1)))
+endef
+define append
+$(eval $(1) = $(value $(1))$(2))
+endef
+
 ONPAPERZEMIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapak-zemin.png)
 gitzemin = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
 $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.sh,$$@)
