@@ -42,5 +42,5 @@ for chapter in $chapters; do
 done
 
 # Make source an index to the chapters
-> $src <<< "esyscmd([[zsh -c 'for f in  $dir/<0->-*.md; do cat $f; echo; done']])"
+> $src <<< "esyscmd([[zsh -c 'for f in  $dir/<0->-*.md; do cat \$f; echo; done']])"
 git add $src
