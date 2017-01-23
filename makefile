@@ -521,7 +521,7 @@ geometrybase = $(if $(filter $(CILTLI),$(call parse_layout,$1)),$1.pdf $1-cilt-m
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE)-geometry.zsh))
 $(GEOMETRIES): %-geometry.zsh: $$(call newgeometry,$$@) | $$(call geometrybase,$$*)
-	set -x ; exec 2> >(cut -c3- > $@) # black magic to output the finished math
+	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	dpi=$(HIDPI)
 	bleedmm=$(BLEED)
 	bleedpx=$(call mmtopx,$(BLEED))
