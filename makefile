@@ -66,11 +66,9 @@ SILE = /home/caleb/projects/sile/sile
 export SILEPATH = /home/caleb/projects/sile/;$(CASILEDIR)
 endif
 
-VIRTUALPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
-
 .ONESHELL:
 .SECONDEXPANSION:
-.PHONY: all ci clean debug list force init dependencies sync_pre sync_post $(TARGETS) $(VIRTUALPDFS) %.app md_cleanup stats %-stats
+.PHONY: all ci clean debug list force init dependencies sync_pre sync_post $(TARGETS) %.app md_cleanup stats %-stats
 .SECONDARY:
 .PRECIOUS: %.pdf %.sil %.toc %.dat %.inc
 .DELETE_ON_ERROR:
@@ -180,6 +178,8 @@ endif
 	done
 	$(call post_sync)
 
+VIRTUALPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
+.PHONY: $(VIRTUALPDFS)
 $(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach RESOURCE,$(RESOURCES),$$*-$(LAYOUT)-$(RESOURCE).pdf)) ;
 
 coverpreq = $(if $(filter $(CILTLI),$(call parse_layout,$1)),,%-kapak.pdf)
