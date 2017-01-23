@@ -51,6 +51,13 @@ MAKEFLAGS = "-j $(JOBS)"
 # List of extra m4 macro files to apply to every source
 M4MACROS ?=
 
+# Utility variables for later, http://blog.jgc.org/2007/06/escaping-comma-and-space-in-gnu-make.html
+, := ,
+space :=
+space +=
+$(space) := 
+$(space) +=
+
 # For watch targets, treat exta parameters as things to pass to the next make
 ifeq (watch,$(firstword $(MAKECMDGOALS)))
   WATCH_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -59,12 +66,12 @@ endif
 
 export PATH := $(CASILEDIR)/bin:$(PATH)
 export HOSTNAME := $(shell hostname)
-export SILEPATH := $(CASILEDIR)
+export SILEPATH += $(CASILEDIR)
 export PROJECT := $(PROJECT)
 
 ifeq ($(DEBUG),true)
 SILE = /home/caleb/projects/sile/sile
-export SILEPATH = /home/caleb/projects/sile/;$(CASILEDIR)
+export SILEPATH += /home/caleb/projects/sile/;$(CASILEDIR)
 .SHELLFLAGS = +o nomatch -e -x -c
 endif
 
@@ -193,10 +200,10 @@ $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@)
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
 	# account for TOC issue: https://github.com/simoncozens/sile/issues/230
 	if $(DRAFT); then
-		$(SILE) -d $(SILEDEBUG) $< -o $@
+		$(SILE) $(and $(SILEDEBUG),-d $(subst $( ),$(,),$(SILEDEBUG))) $< -o $@
 	else
 		export pg0=$(call pagecount,$@)
-		$(SILE) $< -o $@
+		$(SILE) $(and $(SILEDEBUG),-d $(subst $( ),$(,),$(SILEDEBUG))) $< -o $@
 		# Note this page count can't be in Make because of expansion order
 		export pg1=$$(pdfinfo $@ | awk '$$1 == "Pages:" {print $$2}' || echo 0)
 		[[ $${pg0} -ne $${pg1} ]] && $(SILE) $< -o $@ ||:
