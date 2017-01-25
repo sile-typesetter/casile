@@ -527,7 +527,7 @@ $(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml | $(CASILEDIR)/viachristus.lu
 		--file=$< \
 		--export-pdf=$@
 
-newgeometry = $(shell grep -qx dpi=$(HIDPI) $1 || echo force)
+newgeometry = $(shell grep -sqx dpi=$(HIDPI) $1 || echo force)
 geometrybase = $(if $(filter $(CILTLI),$(call parse_layout,$1)),$1.pdf $1-cilt-metin.pdf,$1-kapak-metin.pdf)
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
