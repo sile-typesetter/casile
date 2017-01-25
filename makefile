@@ -53,6 +53,9 @@ M4MACROS ?=
 # List of exta YAML meta data files to splice into each book
 METADATA ?=
 
+# Tell sile to look here for stuff before it’s internal stuff
+SILEPATH += $(CASILEDIR)
+
 # Set default document class
 DOCUMENTCLASS ?= cabook
 
@@ -71,12 +74,11 @@ endif
 
 export PATH := $(CASILEDIR)/bin:$(PATH)
 export HOSTNAME := $(shell hostname)
-export SILEPATH += $(CASILEDIR)
 export PROJECT := $(PROJECT)
 
 ifeq ($(DEBUG),true)
 SILE = /home/caleb/projects/sile/sile
-export SILEPATH += /home/caleb/projects/sile/;$(CASILEDIR)
+$(call prepend,SILEPATH,/home/caleb/projects/sile/ )
 .SHELLFLAGS = +o nomatch -e -x -c
 endif
 
@@ -206,6 +208,7 @@ $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@)
 	$(addtosync)
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
 	# account for TOC issue: https://github.com/simoncozens/sile/issues/230
+	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	if $(DRAFT); then
 		$(SILE) $(and $(SILEDEBUG),-d $(subst $( ),$(,),$(SILEDEBUG))) $< -o $@
 	else
