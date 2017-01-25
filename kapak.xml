@@ -1,4 +1,4 @@
-<sile class="vc" crop="false" background="false">
+<sile class="cabook" crop="false" background="false">
   <script>
     SILE.require(casiledir .. "/viachristus")
     SILE.require(infofile)
