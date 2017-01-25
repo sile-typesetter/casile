@@ -1,4 +1,3 @@
-publisher = "viachristus"
 local book = SILE.require("classes/book")
 local plain = SILE.require("classes/plain")
 local cabook = book { id = "cabook" }

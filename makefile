@@ -53,6 +53,9 @@ M4MACROS ?=
 # List of exta YAML meta data files to splice into each book
 METADATA ?=
 
+# Extra lua files to include before processing documents
+LUAINCLUDE +=
+
 # Tell sile to look here for stuff before it’s internal stuff
 SILEPATH += $(CASILEDIR)
 
@@ -78,9 +81,9 @@ export PROJECT := $(PROJECT)
 
 ifeq ($(DEBUG),true)
 SILE = /home/caleb/projects/sile/sile
-$(call prepend,SILEPATH,/home/caleb/projects/sile/ )
 .SHELLFLAGS = +o nomatch -e -x -c
 endif
+$(call prepend,SILEPATH,/home/caleb/projects/sile/ )
 
 .ONESHELL:
 .SECONDEXPANSION:
@@ -203,22 +206,22 @@ $(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach 
 coverpreq = $(if $(filter $(CILTLI),$(call parse_layout,$1)),,%-kapak.pdf)
 
 ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
-$(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@)
+$(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	$(addtosync)
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
 	# account for TOC issue: https://github.com/simoncozens/sile/issues/230
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	if $(DRAFT); then
-		$(SILE) $(and $(SILEDEBUG),-d $(subst $( ),$(,),$(SILEDEBUG))) $< -o $@
+		$(SILE) -I .casile.lua $(and $(SILEDEBUG),-d $(subst $( ),$(,),$(SILEDEBUG))) $< -o $@
 	else
 		export pg0=$(call pagecount,$@)
-		$(SILE) $(and $(SILEDEBUG),-d $(subst $( ),$(,),$(SILEDEBUG))) $< -o $@
+		$(SILE) -I .casile.lua $(and $(SILEDEBUG),-d $(subst $( ),$(,),$(SILEDEBUG))) $< -o $@
 		# Note this page count can't be in Make because of expansion order
 		export pg1=$$(pdfinfo $@ | awk '$$1 == "Pages:" {print $$2}' || echo 0)
-		[[ $${pg0} -ne $${pg1} ]] && $(SILE) $< -o $@ ||:
+		[[ $${pg0} -ne $${pg1} ]] && $(SILE) -I .casile.lua $< -o $@ ||:
 		export pg2=$$(pdfinfo $@ | awk '$$1 == "Pages:" {print $$2}' || echo 0)
-		[[ $${pg1} -ne $${pg2} ]] && $(SILE) $< -o $@ ||:
+		[[ $${pg1} -ne $${pg2} ]] && $(SILE) -I .casile.lua $< -o $@ ||:
 	fi
 	# If we have a special cover page for this format, swap it out for the half title page
 	if $(COVERS) && [[ -f $*-kapak.pdf ]]; then
@@ -242,6 +245,14 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(CASILEDIR)/template.sil 
 			--to=sile \
 			$(word 2,$^) $< |
 		$(call sile_hook) > $@
+
+.casile.lua: $(LUAINCLUDE)
+	cat <<- EOF > $@
+		CALISE = {}
+		CASILE.casiledir = "$(CASILEDIR)"
+		CASILE.publisher = "casile"
+	EOF
+	$(and $^,cat $^ >> $@)
 
 %-processed.md: $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) %.md
 	if $(DIFF) && $(if $(PARENT),true,false); then
@@ -450,14 +461,15 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.zsh
 
 CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
 													
-$(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@) | $(CASILEDIR)/viachristus.lua $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(CASILEDIR)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
+$(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@) .casile.lua | $(CASILEDIR)/viachristus.lua $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(CASILEDIR)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
 	cat <<- EOF > $*-cilt.lua
 		versioninfo = "$(call versioninfo,$*)"
 		metadatafile = "$(word 2,$^)"
 		spine = "$(call spinemm,$(lastword $^))mm"
 		$(foreach LUA,$|, SILE.require("$(basename $(LUA))");)
 	EOF
-	$(SILE) $< -e 'infofile = "$*-cilt"; casiledir = "$(CASILEDIR)"' -o $@
+	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
+	$(SILE) -I <(cat .casile.lua <<< 'CASILE.infofile = "$*-cilt"') $< -o $@
 
 %-fragman-on.png: %-cilt-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
@@ -476,14 +488,16 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@)
 		-composite $@
 
 KAPAKMETIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapak-metin.pdf)
-$(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml | $(CASILEDIR)/viachristus.lua $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(CASILEDIR)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
+$(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml .casile.lua | $(CASILEDIR)/viachristus.lua $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(CASILEDIR)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
 	lua=$*-$(call parse_layout,$@)-kapak
 	cat <<- EOF > $$lua.lua
 		versioninfo = "$(call versioninfo,$*)"
 		metadatafile = "$(word 2,$^)"
 		$(foreach LUA,$|, SILE.require("$(basename $(LUA))");)
 	EOF
-	$(SILE) $< -e "infofile = '$$lua'; casiledir = '$(CASILEDIR)'" -o $@
+	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
+	echo BBB BBB $$SILE_PATH
+	$(SILE) -I <(cat .casile.lua <<< "CASILE.infofile = '$$lua'") $< -o $@
 
 %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(CASILEDIR)/vc_sembol_renkli.svg $(CASILEDIR)/vc_logo_renkli.svg %-geometry.zsh
 	source $(lastword $^)
