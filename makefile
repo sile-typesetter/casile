@@ -116,6 +116,8 @@ debug:
 	@echo CASILEDIR: $(CASILEDIR)
 	@echo SILE: $(SILE)
 	@echo SILEPATH: $(SILEPATH)
+	@echo M4MACROS: $(M4MACROS)
+	@echo METADATA: $(METADATA)
 	@echo versioninfo: $(call versioninfo,$(PROJECT))
 
 force: ;
