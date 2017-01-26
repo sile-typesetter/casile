@@ -83,7 +83,6 @@ ifeq ($(DEBUG),true)
 SILE = /home/caleb/projects/sile/sile
 .SHELLFLAGS = +o nomatch -e -x -c
 endif
-$(call prepend,SILEPATH,/home/caleb/projects/sile/ )
 
 .ONESHELL:
 .SECONDEXPANSION:
@@ -248,7 +247,7 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(CASILEDIR)/template.sil 
 
 .casile.lua: $(LUAINCLUDE)
 	cat <<- EOF > $@
-		CALISE = {}
+		CASILE = {}
 		CASILE.casiledir = "$(CASILEDIR)"
 		CASILE.publisher = "casile"
 	EOF
@@ -470,7 +469,7 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@)
 		$(foreach LUA,$|, SILE.require("$(basename $(LUA))");)
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
-	$(SILE) -I <(cat .casile.lua <<< 'CASILE.infofile = "$*-cilt"') $< -o $@
+	$(SILE) -I <(cat .casile.lua <(echo 'CASILE.infofile = "$*-cilt"')) $< -o $@
 
 %-fragman-on.png: %-cilt-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
@@ -498,7 +497,7 @@ $(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml .casile.lua | $(CASILEDIR)/vi
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	echo BBB BBB $$SILE_PATH
-	$(SILE) -I <(cat .casile.lua <<< "CASILE.infofile = '$$lua'") $< -o $@
+	$(SILE) -I <(cat .casile.lua <(echo "CASILE.infofile = '$$lua'") | tee dd) $< -o $@
 
 %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(CASILEDIR)/vc_sembol_renkli.svg $(CASILEDIR)/vc_logo_renkli.svg %-geometry.zsh
 	source $(lastword $^)
