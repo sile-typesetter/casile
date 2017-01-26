@@ -295,6 +295,7 @@ endef
 define find_and_munge
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
 	find $(PROJECTDIR) -maxdepth 2 -name '$1' |
+		grep -f <(git ls-files | sed -e 's/$$/$$/') |
 		while read f; do
 			grep -q 'esyscmd.*cat' $$f && continue # skip compilations that are mostly M4
 			git diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
