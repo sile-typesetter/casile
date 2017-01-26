@@ -137,7 +137,7 @@ SILE.registerCommand("part", function (options, content)
     SILE.call("medskip")
     SILE.Commands["book:partfont"]({ size = "4%pw" }, content);
     SILE.call("medskip")
-    SILE.call("font", { filename = lfs.currentdir() .. "/fonts/FeFlow2.otf", size = "9pt" }, { "a" })
+    SILE.call("font", { filename = CASILE.casiledir .. "/fonts/FeFlow2.otf", size = "9pt" }, { "a" })
     SILE.call("bigskip")
   end)
   SILE.scratch.headers.skipthispage = true
