@@ -540,19 +540,20 @@ $(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml .casile.lua | $(CASILEDIR)/vi
 	$(addtosync)
 	source $(lastword $^)
 	$(INKSCAPE) --without-gui \
-		--export-dpi=$$dpi \
+		--export-dpi=$$hidpi \
 		--export-margin=$$trimmm \
 		--file=$< \
 		--export-pdf=$@
 
-newgeometry = $(shell grep -sqx dpi=$(HIDPI) $1 || echo force)
+newgeometry = $(shell grep -sqx hidpi=$(HIDPI) $1 || echo force)
 geometrybase = $(if $(filter $(CILTLI),$(call parse_layout,$1)),$1.pdf $1-cilt-metin.pdf,$1-kapak-metin.pdf)
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE)-geometry.zsh))
 $(GEOMETRIES): %-geometry.zsh: $$(call newgeometry,$$@) | $$(call geometrybase,$$*)
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
-	dpi=$(HIDPI)
+	hidpi=$(HIDPI)
+	lodpi=$(HIDPI)
 	bleedmm=$(BLEED)
 	bleedpx=$(call mmtopx,$(BLEED))
 	bleedpm=$(call mmtopm,$(BLEED))
