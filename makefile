@@ -496,7 +496,6 @@ $(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml .casile.lua | $(CASILEDIR)/vi
 		$(foreach LUA,$|, SILE.require("$(basename $(LUA))");)
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
-	echo BBB BBB $$SILE_PATH
 	$(SILE) -I <(cat .casile.lua <(echo "CASILE.infofile = '$$lua'") | tee dd) $< -o $@
 
 %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(CASILEDIR)/vc_sembol_renkli.svg $(CASILEDIR)/vc_logo_renkli.svg %-geometry.zsh
