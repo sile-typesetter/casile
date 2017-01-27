@@ -13,6 +13,9 @@ include $(CASILEDIR)/makefile-$(LANGUAGE)
 # Find stuff to build that has both a YML and a MD component
 TARGETS ?= $(filter $(basename $(wildcard *.md)),$(basename $(wildcard *.yml)))
 
+# List of figures that need building prior to content
+FIGURES ?=
+
 # Default output formats and parameters (often overridden)
 FORMATS ?= pdf epub
 BLEED ?= 3
@@ -253,7 +256,7 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(CASILEDIR)/template.sil 
 	EOF
 	$(and $^,cat $^ >> $@)
 
-%-processed.md: $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) %.md
+%-processed.md: $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) $(FIGURES) %.md
 	if $(DIFF) && $(if $(PARENT),true,false); then
 		branch2criticmark.zsh $(PARENT) $(lastword $^) |
 			sed -e 's#{==#\\criticHighlight{#g' -e 's#==}#}#g' \
