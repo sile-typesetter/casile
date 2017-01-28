@@ -616,3 +616,7 @@ SILE.registerCommand("dropcap", function (options, content)
   end)
   SILE.call("indent")
 end)
+
+SILE.registerUnit("%pmed", { relative = true, definition = function (v)
+  return v / 100 * (SILE.documentState.orgPaperSize[1] + SILE.documentState.orgPaperSize[2]) / 2
+end})
