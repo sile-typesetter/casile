@@ -326,6 +326,13 @@ define md_cleanup
 	) )
 endef
 
+define strip_lang
+	cat |
+		perl -pne "
+			s/\\\lang.{1,3}\{([^\}]+)}/\1/g
+		"
+endef
+
 define markdown_hook
 	cat -
 endef
@@ -724,7 +731,7 @@ endef
 		--smart \
 		--epub-cover-image=$(lastword $^) \
 		$(word 2,$^) \
-		$< -o $@
+		<($(call strip_lang) < $<) -o $@
 
 %.mobi: %.epub
 	$(call addtosync,$@)
