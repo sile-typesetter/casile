@@ -4,8 +4,8 @@ SILE.registerCommand("frontcover", function ()
   SILE.call("pagetemplate", options, function ()
     SILE.call("frame", {
         id = "front",
-        top = "15%ph",
-        bottom = "100%ph - 15%ph",
+        top = "0",
+        bottom = "100%ph",
         left = "15%pw",
         right = "85%pw"
       })
@@ -26,6 +26,7 @@ SILE.registerCommand("frontcover", function ()
       SILE.call("book:partnumfont", { size = "6%pmed", weight = 300 }, { SILE.metadata.creator[1].text })
     end)
     SILE.call("par")
+	SILE.call("vfill")
     SILE.call("break")
   end)
 end)
