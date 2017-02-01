@@ -79,14 +79,14 @@ end
 
 -- Output a list suitable for shell script parsing
 for i, v in pairs(breaks) do
-  local n = string.format("%03d", i)
+  local n = string.format("%03d", i - 1)
   local out = basename .. "-app-" .. n .. ".pdf"
 
   -- Fieds expected by makefile to pass to pdftk
   print(v, out)
 
   -- Human readable info for copy/paste to the church app
-  infow("CHUNK " .. i  .. ":")
+  infow("CHUNK " .. i - 1  .. ":")
   infow(labels[i])
   infow(share .. out, true)
 end
