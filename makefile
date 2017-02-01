@@ -345,11 +345,11 @@ endef
 
 %.app: %-app.info $(foreach PANKART,$(PANKARTLI),%-$(PANKART)-pankart.jpg) ;
 
-%-app.info: %-app.sil.toc %-merged.yml
+%-app.info: %-app.sil.toc %-app.pdf %-merged.yml
 	$(addtosync)
-	$(CASILEDIR)/bin/toc2breaks.lua $* $^ $@ |
+	$(CASILEDIR)/bin/toc2breaks.lua $* $(firstword $^) $(lastword $^) $@ |
 		while read range out; do
-			pdftk $*-app.pdf cat $$range output $$out
+			pdftk $(word 2,$^) cat $$range output $$out
 			echo $$out >> sync_files.dat
 		done
 
