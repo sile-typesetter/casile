@@ -51,7 +51,7 @@ function process_line (line) {
         previousOffset = 0;
       }
       var pretty = formatter('yc-long', ref.osis);
-      pretty = "[" + pretty + "](https://develop.incil.info/referans/" + ref.osis + ")";
+      pretty = "[" + pretty + "](https://sahneleme.incil.info/referans/" + ref.osis + ")";
       line = line.replaceSplice(ref.indices[0] + offset, ref.indices[1] + offset + previousOffset, pretty);
       previousOffset = ref.indices[0] - ref.indices[1] + pretty.length;
       offset += previousOffset;
