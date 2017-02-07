@@ -108,6 +108,7 @@ debug:
 	@echo TARGETS: $(TARGETS)
 	@echo FORMATS: $(FORMATS)
 	@echo LAYOUTS: $(LAYOUTS)
+	@echo FIGURES: $(FIGURES)
 	@echo TAG: $(TAG)
 	@echo TAG_SEQ: $(TAG_SEQ)
 	@echo TAG_BASE: $(TAG_BASE)
@@ -133,6 +134,8 @@ list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
 
 $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
+
+figures: $(FIGURES) ;
 
 init: dependencies
 	$(and $(OUTPUTDIR),mkdir -p $(OUTPUTDIR))
@@ -256,7 +259,7 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(CASILEDIR)/template.sil 
 	EOF
 	$(and $^,cat $^ >> $@)
 
-%-processed.md: $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) $(FIGURES) %.md
+%-processed.md: $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) figures %.md
 	if $(DIFF) && $(if $(PARENT),true,false); then
 		branch2criticmark.zsh $(PARENT) $(lastword $^) |
 			sed -e 's#{==#\\criticHighlight{#g' -e 's#==}#}#g' \
