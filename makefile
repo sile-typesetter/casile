@@ -208,7 +208,7 @@ VIRTUALPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
 .PHONY: $(VIRTUALPDFS)
 $(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach RESOURCE,$(RESOURCES),$$*-$(LAYOUT)-$(RESOURCE).pdf)) ;
 
-coverpreq = $(if $(filter $(CILTLI),$(call parse_layout,$1)),,%-kapak.pdf)
+coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(CILTLI),$(call parse_layout,$1)),,%-kapak.pdf),)
 
 ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
 $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua
