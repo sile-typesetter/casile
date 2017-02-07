@@ -1,7 +1,7 @@
 \begin[$if(papersize)$papersize=$papersize$,$endif$class=$documentclass$]{document}
 $if(metadatafile)$
 \begin{script}
-SILE.metadata = require("readmeta").load("$metadatafile$")
+CASILE.metadata = require("readmeta").load("$metadatafile$")
 \end{script}
 $endif$
 $if(lang)$

@@ -21,12 +21,12 @@ SILE.registerCommand("imprint", function (options, content)
         SILE.settings.set("linespacing.method", "fixed")
         SILE.settings.set("linespacing.fixed.baselinedistance", SILE.length.parse("2.8ex plus 1pt minus 0.5pt"))
 
-        if SILE.metadata.publisher and not SILE.scratch.layout == "app" then
+        if CASILE.metadata.publisher and not SILE.scratch.layout == "app" then
           SILE.settings.temporarily(function ()
             SILE.call("img", { src = lfs.currentdir() .. "/vc_sembol_renksiz.pdf", height = "6.5em" })
             SILE.call("skip", { height = "-6.7em" })
             SILE.settings.set("document.lskip", SILE.nodefactory.newGlue({ width = imgUnit * 6.5 }))
-            SILE.call("font", { filename = lfs.currentdir() .. "/fonts/Mason-Bold.otf", size = "1.25em" }, { SILE.metadata.publisher })
+            SILE.call("font", { filename = lfs.currentdir() .. "/fonts/Mason-Bold.otf", size = "1.25em" }, { CASILE.metadata.publisher })
             SILE.call("break")
             SILE.typesetter:typeset("Davutpaşa Cad. Kazım Dinçol San. Sit.")
             SILE.call("break")
@@ -59,7 +59,7 @@ SILE.registerCommand("imprint", function (options, content)
           SILE.call("par")
         end
 
-        if SILE.metadata.manufacturer then
+        if CASILE.metadata.manufacturer then
           SILE.call("skip", { height = "5.4em" })
           SILE.settings.temporarily(function ()
             SILE.call("img", { src = qrimg, height = "5.8em" })
@@ -100,7 +100,7 @@ SILE.registerCommand("imprint", function (options, content)
         if SILE.Commands["meta:versecredits"] then
           SILE.call("meta:versecredits")
         end
-        if SILE.metadata.publisher then
+        if CASILE.metadata.publisher then
           if SILE.Commands["meta:distribution"] then
             SILE.call("par")
             SILE.call("meta:distribution")

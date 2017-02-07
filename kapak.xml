@@ -5,7 +5,7 @@
     SILE.registerCommand("meta:surum", function()
       SILE.typesetter:typeset(versioninfo)
     end)
-    SILE.metadata = require("readmeta").load(metadatafile)
+    CASILE.metadata = require("readmeta").load(metadatafile)
   </script>
   <define command="output-right-running-head"></define>
   <script src="packages/frametricks" />

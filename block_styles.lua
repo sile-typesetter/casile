@@ -6,12 +6,12 @@ SILE.registerCommand("titlepage", function (options, content)
     SILE.call("hbox")
     SILE.call("skip", { height = "4%ph" })
     SILE.call("book:titlepage-title-font", { size = "7%pw" }, function ()
-      SILE.call("wraptitle", {}, { SILE.metadata.title } )
+      SILE.call("wraptitle", {}, { CASILE.metadata.title } )
     end)
     SILE.call("skip", { height = "9%ph" })
-    if SILE.metadata.subtitle then
+    if CASILE.metadata.subtitle then
       SILE.call("book:titlepage-subtitle-font", { size = "4%pw" }, function ()
-        SILE.call("wrapsubtitle", {}, { SILE.metadata.subtitle })
+        SILE.call("wrapsubtitle", {}, { CASILE.metadata.subtitle })
       end)
     end
     if SILE.Commands["meta:author"] then
@@ -20,7 +20,7 @@ SILE.registerCommand("titlepage", function (options, content)
         SILE.call("meta:author")
       end)
     end
-    if SILE.metadata.publisher then
+    if CASILE.metadata.publisher then
       SILE.call("vfill")
       SILE.call("img", { src = lfs.currentdir() .. "/vc_logo_renksiz.pdf", width = "25%pw" })
     end
