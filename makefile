@@ -59,6 +59,9 @@ METADATA ?=
 # Extra lua files to include before processing documents
 LUAINCLUDE +=
 
+# Primary libraries to include (loaded in reverse order so this one is first)
+LUALIBS += $(CASILEDIR)/casile.lua
+
 # Tell sile to look here for stuff before it’s internal stuff
 SILEPATH += $(CASILEDIR)
 
@@ -237,7 +240,7 @@ $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua
 	fi
 
 ONPAPERSILS = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE).sil)
-$(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(CASILEDIR)/template.sil | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(CASILEDIR)/viachristus.lua
+$(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(CASILEDIR)/template.sil | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	$(PANDOC) --standalone \
 			--wrap=preserve \
 			-V documentclass="$(DOCUMENTCLASS)" \
@@ -398,6 +401,7 @@ width = $(shell identify -density $(HIDPI) -format %[fx:w] $1)
 height = $(shell identify -density $(HIDPI) -format %[fx:h] $1)
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
+reverse = $(if $(wordlist 2,2,$(1)),$(call reverse,$(wordlist 2,$(words $(1)),$(1))) $(firstword $(1)),$(1))
 
 # Utility to modify recursive variables, see http://stackoverflow.com/a/36863261/313192
 define prepend
@@ -478,12 +482,12 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.zsh
 
 CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
 													
-$(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@) .casile.lua | $(CASILEDIR)/viachristus.lua $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(CASILEDIR)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
+$(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@) .casile.lua | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	cat <<- EOF > $*-cilt.lua
 		versioninfo = "$(call versioninfo,$*)"
 		metadatafile = "$(word 2,$^)"
 		spine = "$(call spinemm,$(lastword $^))mm"
-		$(foreach LUA,$|, SILE.require("$(basename $(LUA))");)
+		$(foreach LUA,$(call reverse,$|), SILE.require("$(basename $(LUA))");)
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) -I <(cat .casile.lua <(echo 'CASILE.infofile = "$*-cilt"')) $< -o $@

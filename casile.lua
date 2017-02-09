@@ -8,6 +8,7 @@ SILE.require("packages/image")
 SILE.require("packages/date")
 
 SILE.require("imprint");
+SILE.require("covers");
 SILE.require("hyphenation_exceptions");
 SILE.require("inline_styles");
 SILE.require("block_styles");
