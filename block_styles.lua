@@ -22,7 +22,7 @@ SILE.registerCommand("titlepage", function (options, content)
     end
     if CASILE.metadata.publisher then
       SILE.call("vfill")
-      SILE.call("img", { src = lfs.currentdir() .. "/vc_logo_renksiz.pdf", width = "25%pw" })
+      SILE.call("img", { src = CASILE.avadanlikdir .. "/vc_logo_renksiz.pdf", width = "25%pw" })
     end
   end)
   SILE.call("par")
