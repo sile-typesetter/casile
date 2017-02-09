@@ -7,11 +7,11 @@ SILE.require("packages/rules")
 SILE.require("packages/image")
 SILE.require("packages/date")
 
-SILE.require("imprint");
-SILE.require("covers");
-SILE.require("hyphenation_exceptions");
-SILE.require("inline_styles");
-SILE.require("block_styles");
+SILE.require("imprint", CASILE.casiledir);
+SILE.require("covers", CASILE.casiledir);
+SILE.require("hyphenation_exceptions", CASILE.casiledir);
+SILE.require("inline_styles", CASILE.casiledir);
+SILE.require("block_styles", CASILE.casiledir);
 
 textcase = SILE.require("packages/textcase").exports
 
