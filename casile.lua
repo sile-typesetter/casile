@@ -178,16 +178,16 @@ SILE.registerCommand("book:sectioning", function (options, content)
 end)
 
 -- This is the same as SILE's version but sets our no-headers variable on blank pages
-SILE.registerCommand("open-double-page", function ()
-  SILE.typesetter:leaveHmode();
-  SILE.Commands["supereject"]();
-  if SILE.documentState.documentClass:oddPage() then
+-- ...and allows opening to an even page
+SILE.registerCommand("open-double-page", function (options)
+  local even = options.even or false
+  local class = SILE.documentState.documentClass
+  repeat 
     SILE.typesetter:typeset("")
     SILE.typesetter:leaveHmode();
     SILE.Commands["supereject"]();
     SILE.scratch.headers.skipthispage = true
-  end
-  SILE.typesetter:leaveHmode();
+  until (even and class:oddPage()) or not class:oddPage()
 end)
 
 local function tr_num2text (num, ordinal)
