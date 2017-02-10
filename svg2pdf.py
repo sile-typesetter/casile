@@ -35,7 +35,7 @@ def svg_to_any(key, value, fmt, meta):
            except OSError:
                mtime = -1
            if mtime < os.path.getmtime(src):
-               cmd_line = ['inkscape', option[0], eps_name, src]
+               cmd_line = ['inkscape', '--export-ignore-filters', option[0], eps_name, src]
                sys.stderr.write("Running %s\n" % " ".join(cmd_line))
                subprocess.call(cmd_line, stdout=sys.stderr.fileno())
            if attrs:
