@@ -58,7 +58,7 @@ SILE.registerCommand("tableofcontents", function (options, content)
   SILE.call("tableofcontents:footer")
 end)
 
-SILE.registerCommand("chapter:before", function (options, content)
+SILE.registerCommand("cabook:chapter:before", function (options, content)
   SILE.call("open-double-page")
   SILE.call("noindent")
   -- If Sectioning doesn't output numbering, the chapter starts too high on the page
@@ -67,7 +67,7 @@ SILE.registerCommand("chapter:before", function (options, content)
   end
 end)
 
-SILE.registerCommand("chapter:after", function (options, content)
+SILE.registerCommand("cabook:chapter:after", function (options, content)
   SILE.call("bigskip")
   SILE.call("fullrule")
   if (options.numbering == false or options.numbering == "false") then
@@ -80,7 +80,7 @@ end)
 SILE.registerCommand("chapter", function (options, content)
   options.display = options.display or "STRING"
   options.numbering = options.numbering or true
-  SILE.call("chapter:before", options, content)
+  SILE.call("cabook:chapter:before", options, content)
   SILE.call("set-counter", { id = "footnote", value = 1 })
   SILE.call("center", {}, function ()
     SILE.settings.temporarily(function ()
@@ -100,7 +100,7 @@ SILE.registerCommand("chapter", function (options, content)
   SILE.call("left-running-head")
   SILE.call("right-running-head", {}, content)
   SILE.scratch.headers.skipthispage = true
-  SILE.call("chapter:after", options, content)
+  SILE.call("cabook:chapter:after", options, content)
 end, "Begin a new chapter");
 
 SILE.registerCommand("section", function (options, content)

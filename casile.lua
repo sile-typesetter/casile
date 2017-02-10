@@ -27,11 +27,11 @@ SILE.call("footnote:separator", {}, function ()
   SILE.call("medskip")
 end)
 
-SILE.registerCommand("book:chapter:pre:tr", function ()
+SILE.registerCommand("cabook:chapter:pre:tr", function ()
   SILE.typesetter:typeset("BÖLÜM ")
 end)
 
-SILE.registerCommand("book:chapter:post", function ()
+SILE.registerCommand("cabook:chapter:post", function ()
   SILE.call("font", { filename = CASILE.casiledir .. "/fonts/FeFlow2.otf", size = "9pt" }, function ()
     SILE.call("skip", { height = "-3pt" })
     SILE.typesetter:typeset("a")
@@ -39,15 +39,15 @@ SILE.registerCommand("book:chapter:post", function ()
   end)
 end)
 
-SILE.registerCommand("book:part:pre", function ()
+SILE.registerCommand("cabook:part:pre", function ()
 end)
 
-SILE.registerCommand("book:part:post", function ()
+SILE.registerCommand("cabook:part:post", function ()
   SILE.typesetter:typeset(" KISIM")
   SILE.call("par")
 end)
 
-SILE.registerCommand("book:subparagraph:post", function ()
+SILE.registerCommand("cabook:subparagraph:post", function ()
 end)
 
 SILE.registerCommand("tableofcontents:header", function ()
