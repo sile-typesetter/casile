@@ -15,7 +15,7 @@ SILE.registerCommand("titlepage", function (options, content)
       end)
     end
     if SILE.Commands["meta:author"] then
-      SILE.call("skip", { height = "6%ph" })
+      SILE.call("vfill")
       SILE.call("cabook:titlepage-author-font", { size = "4%pw", weight = 300 }, function ()
         SILE.call("meta:author")
       end)
