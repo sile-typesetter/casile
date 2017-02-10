@@ -181,6 +181,7 @@ dependencies:
 	perl -e ';' -MYAML::Merge::Simple
 	python -c "import yaml"
 	python -c "import isbnlib"
+	python -c "import pandocfilters"
 
 define addtosync =
 	echo $@ >> sync_files.dat
