@@ -65,6 +65,9 @@ LUALIBS += $(CASILEDIR)/casile.lua
 # Tell sile to look here for stuff before it’s internal stuff
 SILEPATH += $(CASILEDIR)
 
+# Extra arguments to pass to Pandow
+PANDOCARGS ?=
+
 # Set default document class
 DOCUMENTCLASS ?= cabook
 
@@ -129,6 +132,8 @@ debug:
 	@echo SILEPATH: $(SILEPATH)
 	@echo M4MACROS: $(M4MACROS)
 	@echo METADATA: $(METADATA)
+	@echo LUALIBS: $(LUALIBS)
+	@echo PANDOCARGS: $(PANDOCARGS)
 	@echo versioninfo: $(call versioninfo,$(PROJECT))
 
 force: ;
@@ -242,6 +247,7 @@ $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua
 ONPAPERSILS = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE).sil)
 $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(CASILEDIR)/template.sil | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	$(PANDOC) --standalone \
+			$(PANDOCARGS) \
 			--wrap=preserve \
 			-V documentclass="$(DOCUMENTCLASS)" \
 			-V metadatafile="$(word 2,$^)" \
@@ -742,6 +748,7 @@ endef
 %.epub %.odt %.docx: %-processed.md %-merged.yml %-epub-pankart.jpg
 	$(addtosync)
 	$(PANDOC) \
+		$(PANDOCARGS) \
 		--smart \
 		--epub-cover-image=$(lastword $^) \
 		$(word 2,$^) \
