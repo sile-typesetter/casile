@@ -6,6 +6,7 @@ SILE.require("packages/rebox");
 SILE.require("packages/rules")
 SILE.require("packages/image")
 SILE.require("packages/date")
+SILE.require("packages/textcase")
 
 SILE.require("imprint", CASILE.casiledir);
 SILE.require("covers", CASILE.casiledir);
