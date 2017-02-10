@@ -143,6 +143,7 @@ list:
 
 $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
 
+.PHONY: figures
 figures: $(FIGURES) ;
 
 init: dependencies
@@ -270,7 +271,7 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(CASILEDIR)/template.sil 
 	EOF
 	$(and $^,cat $^ >> $@)
 
-%-processed.md: $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) figures %.md
+%-processed.md: $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) %.md | figures
 	if $(DIFF) && $(if $(PARENT),true,false); then
 		branch2criticmark.zsh $(PARENT) $(lastword $^)
 	else
