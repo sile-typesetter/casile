@@ -528,7 +528,7 @@ $(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml .casile.lua | $(CASILEDIR)/vi
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) -I <(cat .casile.lua <(echo "CASILE.infofile = '$$lua'")) $< -o $@
 
-%-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(CASILEDIR)/vc_sembol_renkli.svg $(CASILEDIR)/vc_logo_renkli.svg %-geometry.zsh
+%-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(AVADANLIKDIR)/vc_sembol_renkli.svg $(AVADANLIKDIR)/vc_logo_renkli.svg %-geometry.zsh
 	source $(lastword $^)
 	texturew="$$(bc <<< "$$imgwpx / $(call scale,4,4)")"
 	textureh="$$(bc <<< "$$imghpx / $(call scale,4,4)")"
@@ -644,7 +644,7 @@ endef
 define magick_logo
 	-gravity southwest \
 	\( \
-	-background none $(CASILEDIR)/vc_logo_renksiz.svg \
+	-background none $(AVADANLIKDIR)/vc_logo_renksiz.svg \
 	-channel RGB -negate \
 	-level 20%,60%!  \
 	-resize $(call mmtopx,30)x \
