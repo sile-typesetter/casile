@@ -116,9 +116,9 @@ debug:
 	@echo LAYOUTS: $(LAYOUTS)
 	@echo FIGURES: $(FIGURES)
 	@echo TAG: $(TAG)
-	@echo TAG_SEQ: $(TAG_SEQ)
-	@echo TAG_BASE: $(TAG_BASE)
-	@echo TAG_NAME: $(TAG_NAME)
+	@echo ALLTAGS: $(ALLTAGS)
+	@echo LASTTAG: $(LASTTAG)
+	@echo TAGNAME: $(TAGNAME)
 	@echo BRANCH: $(BRANCH)
 	@echo PARENT: $(PARENT)
 	@echo DIFF: $(DIFF)
@@ -202,10 +202,10 @@ sync_post: sync_files.dat
 	$(if $(OUTPUTDIR),,exit 0)
 	sort -u $< | sponge $<
 	for target in $(TARGETS); do
-ifeq ($(ALL_TAGS),)
+ifeq ($(ALLTAGS),)
 		tagpath=
 else
-		tagpath=$$target/$(TAG_NAME)/
+		tagpath=$$target/$(TAGNAME)/
 endif
 		mkdir -p $(OUTPUTDIR)/$$tagpath
 		while read file; do
