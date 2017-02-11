@@ -491,7 +491,7 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.zsh
 
 CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
 													
-$(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@) .casile.lua | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+$(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml .casile.lua $$(subst -cilt-metin,,$$@) | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	cat <<- EOF > $*-cilt.lua
 		versioninfo = "$(call versioninfo,$*)"
 		metadatafile = "$(word 2,$^)"
@@ -499,7 +499,7 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml $$(subst -cilt-metin,,$$@)
 		$(foreach LUA,$(call reverse,$|), SILE.require("$(basename $(LUA))");)
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
-	$(SILE) -I <(cat .casile.lua <(echo 'CASILE.infofile = "$*-cilt"')) $< -o $@
+	$(SILE) -I <(cat $(word 3,$^) <(echo 'CASILE.infofile = "$*-cilt"')) $< -o $@
 
 %-fragman-on.png: %-cilt-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
