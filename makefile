@@ -492,14 +492,15 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.zsh
 CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
 													
 $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml .casile.lua $$(subst -cilt-metin,,$$@) | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
-	cat <<- EOF > $*-cilt.lua
+	lua=$*-$(call parse_layout,$@)-cilt
+	cat <<- EOF > $$lua.lua
 		versioninfo = "$(call versioninfo,$*)"
 		metadatafile = "$(word 2,$^)"
-		spine = "$(call spinemm,$(lastword $^))mm"
+		spine = "$(call spinemm,$(filter %.pdf,$^))mm"
 		$(foreach LUA,$(call reverse,$|), SILE.require("$(basename $(LUA))");)
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
-	$(SILE) -I <(cat $(word 3,$^) <(echo 'CASILE.infofile = "$*-cilt"')) $< -o $@
+	$(SILE) -I <(cat .casile.lua <(echo "CASILE.infofile = '$$lua'")) $< -o $@
 
 %-fragman-on.png: %-cilt-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
