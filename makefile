@@ -30,9 +30,9 @@ STATSMONTHS ?= 1 # How far back to look for commits when building stats
 DEBUG ?= false # Use SILE debug flags, set -x, and the like
 SILEDEBUG ?= casile # Specific debug flags to set
 COVERS ?= true # Build covers?
-SCALE = 17 # Reduction factor for draft builds
-HIDPI = $(call scale,1200) # Default DPI for generated press resources
-LODPI = $(call scale,300) # Default DPI for generated consumer resources
+SCALE ?= 17 # Reduction factor for draft builds
+HIDPI ?= $(call scale,1200) # Default DPI for generated press resources
+LODPI ?= $(call scale,300) # Default DPI for generated consumer resources
 
 # Allow overriding executables used
 SILE ?= sile
