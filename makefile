@@ -539,13 +539,14 @@ $(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml .casile.lua | $(CASILEDIR)/vi
 		\( -gravity east -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_on) -splice $${bleedpx}x \) -composite \
 		\( -gravity west -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_arka) -splice $${bleedpx}x \) -composite \
 		\( -gravity center -size $${spinepx}x$${coverhpx} -background none xc: $(call magick_sirt) \) -composite \
-		\( -gravity east $(word 1,$^) -splice $${bleedpx}x \) -compose over -composite \
-		\( -gravity west $(word 2,$^) -splice $${bleedpx}x \) -compose over -composite \
-		\( -gravity center $(word 3,$^) \) -compose over -composite \
+		\( -gravity east $(word 1,$^) -splice $${bleedpx}x -write mpr:metin-on \) -compose over -composite \
+		\( -gravity west $(word 2,$^) -splice $${bleedpx}x -write mpr:metin-arka \) -compose over -composite \
+		\( -gravity center $(word 3,$^) -write mpr:metin-sirt \) -compose over -composite \
 		$(call magick_sembol,$(word 5,$^))\
 		$(call magick_barkod,$(word 4,$^)) \
 		$(call magick_logo,$(word 6,$^)) \
-		-composite +repage \
+		-gravity center -size %[fx:u.w]x%[fx:u.h] \
+		-composite \
 		$(call magick_cilt) \
 		$@
 
