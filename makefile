@@ -807,7 +807,8 @@ stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
 %-ayetler.json: %-processed.md
 	# cd $(CASILEDIR)
 	# yarn add bible-passage-reference-parser
-	extract_references.js < $^ > $@
+	$(if $(HEAD),head -n$(HEAD),cat) $< |
+		extract_references.js > $@
 
 normalize_references: $(SOURCES)
 	$(call find_and_munge,*.md,normalize_references.js,Normalize verse references using BCV parser)
