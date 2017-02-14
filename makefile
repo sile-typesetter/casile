@@ -810,6 +810,9 @@ stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
 	$(if $(HEAD),head -n$(HEAD),cat) $< |
 		extract_references.js > $@
 
+%-ayetler-sorted.json: %-ayetler.json
+	jq 'sort_by(.seq)' $< > $@
+
 normalize_references: $(SOURCES)
 	$(call find_and_munge,*.md,normalize_references.js,Normalize verse references using BCV parser)
 
