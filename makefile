@@ -261,7 +261,7 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-ayetler-sorted.json %-url.png $(CA
 			$(foreach LUA,$|, -V script=$(basename $(LUA))) \
 			--template=$(word 5,$^) \
 			--to=sile \
-			$(word 2,$^) $< |
+			$(word 2,$^) <( $(call pre_sile_markdown_hook) < $< ) |
 		$(call sile_hook) > $@
 
 .casile.lua: $(LUAINCLUDE)
@@ -357,6 +357,10 @@ define strip_lang
 endef
 
 define markdown_hook
+	cat -
+endef
+
+define pre_sile_markdown_hook
 	cat -
 endef
 
