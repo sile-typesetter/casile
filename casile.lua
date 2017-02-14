@@ -13,7 +13,6 @@ SILE.require("covers", CASILE.casiledir)
 SILE.require("hyphenation_exceptions", CASILE.casiledir)
 SILE.require("inline_styles", CASILE.casiledir)
 SILE.require("block_styles", CASILE.casiledir)
-SILE.require("verseindex", CASILE.casiledir)
 
 textcase = SILE.require("packages/textcase").exports
 
