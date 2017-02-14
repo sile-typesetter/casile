@@ -30,7 +30,11 @@ local init = function (self)
     return orig_href(options, content)
   end)
 
-  SILE.registerCommand("tableofverses:entry", function (options, content)
+  SILE.registerCommand("tableofverses:book", function (options, content)
+    SILE.call("section", { numbered = false }, content)
+  end)
+
+  SILE.registerCommand("tableofverses:reference", function (options, content)
     if #options.pages < 1 then
       SU.warn("Verse in index doesn't have page marker")
       SU.debug("casile", content)
@@ -51,7 +55,6 @@ local init = function (self)
   end)
 
   SILE.registerCommand("markverse", function (options, content)
-    -- SU.dump(options, content)
     SILE.call("info", {
         category = "tov",
         value = {
@@ -63,7 +66,12 @@ local init = function (self)
   SILE.registerCommand("tableofverses", function (options, content)
     SILE.call("chapter", { numbered = false }, { "Ek: Ayetler İndeksi" })
     local refshash = {}
+    local lastbook = nil
     for _, ref in pairs(CASILE.verses) do
+      if not(lastbook == ref.b) then
+        SILE.call("tableofverses:book", { }, { ref.b })
+        lastbook = ref.b
+      end
       if not refshash[ref.osis] then
         refshash[ref.osis] = true
         local label = ref.reformat
@@ -78,7 +86,7 @@ local init = function (self)
             end
           end
         end
-        SILE.call("tableofverses:entry", { pages = pages }, { label })
+        SILE.call("tableofverses:reference", { pages = pages }, { label })
       end
     end
   end)
