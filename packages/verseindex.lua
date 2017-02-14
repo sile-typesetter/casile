@@ -31,7 +31,7 @@ local init = function (self)
   end)
 
   SILE.registerCommand("tableofverses:book", function (options, content)
-    SILE.call("section", { numbered = false }, content)
+    SILE.call("section", { numbering = "false" }, content)
   end)
 
   SILE.registerCommand("tableofverses:reference", function (options, content)
@@ -64,7 +64,7 @@ local init = function (self)
   end)
 
   SILE.registerCommand("tableofverses", function (options, content)
-    SILE.call("chapter", { numbered = false }, { "Ek: Ayetler İndeksi" })
+    SILE.call("chapter", { numbering = "false" }, { "Ek: Ayetler İndeksi" })
     local refshash = {}
     local lastbook = nil
     for _, ref in pairs(CASILE.verses) do
