@@ -37,7 +37,7 @@ function mergeRefs(a, b) {
 
 function process_line (line) {
   line = line + "\n"; // restore that which readline rightfully stole
-  if (!line.match(/^(#|\[\^\d+\]:) /)) { // skip footnotes and headings for now
+  // if (!line.match(/^(#|\[\^\d+\]:) /)) { // skip footnotes and headings for now
     var offset = 0;
     var previousOffset = 0;
     var context = null;
@@ -56,7 +56,7 @@ function process_line (line) {
       offset += previousOffset;
       context = ref;
     });
-  }
+  // }
   process.stdout.write(line);
 }
 
