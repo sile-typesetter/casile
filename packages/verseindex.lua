@@ -29,6 +29,27 @@ local init = function (self)
     SILE.call("markverse", options, content)
     return orig_href(options, content)
   end)
+
+  SILE.registerCommand("tableofverses:entry", function (options, content)
+    if #options.pages < 1 then
+      SU.warn("Verse in index doesn't have page marker")
+      SU.debug("casile", content)
+      return
+    end
+    SILE.process(content)
+    SILE.call("noindent")
+    SILE.call("hfill")
+    local first = true
+    for _, page in pairs(options.pages) do
+      if not first then
+        SILE.typesetter:typeset(", ")
+      end
+      SILE.typesetter:typeset(page)
+      first = false
+    end
+    SILE.call("par")
+  end)
+
   SILE.registerCommand("markverse", function (options, content)
     -- SU.dump(options, content)
     SILE.call("info", {
@@ -41,10 +62,24 @@ local init = function (self)
 
   SILE.registerCommand("tableofverses", function (options, content)
     SILE.call("chapter", { numbered = false }, { "Ek: Ayetler İndeksi" })
-    SILE.typesetter:typeset("Frogs in a pond.")
-    -- SU.dump(SILE.scratch.tableofverses)
-    for i, ref in pairs(CASILE.verses) do
-      SU.dump(ref, SILE.scratch.tableofverses[i])
+    local refshash = {}
+    for _, ref in pairs(CASILE.verses) do
+      if not refshash[ref.osis] then
+        refshash[ref.osis] = true
+        local label = ref.reformat
+        local pages = {}
+        local pageshash = {}
+        for _, link in pairs(SILE.scratch.tableofverses) do
+          if link.label[1] == label  then
+            local pageno = link.pageno
+            if not pageshash[pageno] then 
+              pages[#pages+1] = pageno
+              pageshash[pageno] = true
+            end
+          end
+        end
+        SILE.call("tableofverses:entry", { pages = pages }, { label })
+      end
     end
   end)
 
