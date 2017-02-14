@@ -19,11 +19,15 @@ var rl = readline.createInterface({
 var references = [];
 
 function extract_references (data) {
-  var res = bcv.parse(data).osis_and_indices();
+  var res = bcv.parse(data).parsed_entities();
   res.forEach(function(match) {
     var ref = {};
     ref.original = data.slice(match.indices[0], match.indices[1]);
     ref.osis = match.osis;
+    ref.b = formatter('yc-long', match.start.b);
+    ref.c = match.start.c;
+    ref.v = match.start.v;
+    ref.seq = bcv.translations["default"].order[match.start.b] * 1000000 + match.start.c * 1000 + match.start.v;
     ref.reformat = formatter('yc-long', match.osis);
     references.push(ref);
   });

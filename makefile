@@ -248,17 +248,18 @@ $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua
 	fi
 
 ONPAPERSILS = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE).sil)
-$(ONPAPERSILS): %-processed.md %-merged.yml %-url.png $(CASILEDIR)/template.sil | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+$(ONPAPERSILS): %-processed.md %-merged.yml %-ayetler-sorted.json %-url.png $(CASILEDIR)/template.sil | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
 			--wrap=preserve \
 			-V documentclass="$(DOCUMENTCLASS)" \
 			-V metadatafile="$(word 2,$^)" \
+			-V versesfile="$(word 3,$^)" \
 			-V versioninfo="$(call versioninfo,$*)" \
 			-V urlinfo="$(call urlinfo,$*)" \
-			-V qrimg="./$(word 3,$^)" \
+			-V qrimg="./$(word 4,$^)" \
 			$(foreach LUA,$|, -V script=$(basename $(LUA))) \
-			--template=$(word 4,$^) \
+			--template=$(word 5,$^) \
 			--to=sile \
 			$(word 2,$^) $< |
 		$(call sile_hook) > $@
@@ -363,7 +364,7 @@ define sile_hook
 	cat -
 endef
 
-%.sil.toc: %.pdf ;
+%.sil.toc %.sil.tov: %.pdf ;
 
 %.app: %-app.info $(foreach PANKART,$(PANKARTLI),%-$(PANKART)-pankart.jpg) ;
 
@@ -804,11 +805,14 @@ stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
 %-stats:
 	stats.zsh $* $(STATSMONTHS)
 
-%-ayetler.json: %.md
+%-ayetler.json: %-processed.md
 	# cd $(CASILEDIR)
 	# yarn add bible-passage-reference-parser
-	extract_references.js < $^ > $@
-	cat $@
+	$(if $(HEAD),head -n$(HEAD),cat) $< |
+		extract_references.js > $@
+
+%-ayetler-sorted.json: %-ayetler.json
+	jq 'sort_by(.seq)' $< > $@
 
 normalize_references: $(SOURCES)
 	$(call find_and_munge,*.md,normalize_references.js,Normalize verse references using BCV parser)

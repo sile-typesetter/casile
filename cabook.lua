@@ -5,8 +5,11 @@ local cabook = book { id = "cabook" }
 cabook:declareOption("crop", "true")
 cabook:declareOption("background", "true")
 
+cabook:loadPackage("verseindex", CASILE.casiledir)
+
 cabook.endPage = function (self)
   cabook:moveTocNodes()
+  cabook:moveTovNodes()
 
   if not SILE.scratch.headers.skipthispage then
     SILE.settings.pushState()
@@ -21,6 +24,12 @@ cabook.endPage = function (self)
   SILE.scratch.headers.skipthispage = false
 
   return plain.endPage(cabook)
+end
+
+cabook.finish = function (self)
+  local ret = book:finish()
+  cabook:writeTov()
+  return ret
 end
 
 -- CaSILE books sometimes have sections, sometimes don't.

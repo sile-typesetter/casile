@@ -1,9 +1,12 @@
 \begin[$if(papersize)$papersize=$papersize$,$endif$class=$documentclass$]{document}
-$if(metadatafile)$
 \begin{script}
+$if(metadatafile)$
 CASILE.metadata = require("readmeta").load("$metadatafile$")
-\end{script}
 $endif$
+$if(versesfile)$
+CASILE.verses = require("readmeta").load("$versesfile$")
+$endif$
+\end{script}
 $if(lang)$
 \language[main=$lang$]
 \font[language=$lang$]
@@ -130,6 +133,7 @@ $endfor$
 \tableofcontents
 $body$
 \novbreak\medskip\novbreak\center{\novbreak\book:chapter:post{}}
+\tableofverses
 $if(seriestitle)$
 \seriespage:pre
 \seriespage:series{$seriestitle$}
