@@ -5,6 +5,8 @@ var bcv_parser = require('bible-passage-reference-parser/js/tr_bcv_parser').bcv_
 var bcv = new bcv_parser();
 var formatter = require('bible-reference-formatter/es6/tr');
 
+var merge_chains = false;
+
 bcv.set_options({
   'sequence_combination_strategy': 'separate'
 });
@@ -43,7 +45,7 @@ function process_line (line) {
     var context = null;
     var refs = bcv.parse(line).osis_and_indices();
     refs.forEach(function(ref) {
-      if ( context && isChained(context, ref, line, offset) ) {
+      if ( context && isChained(context, ref, line, offset) && merge_chains ) {
         var mref = mergeRefs(context, ref);
         ref = mref;
         offset -= previousOffset;
