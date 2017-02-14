@@ -65,6 +65,7 @@ local init = function (self)
 
   SILE.registerCommand("tableofverses", function (options, content)
     SILE.call("chapter", { numbering = "false" }, { "Ek: Ayetler İndeksi" })
+    SILE.call("cabook:seriffont", { size = "0.95em" })
     local refshash = {}
     local lastbook = nil
     for _, ref in pairs(CASILE.verses) do
