@@ -137,17 +137,27 @@ SILE.registerCommand("aki", function ()
   SILE.call("penalty", { penalty = -1 })
 end)
 
+CASILE.booleanopt = function(value, default)
+  if value == "false" then return false end
+  if value == false then return false end
+  if value == "true" then return true end
+  if value == true then return true end
+  return default
+end
+
 SILE.registerCommand("book:sectioning", function (options, content)
   local content = SU.subContent(content)
+  options.skiptoc = CASILE.booleanopt(options.skiptoc, false)
+  options.numbering = CASILE.booleanopt(options.numbering, true)
+  options.reset = CASILE.booleanopt(options.reset, false)
   local level = SU.required(options, "level", "book:sectioning")
-  if not (options.numbering == false or options.numbering == "false") then
-    if not options.reset == true or options.reset == "true" then reset = false end
+  if options.numbering then
     SILE.call("increment-multilevel-counter", {
-      id = "sectioning",
-      level = options.level,
-      display = options.display,
-      reset = options.reset
-    })
+        id = "sectioning",
+        level = options.level,
+        display = options.display,
+        reset = options.reset
+      })
     local toc_content = {}
     for k, v in pairs(content) do
       toc_content[k] = v
@@ -172,9 +182,9 @@ SILE.registerCommand("book:sectioning", function (options, content)
       SILE.call(options.postnumber)
     end
     local number = SILE.formatCounter({ display = "arabic", value = counters.value[level] })
-    SILE.call("tocentry", { level = options.level, number = tonumber(number) }, toc_content)
+    if not skiptoc then SILE.call("tocentry", { level = options.level, number = tonumber(number) }, toc_content) end
   else
-    SILE.call("tocentry", { level = options.level, number = false }, content)
+    if not skiptoc then SILE.call("tocentry", { level = options.level, number = false }, content) end
   end
 end)
 
@@ -286,7 +296,7 @@ SILE.registerCommand("tableofcontents", function (options, content)
   local toc = assert(loadstring(doc))()
   local haschapters = false
   for i = 1, #toc do
-    if toc[i].level == 1 then
+    if toc[i].level == 2 then
       haschapters = true
     end
   end
