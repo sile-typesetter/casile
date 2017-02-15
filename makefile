@@ -272,11 +272,12 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-ayetler-sorted.json %-url.png $(CA
 	EOF
 	$(and $^,cat $^ >> $@)
 
-%-processed.md: $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $$(wildcard $$*.m4) %.md | figures
+preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $(wildcard $1.m4) 
+%-processed.md: %.md $$(call preprocess_macros,$$*) $$(wildcard $$*-bolumler/*.md) | figures
 	if $(DIFF) && $(if $(PARENT),true,false); then
-		branch2criticmark.zsh $(PARENT) $(lastword $^)
+		branch2criticmark.zsh $(PARENT) $<
 	else
-		m4 $^
+		m4 $(call preprocess_macros,$$*) $<
 	fi |
 		renumber_footnotes.pl |
 		$(call criticToSile) |
