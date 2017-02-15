@@ -194,11 +194,16 @@ end)
 SILE.registerCommand("open-double-page", function (options)
   local even = options.even or false
   local class = SILE.documentState.documentClass
+  local first = false
   repeat 
-    SILE.typesetter:typeset("")
+    if not first then
+      SILE.scratch.headers.skipthispage = true
+      SILE.typesetter:typeset(" ")
+    end
     SILE.typesetter:leaveHmode();
     SILE.Commands["supereject"]();
     SILE.scratch.headers.skipthispage = true
+    first = false
   until (even and class:oddPage()) or not class:oddPage()
 end)
 
@@ -473,8 +478,8 @@ SILE.registerCommand("dedication", function (options, content)
     SILE.call("hbox")
     SILE.call("vfill")
     SILE.call("font", { style = "Italic", size = "14pt" }, content)
-    SILE.call("bigskip")
   end)
+  SILE.call("eject")
 end)
 
 SILE.registerCommand("seriespage:series", function (options, content)
