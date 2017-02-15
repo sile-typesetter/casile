@@ -171,10 +171,22 @@ SILE.registerCommand("book:sectioning", function (options, content)
       if SILE.Commands[options.postnumber..":"..lang] then options.postnumber = options.postnumber..":"..lang end
       SILE.call(options.postnumber)
     end
-    SILE.call("tocentry", { level = options.level }, toc_content)
+    local number = SILE.formatCounter({ display = "arabic", value = counters.value[level] })
+    SILE.call("tocentry", { level = options.level, number = tonumber(number) }, toc_content)
   else
-    SILE.call("tocentry", { level = options.level }, content)
+    SILE.call("tocentry", { level = options.level, number = false }, content)
   end
+end)
+
+SILE.registerCommand("tocentry", function (options, content)
+  SILE.call("info", {
+    category = "toc",
+    value = {
+      label = content,
+      number = options.number,
+      level = (options.level or 1)
+    }
+  })
 end)
 
 -- This is the same as SILE's version but sets our no-headers variable on blank pages
@@ -237,6 +249,27 @@ SILE.formatCounter = function (options)
   if (options.display == "ORDINAL") then return textcase.uppercase(tr_num2text(options.value, true)) end
   return originalFormatter(options)
 end
+
+SILE.registerCommand("chaptertoc", function (options, content)
+  local thischapter = SILE.scratch.counters.sectioning.value[1]
+  if thischapter < 1 then return end
+  SILE.call("section", { numbering = false }, { "Bölümdekiler" })
+  local tocfile,_ = io.open(SILE.masterFilename .. '.toc')
+  if not tocfile then return end
+  local doc = tocfile:read("*all")
+  local toc = assert(loadstring(doc))()
+  local zone = false
+  local chaptertoc = {}
+  for _, item in pairs(toc) do
+    if zone and item.level > 1 then
+      SILE.call("tableofcontents:item", {
+          level = item.level,
+          pageno = item.pageno
+        }, item.label)
+    end
+    if item.level == 1 then zone = item.number == thischapter end
+  end
+end)
 
 SILE.registerCommand("tableofcontents", function (options, content)
   local tocfile,_ = io.open(SILE.masterFilename .. '.toc')
