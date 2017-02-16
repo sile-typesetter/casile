@@ -31,7 +31,9 @@ local init = function (self)
   end)
 
   SILE.registerCommand("tableofverses:book", function (options, content)
+    SILE.call("hbox")
     SILE.call("section", { numbering = "false" }, content)
+    SILE.call("breakframevertical")
   end)
 
   SILE.registerCommand("tableofverses:reference", function (options, content)
@@ -42,13 +44,15 @@ local init = function (self)
     end
     SILE.process(content)
     SILE.call("noindent")
-    SILE.call("hfill")
+    SILE.call("glue", { width = "1spc" })
+    SILE.call("dotfill")
+    SILE.call("glue", { width = "1spc" })
     local first = true
-    for _, page in pairs(options.pages) do
+    for _, pageno in pairs(options.pages) do
       if not first then
         SILE.typesetter:typeset(", ")
       end
-      SILE.typesetter:typeset(page)
+      SILE.typesetter:typeset(pageno)
       first = false
     end
     SILE.call("par")
@@ -64,22 +68,28 @@ local init = function (self)
   end)
 
   SILE.registerCommand("tableofverses", function (options, content)
-    SILE.call("chapter", { numbering = "false", appendix = true }, { "Ek: Ayet Referans İndeksi" })
+    SILE.call("chapter", { numbering = "false", appendix = true }, { "Ayet Referans İndeksi" })
     SILE.call("cabook:seriffont", { size = "0.95em" })
     local refshash = {}
     local lastbook = nil
-    for _, ref in pairs(CASILE.verses) do
-      if not(lastbook == ref.b) then
-        SILE.call("tableofverses:book", { }, { ref.b })
-        lastbook = ref.b
-      end
+    local seq = 0
+    local incol = false
+    for i, ref in pairs(CASILE.verses) do
       if not refshash[ref.osis] then
         refshash[ref.osis] = true
-        local label = ref.reformat
+        if not(lastbook == ref.b) then
+          if incol then SILE.call("mergecolumns") end
+          SILE.call("tableofverses:book", { }, { ref.b })
+          SILE.call("makecolumns", { gutter = "5%pw" })
+          incol = true
+          seq = 0
+          lastbook = ref.b
+        end
+        local label = ref.reformat:match(".* (.*)")
         local pages = {}
         local pageshash = {}
         for _, link in pairs(SILE.scratch.tableofverses) do
-          if link.label[1] == label  then
+          if link.label[1] == ref.b .. " " .. label  then
             local pageno = link.pageno
             if not pageshash[pageno] then 
               pages[#pages+1] = pageno
@@ -88,8 +98,10 @@ local init = function (self)
           end
         end
         SILE.call("tableofverses:reference", { pages = pages }, { label })
+        seq = seq + 1
       end
     end
+    if incol then SILE.call("mergecolumns") end
   end)
 
 end
