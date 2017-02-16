@@ -220,9 +220,11 @@ $(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach 
 
 coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(CILTLI),$(call parse_layout,$1)),,%-kapak.pdf),)
 
+onpaperlibs = $(wildcard $1.lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call parse_layout,$1).lua $(LUALIBS)
+
 ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
 $(ONPAPERPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
-$(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua
+$(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$*)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	$(addtosync)
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
@@ -248,20 +250,20 @@ $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua
 	fi
 
 ONPAPERSILS = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE).sil)
-$(ONPAPERSILS): %-processed.md %-merged.yml %-ayetler-sorted.json %-url.png $(CASILEDIR)/template.sil | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+$(ONPAPERSILS): %-processed.md %-merged.yml %-ayetler-sorted.json %-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$*)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
 			--wrap=preserve \
 			-V documentclass="$(DOCUMENTCLASS)" \
-			-V metadatafile="$(word 2,$^)" \
-			-V versesfile="$(word 3,$^)" \
+			-V metadatafile="$(filter %-merged.yml,$^)" \
+			-V versesfile="$(filter %-ayetler-sorted.json,$^)" \
 			-V versioninfo="$(call versioninfo,$*)" \
 			-V urlinfo="$(call urlinfo,$*)" \
-			-V qrimg="./$(word 4,$^)" \
-			$(foreach LUA,$|, -V script=$(basename $(LUA))) \
-			--template=$(word 5,$^) \
+			-V qrimg="./$(filter %-url.png,$^)" \
+			$(foreach LUA,$|), -V script=$(basename $(LUA))) \
+			--template=$(filter %.sil,$^) \
 			--to=sile \
-			$(word 2,$^) <( $(call pre_sile_markdown_hook) < $< ) |
+			$(filter %-merged.yml,$^) <( $(call pre_sile_markdown_hook) < $< ) |
 		$(call sile_hook) > $@
 
 .casile.lua: $(LUAINCLUDE)
