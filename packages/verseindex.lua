@@ -26,9 +26,9 @@ local init = function (self)
   self:loadPackage("leaders")
 
   local inpair = nil
+  local defaultparskip = SILE.settings.get("typesetter.parfillskip")
 
   local continuepair = function (args)
-    -- SU.debug("casile", "state", #SILE.typesetter.state.nodes, #SILE.typesetter.state.outputQueue)
     if inpair and args.frame.id == "content" then
       SILE.typesetter:pushState()
       SILE.call("tableofverses:book", { }, { inpair })
@@ -36,24 +36,26 @@ local init = function (self)
     end
   end
 
-  -- SILE.typesetter:registerNewFrameHook(continuepair)
-  -- SILE.typesetter:registerFrameBreakHook(continuepair)
   local pushBack = SILE.typesetter.pushBack
   SILE.typesetter.pushBack = function(self)
     continuepair(self)
     pushBack(self)
   end
 
-  local startpair = function ()
+  local startpair = function (pair)
     SILE.call("makecolumns", { gutter = "5%pw" })
+    SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
+    inpair = pair
   end
 
   local endpair = function (seq)
+    inpair = nil
     if seq > 2 and seq % 2 == 0 then
-      SILE.call("tableofverses:reference", { pages = { "0" } }, { "One more" })
-      -- SILE.call("smallskip")
+      SILE.typesetter:typeset(" ")
+      SILE.call("par")
     end
     SILE.call("mergecolumns")
+    SILE.settings.set("typesetter.parfillskip", defaultparskip)
   end
 
   SILE.registerCommand("href", function (options, content)
@@ -62,12 +64,11 @@ local init = function (self)
   end)
 
   SILE.registerCommand("tableofverses:book", function (options, content)
-    SILE.call("hbox")
+    SILE.call("requireSpace", { height = "4em" })
+    SILE.settings.set("typesetter.parfillskip", defaultparskip)
     SILE.call("section", { numbering = "false" }, content)
     SILE.call("breakframevertical")
-    -- SILE.typesetter:typeset("At least one verse" )
-    SILE.call("par")
-    startpair()
+    startpair(content[1])
   end)
 
   SILE.registerCommand("tableofverses:reference", function (options, content)
@@ -76,12 +77,9 @@ local init = function (self)
       SU.debug("casile", content)
       pages = { "0" }
     end
-    -- SU.debug("casile", content)
     SILE.process(content)
     SILE.call("noindent")
-    SILE.call("glue", { width = "1spc" })
     SILE.call("dotfill")
-    SILE.call("glue", { width = "1spc" })
     local first = true
     for _, pageno in pairs(options.pages) do
       if not first then
@@ -114,9 +112,8 @@ local init = function (self)
         if not(lastbook == ref.b) then
           if inpair then endpair(seq) end
           SILE.call("tableofverses:book", { }, { ref.b })
-          inpair = ref.b
           seq = 1
-          lastbook = ref.b
+          lastbook = inpair
         end
         local label = ref.reformat:match(".* (.*)")
         local pages = {}
