@@ -37,3 +37,8 @@ SILE.registerCommand("meta:distribution", function (options, content)
   SILE.call("font", { weight = 600, style = "Bold" }, { "Yayın: " })
   SILE.typesetter:typeset("Bu PDF biçimi, özellikle yerel kiliselerin kendi cemaatları için basmalarına uygun hazırlanmıştır ve Via Christus’un internet sitesinde üçretsiz yayılmaktadır.")
 end)
+
+SILE.registerCommand("href", function (options, content)
+  SILE.call("markverse", options, content)
+  SILE.process(content)
+end)

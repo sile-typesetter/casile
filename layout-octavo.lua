@@ -33,5 +33,6 @@ SILE.call("switch-master-one-page", { id = "right" })
 if SILE.documentState.documentClass.options.crop() == "true" then SILE.require("crop") end
 
 SILE.registerCommand("href", function (options, content)
+  SILE.call("markverse", options, content)
   SILE.process(content)
 end)
