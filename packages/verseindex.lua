@@ -66,6 +66,8 @@ local init = function (self)
   SILE.registerCommand("tableofverses:book", function (options, content)
     SILE.call("requireSpace", { height = "4em" })
     SILE.settings.set("typesetter.parfillskip", defaultparskip)
+    SILE.call("hbox")
+    SILE.call("skip", { height = "1ex" })
     SILE.call("section", { numbering = "false" }, content)
     SILE.call("breakframevertical")
     startpair(content[1])
@@ -133,6 +135,7 @@ local init = function (self)
     end
     if inpair then endpair(seq) end
     inpair = nil
+    SILE.call("eject")
   end)
 
 end
