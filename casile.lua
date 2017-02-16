@@ -703,6 +703,18 @@ SILE.registerCommand("dropcap", function (options, content)
   SILE.call("indent")
 end)
 
+SILE.registerCommand("requireSpace", function(options, content)
+	local required = SILE.length.parse(options.height or 1)
+	SILE.typesetter:leaveHmode()
+	local hbox = SILE.Commands["hbox"]({}, content)
+	table.remove(SILE.typesetter.state.nodes) -- steal it back
+	local heightOfPageSoFar = SILE.pagebuilder.collateVboxes(SILE.typesetter.state.outputQueue).height
+	local heightOfFrame = SILE.typesetter.frame:height()
+	if heightOfFrame - heightOfPageSoFar < required then
+		SILE.call("eject")
+	end
+end)
+
 SILE.registerUnit("%pmed", { relative = true, definition = function (v)
   return v / 100 * (SILE.documentState.orgPaperSize[1] + SILE.documentState.orgPaperSize[2]) / 2
 end})
