@@ -25,6 +25,37 @@ local init = function (self)
   self:loadPackage("infonode")
   self:loadPackage("leaders")
 
+  local inpair = nil
+
+  local continuepair = function (args)
+    -- SU.debug("casile", "state", #SILE.typesetter.state.nodes, #SILE.typesetter.state.outputQueue)
+    if inpair and args.frame.id == "content" then
+      SILE.typesetter:pushState()
+      SILE.call("tableofverses:book", { }, { inpair })
+      SILE.typesetter:popState()
+    end
+  end
+
+  -- SILE.typesetter:registerNewFrameHook(continuepair)
+  -- SILE.typesetter:registerFrameBreakHook(continuepair)
+  local pushBack = SILE.typesetter.pushBack
+  SILE.typesetter.pushBack = function(self)
+    continuepair(self)
+    pushBack(self)
+  end
+
+  local startpair = function ()
+    SILE.call("makecolumns", { gutter = "5%pw" })
+  end
+
+  local endpair = function (seq)
+    if seq > 2 and seq % 2 == 0 then
+      SILE.call("tableofverses:reference", { pages = { "0" } }, { "One more" })
+      -- SILE.call("smallskip")
+    end
+    SILE.call("mergecolumns")
+  end
+
   SILE.registerCommand("href", function (options, content)
     SILE.call("markverse", options, content)
     return orig_href(options, content)
@@ -34,14 +65,18 @@ local init = function (self)
     SILE.call("hbox")
     SILE.call("section", { numbering = "false" }, content)
     SILE.call("breakframevertical")
+    -- SILE.typesetter:typeset("At least one verse" )
+    SILE.call("par")
+    startpair()
   end)
 
   SILE.registerCommand("tableofverses:reference", function (options, content)
     if #options.pages < 1 then
       SU.warn("Verse in index doesn't have page marker")
       SU.debug("casile", content)
-      return
+      pages = { "0" }
     end
+    -- SU.debug("casile", content)
     SILE.process(content)
     SILE.call("noindent")
     SILE.call("glue", { width = "1spc" })
@@ -72,17 +107,15 @@ local init = function (self)
     SILE.call("cabook:seriffont", { size = "0.95em" })
     local refshash = {}
     local lastbook = nil
-    local seq = 0
-    local incol = false
+    local seq = 1
     for i, ref in pairs(CASILE.verses) do
       if not refshash[ref.osis] then
         refshash[ref.osis] = true
         if not(lastbook == ref.b) then
-          if incol then SILE.call("mergecolumns") end
+          if inpair then endpair(seq) end
           SILE.call("tableofverses:book", { }, { ref.b })
-          SILE.call("makecolumns", { gutter = "5%pw" })
-          incol = true
-          seq = 0
+          inpair = ref.b
+          seq = 1
           lastbook = ref.b
         end
         local label = ref.reformat:match(".* (.*)")
@@ -101,7 +134,8 @@ local init = function (self)
         seq = seq + 1
       end
     end
-    if incol then SILE.call("mergecolumns") end
+    if inpair then endpair(seq) end
+    inpair = nil
   end)
 
 end
