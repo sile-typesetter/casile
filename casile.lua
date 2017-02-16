@@ -194,6 +194,7 @@ SILE.registerCommand("tocentry", function (options, content)
     value = {
       label = content,
       number = options.number,
+      skiptoc = options.skiptoc,
       level = (options.level or 1)
     }
   })
@@ -266,7 +267,7 @@ SILE.formatCounter = function (options)
 end
 
 SILE.registerCommand("chaptertoc", function (options, content)
-  local thischapter = SILE.scratch.counters.sectioning.value[1]
+  local thischapter = SILE.scratch.counters.sectioning.value[2]
   if thischapter < 1 then return end
   SILE.call("section", { numbering = false }, { "Bölümdekiler" })
   local tocfile,_ = io.open(SILE.masterFilename .. '.toc')
@@ -276,13 +277,14 @@ SILE.registerCommand("chaptertoc", function (options, content)
   local zone = false
   local chaptertoc = {}
   for _, item in pairs(toc) do
-    if zone and item.level > 1 then
+    if zone and item.level > 2 then
       SILE.call("tableofcontents:item", {
+          chaptertoc = true,
           level = item.level,
           pageno = item.pageno
         }, item.label)
     end
-    if item.level == 1 then zone = item.number == thischapter end
+    if item.level == 2 then zone = item.number == thischapter end
   end
 end)
 
@@ -302,12 +304,14 @@ SILE.registerCommand("tableofcontents", function (options, content)
   end
   if not haschapters then return end
   SILE.call("tableofcontents:header")
-  for i = 1, #toc do
-    local item = toc[i]
-    SILE.call("tableofcontents:item", {
-      level = item.level,
-      pageno = item.pageno
-    }, item.label)
+  for _, item in pairs(toc) do
+    if not item.skiptoc then
+      SILE.call("tableofcontents:item", {
+          chaptertoc = false,
+          level = item.level,
+          pageno = item.pageno
+        }, item.label)
+    end
   end
   SILE.call("tableofcontents:footer")
 end)

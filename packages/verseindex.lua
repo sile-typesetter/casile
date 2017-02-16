@@ -68,7 +68,7 @@ local init = function (self)
     SILE.settings.set("typesetter.parfillskip", defaultparskip)
     SILE.call("hbox")
     SILE.call("skip", { height = "1ex" })
-    SILE.call("section", { numbering = "false" }, content)
+    SILE.call("section", { numbering = false, skiptoc = true }, content)
     SILE.call("breakframevertical")
     startpair(content[1])
   end)
@@ -103,7 +103,7 @@ local init = function (self)
   end)
 
   SILE.registerCommand("tableofverses", function (options, content)
-    SILE.call("chapter", { numbering = "false", appendix = true }, { "Ayet Referans İndeksi" })
+    SILE.call("chapter", { numbering = false, appendix = true }, { "Ayet Referans İndeksi" })
     SILE.call("cabook:seriffont", { size = "0.95em" })
     local refshash = {}
     local lastbook = nil
