@@ -428,31 +428,31 @@ endef
 
 ONPAPERZEMIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapak-zemin.png)
 gitzemin = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
-$(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.zsh,$$@)
-	@source $(firstword $|)
-	$(if $^,true,false) && $(MAGICK) $^ \
+$(ONPAPERZEMIN): $$(call gitzemin,$$@) $$(subst -kapak-zemin.png,-geometry.zsh,$$@)
+	source $(filter %-geometry.zsh,$^)
+	$(if $(filter %.png,$^),true,false) && $(MAGICK) $(filter %.png,$^) \
 		-gravity $(COVERGRAVITY) \
 		-extent  "%[fx:w/h>=$${coveraspect}?h*$${coveraspect}:w]x" \
 		-extent "x%[fx:w/h<=$${coveraspect}?w/$${coveraspect}:h]" \
 		-resize $${coverwpx}x$${coverhpx} \
 		-normalize \
 		$@ ||:
-	$(if $^,false,true) && $(MAGICK) \
+	$(if $(filter %.png,$^),false,true) && $(MAGICK) \
 		-size $${coverwpx}x$${coverhpx}^ $(call magick_zemin) -composite \
 		\( -background none xc: $(call magick_kapak) \) -composite \
 		$@ ||:
 
-%-pankart.jpg: %-kapak.png | %-geometry.zsh
+%-pankart.jpg: %-kapak.png %-geometry.zsh
 	$(addtosync)
-	@source $(firstword $|)
+	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< \
 		-resize $${coverwpp}x$${coverhpp}^ \
 		-quality 85 \
 		$@
 
-%-kapak.png: %-kapak-zemin.png %-kapak-metin.pdf | %-geometry.zsh
-	source $(firstword $|)
-	$(MAGICK) -density $(HIDPI) $(lastword $^)[0] \
+%-kapak.png: %-kapak-zemin.png %-kapak-metin.pdf %-geometry.zsh
+	source $(filter %-geometry.zsh,$^)
+	$(MAGICK) -density $(HIDPI) $(filter %.pdf,$^)[0] \
 		-fill none \
 		-fuzz 5% \
 		-draw 'color 1,1 replace' \
@@ -480,18 +480,18 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) | $$(subst -kapak-zemin.png,-geometry.zsh
 		\) +swap -compose over -composite \
 		+repage $@
 
-%-kapak.pdf: %-kapak.png %-kapak-metin.pdf | %-geometry.zsh
+%-kapak.pdf: %-kapak.png %-kapak-metin.pdf %-geometry.zsh
 	$(COVERS) || exit 0
 	metin=$$(mktemp kapakXXXXXX.pdf)
 	bg=$$(mktemp kapakXXXXXX.pdf)
-	source $(firstword $|)
+	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< \
 		-density $(LODPI) \
 		-compress jpeg \
 		-quality 50 \
 		+repage \
 		$$bg
-	pdftk $(lastword $^) cat 1 output $$metin
+	pdftk $(filter %.pdf,$^) cat 1 output $$metin
 	pdftk $$metin background $$bg output $@
 	rm $$metin $$bg
 
@@ -501,7 +501,7 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml .casile.lua $$(subst -cilt
 	lua=$*-$(call parse_layout,$@)-cilt
 	cat <<- EOF > $$lua.lua
 		versioninfo = "$(call versioninfo,$*)"
-		metadatafile = "$(word 2,$^)"
+		metadatafile = "$(filter %-merged.yml,$^)"
 		spine = "$(call spinemm,$(filter %.pdf,$^))mm"
 		$(foreach LUA,$(call reverse,$|), SILE.require("$(basename $(LUA))");)
 	EOF
@@ -557,10 +557,10 @@ $(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml .casile.lua | $(CASILEDIR)/vi
 		$@
 
 %-cilt.svg: $(CASILEDIR)/cilt.svg %-cilt.png %-geometry.zsh
-	source $(word 3,$^)
+	source $(filter %-geometry.zsh,$^)
 	ver=$(subst @,\\@,$(call versioninfo,$@))
 	perl -pne "
-			s#IMG#$(word 2,$^)#g;
+			s#IMG#$(filter %.png,$^)#g;
 			s#VER#$${ver}#g;
 			s#CANVASX#$${ciltwmm}mm#g;
 			s#CANVASY#$${coverhmm}mm#g;
@@ -574,9 +574,9 @@ $(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml .casile.lua | $(CASILEDIR)/vi
 			s#SW#$${spinepm}#g;
 		" $< > $@
 
-%-cilt.pdf:	%-cilt.svg %-cilt.png %-geometry.zsh
+%-cilt.pdf:	%-cilt.svg %-geometry.zsh
 	$(addtosync)
-	source $(lastword $^)
+	source $(filter %-geometry.zsh,$^)
 	$(INKSCAPE) --without-gui \
 		--export-dpi=$$hidpi \
 		--export-margin=$$trimmm \
@@ -682,26 +682,26 @@ define magick_fray
 endef
 
 %-cilt-on.png: %-cilt.png %-geometry.zsh
-	source $(word 2,$^)
+	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< -gravity east -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
 
 %-cilt-arka.png: %-cilt.png %-geometry.zsh
-	source $(word 2,$^)
+	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< -gravity west -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
 
 %-cilt-sirt.png: %-cilt.png %-geometry.zsh
-	source $(word 2,$^)
+	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< -gravity center -crop $${spinepx}x$${coverhpx}+0+0! $@
 
 %-pov-on.png: %-cilt-on.png %-geometry.zsh
-	source $(lastword $^)
+	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< \
 		$(call magick_crease,0+) \
 		$(call magick_fray) \
 		$@
 
 %-pov-arka.png: %-cilt-arka.png %-geometry.zsh
-	source $(lastword $^)
+	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< \
 		$(call magick_crease,w-) \
 		$(call magick_fray) \
