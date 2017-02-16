@@ -29,7 +29,8 @@ local init = function (self)
   local defaultparskip = SILE.settings.get("typesetter.parfillskip")
 
   local continuepair = function (args)
-    if inpair and args.frame.id == "content" then
+    if not args then return end
+    if inpair and (args.frame.id == "content") then
       SILE.typesetter:pushState()
       SILE.call("tableofverses:book", { }, { inpair })
       SILE.typesetter:popState()
