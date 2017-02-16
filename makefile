@@ -220,11 +220,12 @@ $(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach 
 
 coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(CILTLI),$(call parse_layout,$1)),,%-kapak.pdf),)
 
-onpaperlibs = $(wildcard $1.lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call parse_layout,$1).lua $(LUALIBS)
+# Order is important here, these are included in reverse order so early supercedes late
+onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call parse_layout,$1).lua $(LUALIBS)
 
 ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
 $(ONPAPERPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
-$(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$*)
+$(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	$(addtosync)
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
@@ -250,7 +251,7 @@ $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperl
 	fi
 
 ONPAPERSILS = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE).sil)
-$(ONPAPERSILS): %-processed.md %-merged.yml %-ayetler-sorted.json %-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$*)
+$(ONPAPERSILS): %-processed.md %-merged.yml %-ayetler-sorted.json %-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
 			--wrap=preserve \
@@ -260,7 +261,7 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-ayetler-sorted.json %-url.png $(CA
 			-V versioninfo="$(call versioninfo,$*)" \
 			-V urlinfo="$(call urlinfo,$*)" \
 			-V qrimg="./$(filter %-url.png,$^)" \
-			$(foreach LUA,$|), -V script=$(basename $(LUA))) \
+			$(foreach LUA,$(filter %.lua,$|), -V script=$(basename $(LUA))) \
 			--template=$(filter %.sil,$^) \
 			--to=sile \
 			$(filter %-merged.yml,$^) <( $(call pre_sile_markdown_hook) < $< ) |
@@ -279,7 +280,7 @@ preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4)
 	if $(DIFF) && $(if $(PARENT),true,false); then
 		branch2criticmark.zsh $(PARENT) $<
 	else
-		m4 $(call preprocess_macros,$$*) $<
+		m4 $(filter %.m4,$^) $<
 	fi |
 		renumber_footnotes.pl |
 		$(call criticToSile) |
@@ -418,6 +419,7 @@ width = $(shell identify -density $(HIDPI) -format %[fx:w] $1)
 height = $(shell identify -density $(HIDPI) -format %[fx:h] $1)
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
+parse_bookid = $(firstword $(subst -, ,$(basename $1)))
 reverse = $(if $(wordlist 2,2,$(1)),$(call reverse,$(wordlist 2,$(words $(1)),$(1))) $(firstword $(1)),$(1))
 
 # Utility to modify recursive variables, see http://stackoverflow.com/a/36863261/313192
