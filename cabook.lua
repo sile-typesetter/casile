@@ -4,12 +4,13 @@ local cabook = book { id = "cabook" }
 
 cabook:declareOption("crop", "true")
 cabook:declareOption("background", "true")
+cabook:declareOption("verseindex", "false")
 
 cabook:loadPackage("verseindex", CASILE.casiledir)
 
 cabook.endPage = function (self)
   cabook:moveTocNodes()
-  cabook:moveTovNodes()
+  if cabook.options.verseindex() == "true" then cabook:moveTovNodes() end
 
   if not SILE.scratch.headers.skipthispage then
     SILE.settings.pushState()
@@ -27,8 +28,8 @@ cabook.endPage = function (self)
 end
 
 cabook.finish = function (self)
+  if cabook.options.verseindex() == "true" then cabook:writeTov() end
   local ret = book:finish()
-  cabook:writeTov()
   return ret
 end
 

@@ -133,7 +133,6 @@ $endfor$
 \tableofcontents
 $body$
 \novbreak\medskip\novbreak\center{\novbreak\book:chapter:post{}}
-\tableofverses
 $if(seriestitle)$
 \seriespage:pre
 \seriespage:series{$seriestitle$}
