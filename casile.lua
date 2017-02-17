@@ -203,20 +203,21 @@ end)
 
 -- This is the same as SILE's version but sets our no-headers variable on blank pages
 -- ...and allows opening to an even page
-SILE.registerCommand("open-double-page", function (options)
-  local even = options.even or false
+SILE.registerCommand("open-page", function (options)
+  local odd = CASILE.booleanopt(options.odd, false)
   local class = SILE.documentState.documentClass
-  local first = false
+  local first = true
   repeat 
     if not first then
+      SILE.typesetter:typeset("")
+      SILE.typesetter:leaveHmode();
       SILE.scratch.headers.skipthispage = true
-      SILE.typesetter:typeset(" ")
     end
     SILE.typesetter:leaveHmode();
     SILE.Commands["supereject"]();
-    SILE.scratch.headers.skipthispage = true
     first = false
-  until (even and class:oddPage()) or not class:oddPage()
+  until (odd and class:oddPage() or not class:oddPage())
+  SILE.typesetter:leaveHmode();
 end)
 
 local function tr_num2text (num, ordinal)
@@ -545,7 +546,7 @@ SILE.registerCommand("seriespage:series", function (options, content)
 end)
 
 SILE.registerCommand("seriespage:pre", function (options, content)
-  SILE.call("open-double-page")
+  SILE.call("open-page")
   SILE.scratch.headers.skipthispage = true
   SILE.call("nofolios")
   SILE.call("topfill")
