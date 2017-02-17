@@ -212,7 +212,6 @@ SILE.registerCommand("open-page", function (options)
   local first = true
   repeat 
     if not first then
-      SILE.scratch.headers.skipthispage = true
       SILE.typesetter:typeset("")
       SILE.typesetter:leaveHmode();
       SILE.scratch.headers.skipthispage = true
