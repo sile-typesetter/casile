@@ -701,6 +701,10 @@ define magick_fray
 	-alpha off -compose copyopacity -composite
 endef
 
+define magick_emulateprint
+	-level 10%,80%,2!
+endef
+
 %-cilt-on.png: %-cilt.png %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< -gravity east -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
@@ -716,6 +720,7 @@ endef
 %-pov-on.png: %-cilt-on.png %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< \
+		$(call magick_emulateprint) \
 		$(call magick_crease,0+) \
 		$(call magick_fray) \
 		$@
@@ -723,12 +728,17 @@ endef
 %-pov-arka.png: %-cilt-arka.png %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< \
+		$(call magick_emulateprint) \
 		$(call magick_crease,w-) \
 		$(call magick_fray) \
 		$@
 
 %-pov-sirt.png: %-cilt-sirt.png
-	$(MAGICK) $< -gravity center -extent 200%x100% $@
+	$(MAGICK) $< \
+		-gravity center \
+		-extent 200%x100% \
+		$(call magick_emulateprint) \
+		$@
 
 povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
 
