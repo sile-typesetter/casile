@@ -25,6 +25,7 @@ COVERGRAVITY ?= Center
 
 # Build mode flags
 DRAFT ?= false # Take shortcuts, scale things down, be quick about it
+LAZY ?= true # Pretend to do things we didn't
 DIFF ?= false # Show differences to parent brancd in build
 STATSMONTHS ?= 1 # How far back to look for commits when building stats
 DEBUG ?= false # Use SILE debug flags, set -x, and the like
@@ -242,6 +243,7 @@ onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua)
 ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
 $(ONPAPERPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
 $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@)
+	$(call skip_if_lazy,$@)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	$(addtosync)
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
@@ -422,6 +424,10 @@ issue.info:
 define skip_if_tracked
 	$(COVERS) || exit 0
 	git ls-files --error-unmatch -- $1 2>/dev/null && exit 0 ||:
+endef
+
+define skip_if_lazy
+	$(LAZY) && $(if $(filter $1,$(MAKECMDGOALS)),true,false) && test -f $1 && { touch $1, exit 0 } ||:
 endef
 
 pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}' || echo 0)
@@ -868,7 +874,7 @@ split_chapters:
 
 watch:
 	git ls-files --recurse-submodules |
-		entr -c -p make DRAFT=true $(WATCH_ARGS)
+		entr -c -p make DRAFT=true LAZY=true $(WATCH_ARGS)
 
 watchdiff:
 	git ls-files | entr -c -p git diff --color=always
