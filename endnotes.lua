@@ -3,7 +3,9 @@ SILE.scratch.endnotes = {}
 
 SILE.registerCommand("endnote", function (options, content)
   SILE.call("footnotemark")
-  local material = content
+  local material = function ()
+    SILE.process(content)
+  end
   local counter = SILE.formatCounter(SILE.scratch.counters.footnote)
   SILE.scratch.endnotes[#SILE.scratch.endnotes+1] = function ()
     return counter, material
@@ -28,7 +30,7 @@ SILE.registerCommand("endnotes", function (options, content)
           SILE.call("endnote:counter", { value = counter })
         end)
         SILE.call("raggedright", {}, function ()
-          SILE.process(material)
+          material()
         end)
       end)
     end
