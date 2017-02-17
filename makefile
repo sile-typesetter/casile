@@ -541,7 +541,7 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml .casile.lua $$(subst -cilt
 %-fragman-sirt.png: %-cilt-metin.pdf | %.pdf
 	$(MAGICK) -density $(HIDPI) $<[2] \
 		-crop $(call mmtopx,$(call spinemm,$(word 1,$|)))x+0+0 \
-		$(call magick_fragman_arka) \
+		$(call magick_fragman_sirt) \
 		-composite $@
 
 KAPAKMETIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapak-metin.pdf)
