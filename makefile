@@ -95,7 +95,7 @@ endif
 
 .ONESHELL:
 .SECONDEXPANSION:
-.PHONY: all ci clean debug list force init dependencies sync_pre sync_post $(TARGETS) %.app md_cleanup stats %-stats
+.PHONY: all ci debug list force init sync_pre sync_post $(TARGETS) %.app md_cleanup stats %-stats
 .SECONDARY:
 .PRECIOUS: %.pdf %.sil %.toc %.dat %.inc
 .DELETE_ON_ERROR:
@@ -106,6 +106,7 @@ ci: | init clean debug sync_pre all sync_post stats
 
 render: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(LAYOUTS),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).png)))
 
+.PHONY: clean
 clean:
 	git clean -xf
 
@@ -146,12 +147,15 @@ $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
 .PHONY: figures
 figures: $(FIGURES) ;
 
-init: dependencies
+.PHONY: init
+init: check_dependencies init_casile update_toolkits update_repository
 	$(and $(OUTPUTDIR),mkdir -p $(OUTPUTDIR))
-	git submodule update --init --remote
+
+.PHONY: init_casile
 	cd $(CASILEDIR) && yarn install
 
-dependencies:
+.PHONY: check_dependencies
+check_dependencies:
 	hash yarn
 	hash $(SILE)
 	hash $(PANDOC)
@@ -183,6 +187,18 @@ dependencies:
 	python -c "import yaml"
 	python -c "import isbnlib"
 	python -c "import pandocfilters"
+
+.PHONY: update_toolkits
+update_toolkits: update_casile
+
+.PHONY: update_casile
+update_casile:
+	git submodule update --init --remote -- $(CASILEDIR)
+	cd $(CASILEDIR) && yarn upgrade
+
+.PHONY: update_repository
+update_repository:
+	git fetch --all --prune --tags
 
 define addtosync =
 	echo $@ >> sync_files.dat
