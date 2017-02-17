@@ -44,7 +44,7 @@ local init = function (self)
   end
 
   local startpair = function (pair)
-    SILE.call("makecolumns", { gutter = "5%pw" })
+    SILE.call("makecolumns", { gutter = "4%pw" })
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
     inpair = pair
   end
@@ -82,7 +82,9 @@ local init = function (self)
     end
     SILE.process(content)
     SILE.call("noindent")
-    SILE.call("dotfill")
+    SILE.call("font", { size = ".5em" }, function ()
+      SILE.call("dotfill")
+    end)
     local first = true
     for _, pageno in pairs(options.pages) do
       if not first then
