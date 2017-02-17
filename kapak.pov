@@ -21,10 +21,10 @@
 }
 
 #declare bookfinish = finish {
-	ambient 0.75
-	diffuse 0.3
+	ambient 0.90
+	diffuse 0.5
 	reflection 0.05
-	specular 0.15
+	specular 0.25
 	roughness 0.05
 }
 
