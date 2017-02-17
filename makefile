@@ -427,7 +427,7 @@ define skip_if_tracked
 endef
 
 define skip_if_lazy
-	$(LAZY) && $(if $(filter $1,$(MAKECMDGOALS)),true,false) && test -f $1 && { touch $1, exit 0 } ||:
+	$(LAZY) && $(if $(filter $1,$(MAKECMDGOALS)),false,true) && test -f $1 && { touch $1, exit 0 } ||:
 endef
 
 pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}' || echo 0)
