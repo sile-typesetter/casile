@@ -87,11 +87,13 @@ SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.6ex p
 SILE.settings.set("linebreak.hyphenPenalty", 300)
 
 SILE.registerCommand("left-running-head", function (options, content)
-  SILE.scratch.headers.left = content
+  local closure = SILE.settings.wrap()
+  SILE.scratch.headers.left = function () closure(content) end
 end, "Text to appear on the top of the left page")
 
 SILE.registerCommand("right-running-head", function (options, content)
-  SILE.scratch.headers.right = content
+  local closure = SILE.settings.wrap()
+  SILE.scratch.headers.right = function () closure(content) end
 end, "Text to appear on the top of the right page")
 
 SILE.registerCommand("output-right-running-head", function (options, content)
@@ -205,6 +207,7 @@ end)
 -- ...and allows opening to an even page
 SILE.registerCommand("open-page", function (options)
   local odd = CASILE.booleanopt(options.odd, false)
+  local double = CASILE.booleanopt(options.double, true)
   local class = SILE.documentState.documentClass
   local first = true
   repeat 
@@ -216,7 +219,7 @@ SILE.registerCommand("open-page", function (options)
     SILE.typesetter:leaveHmode();
     SILE.Commands["supereject"]();
     first = false
-  until (odd and class:oddPage() or not class:oddPage())
+  until (odd and class:oddPage() or not class:oddPage() or not double)
   SILE.typesetter:leaveHmode();
 end)
 
@@ -717,7 +720,7 @@ SILE.registerCommand("requireSpace", function(options, content)
 	local heightOfPageSoFar = SILE.pagebuilder.collateVboxes(SILE.typesetter.state.outputQueue).height
 	local heightOfFrame = SILE.typesetter.frame:height()
 	if heightOfFrame - heightOfPageSoFar < required then
-		SILE.call("eject")
+		SILE.call("supereject")
 	end
 end)
 
