@@ -582,6 +582,9 @@ $(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml .casile.lua | $(CASILEDIR)/vi
 		$(call magick_cilt) \
 		$@
 
+%-cilt-printcolor.png: %-cilt.png
+	$(MAGICK) $< $(call magick_printcolor) $@
+
 %-cilt.svg: $(CASILEDIR)/cilt.svg %-cilt.png %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	ver=$(subst @,\\@,$(call versioninfo,$@))
@@ -708,8 +711,13 @@ define magick_fray
 endef
 
 define magick_emulateprint
-	-level 0%,95%,1.6! \
+	+level 0%,95%,1.6 \
 	-modulate 100,75
+endef
+
+define magick_printcolor
+	-modulate 100,140 \
+	+level 0%,110%,0.7
 endef
 
 %-cilt-on.png: %-cilt.png %-geometry.zsh
@@ -724,24 +732,28 @@ endef
 	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< -gravity center -crop $${spinepx}x$${coverhpx}+0+0! $@
 
-%-pov-on.png: %-cilt-on.png %-geometry.zsh
+%-pov-on.png: %-cilt-printcolor.png %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< \
+		-gravity east -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! \
 		$(call magick_emulateprint) \
 		$(call magick_crease,0+) \
 		$(call magick_fray) \
 		$@
 
-%-pov-arka.png: %-cilt-arka.png %-geometry.zsh
+%-pov-arka.png: %-cilt-printcolor.png %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< \
+		-gravity west -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! \
 		$(call magick_emulateprint) \
 		$(call magick_crease,w-) \
 		$(call magick_fray) \
 		$@
 
-%-pov-sirt.png: %-cilt-sirt.png
+%-pov-sirt.png: %-cilt-printcolor.png %-geometry.zsh
+	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< \
+		-gravity center -crop $${spinepx}x$${coverhpx}+0+0! \
 		-gravity center \
 		-extent 200%x100% \
 		$(call magick_emulateprint) \
