@@ -111,7 +111,11 @@ all: $(TARGETS)
 .PHONY: ci
 ci: | init clean debug sync_pre all sync_post stats
 
-render: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(LAYOUTS),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).png)))
+.PHONY: renderings
+renderings: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(LAYOUTS),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).jpg)))
+
+.PHONY: promotionals
+promotionals: $(foreach TARGET,$(TARGETS),$(foreach PANKART,$(PANKARTLI),$(TARGET)-$(PANKART)-pankart.jpg))
 
 .PHONY: clean
 clean:
@@ -483,11 +487,15 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) $$(subst -kapak-zemin.png,-geometry.zsh,$
 		\( -background none xc: $(call magick_kapak) \) -composite \
 		$@ ||:
 
-%-pankart.jpg: %-kapak.png %-geometry.zsh
-	$(addtosync)
+%-pankart.png: %-kapak.png %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< \
 		-resize $${coverwpp}x$${coverhpp}^ \
+		$@
+
+%.jpg: $$(filter pankart,$$(substr -, ,$$*)) %.png
+	$(addtosync)
+	$(MAGICK) $< \
 		-quality 85 \
 		$@
 
@@ -797,32 +805,32 @@ define povray
 	rm $$headers
 endef
 
-define povcrop
-	$(MAGICK) $1 \( +clone \
-		-virtual-pixel edge \
-		-blur 0x%[fx:w/50] \
-		-fuzz 15% \
-		-trim -trim \
-		-set option:fuzzy_trim "%[fx:w*1.2]x%[fx:h*1.2]+%[fx:page.x-w*0.1]+%[fx:page.y-h*0.1]" \
-		+delete \) \
-		-crop %[fuzzy_trim] \
-		-resize $(call scale,4000)x $1
-endef
-
 %-3b-on.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/on.pov $(povtextures)
 	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
-	$(call povcrop,$@)
 
 %-3b-arka.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/arka.pov $(povtextures)
 	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
-	$(call povcrop,$@)
 
 %-3b-istif.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/istif.pov $(povtextures)
 	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,8000,6000)
-	$(call povcrop,$@)
+
+%.jpg: $$(filter 3b,$$(substr -, ,$$*)) %.png
+	$(MAGICK) $< \
+		\( +clone \
+			-virtual-pixel edge \
+			-blur 0x%[fx:w/50] \
+			-fuzz 15% \
+			-trim -trim \
+			-set option:fuzzy_trim "%[fx:w*1.2]x%[fx:h*1.2]+%[fx:page.x-w*0.1]+%[fx:page.y-h*0.1]" \
+			+delete
+		\) \
+		-crop %[fuzzy_trim] \
+		-resize $(call scale,4000)x
+		-quality 85 \
+		$@
 
 %.epub %.odt %.docx: %-processed.md %-merged.yml %-epub-pankart.jpg
 	$(addtosync)
