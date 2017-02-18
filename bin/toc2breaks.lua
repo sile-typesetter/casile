@@ -43,6 +43,14 @@ infow("SINGLE PDF:")
 local out = basename .. "-app.pdf"
 infow(share .. out, true)
 
+infow("MEDIA:")
+local out = basename .. "-kare-pankart.jpg"
+infow(share .. out, true)
+local out = basename .. "-genis-pankart.jpg"
+infow(share .. out, true)
+local out = basename .. "-bant-pankart.jpg"
+infow(share .. out, true)
+
 local labels = {}
 local breaks = {}
 
