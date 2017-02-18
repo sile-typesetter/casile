@@ -96,7 +96,7 @@ endif
 
 .ONESHELL:
 .SECONDEXPANSION:
-.PHONY: all ci debug list force init sync_pre sync_post $(TARGETS) %.app md_cleanup stats %-stats
+.PHONY: all ci debug list force init sync_pre sync_post $(TARGETS) %.app stats %-stats
 .SECONDARY:
 .PRECIOUS: %.pdf %.sil %.toc %.dat %.inc
 .DELETE_ON_ERROR:
@@ -334,7 +334,7 @@ define find_and_munge
 	find $(PROJECTDIR) -maxdepth 2 -name '$1' |
 		grep -f <(git ls-files | sed -e 's/$$/$$/') |
 		while read f; do
-			grep -q 'esyscmd.*cat' $$f && continue # skip compilations that are mostly M4
+			grep -q "esyscmd.*cat.* $$(basename $$f)-bolumler/" $$f && continue # skip compilations that are mostly M4
 			git diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
 			$2 < $$f | sponge $$f
 			git add -- $$f
@@ -342,6 +342,7 @@ define find_and_munge
 	git diff-index --quiet --cached HEAD || git ci -m "[auto] $3"
 endef
 
+.PHONY: md_cleanup
 md_cleanup:
 	$(call find_and_munge,*.md,msword_escapes.pl,Fixup bad MS word typing habits that Pandoc tries to preserve)
 	$(call find_and_munge,*.md,lazy_quotes.pl,Replace lazy double single quotes with real doubles)
