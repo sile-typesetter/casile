@@ -708,8 +708,8 @@ define magick_fray
 endef
 
 define magick_emulateprint
-	-level 5%,90%,1.8! \
-	-modulate 95,85
+	-level 0%,95%,1.6! \
+	-modulate 100,75
 endef
 
 %-cilt-on.png: %-cilt.png %-geometry.zsh
