@@ -790,7 +790,7 @@ endef
 povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
 
 %-3b.pov: %-geometry.zsh | $(povtextures)
-	source $<
+	source $(filter %-geometry.zsh,$^)
 	cat <<- EOF > $@
 		#declare coverwmm = $$coverwmm;
 		#declare coverhmm = $$coverhmm;
@@ -822,17 +822,17 @@ define povcrop
 		-resize $(call scale,4000)x $1
 endef
 
-%-3b-on.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/on.pov | $(povtextures)
+%-3b-on.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/on.pov $(povtextures)
 	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
 	$(call povcrop,$@)
 
-%-3b-arka.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/arka.pov | $(povtextures)
+%-3b-arka.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/arka.pov $(povtextures)
 	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
 	$(call povcrop,$@)
 
-%-3b-istif.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/istif.pov | $(povtextures)
+%-3b-istif.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/istif.pov $(povtextures)
 	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,8000,6000)
 	$(call povcrop,$@)
