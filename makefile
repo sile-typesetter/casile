@@ -480,7 +480,7 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) $$(subst -kapak-zemin.png,-geometry.zsh,$
 		-extent  "%[fx:w/h>=$${coveraspect}?h*$${coveraspect}:w]x" \
 		-extent "x%[fx:w/h<=$${coveraspect}?w/$${coveraspect}:h]" \
 		-resize $${coverwpx}x$${coverhpx} \
-		-normalize \
+		$(call magick_zeminfilter) \
 		$@ ||:
 	$(if $(filter %.png,$^),false,true) && $(MAGICK) \
 		-size $${coverwpx}x$${coverhpx}^ $(call magick_zemin) -composite \
@@ -501,7 +501,14 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) $$(subst -kapak-zemin.png,-geometry.zsh,$
 
 %-kapak.png: %-kapak-zemin.png %-kapak-metin.pdf %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
-	$(MAGICK) -density $(HIDPI) $(filter %.pdf,$^)[0] \
+	$(MAGICK) $< \
+		-density $(HIDPI) \
+		$(filter %.pdf,$^)[0] \
+		$(call magick_kapak) \
+		-compose over -composite \
+		+repage $@
+
+define magick_kapak
 		-fill none \
 		-fuzz 5% \
 		-draw 'color 1,1 replace' \
@@ -524,10 +531,8 @@ $(ONPAPERZEMIN): $$(call gitzemin,$$@) $$(subst -kapak-zemin.png,-geometry.zsh,$
 			-negate \
 		\) -composite \
 		\( mpr:metin \
-		\) -composite \
-		\( $< \
-		\) +swap -compose over -composite \
-		+repage $@
+		\) -composite
+endef
 
 %-kapak.pdf: %-kapak.png %-kapak-metin.pdf %-geometry.zsh
 	$(COVERS) || exit 0
@@ -688,6 +693,10 @@ $(GEOMETRIES): %-geometry.zsh: $$(call newgeometry,$$@) | $$(call geometrybase,$
 
 define magick_zemin
 	xc:darkgray
+endef
+
+define magick_zeminfilter
+	-normalize
 endef
 
 define magick_kenar
