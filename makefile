@@ -574,12 +574,12 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml .casile.lua $$(subst -cilt
 		-composite $@
 
 KAPAKMETIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapak-metin.pdf)
-$(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml .casile.lua | $(CASILEDIR)/viachristus.lua $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(CASILEDIR)/covers.lua $$(wildcard $(PROJECT).lua) $$(wildcard $$*.lua)
+$(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml .casile.lua | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	lua=$*-$(call parse_layout,$@)-kapak
 	cat <<- EOF > $$lua.lua
 		versioninfo = "$(call versioninfo,$*)"
-		metadatafile = "$(word 2,$^)"
-		$(foreach LUA,$|, SILE.require("$(basename $(LUA))");)
+		metadatafile = "$(filter %-merged.yml,$^)"
+		$(foreach LUA,$(call reverse,$|), SILE.require("$(basename $(LUA))");)
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) -I <(cat .casile.lua <(echo "CASILE.infofile = '$$lua'")) $< -o $@
