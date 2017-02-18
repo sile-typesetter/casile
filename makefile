@@ -585,6 +585,24 @@ $(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml .casile.lua | $(CASILEDIR)/vi
 %-cilt-printcolor.png: %-cilt.png
 	$(MAGICK) $< $(call magick_printcolor) $@
 
+%-cilt-printcolor.svg: $(CASILEDIR)/cilt.svg %-cilt-printcolor.png %-geometry.zsh
+	source $(filter %-geometry.zsh,$^)
+	ver=$(subst @,\\@,$(call versioninfo,$@))
+	perl -pne "
+			s#IMG#$(filter %.png,$^)#g;
+			s#VER#$${ver}#g;
+			s#CANVASX#$${ciltwmm}mm#g;
+			s#CANVASY#$${coverhmm}mm#g;
+			s#IMW#$${imgwpm}#g;
+			s#IMH#$${imghpm}#g;
+			s#WWW#$${ciltwpm}#g;
+			s#HHH#$${coverhpm}#g;
+			s#BLEED#$${bleedpm}#g;
+			s#TRIM#$${trimpm}#g;
+			s#CW#$${coverwpm}#g;
+			s#SW#$${spinepm}#g;
+		" $< > $@
+
 %-cilt.svg: $(CASILEDIR)/cilt.svg %-cilt.png %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	ver=$(subst @,\\@,$(call versioninfo,$@))
@@ -604,6 +622,15 @@ $(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml .casile.lua | $(CASILEDIR)/vi
 		" $< > $@
 
 %-cilt.pdf:	%-cilt.svg %-geometry.zsh
+	$(addtosync)
+	source $(filter %-geometry.zsh,$^)
+	$(INKSCAPE) --without-gui \
+		--export-dpi=$$hidpi \
+		--export-margin=$$trimmm \
+		--file=$< \
+		--export-pdf=$@
+
+%-cilt-printcolor.pdf:	%-cilt-printcolor.svg %-geometry.zsh
 	$(addtosync)
 	source $(filter %-geometry.zsh,$^)
 	$(INKSCAPE) --without-gui \
