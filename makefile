@@ -101,13 +101,14 @@ endif
 
 .ONESHELL:
 .SECONDEXPANSION:
-.PHONY: all ci debug list force init sync_pre sync_post $(TARGETS) %.app stats %-stats
 .SECONDARY:
 .PRECIOUS: %.pdf %.sil %.toc %.dat %.inc
 .DELETE_ON_ERROR:
 
+.PHONY: all
 all: $(TARGETS)
 
+.PHONY: ci
 ci: | init clean debug sync_pre all sync_post stats
 
 render: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(LAYOUTS),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).png)))
@@ -116,6 +117,7 @@ render: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(LAYOUTS),$(foreach RENDER
 clean:
 	git clean -xf
 
+.PHONY: debug
 debug:
 	@echo PROJECT: $(PROJECT)
 	@echo TARGETS: $(TARGETS)
@@ -143,21 +145,25 @@ debug:
 	@echo PANDOCARGS: $(PANDOCARGS)
 	@echo versioninfo: $(call versioninfo,$(PROJECT))
 
+.PHONY: force
 force: ;
 
+.PHONY: list
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
 
+.PHONY: $(TARGETS)
 $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
 
 .PHONY: figures
-figures: $(FIGURES) ;
+figures: $(FIGURES)
 
 .PHONY: init
 init: check_dependencies init_casile update_toolkits update_repository
 	$(and $(OUTPUTDIR),mkdir -p $(OUTPUTDIR))
 
 .PHONY: init_casile
+init_casile:
 	cd $(CASILEDIR) && yarn install
 
 .PHONY: check_dependencies
@@ -215,11 +221,13 @@ define scale =
 $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | bc) || echo $1))
 endef
 
+.PHONY: sync_pre
 sync_pre:
 	$(if $(INPUTDIR),,exit 0)
 	$(call pre_sync)
 	-rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/
 
+.PHONY: sync_post
 sync_post: sync_files.dat
 	$(if $(OUTPUTDIR),,exit 0)
 	sort -u $< | sponge $<
@@ -398,7 +406,8 @@ endef
 
 %.sil.toc %.sil.tov: %.pdf ;
 
-%.app: %-app.info $(foreach PANKART,$(PANKARTLI),%-$(PANKART)-pankart.jpg) ;
+.PHONY: %.app
+%.app: %-app.info $(foreach PANKART,$(PANKARTLI),%-$(PANKART)-pankart.jpg)
 
 %-app.info: %-app.sil.toc %-app.pdf %-merged.yml
 	$(addtosync)
@@ -862,8 +871,10 @@ endef
 %-barkod.png: %-barkod.svg
 	$(CONVERT) $< -background white -resize $(call scale,1200)x $@
 
+.PHONY: stats
 stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
 
+.PHONY: %-stats
 %-stats:
 	stats.zsh $* $(STATSMONTHS)
 
