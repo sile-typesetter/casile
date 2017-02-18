@@ -52,6 +52,11 @@ PAPERSIZES = $(CILTLI) $(KAPAKLI) $(PANKARTLI)
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
 MAKEFLAGS = "-j $(JOBS)"
 
+# Over-ride entr arguments, defaults to just clear
+# Add -r to kill and restart jobs on activity
+# And -p to wait for activity on first invocation
+ENTRFLAGS := -c -r
+
 # List of extra m4 macro files to apply to every source
 M4MACROS ?=
 # List of exta YAML meta data files to splice into each book
@@ -888,7 +893,7 @@ split_chapters:
 
 watch:
 	git ls-files --recurse-submodules |
-		entr -c -r make DRAFT=true LAZY=true $(WATCH_ARGS)
+		entr $(ENTRFLAGS) make DRAFT=true LAZY=true $(WATCH_ARGS)
 
 watchdiff:
 	git ls-files | entr -c -p git diff --color=always
