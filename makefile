@@ -471,9 +471,9 @@ define append
 $(eval $(1) = $(value $(1))$(2))
 endef
 
-ONPAPERZEMIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapak-zemin.png)
+ONPAPERZEMINS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-kapak-zemin.png))
 gitzemin = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
-$(ONPAPERZEMIN): $$(call gitzemin,$$@) $$(subst -kapak-zemin.png,-geometry.zsh,$$@)
+$(ONPAPERZEMINS): %-kapak-zemin.png: $$(call gitzemin,$$@) $$(subst -kapak-zemin.png,-geometry.zsh,$$@)
 	source $(filter %-geometry.zsh,$^)
 	$(if $(filter %.png,$^),true,false) && $(MAGICK) $(filter %.png,$^) \
 		-gravity $(COVERGRAVITY) \
@@ -578,16 +578,15 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml .casile.lua $$(subst -cilt
 		$(call magick_fragman_sirt) \
 		-composite $@
 
-KAPAKMETIN = $(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-kapak-metin.pdf)
-$(KAPAKMETIN): $(CASILEDIR)/kapak.xml %-merged.yml .casile.lua | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
-	lua=$*-$(call parse_layout,$@)-kapak
-	cat <<- EOF > $$lua.lua
-		versioninfo = "$(call versioninfo,$*)"
+KAPAKMETINS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-kapak-metin.pdf))
+$(KAPAKMETINS): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-merged.yml .casile.lua | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+	cat <<- EOF > $*.lua
+		versioninfo = "$(call versioninfo,$(call parse_bookid,$@))"
 		metadatafile = "$(filter %-merged.yml,$^)"
 		$(foreach LUA,$(call reverse,$|), SILE.require("$(basename $(LUA))");)
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
-	$(SILE) -I <(cat .casile.lua <(echo "CASILE.infofile = '$$lua'")) $< -o $@
+	$(SILE) -I <(cat .casile.lua <(echo "CASILE.infofile = '$*'")) $< -o $@
 
 %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(AVADANLIKDIR)/vc_sembol_renkli.svg $(AVADANLIKDIR)/vc_logo_renkli.svg %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
