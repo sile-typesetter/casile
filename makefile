@@ -645,7 +645,7 @@ geometrybase = $(if $(filter $(CILTLI),$(call parse_layout,$1)),$1.pdf $1-cilt-m
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE)-geometry.zsh))
-$(GEOMETRIES): %-geometry.zsh: $$(call newgeometry,$$@) | $$(call geometrybase,$$*)
+$(GEOMETRIES): %-geometry.zsh: $$(call newgeometry,$$@) $$(call geometrybase,$$*)
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	hidpi=$(HIDPI)
 	lodpi=$(HIDPI)
@@ -669,11 +669,11 @@ $(GEOMETRIES): %-geometry.zsh: $$(call newgeometry,$$@) | $$(call geometrybase,$
 			coverhpt=%[fx:round(h/$(HIDPI)*72)]
 			coverhpp=%[fx:round(h/$(HIDPI)*$(LODPI))]
 			coveraspect=%[fx:w/h]
-		' $(lastword $|)[0] || echo false)
-	spinemm=$(call spinemm,$(firstword $|))
-	spinepx=$(call mmtopx,$(call spinemm,$(firstword $|)))
-	spinepm=$(call mmtopm,$(call spinemm,$(firstword $|)))
-	spinept=$(call mmtopt,$(call spinemm,$(firstword $|)))
+		' $(lastword $(filter %.pdf,$^))[0] || echo false)
+	spinemm=$(call spinemm,$(firstword $(filter %.pdf,$^)))
+	spinepx=$(call mmtopx,$(call spinemm,$(firstword $(filter %.pdf,$^))))
+	spinepm=$(call mmtopm,$(call spinemm,$(firstword $(filter %.pdf,$^))))
+	spinept=$(call mmtopt,$(call spinemm,$(firstword $(filter %.pdf,$^))))
 	fbwmm=$$(($$coverwmm+$$bleedmm))
 	fbwpx=$$(($$coverwpx+$$bleedpx))
 	fbwpm=$$(($$coverwpm+$$bleedpm))
