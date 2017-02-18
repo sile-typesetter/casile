@@ -888,7 +888,7 @@ split_chapters:
 
 watch:
 	git ls-files --recurse-submodules |
-		entr -c -p make DRAFT=true LAZY=true $(WATCH_ARGS)
+		entr -c make DRAFT=true LAZY=true $(WATCH_ARGS)
 
 watchdiff:
 	git ls-files | entr -c -p git diff --color=always
