@@ -449,6 +449,8 @@ define skip_if_lazy
 	$(LAZY) && $(if $(filter $1,$(MAKECMDGOALS)),false,true) && test -f $1 && { touch $1; exit 0 } ||:
 endef
 
+onlyif = $(if $(findstring $1,$2),,none)
+
 pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}' || echo 0)
 pagew = $(shell pdfinfo $1 | awk '$$1$$2 == "Pagesize:" {print $$3}' || echo 0)
 pageh = $(shell pdfinfo $1 | awk '$$1$$2 == "Pagesize:" {print $$5}' || echo 0)
@@ -493,7 +495,7 @@ $(ONPAPERZEMINS): %-kapak-zemin.png: $$(call gitzemin,$$@) $$(subst -kapak-zemin
 		-resize $${coverwpp}x$${coverhpp}^ \
 		$@
 
-%.jpg: $$(filter pankart,$$(substr -, ,$$*)) %.png
+%.jpg: %.png $$(call onlyif,-pankart,$$*)
 	$(addtosync)
 	$(MAGICK) $< \
 		-quality 85 \
@@ -825,7 +827,7 @@ endef
 	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,8000,6000)
 
-%.jpg: $$(filter 3b,$$(substr -, ,$$*)) %.png
+%.jpg: %.png $$(call onlyif,-3b-,$$*)
 	$(MAGICK) $< \
 		\( +clone \
 			-virtual-pixel edge \
@@ -833,10 +835,10 @@ endef
 			-fuzz 15% \
 			-trim -trim \
 			-set option:fuzzy_trim "%[fx:w*1.2]x%[fx:h*1.2]+%[fx:page.x-w*0.1]+%[fx:page.y-h*0.1]" \
-			+delete
+			+delete \
 		\) \
 		-crop %[fuzzy_trim] \
-		-resize $(call scale,4000)x
+		-resize $(call scale,4000)x \
 		-quality 85 \
 		$@
 
