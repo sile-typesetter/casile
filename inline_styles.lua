@@ -67,6 +67,7 @@ end)
 SILE.registerCommand("cabook:page-number-font", function (options, content)
   options.style = options.style or "Roman"
   options.size = options.size or "13pt"
+  options.weight = options.weight or 400
   SILE.call("cabook:altseriffont", options, content)
 end)
 

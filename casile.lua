@@ -87,13 +87,11 @@ SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.6ex p
 SILE.settings.set("linebreak.hyphenPenalty", 300)
 
 SILE.registerCommand("left-running-head", function (options, content)
-  local closure = SILE.settings.wrap()
-  SILE.scratch.headers.left = function () closure(content) end
+  SILE.scratch.headers.left = content
 end, "Text to appear on the top of the left page")
 
 SILE.registerCommand("right-running-head", function (options, content)
-  local closure = SILE.settings.wrap()
-  SILE.scratch.headers.right = function () closure(content) end
+  SILE.scratch.headers.right = content
 end, "Text to appear on the top of the right page")
 
 SILE.registerCommand("output-right-running-head", function (options, content)
