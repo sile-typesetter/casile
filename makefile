@@ -449,8 +449,6 @@ define skip_if_lazy
 	$(LAZY) && $(if $(filter $1,$(MAKECMDGOALS)),false,true) && test -f $1 && { touch $1; exit 0 } ||:
 endef
 
-onlyif = $(if $(findstring $1,$2),,none)
-
 pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}' || echo 0)
 pagew = $(shell pdfinfo $1 | awk '$$1$$2 == "Pagesize:" {print $$3}' || echo 0)
 pageh = $(shell pdfinfo $1 | awk '$$1$$2 == "Pagesize:" {print $$5}' || echo 0)
@@ -493,12 +491,6 @@ $(ONPAPERZEMINS): %-kapak-zemin.png: $$(call gitzemin,$$@) $$(subst -kapak-zemin
 	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< \
 		-resize $${coverwpp}x$${coverhpp}^ \
-		$@
-
-%.jpg: %.png $$(call onlyif,-pankart,$$*)
-	$(addtosync)
-	$(MAGICK) $< \
-		-quality 85 \
 		$@
 
 %-kapak.png: %-kapak-zemin.png %-kapak-metin.pdf %-geometry.zsh
@@ -816,29 +808,31 @@ define povray
 endef
 
 %-3b-on.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/on.pov $(povtextures)
-	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
 
 %-3b-arka.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/arka.pov $(povtextures)
-	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
 
 %-3b-istif.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/istif.pov $(povtextures)
-	$(addtosync)
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,8000,6000)
 
-%.jpg: %.png $$(call onlyif,-3b-,$$*)
+define pov_crop
+	\( +clone \
+		-virtual-pixel edge \
+		-blur 0x%[fx:w/50] \
+		-fuzz 15% \
+		-trim -trim \
+		-set option:fuzzy_trim "%[fx:w*1.2]x%[fx:h*1.2]+%[fx:page.x-w*0.1]+%[fx:page.y-h*0.1]" \
+		+delete \
+    \) \
+    -crop %[fuzzy_trim] \
+    -resize $(call scale,4000)x
+endef
+
+%.jpg: %.png
+	$(addtosync)
 	$(MAGICK) $< \
-		\( +clone \
-			-virtual-pixel edge \
-			-blur 0x%[fx:w/50] \
-			-fuzz 15% \
-			-trim -trim \
-			-set option:fuzzy_trim "%[fx:w*1.2]x%[fx:h*1.2]+%[fx:page.x-w*0.1]+%[fx:page.y-h*0.1]" \
-			+delete \
-		\) \
-		-crop %[fuzzy_trim] \
-		-resize $(call scale,4000)x \
+		$(if $(findstring 3b,$*),$(call pov_crop),) \
 		-quality 85 \
 		$@
 
