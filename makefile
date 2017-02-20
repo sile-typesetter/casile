@@ -112,7 +112,7 @@ all: $(TARGETS)
 ci: | init clean debug sync_pre all sync_post stats
 
 .PHONY: renderings
-renderings: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(LAYOUTS),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).jpg)))
+renderings: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(filter $(CILTLI),$(LAYOUTS)),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).jpg)))
 
 .PHONY: promotionals
 promotionals: $(foreach TARGET,$(TARGETS),$(foreach PANKART,$(PANKARTLI),$(TARGET)-$(PANKART)-pankart.jpg))
