@@ -484,7 +484,7 @@ $(ONPAPERZEMINS): %-kapak-zemin.png: $$(call gitzemin,$$@) $$(subst -kapak-zemin
 		$@ ||:
 	$(if $(filter %.png,$^),false,true) && $(MAGICK) \
 		-size $${coverwpx}x$${coverhpx}^ $(call magick_zemin) -composite \
-		\( -background none xc: $(call magick_kapak) \) -composite \
+		$(call magick_zeminfilter) \
 		$@ ||:
 
 %-pankart.png: %-kapak.png %-geometry.zsh
