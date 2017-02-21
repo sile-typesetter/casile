@@ -860,7 +860,7 @@ endef
 		    -e '/owncloudshare:/s/: \(.*\)$$/: "\1"/' > $@
 
 %-barkod.svg: %-merged.yml
-	zint --directsvg --scale=5 --barcode=69 --height=30 \
+	zint --direct --filetype=svg --scale=5 --barcode=69 --height=30 \
 		--data=$(shell $(CASILEDIR)/bin/isbn_format.py $< print) |\
 		$(CONVERT) - \
 			-bordercolor white -border 10 \
@@ -873,7 +873,7 @@ endef
 	$(CONVERT) $< $@
 
 %-url.svg:
-	zint --directsvg --scale=10 --barcode=58 \
+	zint --direct --filetype=svg --scale=10 --barcode=58 \
 		--data=$(call urlinfo,$*) |\
 		$(CONVERT) - \
 			-bordercolor White -border 10x10 \
