@@ -1,6 +1,6 @@
 local bleed = 3 * 2.83465
 local trim = 10 * 2.83465
-local len = trim - bleed * 2
+local len = trim - bleed
 
 SILE.require("packages/cropmarks")
 
