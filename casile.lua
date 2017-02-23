@@ -217,7 +217,7 @@ SILE.registerCommand("open-page", function (options)
     SILE.typesetter:leaveHmode();
     SILE.Commands["supereject"]();
     first = false
-  until (odd and class:oddPage() or not class:oddPage() or not double)
+  until (not double or (odd and class:oddPage()) or (not odd and not class:oddPage()))
   SILE.typesetter:leaveHmode();
 end)
 
