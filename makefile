@@ -76,6 +76,7 @@ PANDOCARGS ?=
 
 # Set default document class
 DOCUMENTCLASS ?= cabook
+DOCUMENTOPTIONS ?=
 
 # Utility variables for later, http://blog.jgc.org/2007/06/escaping-comma-and-space-in-gnu-make.html
 , := ,
@@ -291,6 +292,7 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-ayetler-sorted.json %-url.png $(CA
 			$(PANDOCARGS) \
 			--wrap=preserve \
 			-V documentclass="$(DOCUMENTCLASS)" \
+			$(if $(DOCUMENTOPTIONS),-V classoptions="$(DOCUMENTOPTIONS)",) \
 			-V metadatafile="$(filter %-merged.yml,$^)" \
 			-V versesfile="$(filter %-ayetler-sorted.json,$^)" \
 			-V versioninfo="$(call versioninfo,$*)" \

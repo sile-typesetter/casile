@@ -1,4 +1,4 @@
-\begin[$if(papersize)$papersize=$papersize$,$endif$class=$documentclass$]{document}
+\begin[$if(papersize)$papersize=$papersize$,$endif$class=$documentclass$$if(classoptions)$,$classoptions$$endif$]{document}
 \begin{script}
 $if(metadatafile)$
 CASILE.metadata = require("readmeta").load("$metadatafile$")
