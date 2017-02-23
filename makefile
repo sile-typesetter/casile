@@ -109,8 +109,13 @@ endif
 .PHONY: all
 all: $(TARGETS)
 
-.PHONY: ci
-ci: | init clean debug sync_pre all sync_post stats
+.PHONY: ci ci_stage1 ci_stage2 ci_stage3 ci_stage4
+ci: ci_stage4
+ci_stage1: init clean debug
+ci_stage2: ci_stage1 sync_pre
+ci_stage3: ci_stage2 all
+ci_stage4: ci_stage3 sync_post stats
+
 
 .PHONY: renderings
 renderings: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(filter $(CILTLI),$(LAYOUTS)),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).jpg)))
