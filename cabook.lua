@@ -6,7 +6,11 @@ cabook:declareOption("crop", "true")
 cabook:declareOption("background", "true")
 cabook:declareOption("verseindex", "false")
 
-cabook:loadPackage("verseindex", CASILE.casiledir)
+if cabook.options.verseindex() == "true" then
+  cabook:loadPackage("verseindex", CASILE.casiledir)
+else
+  SILE.registerCommand("markverse", function (options, content) end)
+end
 
 cabook.endPage = function (self)
   cabook:moveTocNodes()
