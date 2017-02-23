@@ -123,8 +123,9 @@ local init = function (self)
         local label = ref.reformat:match(".* (.*)")
         local pages = {}
         local pageshash = {}
+        local bk = ref.b == "Mezmurlar" and "Mezmur" or ref.b
         for _, link in pairs(SILE.scratch.tableofverses) do
-          if link.label[1] == ref.b .. " " .. label  then
+          if link.label[1] == bk .. " " .. label  then
             local pageno = link.pageno
             if not pageshash[pageno] then 
               pages[#pages+1] = pageno
