@@ -108,6 +108,12 @@ local init = function (self)
   SILE.registerCommand("tableofverses", function (options, content)
     SILE.call("chapter", { numbering = false, appendix = true }, { "Ayet Referans İndeksi" })
     SILE.call("cabook:seriffont", { size = "0.95em" })
+    local origmethod = SILE.settings.get("linespacing.method")
+    local origleader = SILE.settings.get("linespacing.fixed.baselinedistance")
+    local origparskip = SILE.settings.get("document.parskip")
+    SILE.settings.set("linespacing.method", "fixed")
+    SILE.settings.set("linespacing.fixed.baselinedistance", SILE.length.parse("1.1em"))
+    SILE.settings.set("document.parskip", SILE.nodefactory.newVglue({}))
     local refshash = {}
     local lastbook = nil
     local seq = 1
@@ -139,7 +145,9 @@ local init = function (self)
     end
     if inpair then endpair(seq) end
     inpair = nil
-    SILE.call("eject")
+    SILE.settings.set("linespacing.fixed.baselinedistance", origleader)
+    SILE.settings.set("linespacing.method", origmethod)
+    SILE.settings.set("document.parskip", origparskip)
   end)
 
 end
