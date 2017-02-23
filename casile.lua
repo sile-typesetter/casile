@@ -204,7 +204,7 @@ end)
 -- This is the same as SILE's version but sets our no-headers variable on blank pages
 -- ...and allows opening to an even page
 SILE.registerCommand("open-page", function (options)
-  local odd = CASILE.booleanopt(options.odd, false)
+  local odd = CASILE.booleanopt(options.odd, true)
   local double = CASILE.booleanopt(options.double, true)
   local class = SILE.documentState.documentClass
   local first = true
