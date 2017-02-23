@@ -10,7 +10,7 @@ cabook:loadPackage("verseindex", CASILE.casiledir)
 
 cabook.endPage = function (self)
   cabook:moveTocNodes()
-  if cabook.options.verseindex() == "true" then cabook:moveTovNodes() end
+  if cabook.options.verseindex() then cabook:moveTovNodes() end
 
   if not SILE.scratch.headers.skipthispage then
     SILE.settings.pushState()
@@ -28,7 +28,10 @@ cabook.endPage = function (self)
 end
 
 cabook.finish = function (self)
-  if cabook.options.verseindex() == "true" then cabook:writeTov() end
+  if cabook.options.verseindex() then
+    cabook:writeTov()
+    SILE.call("tableofverses")
+  end
   local ret = book:finish()
   return ret
 end
