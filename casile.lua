@@ -307,7 +307,7 @@ SILE.registerCommand("tableofcontents", function (options, content)
   end
   if not haschapters then return end
   SILE.call("tableofcontents:header")
-  for _, item in pairs(toc) do
+  for _, item in ipairs(toc) do -- pairs turns things back in the wrong order sometime
     if not item.skiptoc then
       SILE.call("tableofcontents:item", {
           chaptertoc = false,
