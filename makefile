@@ -25,7 +25,7 @@ COVERGRAVITY ?= Center
 
 # Build mode flags
 DRAFT ?= false # Take shortcuts, scale things down, be quick about it
-LAZY ?= true # Pretend to do things we didn't
+LAZY ?= false # Pretend to do things we didn't
 DIFF ?= false # Show differences to parent brancd in build
 STATSMONTHS ?= 1 # How far back to look for commits when building stats
 DEBUG ?= false # Use SILE debug flags, set -x, and the like
