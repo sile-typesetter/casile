@@ -107,15 +107,14 @@ endif
 .DELETE_ON_ERROR:
 
 .PHONY: all
-all: $(TARGETS)
+all: $(TARGETS) $(and $(CIMODE),sync_pre)
 
-.PHONY: ci ci_stage1 ci_stage2 ci_stage3 ci_stage4
-ci: ci_stage4
-ci_stage1: init clean debug
-ci_stage2: ci_stage1 sync_pre
-ci_stage3: ci_stage2 all
-ci_stage4: ci_stage3 sync_post stats
+ifeq ($(MAKECMDGOALS),ci)
+CIMODE ?= 1
+endif
 
+.PHONY: ci
+ci: init clean debug sync_pre all sync_post stats
 
 .PHONY: renderings
 renderings: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(filter $(CILTLI),$(LAYOUTS)),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).jpg)))
@@ -124,11 +123,11 @@ renderings: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(filter $(CILTLI),$(LA
 promotionals: $(foreach TARGET,$(TARGETS),$(foreach PANKART,$(PANKARTLI),$(TARGET)-$(PANKART)-pankart.jpg))
 
 .PHONY: clean
-clean:
+clean: $(and $(CIMODE),init)
 	git clean -xf
 
 .PHONY: debug
-debug:
+debug: $(and $(CIMODE),clean)
 	@echo PROJECT: $(PROJECT)
 	@echo TARGETS: $(TARGETS)
 	@echo FORMATS: $(FORMATS)
@@ -169,11 +168,13 @@ $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
 figures: $(FIGURES)
 
 .PHONY: init
-init: check_dependencies init_casile update_toolkits update_repository
+init: check_dependencies update_toolkits update_repository
 	$(and $(OUTPUTDIR),mkdir -p $(OUTPUTDIR))
 
 .PHONY: init_casile
-init_casile:
+init_casile: | $(CASILEDIR)/yarn.lock
+
+$(CASILEDIR)/yarn.lock:
 	cd $(CASILEDIR) && yarn install
 
 .PHONY: check_dependencies
@@ -214,7 +215,7 @@ check_dependencies:
 update_toolkits: update_casile
 
 .PHONY: update_casile
-update_casile:
+update_casile: init_casile
 	git submodule update --init --remote -- $(CASILEDIR)
 	cd $(CASILEDIR) && yarn upgrade
 
@@ -232,13 +233,13 @@ $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | b
 endef
 
 .PHONY: sync_pre
-sync_pre:
+sync_pre: $(and $(CIMODE),clean)
 	$(if $(INPUTDIR),,exit 0)
 	$(call pre_sync)
 	-rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/
 
 .PHONY: sync_post
-sync_post: sync_files.dat
+sync_post: sync_files.dat $(and $(CIMODE),all)
 	$(if $(OUTPUTDIR),,exit 0)
 	sort -u $< | sponge $<
 	for target in $(TARGETS); do
@@ -891,7 +892,7 @@ endef
 	$(CONVERT) $< -background white -resize $(call scale,1200)x $@
 
 .PHONY: stats
-stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
+stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats) $(and $(CIMODE),init)
 
 .PHONY: %-stats
 %-stats:
