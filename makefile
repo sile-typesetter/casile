@@ -854,7 +854,7 @@ endef
 		<($(call strip_lang) < $<) -o $@
 
 %.mobi: %.epub
-	$(call addtosync,$@)
+	$(addtosync)
 	-kindlegen $<
 
 # This is obsoleted by YAML merger, but the code might prove useful someday
