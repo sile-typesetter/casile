@@ -293,7 +293,7 @@ $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperl
 	fi
 
 ONPAPERSILS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).sil))
-$(ONPAPERSILS): %.sil: %-processed.md %-merged.yml $$(call parse_bookid,$$*)-ayetler-sorted.json $$(call parse_bookid,$$*)-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
+$(ONPAPERSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_bookid,$$@)-merged.yml $$(call parse_bookid,$$@)-ayetler-sorted.json $$(call parse_bookid,$$@)-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
 			--wrap=preserve \
