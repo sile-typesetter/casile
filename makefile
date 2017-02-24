@@ -264,7 +264,7 @@ coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(CILTLI),$(call parse_l
 # Order is important here, these are included in reverse order so early supercedes late
 onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call parse_layout,$1).lua $(LUALIBS)
 
-ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).pdf))
+ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(PANKARTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE).pdf))
 $(ONPAPERPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
 $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@)
 	$(call skip_if_lazy,$@)
