@@ -257,9 +257,9 @@ endif
 
 VIRTUALPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
 .PHONY: $(VIRTUALPDFS)
-$(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf)
+$(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach RESOURCE,$(RESOURCES),$(if $(filter $(LAYOUT),$(CILTLI)),$$*-$(LAYOUT)-$(RESOURCE).pdf,)))
 
-coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(CILTLI),$(call parse_layout,$1)),%-cilt.pdf,%-kapak.pdf),)
+coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(CILTLI),$(call parse_layout,$1)),,%-kapak.pdf),)
 
 # Order is important here, these are included in reverse order so early supercedes late
 onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call parse_layout,$1).lua $(LUALIBS)
