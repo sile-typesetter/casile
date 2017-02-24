@@ -30,7 +30,7 @@ class:defineMaster({
 class:mirrorMaster("right", "left")
 SILE.call("switch-master-one-page", { id = "right" })
 
-if SILE.documentState.documentClass.options.crop() == "true" then SILE.require("crop") end
+if class.options.crop() == "true" then class:setupCrop() end
 
 setCommandDefaults("imprint:font", { size = "7pt" })
 

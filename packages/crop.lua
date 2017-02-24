@@ -2,9 +2,6 @@ local bleed = 3 * 2.83465
 local trim = 10 * 2.83465
 local len = trim - bleed
 
-SILE.require("packages/cropmarks")
-
--- Use  our own version of SILE packgage
 local outcounter = 1
 local date = SILE.require("packages.date").exports
 
@@ -58,9 +55,12 @@ local function reconstrainFrameset(fs)
   end
 end
 
-SILE.registerCommand("crop:setup", function (o,c)
-  local papersize = SU.required(o, "papersize", "setting up crop marks")
-  local size = SILE.paperSizeParser(papersize)
+local setup = function(self)
+  local papersize = SILE.documentState.paperSize
+  local w = papersize[1] + (trim * 2)
+  local h = papersize[2] + (trim * 2)
+  local sheetsize = w .. "pt x " .. h .. "pt"
+  local size = SILE.paperSizeParser(sheetsize)
   local oldsize = SILE.documentState.paperSize
   SILE.documentState.paperSize = size
   local offsetx = ( SILE.documentState.paperSize[1] - oldsize[1] ) / 2
@@ -78,29 +78,24 @@ SILE.registerCommand("crop:setup", function (o,c)
     reconstrainFrameset(SILE.documentState.documentClass.pageTemplate.frames)
   end
   if SILE.typesetter.frame then SILE.typesetter.frame:init() end
-
-  local oldEndPage = SILE.documentState.documentClass.endPage
-  SILE.documentState.documentClass.endPage = function(self)
-    oldEndPage(self)
-    outputMarks()
-  end
-end)
-
--- END package override
-
-if not sheetsize then
-  local papersize = SILE.documentState.paperSize
-  local w = papersize[1] + (trim * 2)
-  local h = papersize[2] + (trim * 2)
-  sheetsize = w .. "pt x " .. h .. "pt"
 end
 
-local outcounter = 1
+local init = function(self)
 
-SILE.registerCommand("crop:header", function (options, content)
-  SILE.call("meta:surum")
-  SILE.typesetter:typeset(" (" .. outcounter .. ") " .. os.getenv("HOSTNAME") .. " / " .. os.date("%Y-%m-%d, %X"))
-  outcounter = outcounter + 1
-end)
+  local outcounter = 1
 
-SILE.call("crop:setup", { papersize = sheetsize })
+  SILE.registerCommand("crop:header", function (options, content)
+    SILE.call("meta:surum")
+    SILE.typesetter:typeset(" (" .. outcounter .. ") " .. os.getenv("HOSTNAME") .. " / " .. os.date("%Y-%m-%d, %X"))
+    outcounter = outcounter + 1
+  end)
+
+end
+
+return {
+  exports =  {
+    outputCropMarks = outputMarks,
+    setupCrop = setup
+  },
+  init = init
+}

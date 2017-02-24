@@ -6,6 +6,10 @@ cabook:declareOption("crop", "true")
 cabook:declareOption("background", "true")
 cabook:declareOption("verseindex", "false")
 
+if cabook.options.crop() == "true" then
+  cabook:loadPackage("crop", CASILE.casiledir)
+end
+
 if cabook.options.verseindex() == "true" then
   cabook:loadPackage("verseindex", CASILE.casiledir)
 else
@@ -28,7 +32,9 @@ cabook.endPage = function (self)
   end
   SILE.scratch.headers.skipthispage = false
 
-  return plain.endPage(cabook)
+  local ret = plain.endPage(cabook)
+  if cabook.options.crop() == "true" then cabook:outputCropMarks() end
+  return ret
 end
 
 cabook.finish = function (self)
@@ -36,8 +42,7 @@ cabook.finish = function (self)
     cabook:writeTov()
     SILE.call("tableofverses")
   end
-  local ret = book:finish()
-  return ret
+  return book:finish()
 end
 
 -- CaSILE books sometimes have sections, sometimes don't.
