@@ -236,7 +236,7 @@ endef
 sync_pre: $(and $(CIMODE),clean)
 	$(if $(INPUTDIR),,exit 0)
 	$(call pre_sync)
-	-rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/
+	rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/ ||:
 
 .PHONY: sync_post
 sync_post: sync_files.dat $(and $(CIMODE),all)
@@ -331,7 +331,7 @@ preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4)
 		$(call markdown_hook) > $@
 
 %-ciftyonlu.pdf: %.pdf
-	-pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $<
+	pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $< ||:
 
 %-kirpilmis.pdf: %.pdf
 	$(addtosync)
@@ -858,7 +858,7 @@ endef
 
 %.mobi: %.epub
 	$(addtosync)
-	-kindlegen $<
+	kindlegen $< ||:
 
 # This is obsoleted by YAML merger, but the code might prove useful someday
 # because the results are more flexible that the perl class
