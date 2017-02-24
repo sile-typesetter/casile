@@ -884,7 +884,7 @@ endef
 
 %-url.svg:
 	zint --direct --filetype=svg --scale=10 --barcode=58 \
-		--data=$(call urlinfo,$*) |\
+		--data=$(call urlinfo,$@) |\
 		$(CONVERT) - \
 			-bordercolor White -border 10x10 \
 			-bordercolor Black -border 4x4 \
