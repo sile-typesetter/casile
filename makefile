@@ -501,6 +501,7 @@ $(ONPAPERZEMINS): %-kapak-zemin.png: $$(call gitzemin,$$@) $$(subst -kapak-zemin
 	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< \
 		-resize $${coverwpp}x$${coverhpp}^ \
+		$(and $(filter epub,$(call parse_layout,$@)),-resize 1000x1600^) \
 		$@
 
 %-kapak.png: %-kapak-zemin.png %-kapak-metin.pdf %-geometry.zsh
@@ -510,7 +511,6 @@ $(ONPAPERZEMINS): %-kapak-zemin.png: $$(call gitzemin,$$@) $$(subst -kapak-zemin
 		$(filter %.pdf,$^)[0] \
 		$(call magick_kapak) \
 		-compose over -composite \
-		$(if $(filter epub,$(call parse_layout,$@)),-resize 1000x1600^,) \
 		+repage $@
 
 define magick_kapak
