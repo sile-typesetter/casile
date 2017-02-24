@@ -510,6 +510,7 @@ $(ONPAPERZEMINS): %-kapak-zemin.png: $$(call gitzemin,$$@) $$(subst -kapak-zemin
 		$(filter %.pdf,$^)[0] \
 		$(call magick_kapak) \
 		-compose over -composite \
+		$(if $(filter epub,$(call parse_layout,$@)),-resize 1000x1600^,) \
 		+repage $@
 
 define magick_kapak
