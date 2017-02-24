@@ -873,7 +873,8 @@ endef
 %-barkod.svg: %-merged.yml
 	zint --direct --filetype=svg --scale=5 --barcode=69 --height=30 \
 		--data=$(shell $(CASILEDIR)/bin/isbn_format.py $< print) |\
-		$(CONVERT) - \
+		sed -e 's/Helvetica/Helvetica Regular/g' |\
+		$(MAGICK) - \
 			-bordercolor white -border 10 \
 			-font Hack-Regular -pointsize 36 \
 			label:"ISBN $(shell $(CASILEDIR)/bin/isbn_format.py $< print mask)" +swap -gravity center -append \
