@@ -292,8 +292,8 @@ $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperl
 		rm $*.tmp.pdf
 	fi
 
-ONPAPERSILS = $(foreach PAPERSIZE,$(PAPERSIZES),%-$(PAPERSIZE).sil)
-$(ONPAPERSILS): %-processed.md %-merged.yml %-ayetler-sorted.json %-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
+ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).sil))
+$(ONPAPERSILS): %.sil: %-processed.md %-merged.yml $$(call parse_bookid,$$*)-ayetler-sorted.json $$(call parse_bookid,$$*)-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
 			--wrap=preserve \
@@ -301,8 +301,8 @@ $(ONPAPERSILS): %-processed.md %-merged.yml %-ayetler-sorted.json %-url.png $(CA
 			$(if $(DOCUMENTOPTIONS),-V classoptions="$(DOCUMENTOPTIONS)",) \
 			-V metadatafile="$(filter %-merged.yml,$^)" \
 			-V versesfile="$(filter %-ayetler-sorted.json,$^)" \
-			-V versioninfo="$(call versioninfo,$*)" \
-			-V urlinfo="$(call urlinfo,$*)" \
+			-V versioninfo="$(call versioninfo,$@)" \
+			-V urlinfo="$(call urlinfo,$@)" \
 			-V qrimg="./$(filter %-url.png,$^)" \
 			$(foreach LUA,$(filter %.lua,$|), -V script=$(basename $(LUA))) \
 			--template=$(filter %.sil,$^) \
@@ -342,7 +342,7 @@ preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4)
 
 define versioninfo
 $(shell
-	echo -en "$(basename $1)@"
+	echo -en "$(call parse_bookid,$1)@"
 	if [[ "$(BRANCH)" == master ]]; then
 		git describe --tags >/dev/null 2>/dev/null || echo -en "$(BRANCH)-"
 		git describe --long --tags --always --dirty=* | cut -d/ -f2 | xargs echo -en
@@ -416,7 +416,9 @@ define sile_hook
 	cat -
 endef
 
-%.sil.toc %.sil.tov: %.pdf ;
+%.sil.toc: %.pdf ;
+
+%.sil.tov: %.pdf ;
 
 .PHONY: %.app
 %.app: %-app.info promotionals ;
