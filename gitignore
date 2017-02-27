@@ -1,0 +1,16 @@
+.gitignore
+
+.avadanlik.lua
+.casile.lua
+
+*.dat
+*.inc
+*.json
+*.pov
+*.toc
+*.tov
+
+*-barkod.*
+*-merged.yml
+*-processed.md
+*-url.*

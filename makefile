@@ -211,7 +211,7 @@ check_dependencies:
 	python -c "import isbnlib"
 	python -c "import pandocfilters"
 
-.PHONY: update_toolkits
+.PHONY: update_toolkits .gitignore
 update_toolkits: update_casile
 
 .PHONY: update_casile
@@ -222,6 +222,11 @@ update_casile: init_casile
 .PHONY: update_repository
 update_repository:
 	git fetch --all --prune --tags
+
+.gitignore: $(CASILEDIR)/gitignore sync_files.dat
+	cp $< $@
+	$(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),echo '$(TARGET)-$(PAPERSIZE)*' >> $@;))
+	cat $(filter %.dat,$^) >> $@
 
 define addtosync =
 	echo $@ >> sync_files.dat
