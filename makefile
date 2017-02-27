@@ -224,6 +224,7 @@ update_repository:
 	git fetch --all --prune --tags
 
 .gitignore: $(CASILEDIR)/gitignore sync_files.dat
+	$(call skip_if_tracked,$@)
 	cp $< $@
 	$(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),echo '$(TARGET)-$(PAPERSIZE)*' >> $@;))
 	cat $(filter %.dat,$^) >> $@
@@ -456,7 +457,6 @@ issue.info:
 	done > $@
 
 define skip_if_tracked
-	$(COVERS) || exit 0
 	git ls-files --error-unmatch -- $1 2>/dev/null && exit 0 ||:
 endef
 
