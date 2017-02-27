@@ -230,7 +230,9 @@ update_repository:
 	cat $(filter %.dat,$^) >> $@
 
 define addtosync =
-	echo $@ >> sync_files.dat
+	$(DRAFT) || echo $@ >> sync_files.dat
+	$(DRAFT) && grep -v $@ sync_files.dat | sponge sync_files.dat ||:
+	sort -u sync_files.dat | sponge sync_files.dat
 endef
 
 # If building in draft mode, scale resolutions down for quick builds
