@@ -840,9 +840,9 @@ endef
 define pov_crop
 	\( +clone \
 		-virtual-pixel edge \
-		-level 40%,55%,0.1 \
-		-blur 0x%[fx:w/200] \
-		-fuzz 5% \
+		-colorspace gray \
+		-edge 3 \
+		-fuzz 40% \
 		-trim -trim \
 		-set option:fuzzy_trim "%[fx:w*1.2]x%[fx:h*1.2]+%[fx:page.x-w*0.1]+%[fx:page.y-h*0.1]" \
 		+delete \
