@@ -211,7 +211,7 @@ check_dependencies:
 	python -c "import pandocfilters"
 
 .PHONY: update_toolkits .gitignore
-update_toolkits: update_casile
+update_toolkits: update_casile time_warp
 
 .PHONY: update_casile
 update_casile: init_casile time_warp_casile
