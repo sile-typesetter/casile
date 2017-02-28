@@ -107,7 +107,7 @@ endif
 .DELETE_ON_ERROR:
 
 .PHONY: all
-all: $(TARGETS) $(and $(CIMODE),sync_pre time_warp)
+all: $(TARGETS) $(and $(CIMODE),sync_pre)
 
 ifeq ($(MAKECMDGOALS),ci)
 CIMODE ?= 1
@@ -117,10 +117,10 @@ endif
 ci: init clean debug sync_pre all sync_post stats
 
 .PHONY: renderings
-renderings: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(filter $(CILTLI),$(LAYOUTS)),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).jpg))) $(and $(CIMODE),time_warp)
+renderings: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(filter $(CILTLI),$(LAYOUTS)),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).jpg)))
 
 .PHONY: promotionals
-promotionals: $(foreach TARGET,$(TARGETS),$(foreach PANKART,$(PANKARTLI),$(TARGET)-$(PANKART)-pankart.jpg)) $(and $(CIMODE),time_warp)
+promotionals: $(foreach TARGET,$(TARGETS),$(foreach PANKART,$(PANKARTLI),$(TARGET)-$(PANKART)-pankart.jpg))
 
 .PHONY: clean
 clean: $(and $(CIMODE),init)
