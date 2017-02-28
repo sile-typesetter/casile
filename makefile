@@ -257,9 +257,10 @@ else
 		tagpath=$$target/$(TAGNAME)/
 endif
 		mkdir -p $(OUTPUTDIR)/$$tagpath
-		while read file; do
-			test -f $$file && rsync -ct $$file $(OUTPUTDIR)/$$tagpath
-		done < $<
+		grep "^$${target}" $< |
+			while read file; do
+				test -f $$file && rsync -ct $$file $(OUTPUTDIR)/$$tagpath
+			done
 	done
 	$(call post_sync)
 
