@@ -107,7 +107,7 @@ endif
 .DELETE_ON_ERROR:
 
 .PHONY: all
-all: $(TARGETS) $(and $(CIMODE),sync_pre)
+all: $(TARGETS) $(and $(CIMODE),sync_pre time_warp)
 
 ifeq ($(MAKECMDGOALS),ci)
 CIMODE ?= 1
@@ -117,10 +117,10 @@ endif
 ci: init clean debug sync_pre all sync_post stats
 
 .PHONY: renderings
-renderings: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(filter $(CILTLI),$(LAYOUTS)),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).jpg)))
+renderings: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(filter $(CILTLI),$(LAYOUTS)),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).jpg))) $(and $(CIMODE),time_warp)
 
 .PHONY: promotionals
-promotionals: $(foreach TARGET,$(TARGETS),$(foreach PANKART,$(PANKARTLI),$(TARGET)-$(PANKART)-pankart.jpg))
+promotionals: $(foreach TARGET,$(TARGETS),$(foreach PANKART,$(PANKARTLI),$(TARGET)-$(PANKART)-pankart.jpg)) $(and $(CIMODE),time_warp)
 
 .PHONY: clean
 clean: $(and $(CIMODE),init)
@@ -215,7 +215,7 @@ check_dependencies:
 update_toolkits: update_casile
 
 .PHONY: update_casile
-update_casile: init_casile
+update_casile: init_casile time_warp_casile
 	git submodule update --init --remote -- $(CASILEDIR)
 	cd $(CASILEDIR) && yarn upgrade
 
@@ -238,6 +238,25 @@ endef
 # If building in draft mode, scale resolutions down for quick builds
 define scale =
 $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | bc) || echo $1))
+endef
+
+# Reset file timestamps to git history to avoid un-necessary builds
+.PHONY: time_warp time_warp_casile
+time_warp: time_warp_casile
+	$(call time_warp,$(PROJECTDIR))
+
+time_warp_casile:
+	$(call time_warp,$(CASILEDIR))
+
+define time_warp
+	cd $1
+	git diff-index --quiet --cached HEAD || continue
+	git ls-files |
+		while read file; do
+			ts=$$(git log -n1 --pretty=format:%cI -- $$file)
+			git diff-files --quiet -- $$file || continue
+			touch -d "$$ts" -- $$file
+		done
 endef
 
 .PHONY: sync_pre
