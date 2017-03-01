@@ -524,6 +524,7 @@ SILE.registerCommand("poetry", function ()
 end)
 
 SILE.registerCommand("dedication", function (options, content)
+  options.eject = CASILE.booleanopt(options.eject, true)
   SILE.scratch.headers.skipthispage = true
   SILE.call("center", {}, function ()
     SILE.settings.set("linespacing.method", "fit-font")
@@ -532,7 +533,7 @@ SILE.registerCommand("dedication", function (options, content)
     SILE.call("vfill")
     SILE.call("font", { style = "Italic", size = "14pt" }, content)
   end)
-  SILE.call("eject")
+  if options.eject then SILE.call("eject") end
 end)
 
 SILE.registerCommand("seriespage:series", function (options, content)
