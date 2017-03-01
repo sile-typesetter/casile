@@ -51,10 +51,6 @@ local init = function (self)
 
   local endpair = function (seq)
     inpair = nil
-    if seq > 2 and seq % 2 == 0 then
-      SILE.typesetter:typeset(" ")
-      SILE.call("par")
-    end
     SILE.call("mergecolumns")
     SILE.settings.set("typesetter.parfillskip", defaultparskip)
   end
