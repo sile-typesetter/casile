@@ -207,18 +207,18 @@ SILE.registerCommand("open-page", function (options)
   local odd = CASILE.booleanopt(options.odd, true)
   local double = CASILE.booleanopt(options.double, true)
   local class = SILE.documentState.documentClass
-  local first = true
+  local count = 0
   repeat 
-    if not first then
+    if count > 0 then
       SILE.typesetter:typeset("")
-      SILE.typesetter:leaveHmode();
+      SILE.typesetter:leaveHmode()
       SILE.scratch.headers.skipthispage = true
     end
-    SILE.typesetter:leaveHmode();
-    SILE.Commands["supereject"]();
-    first = false
-  until (not double or (odd and class:oddPage()) or (not odd and not class:oddPage()))
-  SILE.typesetter:leaveHmode();
+    SILE.typesetter:leaveHmode()
+    SILE.Commands["supereject"]()
+    count = count + 1
+  until (double and count > 1 or not double) and odd == not class:oddPage()
+  SILE.typesetter:leaveHmode()
 end)
 
 local function tr_num2text (num, ordinal)
