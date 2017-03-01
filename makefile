@@ -82,7 +82,7 @@ DOCUMENTOPTIONS ?=
 , := ,
 space :=
 space +=
-$(space) := 
+$(space) :=
 $(space) +=
 
 # For watch targets, treat exta parameters as things to pass to the next make
@@ -345,7 +345,7 @@ $(ONPAPERSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_book
 	EOF
 	$(and $^,cat $^ >> $@)
 
-preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $(wildcard $1.m4) 
+preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $(wildcard $1.m4)
 %-processed.md: %.md $$(call preprocess_macros,$$*) $$(wildcard $$*-bolumler/*.md) | figures
 	if $(DIFF) && $(if $(PARENT),true,false); then
 		branch2criticmark.zsh $(PARENT) $<
@@ -581,7 +581,7 @@ endef
 	rm $$metin $$bg
 
 CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
-													
+
 $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml .casile.lua $$(subst -cilt-metin,,$$@) | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	lua=$*-$(call parse_layout,$@)-cilt
 	cat <<- EOF > $$lua.lua
@@ -960,5 +960,6 @@ watch:
 	git ls-files --recurse-submodules |
 		entr $(ENTRFLAGS) make DRAFT=true LAZY=true $(WATCH_ARGS)
 
-watchdiff:
-	git ls-files | entr -c -p git diff --color=always
+diff:
+	git diff --color=always --ignore-submodules --no-ext-diff
+	git submodule foreach git diff --color=always --no-ext-diff
