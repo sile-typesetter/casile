@@ -100,8 +100,7 @@ SILE.registerCommand("imprint", function (options, content)
           SILE.call("par")
         end
         if CASILE.metadata.publisher then
-          if SILE.Commands["meta:distribution"] then
-            SILE.call("meta:distribution")
+          if SILE.Commands["meta:distribution"]() then
           elseif SILE.Commands["meta:date"] then
             SILE.call("meta:manufacturer")
             SILE.call("par")
@@ -127,5 +126,8 @@ SILE.registerCommand("meta:distribution", function (options, content)
     SILE.call("font", { weight = 600, style = "Bold" }, { "Dağıtım: " })
     SILE.typesetter:typeset(text)
     SILE.call("par")
+    return true
+  else
+    return false
   end
 end)
