@@ -898,7 +898,7 @@ endef
 %-merged.yml: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml)
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $^ |
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
-		    -e '/(own|next)cloudshare:/s/: \(.*\)$$/: "\1"/' > $@
+		    -e '/\(own\|next\)cloudshare:/s/: \(.*\)$$/: "\1"/' > $@
 
 %-barkod.svg: %-merged.yml
 	zint --direct --filetype=svg --scale=5 --barcode=69 --height=30 \
