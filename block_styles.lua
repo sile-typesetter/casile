@@ -156,8 +156,8 @@ SILE.registerCommand("part", function (options, content)
         level = 1,
         reset = false,
         display = "ORDINAL",
-        prenumber = "book:part:pre",
-        postnumber = "book:part:post"
+        prenumber = "cabook:part:pre",
+        postnumber = "cabook:part:post"
       }, content)
     end)
     SILE.call("medskip")
