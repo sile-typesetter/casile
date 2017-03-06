@@ -97,22 +97,35 @@ SILE.registerCommand("imprint", function (options, content)
         end
         if SILE.Commands["meta:versecredits"] then
           SILE.call("meta:versecredits")
+          SILE.call("par")
         end
         if CASILE.metadata.publisher then
           if SILE.Commands["meta:distribution"] then
-            SILE.call("par")
             SILE.call("meta:distribution")
           elseif SILE.Commands["meta:date"] then
-            SILE.call("par")
             SILE.call("meta:manufacturer")
             SILE.call("par")
             SILE.call("meta:date")
+            SILE.call("par")
           end
         end
-        SILE.call("par")
       end)
     end)
   end)
   SILE.call("par")
   SILE.call("break")
+end)
+
+SILE.registerCommand("meta:distribution", function (options, content)
+  local layout = CASILE.layout
+  local distros = CASILE.metadata.distribution
+  local text = nil
+  for _, d in pairs(distros) do
+    if d.layout == layout then text = d.text end
+  end
+  if text then
+    SILE.call("font", { weight = 600, style = "Bold" }, { "Dağıtım: " })
+    SILE.typesetter:typeset(text)
+    SILE.call("par")
+  end
 end)

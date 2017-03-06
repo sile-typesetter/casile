@@ -38,11 +38,6 @@ class:defineMaster({
 class:mirrorMaster("right", "left")
 SILE.call("switch-master-one-page", { id = "right" })
 
-SILE.registerCommand("meta:distribution", function (options, content)
-  SILE.call("font", { weight = 600, style = "Bold" }, { "Yayın: " })
-  SILE.typesetter:typeset("Bu PDF biçimi, özellikle yerel kiliselerin kendi cemaatları için basmalarına uygun hazırlanmıştır ve Via Christus’un internet sitesinde ücretsiz yayılmaktadır.")
-end)
-
 -- We have a bound A4 format too, but this one doesn't need double-page openers
 SILE.registerCommand("open-double-page", function ()
   SILE.typesetter:leaveHmode();
