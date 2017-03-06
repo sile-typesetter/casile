@@ -1,3 +1,5 @@
+CASILE.layout = "a4"
+
 local class = SILE.documentState.documentClass
 
 SILE.documentState.paperSize = SILE.paperSizeParser("a4")

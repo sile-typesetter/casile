@@ -1,3 +1,5 @@
+CASILE.layout = "cep"
+
 local class = SILE.documentState.documentClass
 
 SILE.documentState.paperSize = SILE.paperSizeParser("110mm x 170mm")

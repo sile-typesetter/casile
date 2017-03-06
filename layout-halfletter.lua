@@ -1,3 +1,5 @@
+CASILE.layout = "halfletter"
+
 local class = SILE.documentState.documentClass
 
 SILE.documentState.paperSize = SILE.paperSizeParser("halfletter")

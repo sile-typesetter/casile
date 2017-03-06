@@ -1,3 +1,5 @@
+CASILE.layout = "octavo"
+
 local class = SILE.documentState.documentClass
 
 SILE.documentState.paperSize = SILE.paperSizeParser("432pt x 648pt")

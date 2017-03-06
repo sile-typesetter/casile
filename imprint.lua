@@ -21,7 +21,7 @@ SILE.registerCommand("imprint", function (options, content)
         SILE.settings.set("linespacing.method", "fixed")
         SILE.settings.set("linespacing.fixed.baselinedistance", SILE.length.parse("2.8ex plus 1pt minus 0.5pt"))
 
-        if CASILE.metadata.publisher and not(SILE.scratch.layout == "app") then
+        if CASILE.metadata.publisher and not (CASILE.layout == "app") then
           SILE.settings.temporarily(function ()
             SILE.call("skip", { height = "-6.7em" })
             SILE.settings.set("document.lskip", SILE.nodefactory.newGlue({ width = imgUnit * 6.5 }))

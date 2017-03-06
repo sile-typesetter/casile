@@ -1,3 +1,5 @@
+CASILE.layout = "a4ciltli"
+
 local class = SILE.documentState.documentClass
 
 class:defineMaster({

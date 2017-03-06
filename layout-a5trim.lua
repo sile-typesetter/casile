@@ -1,3 +1,5 @@
+CASILE.layout = "a5trim"
+
 local class = SILE.documentState.documentClass
 
 SILE.documentState.paperSize = SILE.paperSizeParser("135mm x 195mm")
