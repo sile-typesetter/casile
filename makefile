@@ -85,6 +85,26 @@ space +=
 $(space) :=
 $(space) +=
 
+# Assorted utility functions for juggling information about books
+pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}' || echo 0)
+pagew = $(shell pdfinfo $1 | awk '$$1$$2 == "Pagesize:" {print $$3}' || echo 0)
+pageh = $(shell pdfinfo $1 | awk '$$1$$2 == "Pagesize:" {print $$5}' || echo 0)
+spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | bc)
+mmtopx = $(shell echo "$1 * $(HIDPI) * 0.0393701 / 1" | bc)
+mmtopm = $(shell echo "$1 * 96 * .0393701 / 1" | bc)
+mmtopt = $(shell echo "$1 * 2.83465 / 1" | bc)
+width = $(shell identify -density $(HIDPI) -format %[fx:w] $1)
+height = $(shell identify -density $(HIDPI) -format %[fx:h] $1)
+parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
+strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
+parse_bookid = $(firstword $(subst -, ,$(basename $1)))
+
+# Utility to modify recursive variables, see http://stackoverflow.com/a/36863261/313192
+prepend = $(eval $(1) = $(2)$(value $(1)))
+append = $(eval $(1) = $(value $(1))$(2))
+
+reverse = $(if $(wordlist 2,2,$(1)),$(call reverse,$(wordlist 2,$(words $(1)),$(1))) $(firstword $(1)),$(1))
+
 # For watch targets, treat exta parameters as things to pass to the next make
 ifeq (watch,$(firstword $(MAKECMDGOALS)))
   WATCH_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -483,28 +503,6 @@ endef
 
 define skip_if_lazy
 	$(LAZY) && $(if $(filter $1,$(MAKECMDGOALS)),false,true) && test -f $1 && { touch $1; exit 0 } ||:
-endef
-
-pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}' || echo 0)
-pagew = $(shell pdfinfo $1 | awk '$$1$$2 == "Pagesize:" {print $$3}' || echo 0)
-pageh = $(shell pdfinfo $1 | awk '$$1$$2 == "Pagesize:" {print $$5}' || echo 0)
-spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | bc)
-mmtopx = $(shell echo "$1 * $(HIDPI) * 0.0393701 / 1" | bc)
-mmtopm = $(shell echo "$1 * 96 * .0393701 / 1" | bc)
-mmtopt = $(shell echo "$1 * 2.83465 / 1" | bc)
-width = $(shell identify -density $(HIDPI) -format %[fx:w] $1)
-height = $(shell identify -density $(HIDPI) -format %[fx:h] $1)
-parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
-strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
-parse_bookid = $(firstword $(subst -, ,$(basename $1)))
-reverse = $(if $(wordlist 2,2,$(1)),$(call reverse,$(wordlist 2,$(words $(1)),$(1))) $(firstword $(1)),$(1))
-
-# Utility to modify recursive variables, see http://stackoverflow.com/a/36863261/313192
-define prepend
-$(eval $(1) = $(2)$(value $(1)))
-endef
-define append
-$(eval $(1) = $(value $(1))$(2))
 endef
 
 ONPAPERZEMINS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-kapak-zemin.png))
