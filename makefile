@@ -896,6 +896,7 @@ endef
 # 	jq -s 'reduce .[] as $$item({}; . + $$item)' $(foreach YAML,$^,<(yaml2json $(YAML))) > $@
 
 %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml)
+	$(addtosync)
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $^ |
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
 		    -e '/\(own\|next\)cloudshare:/s/: \(.*\)$$/: "\1"/' > $@
