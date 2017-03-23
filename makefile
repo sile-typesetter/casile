@@ -320,13 +320,13 @@ $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperl
 	fi
 
 ONPAPERSILS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).sil))
-$(ONPAPERSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_bookid,$$@)-merged.yml $$(call parse_bookid,$$@)-ayetler-sorted.json $$(call parse_bookid,$$@)-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
+$(ONPAPERSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_bookid,$$@)-manifest.yml $$(call parse_bookid,$$@)-ayetler-sorted.json $$(call parse_bookid,$$@)-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
 			--wrap=preserve \
 			-V documentclass="$(DOCUMENTCLASS)" \
 			$(if $(DOCUMENTOPTIONS),-V classoptions="$(DOCUMENTOPTIONS)",) \
-			-V metadatafile="$(filter %-merged.yml,$^)" \
+			-V metadatafile="$(filter %-manifest.yml,$^)" \
 			-V versesfile="$(filter %-ayetler-sorted.json,$^)" \
 			-V versioninfo="$(call versioninfo,$@)" \
 			-V urlinfo="$(call urlinfo,$@)" \
@@ -334,7 +334,7 @@ $(ONPAPERSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_book
 			$(foreach LUA,$(filter %.lua,$|), -V script=$(basename $(LUA))) \
 			--template=$(filter %.sil,$^) \
 			--to=sile \
-			$(filter %-merged.yml,$^) <( $(call pre_sile_markdown_hook) < $< ) |
+			$(filter %-manifest.yml,$^) <( $(call pre_sile_markdown_hook) < $< ) |
 		$(call sile_hook) > $@
 
 .casile.lua: $(LUAINCLUDE)
@@ -450,7 +450,7 @@ endef
 .PHONY: %.app
 %.app: %-app.info promotionals ;
 
-%-app.info: %-app.sil.toc %-app.pdf %-merged.yml
+%-app.info: %-app.sil.toc %-app.pdf %-manifest.yml
 	$(addtosync)
 	$(CASILEDIR)/bin/toc2breaks.lua $* $(firstword $^) $(lastword $^) $@ |
 		while read range out; do
@@ -582,11 +582,11 @@ endef
 
 CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
 
-$(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml .casile.lua $$(subst -cilt-metin,,$$@) | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+$(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml .casile.lua $$(subst -cilt-metin,,$$@) | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	lua=$*-$(call parse_layout,$@)-cilt
 	cat <<- EOF > $$lua.lua
 		versioninfo = "$(call versioninfo,$*)"
-		metadatafile = "$(filter %-merged.yml,$^)"
+		metadatafile = "$(filter %-manifest.yml,$^)"
 		spine = "$(call spinemm,$(filter %.pdf,$^))mm"
 		$(foreach LUA,$(call reverse,$|), SILE.require("$(basename $(LUA))");)
 	EOF
@@ -610,10 +610,10 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-merged.yml .casile.lua $$(subst -cilt
 		-composite $@
 
 KAPAKMETINS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-kapak-metin.pdf))
-$(KAPAKMETINS): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-merged.yml .casile.lua | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+$(KAPAKMETINS): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-manifest.yml .casile.lua | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$(call parse_bookid,$@))"
-		metadatafile = "$(filter %-merged.yml,$^)"
+		metadatafile = "$(filter %-manifest.yml,$^)"
 		$(foreach LUA,$(call reverse,$|), SILE.require("$(basename $(LUA))");)
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
@@ -877,7 +877,7 @@ endef
 		-quality 85 \
 		$@
 
-%.epub %.odt %.docx: %-processed.md %-merged.yml %-epub-pankart.jpg
+%.epub %.odt %.docx: %-processed.md %-manifest.yml %-epub-pankart.jpg
 	$(addtosync)
 	$(PANDOC) \
 		$(PANDOCARGS) \
@@ -895,12 +895,12 @@ endef
 # %.json: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml)
 # 	jq -s 'reduce .[] as $$item({}; . + $$item)' $(foreach YAML,$^,<(yaml2json $(YAML))) > $@
 
-%-merged.yml: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml)
+%-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml)
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $^ |
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
 		    -e '/\(own\|next\)cloudshare:/s/: \(.*\)$$/: "\1"/' > $@
 
-%-barkod.svg: %-merged.yml
+%-barkod.svg: %-manifest.yml
 	zint --direct --filetype=svg --scale=5 --barcode=69 --height=30 \
 		--data=$(shell $(CASILEDIR)/bin/isbn_format.py $< print) |\
 		sed -e 's/Helvetica/Helvetica Regular/g' |\
