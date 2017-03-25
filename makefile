@@ -623,7 +623,7 @@ $(KAPAKMETINS): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-ma
 
 %-fragman-kapak.png: %-kapak-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
-		$(call magick_fragman_on) \
+		$(call magick_fragman_kapak) \
 		-composite $@
 
 %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(AVADANLIKDIR)/vc_sembol_renkli.svg $(AVADANLIKDIR)/vc_logo_renkli.svg %-geometry.zsh
