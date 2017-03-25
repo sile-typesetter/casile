@@ -514,8 +514,6 @@ ONPAPERZEMINS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(C
 gitzemin = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
 $(ONPAPERZEMINS): %-kapak-zemin.png: $$(call gitzemin,$$@) $$(subst -kapak-zemin.png,-geometry.zsh,$$@)
 	source $(filter %-geometry.zsh,$^)
-	texturew="$$(bc <<< "$$imgwpx / $(call scale,4,4)")"
-	textureh="$$(bc <<< "$$imghpx / $(call scale,4,4)")"
 	$(if $(filter %.png,$^),true,false) && $(MAGICK) $(filter %.png,$^) \
 		-gravity $(COVERGRAVITY) \
 		-extent  "%[fx:w/h>=$${coveraspect}?h*$${coveraspect}:w]x" \
@@ -625,8 +623,6 @@ $(KAPAKMETINS): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-ma
 
 %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(AVADANLIKDIR)/vc_sembol_renkli.svg $(AVADANLIKDIR)/vc_logo_renkli.svg %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
-	texturew="$$(bc <<< "$$imgwpx / $(call scale,4,4)")"
-	textureh="$$(bc <<< "$$imghpx / $(call scale,4,4)")"
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
 		$(or $(and $(call gitzemin,$*-kapak-zemin.png),$(call gitzemin,$*-kapak-zemin.png) -resize $${imgwpx}x$${imghpx}!),$(call magick_zemin)) \
 		$(call magick_kenar) \
