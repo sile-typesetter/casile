@@ -532,14 +532,14 @@ $(ONPAPERZEMINS): %-kapak-zemin.png: $$(call gitzemin,$$@) $$(subst -kapak-zemin
 		$(and $(filter epub,$(call parse_layout,$@)),-resize 1000x1600^) \
 		$@
 
-%-kapak.png: %-kapak-zemin.png %-kapak-metin.pdf %-geometry.zsh
+%-kapak.png: %-kapak-zemin.png %-fragman-kapak.png %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
-	$(MAGICK) $< \
-		-density $(HIDPI) \
-		$(filter %.pdf,$^)[0] \
-		$(call magick_kapak) \
-		-compose over -composite \
-		+repage $@
+	@$(MAGICK) $< \
+		\( -gravity center -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_kapak) \) -compose overlay -composite \
+		\( -gravity center $(word 2,$^) -write mpr:metin-kapak \) -compose over -composite \
+		-gravity center -size %[fx:u.w]x%[fx:u.h] \
+		-composite \
+		$@
 
 define magick_kapak
 		-fill none \
@@ -621,14 +621,19 @@ $(KAPAKMETINS): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-ma
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) -I <(cat .casile.lua <(echo "CASILE.infofile = '$*'")) $< -o $@
 
+%-fragman-kapak.png: %-kapak-metin.pdf
+	$(MAGICK) -density $(HIDPI) $<[0] \
+		$(call magick_fragman_on) \
+		-composite $@
+
 %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(AVADANLIKDIR)/vc_sembol_renkli.svg $(AVADANLIKDIR)/vc_logo_renkli.svg %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
 		$(or $(and $(call gitzemin,$*-kapak-zemin.png),$(call gitzemin,$*-kapak-zemin.png) -resize $${imgwpx}x$${imghpx}!),$(call magick_zemin)) \
 		$(call magick_kenar) \
-		\( -gravity east -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_on) -splice $${bleedpx}x \) -composite \
-		\( -gravity west -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_arka) -splice $${bleedpx}x \) -composite \
-		\( -gravity center -size $${spinepx}x$${coverhpx} -background none xc: $(call magick_sirt) \) -composite \
+		\( -gravity east -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_on) -splice $${bleedpx}x \) -compose overlay -composite \
+		\( -gravity west -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_arka) -splice $${bleedpx}x \) -compose overlay -composite \
+		\( -gravity center -size $${spinepx}x$${coverhpx} -background none xc: $(call magick_sirt) \) -compose overlay -composite \
 		\( -gravity east $(word 1,$^) -splice $${bleedpx}x -write mpr:metin-on \) -compose over -composite \
 		\( -gravity west $(word 2,$^) -splice $${bleedpx}x -write mpr:metin-arka \) -compose over -composite \
 		\( -gravity center $(word 3,$^) -write mpr:metin-sirt \) -compose over -composite \
