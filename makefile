@@ -471,6 +471,8 @@ endef
 .PHONY: %.app
 %.app: %-app.info promotionals ;
 
+%.web: %-manifest.yml %-epub-pankart.jpg
+
 %-app.info: %-app.sil.toc %-app.pdf %-manifest.yml
 	$(addtosync)
 	$(CASILEDIR)/bin/toc2breaks.lua $* $(firstword $^) $(lastword $^) $@ |
