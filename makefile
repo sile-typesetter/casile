@@ -903,30 +903,39 @@ endef
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
 		    -e '/\(own\|next\)cloudshare:/s/: \(.*\)$$/: "\1"/' > $@
 
-%-barkod.svg: %-manifest.yml
-	zint --direct --filetype=svg --scale=5 --barcode=69 --height=30 \
-		--data=$(shell $(CASILEDIR)/bin/isbn_format.py $< print) |\
-		sed -e 's/Helvetica/Helvetica Regular/g' |\
-		$(MAGICK) - \
-			-bordercolor white -border 10 \
-			-font Hack-Regular -pointsize 36 \
-			label:"ISBN $(shell $(CASILEDIR)/bin/isbn_format.py $< print mask)" +swap -gravity center -append \
-			-bordercolor white -border 0x10 \
-			$@
-
 %-url.png: %-url.svg
-	$(CONVERT) $< $@
+	$(MAGICK) $< \
+		-bordercolor White -border 10x10 \
+		-bordercolor Black -border 4x4 \
+		$@
 
 %-url.svg:
-	zint --direct --filetype=svg --scale=10 --barcode=58 \
-		--data=$(call urlinfo,$@) |\
-		$(CONVERT) - \
-			-bordercolor White -border 10x10 \
-			-bordercolor Black -border 4x4 \
-			$@
+	zint \
+			--direct \
+			--filetype=svg \
+			--scale=10 \
+			--barcode=58 \
+			--data=$(call urlinfo,$@) \
+		> $@
+
+%-barkod.svg: %-manifest.yml
+	zint --direct \
+			--filetype=svg \
+			--scale=5 \
+			--barcode=69 \
+			--height=30 \
+			--data=$(shell $(CASILEDIR)/bin/isbn_format.py $< print) |\
+		sed -e 's/Helvetica/Helvetica Regular/g' \
+		> $@
 
 %-barkod.png: %-barkod.svg
-	$(CONVERT) $< -background white -resize $(call scale,1200)x $@
+	$(MAGICK) $< \
+		-bordercolor white -border 10 \
+		-font Hack-Regular -pointsize 36 \
+		label:"ISBN $(shell $(CASILEDIR)/bin/isbn_format.py $< print mask)" +swap -gravity center -append \
+		-bordercolor white -border 0x10 \
+		-resize $(call scale,1200)x \
+		$@
 
 .PHONY: stats
 stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats) $(and $(CIMODE),init)
