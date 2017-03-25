@@ -281,6 +281,7 @@ endef
 
 .PHONY: sync_pre
 sync_pre: $(and $(CIMODE),clean)
+	cat /dev/null > sync_files.dat
 	$(if $(INPUTDIR),,exit 0)
 	$(call pre_sync)
 	rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/ ||:
