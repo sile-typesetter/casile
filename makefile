@@ -137,6 +137,7 @@ endif
 ci: init clean debug sync_pre all sync_post stats
 
 .PHONY: renderings
+renderings: LAYOUTS = $(PUBLAYOUT)
 renderings: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(filter $(CILTLI),$(LAYOUTS)),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).jpg)))
 
 .PHONY: promotionals
