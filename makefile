@@ -469,9 +469,10 @@ endef
 %.sil.tov: %.pdf ;
 
 .PHONY: %.app
-%.app: %-app.info promotionals ;
+%.app: %-app.info promotionals
 
-%.web: %-manifest.yml %-epub-pankart.jpg
+.PHONY: %.web
+%.web: %-manifest.yml %-epub-pankart.jpg promotionals renderings
 
 %-app.info: %-app.sil.toc %-app.pdf %-manifest.yml
 	$(addtosync)
