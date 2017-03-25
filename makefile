@@ -514,6 +514,8 @@ ONPAPERZEMINS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(C
 gitzemin = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
 $(ONPAPERZEMINS): %-kapak-zemin.png: $$(call gitzemin,$$@) $$(subst -kapak-zemin.png,-geometry.zsh,$$@)
 	source $(filter %-geometry.zsh,$^)
+	texturew="$$(bc <<< "$$imgwpx / $(call scale,4,4)")"
+	textureh="$$(bc <<< "$$imghpx / $(call scale,4,4)")"
 	$(if $(filter %.png,$^),true,false) && $(MAGICK) $(filter %.png,$^) \
 		-gravity $(COVERGRAVITY) \
 		-extent  "%[fx:w/h>=$${coveraspect}?h*$${coveraspect}:w]x" \
@@ -523,7 +525,6 @@ $(ONPAPERZEMINS): %-kapak-zemin.png: $$(call gitzemin,$$@) $$(subst -kapak-zemin
 		$@ ||:
 	$(if $(filter %.png,$^),false,true) && $(MAGICK) \
 		-size $${coverwpx}x$${coverhpx}^ $(call magick_zemin) -composite \
-		$(call magick_zeminfilter) \
 		$@ ||:
 
 %-pankart.png: %-kapak.png %-geometry.zsh
