@@ -231,8 +231,8 @@ check_dependencies:
 	python -c "import isbnlib"
 	python -c "import pandocfilters"
 
-.PHONY: update_toolkits .gitignore
-update_toolkits: update_casile time_warp
+.PHONY: update_toolkits
+update_toolkits: update_casile time_warp .gitignore
 
 .PHONY: update_casile
 update_casile: init_casile time_warp_casile
