@@ -249,6 +249,13 @@ update_repository:
 	$(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),echo '$(TARGET)-$(PAPERSIZE)*' >> $@;))
 	cat $(filter %.dat,$^) >> $@
 
+# For normal builds this will get generated based on output files, but for DRAFT
+# mode it's helpful to be able to make an empty one from scratch. Also if we
+# force build this target use the chance to de-duplicate the list.
+sync_files.dat:
+	touch $@
+	sort -u $@ | sponge $@
+
 define addtosync =
 	$(DRAFT) || echo $@ >> sync_files.dat
 	$(DRAFT) && grep -v $@ sync_files.dat | sponge sync_files.dat ||:
