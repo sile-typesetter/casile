@@ -3,7 +3,7 @@
 var readline = require('readline');
 var bcv_parser = require('bible-passage-reference-parser/js/tr_bcv_parser').bcv_parser;
 var bcv = new bcv_parser();
-var formatter = require('bible-reference-formatter/es6/tr');
+// var formatter = require('bible-reference-formatter/es6/tr');
 
 var merge_chains = false;
 
@@ -52,7 +52,8 @@ function process_line (line) {
       } else {
         previousOffset = 0;
       }
-      var pretty = formatter('yc-long', ref.osis);
+      // var pretty = formatter('yc-long', ref.osis);
+      var pretty = line.substr(ref.indices[0] + offset, ref.indices[1] - ref.indices[0]);
       pretty = "[" + pretty + "](https://sahneleme.incil.info/referans/" + ref.osis + ")";
       line = line.replaceSplice(ref.indices[0] + offset, ref.indices[1] + offset + previousOffset, pretty);
       previousOffset = ref.indices[0] - ref.indices[1] + pretty.length;
