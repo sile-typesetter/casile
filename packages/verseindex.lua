@@ -97,7 +97,7 @@ local init = function (self)
     SILE.call("info", {
         category = "tov",
         value = {
-          label = content
+          label = options.title and { options.title } or content
         }
       })
   end)
@@ -128,7 +128,7 @@ local init = function (self)
         local pageshash = {}
         local bk = ref.b == "Mezmurlar" and "Mezmur" or ref.b
         for _, link in pairs(SILE.scratch.tableofverses) do
-          if link.label[1] == bk .. " " .. label  then
+          if link.label[1]:match(bk .. "[  ]" .. label)  then
             local pageno = link.pageno
             if not pageshash[pageno] then 
               pages[#pages+1] = pageno
