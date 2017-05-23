@@ -93,6 +93,7 @@ local init = function (self)
   end)
 
   SILE.registerCommand("markverse", function (options, content)
+    SILE.typesetter:typeset("​") -- Protect hbox location from getting discarded
     SILE.call("info", {
         category = "tov",
         value = {
