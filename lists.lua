@@ -22,8 +22,10 @@ end)
 
 SILE.registerCommand("listitem", function (options, content)
   local lskip = SILE.settings.get("document.lskip").width
-  SILE.call("kern", { width = tostring(lskip * -0.75) })
-  SILE.call("rebox", { width = tostring(lskip * 0.75) }, function ()
+  local markerwidth = SILE.length.parse("1.5em")
+  SILE.call("kern", { width = lskip })
+  SILE.call("kern", { width = markerwidth:negate() })
+  SILE.call("rebox", { width = tostring(markerwidth) }, function ()
     if SILE.scratch.liststyle then
       SILE.call("show-counter", { id = "listarea" })
       SILE.typesetter:typeset(".")
