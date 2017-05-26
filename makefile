@@ -680,6 +680,7 @@ $(KAPAKMETINS): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-ma
 	source $(filter %-geometry.zsh,$^)
 	$(INKSCAPE) --without-gui \
 		--export-dpi=$$hidpi \
+		--export-area-page \
 		--export-margin=$$trimmm \
 		--file=$< \
 		--export-pdf=$@
