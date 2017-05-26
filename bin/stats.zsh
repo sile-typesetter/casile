@@ -68,7 +68,7 @@ function inrange () {
 }
 
 function itemwords () {
-	m4 ${CASILEDIR}/viachristus.m4 <(cat $1.md) |
+	m4 ${CASILEDIR}/casile.m4 <(cat $1.md) |
 		countwords
 }
 
