@@ -949,6 +949,13 @@ endef
 		-bordercolor white -border 0x10 \
 		-resize $(call scale,1200)x \
 		$@
+	if [[ $(shell $(CASILEDIR)/bin/isbn_format.py $*-manifest.yml print) == 9786056644504 ]]; then
+		$(MAGICK) $@ \
+			-stroke red \
+			-strokewidth $(call scale,10) \
+			-draw 'line 0,0,%[fx:w],%[fx:h]' \
+			$@
+	fi
 
 .PHONY: stats
 stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats) $(and $(CIMODE),init)
