@@ -126,12 +126,13 @@ local init = function (self)
           seq = 1
           lastbook = inpair
         end
-        local label = ref.reformat:match(".* (.*)")
         local pages = {}
         local pageshash = {}
-        local bk = ref.b == "Mezmurlar" and "Mezmur" or ref.b
+        local addr = ref.reformat:match(".* (.*)")
+        local label = ref.reformat:gsub(" ", " "):gsub(" ", " ")
+        if ref.b == "Mezmurlar" then label = label:gsub("Mezmurlar", "Mezmur") end
         for _, link in pairs(SILE.scratch.tableofverses) do
-          if link.label[1]:match(bk .. "[  ]" .. label)  then
+          if link.label[1] == label then
             local pageno = link.pageno
             if not pageshash[pageno] then 
               pages[#pages+1] = pageno
@@ -139,7 +140,7 @@ local init = function (self)
             end
           end
         end
-        SILE.call("tableofverses:reference", { pages = pages }, { label })
+        SILE.call("tableofverses:reference", { pages = pages }, { addr })
         seq = seq + 1
       end
     end
