@@ -14,7 +14,7 @@ SILE.registerCommand("listarea", function (options, content)
     SILE.settings.set("document.parindent", SILE.nodefactory.zeroGlue)
     local factor = nestedlist == 1 and 0 or nestedlist / 2
     SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(options.lskip or tostring(listarealskip + listarealskip * factor)))
-	SILE.settings.set("document.rskip", SILE.nodefactory.newGlue(options.rskip or 0))
+	SILE.settings.set("document.rskip", SILE.nodefactory.newGlue(options.rskip or "0pt"))
     SILE.process(content)
   end)
   SILE.call("noindent")
