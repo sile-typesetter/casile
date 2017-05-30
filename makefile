@@ -169,6 +169,7 @@ debug: $(and $(CIMODE),clean)
 	@echo PARENT: $(PARENT)
 	@echo PROJECT: $(PROJECT)
 	@echo SILE: $(SILE)
+	@echo SILEDEBUG: $(SILEDEBUG)
 	@echo SILEPATH: $(SILEPATH)
 	@echo TAG: $(TAG)
 	@echo TAGNAME: $(TAGNAME)
@@ -602,7 +603,10 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml .casile.lua $$(subst -ci
 		$(foreach LUA,$(call reverse,$|), SILE.require("$(basename $(LUA))");)
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
-	$(SILE) -I <(cat .casile.lua <(echo "CASILE.infofile = '$$lua'")) $< -o $@
+	$(SILE) \
+		-I <(cat .casile.lua <(echo "CASILE.infofile = '$$lua'")) \
+		$(and $(SILEDEBUG),-d $(subst $( ),$(,),$(SILEDEBUG))) \
+		$< -o $@
 
 %-fragman-on.png: %-cilt-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
