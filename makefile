@@ -918,6 +918,7 @@ endef
 	$(addtosync)
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $^ |
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
+			-e '/: [[:digit:]]\+[^[:digit:]]/s/: \(.*\)/: "\1"/' \
 		    -e '/\(own\|next\)cloudshare:/s/: \(.*\)$$/: "\1"/' > $@
 
 %-url.png: %-url.svg
