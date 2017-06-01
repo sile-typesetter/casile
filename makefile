@@ -554,7 +554,7 @@ $(ONPAPERZEMINS): %-kapak-zemin.png: $$(call gitzemin,$$@) $$(subst -kapak-zemin
 		$(call magick_zeminfilter) \
 		$@ ||:
 	$(if $(filter %.png,$^),false,true) && $(MAGICK) \
-		-size $${coverwpx}x$${coverhpx}^ $(call magick_zemin) -composite \
+		-size $${coverwpx}x$${coverhpx}^ $(call magick_zemin_kapak) -composite \
 		$@ ||:
 
 %-pankart.png: %-kapak.png %-geometry.zsh
@@ -661,7 +661,7 @@ $(KAPAKFRAGMANLAR): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@
 %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(AVADANLIKDIR)/vc_sembol_renkli.svg $(AVADANLIKDIR)/vc_logo_renkli.svg %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
-		$(or $(and $(call gitzemin,$*-kapak-zemin.png),$(call gitzemin,$*-kapak-zemin.png) -resize $${imgwpx}x$${imghpx}!),$(call magick_zemin)) \
+		$(or $(and $(call gitzemin,$*-kapak-zemin.png),$(call gitzemin,$*-kapak-zemin.png) -resize $${imgwpx}x$${imghpx}!),$(call magick_zemin_cilt)) \
 		$(call magick_kenar) \
 		\( -gravity east -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_on) -splice $${bleedpx}x \) -compose overlay -composite \
 		\( -gravity west -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_arka) -splice $${bleedpx}x \) -compose overlay -composite \
@@ -758,6 +758,14 @@ $(GEOMETRIES): %-geometry.zsh: $$(call newgeometry,$$@) $$(call geometrybase,$$*
 	imghpx=$$(($$coverhpx+$$bleedpx*2))
 	imghpm=$$(($$coverhpm+$$bleedpm*2))
 	imghpt=$$(($$coverhpt+$$bleedpt*2))
+
+define magick_zemin_kapak
+	$(call magick_zemin)
+endef
+
+define magick_zemin_cilt
+	$(call magick_zemin)
+endef
 
 define magick_zemin
 	xc:darkgray
