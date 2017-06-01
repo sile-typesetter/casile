@@ -121,12 +121,11 @@ export PROJECT := $(PROJECT)
 ifeq ($(DEBUG),true)
 SILE = /home/caleb/projects/sile/sile
 .SHELLFLAGS = +o nomatch -e -x -c
+endif
 
 # Pass debug tags on to SILE
 ifdef DEBUGTAGS
 SILEFLAGS += -d $(subst $( ),$(,),$(DEBUGTAGS))
-endif
-
 endif
 
 .ONESHELL:
