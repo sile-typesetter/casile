@@ -556,6 +556,7 @@ end)
 
 -- Make this a function because we want to override it in some layouts
 SILE.registerCommand("topfill", function (options, content)
+  SILE.typesetter:leaveHmode()
   SILE.call("hbox")
   SILE.call("vfill")
 end)
