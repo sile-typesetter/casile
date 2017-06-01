@@ -635,7 +635,7 @@ $(KAPAKMETINS): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-ma
 		$(foreach LUA,$(call reverse,$|), SILE.require("$(basename $(LUA))");)
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
-	$(SILE) -I <(cat .casile.lua <(echo "CASILE.infofile = '$*'")) $< -o $@
+	$(SILE) -I <(cat .casile.lua <(echo "CASILE.infofile = '$*'")) $(and $(SILEDEBUG),-d $(subst $( ),$(,),$(SILEDEBUG))) $< -o $@
 
 %-fragman-kapak.png: %-kapak-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
