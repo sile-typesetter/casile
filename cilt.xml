@@ -1,7 +1,6 @@
 <sile class="cabook" crop="false" background="false">
   <script>
     SILE.require(CASILE.casiledir .. "/casile")
-    SILE.require(CASILE.infofile)
     SILE.registerCommand("meta:surum", function()
       SILE.typesetter:typeset(versioninfo)
     end)

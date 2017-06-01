@@ -617,15 +617,15 @@ endef
 CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
 
 $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml $$(subst -cilt-metin,,$$@) | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
-	lua=$*-$(call parse_layout,$@)-cilt
-	cat <<- EOF > $$lua.lua
+	lua=$*-$(call parse_layout,$@)-cilt.lua
+	cat <<- EOF > $$lua
 		versioninfo = "$(call versioninfo,$*)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
 		spine = "$(call spinemm,$(filter %.pdf,$^))mm"
 		$(foreach LUA,$(call reverse,$|), SILE.require("$(basename $(LUA))");)
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
-	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.infofile = '$$lua'") $< -o $@
+	$(SILE) $(SILEFLAGS) -I $$lua $< -o $@
 
 %-fragman-on.png: %-cilt-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
@@ -651,7 +651,7 @@ $(KAPAKFRAGMANLAR): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@
 		$(foreach LUA,$(call reverse,$|), SILE.require("$(basename $(LUA))");)
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
-	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.infofile = '$*'") $< -o $@
+	$(SILE) $(SILEFLAGS) -I $*.lua $< -o $@
 
 %-fragman-kapak.png: %-kapak-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
