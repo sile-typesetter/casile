@@ -8,6 +8,7 @@ SILE.require("packages/image")
 SILE.require("packages/date")
 SILE.require("packages/textcase")
 SILE.require("packages/frametricks")
+SILE.require("packages/footnotes")
 
 SILE.require("imprint", CASILE.casiledir)
 SILE.require("covers", CASILE.casiledir)
