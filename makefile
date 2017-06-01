@@ -63,7 +63,7 @@ M4MACROS ?=
 METADATA ?=
 
 # Extra lua files to include before processing documents
-LUAINCLUDE +=
+LUAINCLUDES +=
 
 # Primary libraries to include (loaded in reverse order so this one is first)
 LUALIBS += $(CASILEDIR)/casile.lua
@@ -169,6 +169,7 @@ debug: $(and $(CIMODE),clean)
 	@echo FORMATS: $(FORMATS)
 	@echo INPUTDIR: $(INPUTDIR)
 	@echo LAYOUTS: $(LAYOUTS)
+	@echo LUAINCLUDES: $(LUAINCLUDES)
 	@echo LUALIBS: $(LUALIBS)
 	@echo M4MACROS: $(M4MACROS)
 	@echo MAKECMDGOALS: $(MAKECMDGOALS)
@@ -385,19 +386,18 @@ $(ONPAPERSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_book
 		$(call sile_hook) > $@
 
 # Send some environment data to a common Lua file to be pulled into all SILE runs
-.casile.lua: $(LUAINCLUDE)
+.casile.lua:
 	cat <<- EOF > $@
 		CASILE = {}
 		CASILE.casiledir = "$(CASILEDIR)"
 		CASILE.publisher = "casile"
 	EOF
-	$(and $^,cat $^ >> $@)
 
 # Make sure common Lua file is a prerequisite for targets that run SILE
-$(ONPAPERPDFS) $(KAPAKFRAGMANLAR) $(CILTFRAGMANLAR): .casile.lua
+$(ONPAPERPDFS) $(KAPAKFRAGMANLAR) $(CILTFRAGMANLAR): .casile.lua $(LUAINCLUDES)
 
 # Configure SILE arguments to include common Lua library
-SILEFLAGS += -I .casile.lua
+SILEFLAGS += -I .casile.lua $(foreach LUAINCLUDE,$(LUAINCLUDES),-I $(LUAINCLUDE))
 
 preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $(wildcard $1.m4)
 %-processed.md: %.md $$(call preprocess_macros,$$*) $$(wildcard $$*-bolumler/*.md) | figures
