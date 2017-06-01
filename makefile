@@ -29,7 +29,7 @@ LAZY ?= false # Pretend to do things we didn't
 DIFF ?= false # Show differences to parent brancd in build
 STATSMONTHS ?= 1 # How far back to look for commits when building stats
 DEBUG ?= false # Use SILE debug flags, set -x, and the like
-SILEDEBUG ?= casile # Specific debug flags to set
+DEBUGTAGS ?= casile # Specific debug flags to set
 COVERS ?= true # Build covers?
 SCALE ?= 17 # Reduction factor for draft builds
 HIDPI ?= $(call scale,1200) # Default DPI for generated press resources
@@ -121,6 +121,12 @@ export PROJECT := $(PROJECT)
 ifeq ($(DEBUG),true)
 SILE = /home/caleb/projects/sile/sile
 .SHELLFLAGS = +o nomatch -e -x -c
+
+# Pass debug tags on to SILE
+ifdef DEBUGTAGS
+SILEFLAGS += -d $(subst $( ),$(,),$(DEBUGTAGS))
+endif
+
 endif
 
 .ONESHELL:
@@ -156,6 +162,7 @@ debug: $(and $(CIMODE),clean)
 	@echo BRANCH: $(BRANCH)
 	@echo CASILEDIR: $(CASILEDIR)
 	@echo DEBUG: $(DEBUG)
+	@echo DEBUGTAGS: $(DEBUGTAGS)
 	@echo DIFF: $(DIFF)
 	@echo DRAFT: $(DRAFT)
 	@echo FIGURES: $(FIGURES)
@@ -172,7 +179,7 @@ debug: $(and $(CIMODE),clean)
 	@echo PARENT: $(PARENT)
 	@echo PROJECT: $(PROJECT)
 	@echo SILE: $(SILE)
-	@echo SILEDEBUG: $(SILEDEBUG)
+	@echo SILEFLAGS: $(SILEFLAGS)
 	@echo SILEPATH: $(SILEPATH)
 	@echo TAG: $(TAG)
 	@echo TAGNAME: $(TAGNAME)
@@ -333,7 +340,7 @@ onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua)
 
 ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(PANKARTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE).pdf))
 $(ONPAPERPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
-$(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@)
+$(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) $$(call onpaperlibs,$$@)
 	$(call skip_if_lazy,$@)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	$(addtosync)
@@ -341,15 +348,15 @@ $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperl
 	# account for TOC issue: https://github.com/simoncozens/sile/issues/230
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	if $(DRAFT); then
-		$(SILE) -I .casile.lua $(and $(SILEDEBUG),-d $(subst $( ),$(,),$(SILEDEBUG))) $< -o $@
+		$(SILE) $(SILEFLAGS) $< -o $@
 	else
 		export pg0=$(call pagecount,$@)
-		$(SILE) -I .casile.lua $(and $(SILEDEBUG),-d $(subst $( ),$(,),$(SILEDEBUG))) $< -o $@
+		$(SILE) $(SILEFLAGS) $< -o $@
 		# Note this page count can't be in Make because of expansion order
 		export pg1=$$(pdfinfo $@ | awk '$$1 == "Pages:" {print $$2}' || echo 0)
-		[[ $${pg0} -ne $${pg1} ]] && $(SILE) -I .casile.lua $< -o $@ ||:
+		[[ $${pg0} -ne $${pg1} ]] && $(SILE) $(SILEFLAGS) $< -o $@ ||:
 		export pg2=$$(pdfinfo $@ | awk '$$1 == "Pages:" {print $$2}' || echo 0)
-		[[ $${pg1} -ne $${pg2} ]] && $(SILE) -I .casile.lua $< -o $@ ||:
+		[[ $${pg1} -ne $${pg2} ]] && $(SILE) $(SILEFLAGS) $< -o $@ ||:
 	fi
 	# If we have a special cover page for this format, swap it out for the half title page
 	if $(COVERS) && [[ -f $*-kapak.pdf ]]; then
@@ -377,6 +384,7 @@ $(ONPAPERSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_book
 			$(filter %-manifest.yml,$^) <( $(call pre_sile_markdown_hook) < $< ) |
 		$(call sile_hook) > $@
 
+# Send some environment data to a common Lua file to be pulled into all SILE runs
 .casile.lua: $(LUAINCLUDE)
 	cat <<- EOF > $@
 		CASILE = {}
@@ -384,6 +392,12 @@ $(ONPAPERSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_book
 		CASILE.publisher = "casile"
 	EOF
 	$(and $^,cat $^ >> $@)
+
+# Make sure common Lua file is a prerequisite for targets that run SILE
+$(ONPAPERPDFS) $(KAPAKFRAGMANLAR) $(CILTFRAGMANLAR): .casile.lua
+
+# Configure SILE arguments to include common Lua library
+SILEFLAGS += -I .casile.lua
 
 preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $(wildcard $1.m4)
 %-processed.md: %.md $$(call preprocess_macros,$$*) $$(wildcard $$*-bolumler/*.md) | figures
@@ -602,7 +616,7 @@ endef
 
 CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
 
-$(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml .casile.lua $$(subst -cilt-metin,,$$@) | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+$(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml $$(subst -cilt-metin,,$$@) | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	lua=$*-$(call parse_layout,$@)-cilt
 	cat <<- EOF > $$lua.lua
 		versioninfo = "$(call versioninfo,$*)"
@@ -611,10 +625,7 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml .casile.lua $$(subst -ci
 		$(foreach LUA,$(call reverse,$|), SILE.require("$(basename $(LUA))");)
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
-	$(SILE) \
-		-I <(cat .casile.lua <(echo "CASILE.infofile = '$$lua'")) \
-		$(and $(SILEDEBUG),-d $(subst $( ),$(,),$(SILEDEBUG))) \
-		$< -o $@
+	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.infofile = '$$lua'") $< -o $@
 
 %-fragman-on.png: %-cilt-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
@@ -632,15 +643,15 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml .casile.lua $$(subst -ci
 		$(call magick_fragman_sirt) \
 		-composite $@
 
-KAPAKMETINS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-kapak-metin.pdf))
-$(KAPAKMETINS): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-manifest.yml .casile.lua | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+KAPAKFRAGMANLAR = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-kapak-metin.pdf))
+$(KAPAKFRAGMANLAR): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-manifest.yml | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$(call parse_bookid,$@))"
 		metadatafile = "$(filter %-manifest.yml,$^)"
 		$(foreach LUA,$(call reverse,$|), SILE.require("$(basename $(LUA))");)
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
-	$(SILE) -I <(cat .casile.lua <(echo "CASILE.infofile = '$*'")) $(and $(SILEDEBUG),-d $(subst $( ),$(,),$(SILEDEBUG))) $< -o $@
+	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.infofile = '$*'") $< -o $@
 
 %-fragman-kapak.png: %-kapak-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
