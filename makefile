@@ -85,6 +85,9 @@ space +=
 $(space) :=
 $(space) +=
 
+# Utility functions for simplifying per-project makefiles
+depend_font = fc-match "$1" family | grep -qx "$1"
+
 # Assorted utility functions for juggling information about books
 pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}' || echo 0)
 pagew = $(shell pdfinfo $1 | awk '$$1$$2 == "Pagesize:" {print $$3}' || echo 0)
