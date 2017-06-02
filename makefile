@@ -340,7 +340,7 @@ onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua)
 
 ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(PANKARTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE).pdf))
 $(ONPAPERPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
-$(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@)
+$(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES)
 	$(call skip_if_lazy,$@)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	$(addtosync)
