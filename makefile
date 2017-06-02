@@ -244,7 +244,7 @@ check_dependencies:
 	python -c "import isbnlib"
 	python -c "import pandocfilters"
 	$(call depend_font,Hack)
-	$(call depend_font,Helvetica Regular)
+	$(call depend_font,TeX Gyre Heros)
 	$(call depend_font,Libertinus Serif)
 	$(call depend_font,Libertinus Serif Display)
 	$(call depend_font,Libertinus Sans)
@@ -969,7 +969,7 @@ endef
 			--barcode=69 \
 			--height=30 \
 			--data=$(shell $(CASILEDIR)/bin/isbn_format.py $< print) |\
-		sed -e 's/Helvetica/Helvetica Regular/g' \
+		sed -e 's/Helvetica\( Regular\)\?/TeX Gyre Heros/g' \
 		> $@
 
 %-barkod.png: %-barkod.svg
