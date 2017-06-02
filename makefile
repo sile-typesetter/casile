@@ -613,15 +613,16 @@ endef
 CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
 
 $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml .casile.lua $$(subst -cilt-metin,,$$@) | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
-	lua=$*-$(call parse_layout,$@)-cilt.lua
-	cat <<- EOF > $$lua
+	lua=$*-$(call parse_layout,$@)-cilt
+	cat <<- EOF > $$lua.lua
 		versioninfo = "$(call versioninfo,$*)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
 		spine = "$(call spinemm,$(filter %.pdf,$^))mm"
-		$(foreach LUA,$(call reverse,$|), SILE.require("$(basename $(LUA))");)
+		$(foreach LUA,$(call reverse,$|),
+		SILE.require("$(basename $(LUA))"))
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
-	$(SILE) $(SILEFLAGS) -I $$lua $< -o $@
+	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$$lua'") $< -o $@
 
 %-fragman-on.png: %-cilt-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
@@ -640,14 +641,16 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml .casile.lua $$(subst -ci
 		-composite $@
 
 KAPAKFRAGMANLAR = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-kapak-metin.pdf))
-$(KAPAKFRAGMANLAR): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-manifest.yml .casile.lua | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUAINCLUDES) $(LUALIBS)
-	cat <<- EOF > $*.lua
+$(KAPAKFRAGMANLAR): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-manifest.yml .casile.lua | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+	lua=$*
+	cat <<- EOF > $$lua.lua
 		versioninfo = "$(call versioninfo,$(call parse_bookid,$@))"
 		metadatafile = "$(filter %-manifest.yml,$^)"
-		$(foreach LUA,$(call reverse,$|), SILE.require("$(basename $(LUA))");)
+		$(foreach LUA,$(call reverse,$|),
+		SILE.require("$(basename $(LUA))"))
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
-	$(SILE) $(SILEFLAGS) -I $*.lua $< -o $@
+	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$$lua'") $< -o $@
 
 %-fragman-kapak.png: %-kapak-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
