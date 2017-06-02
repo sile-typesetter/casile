@@ -38,7 +38,6 @@ LODPI ?= $(call scale,300) # Default DPI for generated consumer resources
 # Allow overriding executables used
 SILE ?= sile
 PANDOC ?= pandoc
-CONVERT ?= convert
 MAGICK ?= magick
 INKSCAPE ?= inkscape
 
@@ -216,7 +215,6 @@ check_dependencies:
 	hash $(SILE)
 	hash $(PANDOC)
 	$(PANDOC) --list-output-formats | grep -q sile
-	hash $(CONVERT)
 	hash $(MAGICK)
 	hash povray
 	hash yaml2json
@@ -670,7 +668,7 @@ $(KAPAKFRAGMANLAR): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@
 		\( -gravity east $(word 1,$^) -splice $${bleedpx}x -write mpr:metin-on \) -compose over -composite \
 		\( -gravity west $(word 2,$^) -splice $${bleedpx}x -write mpr:metin-arka \) -compose over -composite \
 		\( -gravity center $(word 3,$^) -write mpr:metin-sirt \) -compose over -composite \
-		$(call magick_sembol,$(word 5,$^))\
+		$(call magick_sembol,$(word 5,$^)) \
 		$(call magick_barkod,$(word 4,$^)) \
 		$(call magick_logo,$(word 6,$^)) \
 		-gravity center -size %[fx:u.w]x%[fx:u.h] \
