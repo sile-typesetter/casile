@@ -497,11 +497,13 @@ endef
 
 %.sil.tov: %.pdf ;
 
-.PHONY: %.app
-%.app: %-app.info promotionals
+APPTARGETS = $(foreach TARGET,$(TARGETS),$(TARGET).app)
+.PHONY: $(APPTARGETS)
+$(APPTARGETS): %.app: %-app.info promotionals
 
-.PHONY: %.web
-%.web: %-manifest.yml %-epub-pankart.jpg promotionals renderings
+WEBTARGETS = $(foreach TARGET,$(TARGETS),$(TARGET).web)
+.PHONY: $(WEBTARGETS)
+$(WEBTARGETS): %.web: %-manifest.yml %-epub-pankart.jpg promotionals renderings
 
 %-app.info: %-app.sil.toc %-app.pdf %-manifest.yml
 	$(addtosync)
@@ -991,8 +993,9 @@ endef
 .PHONY: stats
 stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats) $(and $(CIMODE),init)
 
-.PHONY: %-stats
-%-stats:
+STATSTARGETS = $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
+.PHONY: $(STATSTARGETS)
+$(STATSTARGETS): %-stats:
 	stats.zsh $* $(STATSMONTHS)
 
 %-ayetler.json: %-processed.md
