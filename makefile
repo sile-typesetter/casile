@@ -340,7 +340,7 @@ onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua)
 
 ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(PANKARTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE).pdf))
 $(ONPAPERPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
-$(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) $$(call onpaperlibs,$$@)
+$(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@)
 	$(call skip_if_lazy,$@)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	$(addtosync)
@@ -391,9 +391,6 @@ $(ONPAPERSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_book
 		CASILE.casiledir = "$(CASILEDIR)"
 		CASILE.publisher = "casile"
 	EOF
-
-# Make sure common Lua file is a prerequisite for targets that run SILE
-$(ONPAPERPDFS) $(KAPAKFRAGMANLAR) $(CILTFRAGMANLAR): .casile.lua $(LUAINCLUDES)
 
 # Configure SILE arguments to include common Lua library
 SILEFLAGS += -I .casile.lua $(foreach LUAINCLUDE,$(LUAINCLUDES),-I $(LUAINCLUDE))
@@ -615,7 +612,7 @@ endef
 
 CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
 
-$(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml $$(subst -cilt-metin,,$$@) | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+$(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml .casile.lua $$(subst -cilt-metin,,$$@) | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	lua=$*-$(call parse_layout,$@)-cilt.lua
 	cat <<- EOF > $$lua
 		versioninfo = "$(call versioninfo,$*)"
@@ -643,7 +640,7 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml $$(subst -cilt-metin,,$$
 		-composite $@
 
 KAPAKFRAGMANLAR = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-kapak-metin.pdf))
-$(KAPAKFRAGMANLAR): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-manifest.yml | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+$(KAPAKFRAGMANLAR): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-manifest.yml .casile.lua | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUAINCLUDES) $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$(call parse_bookid,$@))"
 		metadatafile = "$(filter %-manifest.yml,$^)"
