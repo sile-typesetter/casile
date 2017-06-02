@@ -63,7 +63,7 @@ M4MACROS ?=
 METADATA ?=
 
 # Extra lua files to include before processing documents
-LUAINCLUDES +=
+LUAINCLUDES += .casile.lua
 
 # Primary libraries to include (loaded in reverse order so this one is first)
 LUALIBS += $(CASILEDIR)/casile.lua
@@ -393,7 +393,7 @@ $(ONPAPERSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_book
 	EOF
 
 # Configure SILE arguments to include common Lua library
-SILEFLAGS += -I .casile.lua $(foreach LUAINCLUDE,$(LUAINCLUDES),-I $(LUAINCLUDE))
+SILEFLAGS += $(foreach LUAINCLUDE,$(call reverse,$(LUAINCLUDES)),-I $(LUAINCLUDE))
 
 preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $(wildcard $1.m4)
 %-processed.md: %.md $$(call preprocess_macros,$$*) $$(wildcard $$*-bolumler/*.md) | figures
@@ -612,7 +612,7 @@ endef
 
 CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
 
-$(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml .casile.lua $$(subst -cilt-metin,,$$@) | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+$(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml $(LUAINCLUDES) $$(subst -cilt-metin,,$$@) | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	lua=$*-$(call parse_layout,$@)-cilt
 	cat <<- EOF > $$lua.lua
 		versioninfo = "$(call versioninfo,$*)"
@@ -641,7 +641,7 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml .casile.lua $$(subst -ci
 		-composite $@
 
 KAPAKFRAGMANLAR = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-kapak-metin.pdf))
-$(KAPAKFRAGMANLAR): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-manifest.yml .casile.lua | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+$(KAPAKFRAGMANLAR): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	lua=$*
 	cat <<- EOF > $$lua.lua
 		versioninfo = "$(call versioninfo,$(call parse_bookid,$@))"
