@@ -151,6 +151,18 @@ renderings: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(filter $(CILTLI),$(LA
 .PHONY: promotionals
 promotionals: $(foreach TARGET,$(TARGETS),$(foreach PANKART,$(PANKARTLI),$(TARGET)-$(PANKART)-pankart.jpg))
 
+# If a series, add some extra dependencies to convenience builds
+ifneq ($(words $(TARGETS)),1)
+promotionals: series_promotionals
+endif
+
+.PHONY: series_promotionals
+series_promotionals: $(PROJECT)-covers.jpg
+
+$(PROJECT)-covers.png: $(foreach TARGET,$(TARGETS),$(TARGET)-epub-kapak.png)
+	$(addtosync)
+	$(MAGICK) $(filter %.png,$^) +append $@
+
 .PHONY: clean
 clean: $(and $(CIMODE),init)
 	git clean -xf
