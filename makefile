@@ -141,8 +141,11 @@ ifeq ($(MAKECMDGOALS),ci)
 CIMODE ?= 1
 endif
 
-.PHONY: ci
-ci: init clean debug sync_pre all sync_post stats
+.PHONY: ci ci_before ci_script ci_after
+ci: ci_before ci_script ci_after
+ci_before: init clean debug sync_pre
+ci_script: all
+ci_after: sync_post stats
 
 .PHONY: renderings
 renderings: LAYOUTS = $(PUBLAYOUT)
