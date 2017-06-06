@@ -148,8 +148,8 @@ endif
 .PHONY: ci ci_before ci_script ci_after
 ci: ci_before ci_script ci_after
 ci_before: init clean debug sync_pre
-ci_script: all
-ci_after: sync_post stats
+ci_script: $(and $(CIMODE),ci_before) all
+ci_after: $(and $(CIMODE),ci_script) sync_post stats
 
 .PHONY: renderings
 renderings: LAYOUTS = $(PUBLAYOUT)
