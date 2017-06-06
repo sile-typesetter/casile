@@ -108,6 +108,10 @@ append = $(eval $(1) = $(value $(1))$(2))
 
 reverse = $(if $(wordlist 2,2,$(1)),$(call reverse,$(wordlist 2,$(words $(1)),$(1))) $(firstword $(1)),$(1))
 
+ifeq ($(DRAFT),true)
+$(MAKECMDGOALS): force
+endif
+
 # For watch targets, treat exta parameters as things to pass to the next make
 ifeq (watch,$(firstword $(MAKECMDGOALS)))
   WATCH_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
