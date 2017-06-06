@@ -339,6 +339,7 @@ endif
 		mkdir -p $(OUTPUTDIR)/$$tagpath
 		grep "^$${target}" $< |
 			while read file; do
+				echo Sync $$file to $(OUTPUTDIR)/$$tagpath
 				test -f $$file && rsync -ct $$file $(OUTPUTDIR)/$$tagpath
 			done
 	done
