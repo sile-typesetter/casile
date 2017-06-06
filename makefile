@@ -135,7 +135,7 @@ endif
 .DELETE_ON_ERROR:
 
 .PHONY: all
-all: $(TARGETS) $(and $(CIMODE),sync_pre)
+all: $(TARGETS) renderings promotionals $(and $(CIMODE),sync_pre)
 
 ifeq ($(MAKECMDGOALS),ci)
 CIMODE ?= 1
