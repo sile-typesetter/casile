@@ -114,8 +114,8 @@ endif
 
 # For watch targets, treat exta parameters as things to pass to the next make
 ifeq (watch,$(firstword $(MAKECMDGOALS)))
-  WATCH_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-  $(eval $(WATCH_ARGS):;@:)
+  WATCHARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  $(eval $(WATCHARGS):;@:)
 endif
 
 export PATH := $(CASILEDIR)/bin:$(PATH)
@@ -1041,7 +1041,7 @@ split_chapters:
 
 watch:
 	git ls-files --recurse-submodules |
-		entr $(ENTRFLAGS) make DRAFT=true LAZY=true $(WATCH_ARGS)
+		entr $(ENTRFLAGS) make DRAFT=true LAZY=true $(WATCHARGS)
 
 diff:
 	git diff --color=always --ignore-submodules --no-ext-diff
