@@ -627,11 +627,9 @@ endef
 	pdftk $$metin background $$bg output $@
 	rm $$metin $$bg
 
-CILTFRAGMANLAR = $(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),%-$(PAPERSIZE)-cilt-metin.pdf)
-
-$(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml $(LUAINCLUDES) $$(subst -cilt-metin,,$$@) | $$(wildcard $$*.lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
-	lua=$*-$(call parse_layout,$@)-cilt
-	cat <<- EOF > $$lua.lua
+CILTFRAGMANLAR = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-cilt-metin.pdf))
+$(CILTFRAGMANLAR): %-cilt-metin.pdf: $(CASILEDIR)/cilt.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -cilt-metin,,$$@) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$*)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
 		spine = "$(call spinemm,$(filter %.pdf,$^))mm"
@@ -639,7 +637,7 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml $(LUAINCLUDES) $$(subst 
 		SILE.require("$(basename $(LUA))"))
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
-	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$$lua'") $< -o $@
+	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
 %-fragman-on.png: %-cilt-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
@@ -658,16 +656,15 @@ $(CILTFRAGMANLAR): $(CASILEDIR)/cilt.xml %-manifest.yml $(LUAINCLUDES) $$(subst 
 		-composite $@
 
 KAPAKFRAGMANLAR = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-kapak-metin.pdf))
-$(KAPAKFRAGMANLAR): %-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
-	lua=$*
-	cat <<- EOF > $$lua.lua
+$(KAPAKFRAGMANLAR): %-kapak-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$(call parse_bookid,$@))"
 		metadatafile = "$(filter %-manifest.yml,$^)"
 		$(foreach LUA,$(call reverse,$|),
 		SILE.require("$(basename $(LUA))"))
 	EOF
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
-	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$$lua'") $< -o $@
+	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
 %-fragman-kapak.png: %-kapak-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
