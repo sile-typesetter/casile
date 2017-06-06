@@ -43,10 +43,10 @@ MAGICK ?= magick
 INKSCAPE ?= inkscape
 
 # List of supported outputs
-CILTLI = a4ciltli octavo halfletter a5trim cep
-KAPAKLI = a4 a5 app
-PANKARTLI = kare genis bant epub
-PAPERSIZES = $(CILTLI) $(KAPAKLI) $(PANKARTLI)
+BINDINGS = a4ciltli octavo halfletter a5trim cep
+DISPLAYS = a4 a5 app
+PLACARDS = kare genis bant epub
+PAPERSIZES = $(BINDINGS) $(DISPLAYS) $(PLACARDS)
 
 # Default to running multiple jobs
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
@@ -149,10 +149,10 @@ ci_after: sync_post stats
 
 .PHONY: renderings
 renderings: LAYOUTS = $(PUBLAYOUT)
-renderings: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(filter $(CILTLI),$(LAYOUTS)),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).jpg)))
+renderings: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(filter $(BINDINGS),$(LAYOUTS)),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).jpg)))
 
 .PHONY: promotionals
-promotionals: $(foreach TARGET,$(TARGETS),$(foreach PANKART,$(PANKARTLI),$(TARGET)-$(PANKART)-pankart.jpg))
+promotionals: $(foreach TARGET,$(TARGETS),$(foreach PANKART,$(PLACARDS),$(TARGET)-$(PANKART)-pankart.jpg))
 
 # If a series, add some extra dependencies to convenience builds
 ifneq ($(words $(TARGETS)),1)
@@ -347,16 +347,16 @@ endif
 
 VIRTUALPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
 .PHONY: $(VIRTUALPDFS)
-$(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach RESOURCE,$(RESOURCES),$(if $(filter $(LAYOUT),$(CILTLI)),$$*-$(LAYOUT)-$(RESOURCE).pdf,))) ;
+$(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach RESOURCE,$(RESOURCES),$(if $(filter $(LAYOUT),$(BINDINGS)),$$*-$(LAYOUT)-$(RESOURCE).pdf,))) ;
 
-coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(CILTLI),$(call parse_layout,$1)),,%-kapak.pdf),)
+coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(BINDINGS),$(call parse_layout,$1)),,%-kapak.pdf),)
 
 # Order is important here, these are included in reverse order so early supercedes late
 onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call parse_layout,$1).lua $(LUALIBS)
 
-ONPAPERPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(PANKARTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE).pdf))
-$(ONPAPERPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
-$(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES)
+FULLPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(PLACARDS),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE).pdf))
+$(FULLPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
+$(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES)
 	$(call skip_if_lazy,$@)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	$(addtosync)
@@ -382,8 +382,8 @@ $(ONPAPERPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperl
 		rm $*.tmp.pdf
 	fi
 
-ONPAPERSILS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).sil))
-$(ONPAPERSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_bookid,$$@)-manifest.yml $$(call parse_bookid,$$@)-ayetler-sorted.json $$(call parse_bookid,$$@)-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
+FULLSILS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).sil))
+$(FULLSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_bookid,$$@)-manifest.yml $$(call parse_bookid,$$@)-ayetler-sorted.json $$(call parse_bookid,$$@)-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
 			--wrap=preserve \
@@ -556,9 +556,9 @@ define skip_if_lazy
 	$(LAZY) && $(if $(filter $1,$(MAKECMDGOALS)),false,true) && test -f $1 && { touch $1; exit 0 } ||:
 endef
 
-ONPAPERZEMINS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-kapak-zemin.png))
-gitzemin = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
-$(ONPAPERZEMINS): %-kapak-zemin.png: $$(call gitzemin,$$@) $$(subst -kapak-zemin.png,-geometry.zsh,$$@)
+COVERBACKGROUNDS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(BINDINGS),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-kapak-zemin.png))
+git_background = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
+$(COVERBACKGROUNDS): %-kapak-zemin.png: $$(call git_background,$$@) $$(subst -kapak-zemin.png,-geometry.zsh,$$@)
 	source $(filter %-geometry.zsh,$^)
 	$(if $(filter %.png,$^),true,false) && $(MAGICK) $(filter %.png,$^) \
 		-gravity $(COVERGRAVITY) \
@@ -628,8 +628,8 @@ endef
 	pdftk $$metin background $$bg output $@
 	rm $$metin $$bg
 
-CILTFRAGMANLAR = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter $(CILTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-cilt-metin.pdf))
-$(CILTFRAGMANLAR): %-cilt-metin.pdf: $(CASILEDIR)/cilt.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -cilt-metin,,$$@) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+BINDINGFRAGMENTS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter $(BINDINGS),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-cilt-metin.pdf))
+$(BINDINGFRAGMENTS): %-cilt-metin.pdf: $(CASILEDIR)/cilt.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -cilt-metin,,$$@) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$*)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -656,8 +656,8 @@ $(CILTFRAGMANLAR): %-cilt-metin.pdf: $(CASILEDIR)/cilt.xml $$(call parse_bookid,
 		$(call magick_fragman_sirt) \
 		-composite $@
 
-KAPAKFRAGMANLAR = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-kapak-metin.pdf))
-$(KAPAKFRAGMANLAR): %-kapak-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+COVERFRAGMENTS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(BINDINGS),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-kapak-metin.pdf))
+$(COVERFRAGMENTS): %-kapak-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$(call parse_bookid,$@))"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -675,7 +675,7 @@ $(KAPAKFRAGMANLAR): %-kapak-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_book
 %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(AVADANLIKDIR)/vc_sembol_renkli.svg $(AVADANLIKDIR)/vc_logo_renkli.svg %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
-		$(or $(and $(call gitzemin,$*-kapak-zemin.png),$(call gitzemin,$*-kapak-zemin.png) -resize $${imgwpx}x$${imghpx}!),$(call magick_zemin_cilt)) \
+		$(or $(and $(call git_background,$*-kapak-zemin.png),$(call git_background,$*-kapak-zemin.png) -resize $${imgwpx}x$${imghpx}!),$(call magick_zemin_cilt)) \
 		$(call magick_kenar) \
 		\( -gravity east -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_on) -splice $${bleedpx}x \) -compose overlay -composite \
 		\( -gravity west -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_arka) -splice $${bleedpx}x \) -compose overlay -composite \
@@ -723,7 +723,7 @@ $(KAPAKFRAGMANLAR): %-kapak-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_book
 		--export-pdf=$@
 
 newgeometry = $(shell grep -sq hidpi=$(HIDPI) $1 || echo force)
-geometrybase = $(if $(filter $(CILTLI),$(call parse_layout,$1)),$1.pdf $1-cilt-metin.pdf,$1-kapak-metin.pdf)
+geometrybase = $(if $(filter $(BINDINGS),$(call parse_layout,$1)),$1.pdf $1-cilt-metin.pdf,$1-kapak-metin.pdf)
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE)-geometry.zsh))
