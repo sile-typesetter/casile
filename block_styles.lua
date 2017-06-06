@@ -21,10 +21,6 @@ SILE.registerCommand("titlepage", function (options, content)
       SILE.call("vfill")
       SILE.call("vfill")
     end
-    if CASILE.metadata.publisher then
-      SILE.call("vfill")
-      SILE.call("img", { src = CASILE.avadanlikdir .. "/vc_logo_renksiz.pdf", width = "25%pw" })
-    end
   end)
   SILE.call("par")
   SILE.call("break")
