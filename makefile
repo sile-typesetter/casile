@@ -57,6 +57,11 @@ MAKEFLAGS = "-j $(JOBS)"
 # And -p to wait for activity on first invocation
 ENTRFLAGS := -c -r
 
+# POVray's progress status output doesn't play nice with Gitlab's CI logging
+ifneq ($(GITLAB_CI),)
+POVFLAGS := -V
+endif
+
 # List of extra m4 macro files to apply to every source
 M4MACROS ?=
 # List of exta YAML meta data files to splice into each book
@@ -907,7 +912,7 @@ povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
 define povray
 	headers=$$(mktemp povXXXXXX.inc)
 	cat $2 $3 > $$headers
-	povray -I$1 -HI$$headers -W$(call scale,$5) -H$(call scale,$6) -Q$(call scale,11,4) -O$4
+	povray $(POVFLAGS) -I$1 -HI$$headers -W$(call scale,$5) -H$(call scale,$6) -Q$(call scale,11,4) -O$4
 	rm $$headers
 endef
 
