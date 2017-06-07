@@ -39,8 +39,10 @@ LODPI ?= $(call scale,300) # Default DPI for generated consumer resources
 SILE ?= sile
 PANDOC ?= pandoc
 CONVERT ?= convert
+IDENTIFY ?= identify
 MAGICK ?= magick
 INKSCAPE ?= inkscape
+POVRAY ?= povray
 
 # List of supported outputs
 BINDINGS = a4ciltli octavo halfletter a5trim cep
@@ -101,8 +103,8 @@ spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | bc)
 mmtopx = $(shell echo "$1 * $(HIDPI) * 0.0393701 / 1" | bc)
 mmtopm = $(shell echo "$1 * 96 * .0393701 / 1" | bc)
 mmtopt = $(shell echo "$1 * 2.83465 / 1" | bc)
-width = $(shell identify -density $(HIDPI) -format %[fx:w] $1)
-height = $(shell identify -density $(HIDPI) -format %[fx:h] $1)
+width = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:w] $1)
+height = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:h] $1)
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 parse_bookid = $(firstword $(subst -, ,$(basename $1)))
@@ -241,8 +243,9 @@ check_dependencies:
 	hash $(PANDOC)
 	$(PANDOC) --list-output-formats | grep -q sile
 	hash $(CONVERT)
+	hash $(IDENTIFY)
 	hash $(MAGICK)
-	hash povray
+	hash $(POVRAY)
 	hash yaml2json
 	hash jq
 	hash zint
@@ -748,7 +751,7 @@ $(GEOMETRIES): %-geometry.zsh: $$(call newgeometry,$$@) $$(call geometrybase,$$*
 	trimpx=$(call mmtopx,$(TRIM))
 	trimpm=$(call mmtopm,$(TRIM))
 	trimpt=$(call mmtopt,$(TRIM))
-	$(shell identify -density $(HIDPI) -format '
+	$(shell $(IDENTIFY) -density $(HIDPI) -format '
 			coverwmm=%[fx:round(w/$(HIDPI)*25.399986)]
 			coverwpx=%[fx:w]
 			coverwpm=%[fx:round(w/$(HIDPI)*90)]
@@ -912,7 +915,7 @@ povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
 define povray
 	headers=$$(mktemp povXXXXXX.inc)
 	cat $2 $3 > $$headers
-	povray $(POVFLAGS) -I$1 -HI$$headers -W$(call scale,$5) -H$(call scale,$6) -Q$(call scale,11,4) -O$4
+	$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$(call scale,$5) -H$(call scale,$6) -Q$(call scale,11,4) -O$4
 	rm $$headers
 endef
 
