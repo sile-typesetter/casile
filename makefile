@@ -60,7 +60,7 @@ MAKEFLAGS = "-j $(JOBS)"
 ENTRFLAGS := -c -r
 
 # POVray's progress status output doesn't play nice with Gitlab's CI logging
-ifneq ($(GITLAB_CI),)
+ifneq ($(CI),)
 POVFLAGS := -V
 endif
 
@@ -150,17 +150,17 @@ endif
 .DELETE_ON_ERROR:
 
 .PHONY: all
-all: $(TARGETS) renderings promotionals $(and $(CIMODE),sync_pre)
+all: $(TARGETS) renderings promotionals $(and $(CI),sync_pre)
 
 ifeq ($(MAKECMDGOALS),ci)
-CIMODE ?= 1
+CI ?= 1
 endif
 
 .PHONY: ci ci_before ci_script ci_after
-ci: ci_before ci_script ci_after
-ci_before: init clean debug sync_pre
-ci_script: $(and $(CIMODE),ci_before) all
-ci_after: $(and $(CIMODE),ci_script) sync_post stats
+ci: init clean debug sync_pre all sync_post stats
+ci_before: init debug
+ci_script: $(and $(CI),ci_before) all
+ci_after: $(and $(CI),ci_script) stats
 
 .PHONY: renderings
 renderings: LAYOUTS = $(PUBLAYOUT)
@@ -182,11 +182,11 @@ $(PROJECT)-covers.png: $(foreach TARGET,$(TARGETS),$(TARGET)-epub-kapak.png)
 	$(MAGICK) $(filter %.png,$^) +append $@
 
 .PHONY: clean
-clean: $(and $(CIMODE),init)
+clean: $(and $(CI),init)
 	git clean -xf
 
 .PHONY: debug
-debug: $(and $(CIMODE),clean)
+debug: $(and $(CI),clean)
 	@echo ALLTAGS: $(ALLTAGS)
 	@echo BRANCH: $(BRANCH)
 	@echo CASILEDIR: $(CASILEDIR)
@@ -352,14 +352,14 @@ define time_warp
 endef
 
 .PHONY: sync_pre
-sync_pre: $(and $(CIMODE),clean)
+sync_pre: $(and $(CI),clean)
 	cat /dev/null > sync_files.dat
 	$(if $(INPUTDIR),,exit 0)
 	$(call pre_sync)
 	rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/ ||:
 
 .PHONY: sync_post
-sync_post: sync_files.dat $(and $(CIMODE),all)
+sync_post: sync_files.dat $(and $(CI),all)
 	$(if $(OUTPUTDIR),,exit 0)
 	sort -u $< | sponge $<
 	for target in $(TARGETS); do
@@ -1036,7 +1036,7 @@ endef
 	fi
 
 .PHONY: stats
-stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats) $(and $(CIMODE),init)
+stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats) $(and $(CI),init)
 
 STATSTARGETS = $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
 .PHONY: $(STATSTARGETS)
