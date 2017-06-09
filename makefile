@@ -301,8 +301,6 @@ update_casile: init_casile
 update_repository:
 	git fetch --all --prune --tags
 
-$(CASILEDIR)/gitignore: init_casile
-
 .gitignore: $(CASILEDIR)/gitignore
 	$(call skip_if_tracked,$@)
 	cp $< $@
@@ -321,6 +319,7 @@ endef
 # Pass or fail target showing whether the CI config is up to date
 .PHONY: $(CICONFIG)_current
 $(CICONFIG)_current: $(CICONFIG)
+	git update-index --refresh
 	git diff-files --quiet -- $<
 
 define addtosync =
@@ -342,6 +341,7 @@ time_warp_casile:
 
 define time_warp
 	cd $1
+	git update-index --refresh
 	git diff-index --quiet --cached HEAD || continue
 	git ls-files |
 		while read file; do
