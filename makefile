@@ -85,6 +85,10 @@ PANDOCARGS ?=
 DOCUMENTCLASS ?= cabook
 DOCUMENTOPTIONS ?=
 
+# Default template for setting up Gitlab CI runners
+CITEMPLATE ?= $(CASILEDIR)/travis.yml
+CICONFIG ?= .travis.yml
+
 # Utility variables for later, http://blog.jgc.org/2007/06/escaping-comma-and-space-in-gnu-make.html
 , := ,
 space :=
@@ -186,6 +190,8 @@ debug: $(and $(CIMODE),clean)
 	@echo ALLTAGS: $(ALLTAGS)
 	@echo BRANCH: $(BRANCH)
 	@echo CASILEDIR: $(CASILEDIR)
+	@echo CICONFIG: $(CICONFIG)
+	@echo CITEMPLATE: $(CITEMPLATE)
 	@echo DEBUG: $(DEBUG)
 	@echo DEBUGTAGS: $(DEBUGTAGS)
 	@echo DIFF: $(DIFF)
@@ -293,6 +299,14 @@ update_repository:
 	cp $< $@
 	$(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),echo '$(TARGET)-$(PAPERSIZE)*' >> $@;))
 	cat $(filter %.dat,$^) >> $@
+
+$(CICONFIG): $(CITEMPLATE)
+	cp $< $@
+
+# Pass or fail target showing whether the CI config is up to date
+.PHONY: $(CICONFIG)_current
+$(CICONFIG)_current: $(CICONFIG)
+	git diff-files --quiet -- $<
 
 # For normal builds this will get generated based on output files, but for DRAFT
 # mode it's helpful to be able to make an empty one from scratch. Also if we
