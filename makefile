@@ -301,7 +301,7 @@ update_repository:
 	cat $(filter %.dat,$^) >> $@
 
 $(CICONFIG): $(CITEMPLATE)
-	cat $(CITEMPLATE) | \
+	cat $< | \
 		$(call ci_setup) | \
 		sponge $@
 
