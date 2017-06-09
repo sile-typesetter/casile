@@ -151,7 +151,7 @@ endif
 .DELETE_ON_ERROR:
 
 .PHONY: all
-all: $(TARGETS) renderings promotionals $(and $(CI),sync_pre)
+all: $(TARGETS) renderings promotionals
 
 ifeq ($(MAKECMDGOALS),ci)
 CI ?= 1
