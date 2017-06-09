@@ -157,11 +157,8 @@ ifeq ($(MAKECMDGOALS),ci)
 CI ?= 1
 endif
 
-.PHONY: ci ci_before ci_script ci_after
+.PHONY: ci
 ci: init clean debug sync_pre all sync_post stats
-ci_before: init debug
-ci_script: $(and $(CI),ci_before) all
-ci_after: $(and $(CI),ci_script) stats
 
 .PHONY: renderings
 renderings: LAYOUTS = $(PUBLAYOUT)
