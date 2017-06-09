@@ -301,11 +301,11 @@ update_casile: init_casile
 update_repository:
 	git fetch --all --prune --tags
 
-.gitignore: $(CASILEDIR)/gitignore sync_files.dat
+.gitignore: $(CASILEDIR)/gitignore init_casile
 	$(call skip_if_tracked,$@)
 	cp $< $@
 	$(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),echo '$(TARGET)-$(PAPERSIZE)*' >> $@;))
-	cat $(filter %.dat,$^) >> $@
+	find $(PUBDIR) -type f -exec basename {} \; >> $@
 
 $(CICONFIG): $(CITEMPLATE)
 	cat $< | \
@@ -320,13 +320,6 @@ endef
 .PHONY: $(CICONFIG)_current
 $(CICONFIG)_current: $(CICONFIG)
 	git diff-files --quiet -- $<
-
-# For normal builds this will get generated based on output files, but for DRAFT
-# mode it's helpful to be able to make an empty one from scratch. Also if we
-# force build this target use the chance to de-duplicate the list.
-sync_files.dat:
-	touch $@
-	sort -u $@ | sponge $@
 
 define addtosync =
 	$(DRAFT) && rm -f $(PUBDIR)/$@ || ln $@ $(PUBDIR)/$@
@@ -358,8 +351,6 @@ endef
 
 .PHONY: sync_pre
 sync_pre: $(and $(CI),clean)
-	cat /dev/null > sync_files.dat
-	$(if $(INPUTDIR),,exit 0)
 	$(call pre_sync)
 	rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/ ||:
 
@@ -560,7 +551,7 @@ $(WEBTARGETS): %.web: %-manifest.yml %-epub-pankart.jpg promotionals renderings
 	$(CASILEDIR)/bin/toc2breaks.lua $* $(firstword $^) $(lastword $^) $@ |
 		while read range out; do
 			pdftk $(word 2,$^) cat $$range output $$out
-			echo $$out >> sync_files.dat
+			ls $$out $(PUBDIR)/$$out
 		done
 
 issue.info:
