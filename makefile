@@ -301,7 +301,13 @@ update_repository:
 	cat $(filter %.dat,$^) >> $@
 
 $(CICONFIG): $(CITEMPLATE)
-	cp $< $@
+	cat $(CITEMPLATE) | \
+		$(call ci_setup) | \
+		sponge $@
+
+define ci_setup
+	cat -
+endef
 
 # Pass or fail target showing whether the CI config is up to date
 .PHONY: $(CICONFIG)_current
