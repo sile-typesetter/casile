@@ -176,8 +176,8 @@ endif
 series_promotionals: $(PROJECT)-covers.jpg
 
 $(PROJECT)-covers.png: $(foreach TARGET,$(TARGETS),$(TARGET)-epub-kapak.png)
-	$(addtosync)
 	$(MAGICK) $(filter %.png,$^) +append $@
+	$(addtosync)
 
 .PHONY: clean
 clean: $(and $(CI),init)
@@ -386,7 +386,6 @@ $(FULLPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
 $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES)
 	$(call skip_if_lazy,$@)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
-	$(addtosync)
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
 	# account for TOC issue: https://github.com/simoncozens/sile/issues/230
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
@@ -408,6 +407,7 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 		pdftk $*.tmp.pdf update_info_utf8 $*.dat output $@
 		rm $*.tmp.pdf
 	fi
+	$(addtosync)
 
 FULLSILS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).sil))
 $(FULLSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_bookid,$$@)-manifest.yml $$(call parse_bookid,$$@)-ayetler-sorted.json $$(call parse_bookid,$$@)-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
@@ -454,11 +454,11 @@ preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4)
 	pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $< ||:
 
 %-kirpilmis.pdf: %.pdf
-	$(addtosync)
 	b=$$(echo "$(TRIM) * 283.465" | bc)
 	w=$$(echo "$(call pagew,$<) * 100 - $$b * 2" | bc)
 	h=$$(echo "$(call pageh,$<) * 100 - $$b * 2" | bc)
 	podofobox $< $@ media $$b $$b $$w $$h
+	$(addtosync)
 
 define versioninfo
 $(shell
@@ -549,15 +549,14 @@ WEBTARGETS = $(foreach TARGET,$(TARGETS),$(TARGET).web)
 $(WEBTARGETS): %.web: %-manifest.yml %-epub-pankart.jpg promotionals renderings
 
 %-app.info: %-app.sil.toc %-app.pdf %-manifest.yml
-	$(addtosync)
 	$(CASILEDIR)/bin/toc2breaks.lua $* $(firstword $^) $(lastword $^) $@ |
 		while read range out; do
 			pdftk $(word 2,$^) cat $$range output $$out
 			ls $$out $(PUBDIR)/$$out
 		done
+	$(addtosync)
 
 issue.info:
-	$(addtosync)
 	for source in $(TARGETS); do
 		echo -e "# $$source\n"
 		if test -d $${source}-bolumler; then
@@ -574,6 +573,7 @@ issue.info:
 		fi
 		echo
 	done > $@
+	$(addtosync)
 
 define skip_if_tracked
 	git ls-files --error-unmatch -- $1 2>/dev/null && exit 0 ||:
@@ -740,7 +740,6 @@ $(COVERFRAGMENTS): %-kapak-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_booki
 		" $< > $@
 
 %-cilt.pdf:	%-cilt.svg %-geometry.zsh
-	$(addtosync)
 	source $(filter %-geometry.zsh,$^)
 	$(INKSCAPE) --without-gui \
 		--export-dpi=$$hidpi \
@@ -748,6 +747,7 @@ $(COVERFRAGMENTS): %-kapak-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_booki
 		--export-margin=$$trimmm \
 		--file=$< \
 		--export-pdf=$@
+	$(addtosync)
 
 newgeometry = $(shell grep -sq hidpi=$(HIDPI) $1 || echo force)
 geometrybase = $(if $(filter $(BINDINGS),$(call parse_layout,$1)),$1.pdf $1-cilt-metin.pdf,$1-kapak-metin.pdf)
@@ -958,24 +958,24 @@ define pov_crop
 endef
 
 %.jpg: %.png
-	$(addtosync)
 	$(MAGICK) $< \
 		$(if $(findstring 3b,$*),$(call pov_crop),) \
 		-quality 85 \
 		$@
+	$(addtosync)
 
 %.epub %.odt %.docx: %-processed.md %-manifest.yml %-epub-pankart.jpg
-	$(addtosync)
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		--smart \
 		--epub-cover-image=$(lastword $^) \
 		$(word 2,$^) \
 		<($(call strip_lang) < $<) -o $@
+	$(addtosync)
 
 %.mobi: %.epub
-	$(addtosync)
 	kindlegen $< ||:
+	$(addtosync)
 
 # This is obsoleted by YAML merger, but the code might prove useful someday
 # because the results are more flexible that the perl class
@@ -983,11 +983,11 @@ endef
 # 	jq -s 'reduce .[] as $$item({}; . + $$item)' $(foreach YAML,$^,<(yaml2json $(YAML))) > $@
 
 %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml)
-	$(addtosync)
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $^ |
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
 			-e '/: [[:digit:]]\+[^[:digit:]]/s/: \(.*\)/: "\1"/' \
 		    -e '/\(own\|next\)cloudshare:/s/: \(.*\)$$/: "\1"/' > $@
+	$(addtosync)
 
 %-url.png: %-url.svg
 	$(MAGICK) $< \
