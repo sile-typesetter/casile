@@ -158,7 +158,7 @@ CI ?= 1
 endif
 
 .PHONY: ci
-ci: init clean debug sync_pre all sync_post stats
+ci: init debug all sync_post stats
 
 .PHONY: renderings
 renderings: LAYOUTS = $(PUBLAYOUT)
@@ -184,7 +184,7 @@ clean: $(and $(CI),init)
 	git clean -xf
 
 .PHONY: debug
-debug: $(and $(CI),clean)
+debug:
 	@echo ALLTAGS: $(ALLTAGS)
 	@echo BRANCH: $(BRANCH)
 	@echo CASILEDIR: $(CASILEDIR)
