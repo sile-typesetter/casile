@@ -231,14 +231,14 @@ $(TARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
 figures: $(FIGURES)
 
 .PHONY: init
-init: check_dependencies update_toolkits update_repository
+init: check_dependencies init_toolkits update_repository
 	$(and $(OUTPUTDIR),mkdir -p $(OUTPUTDIR))
 	$(and $(PUBDIR),mkdir -p $(PUBDIR))
 
 .PHONY: init_casile
-init_casile: | $(CASILEDIR)/yarn.lock
+init_casile: time_warp_casile $(CASILEDIR)/yarn.lock
 
-$(CASILEDIR)/yarn.lock:
+$(CASILEDIR)/yarn.lock: $(CASILEDIR)/package.json
 	cd $(CASILEDIR) && yarn install
 
 .PHONY: check_dependencies
@@ -281,12 +281,20 @@ check_dependencies:
 	$(call depend_font,Libertinus Serif Display)
 	$(call depend_font,Libertinus Sans)
 
+.PHONY: init_toolkits
+init_toolkits: init_casile time_warp .gitignore
+
 .PHONY: update_toolkits
-update_toolkits: update_casile time_warp .gitignore
+update_toolkits: update_casile
+
+.PHONY: init_casile
+init_casile: time_warp_casile
+	cd $(CASILEDIR) && yarn install
 
 .PHONY: update_casile
-update_casile: init_casile time_warp_casile
+update_casile: init_casile
 	git submodule update --init --remote -- $(CASILEDIR)
+	$(call time_warp,$(CASILEDIR))
 	cd $(CASILEDIR) && yarn upgrade
 
 .PHONY: update_repository
