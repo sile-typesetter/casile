@@ -301,11 +301,13 @@ update_casile: init_casile
 update_repository:
 	git fetch --all --prune --tags
 
-.gitignore: $(CASILEDIR)/gitignore init_casile
+$(CASILEDIR)/gitignore: init_casile
+
+.gitignore: $(CASILEDIR)/gitignore
 	$(call skip_if_tracked,$@)
 	cp $< $@
 	$(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),echo '$(TARGET)-$(PAPERSIZE)*' >> $@;))
-	find $(PUBDIR) -type f -exec basename {} \; >> $@
+	find -path "$(PUBDIR)/*" -type f -exec basename {} \; >> $@
 
 $(CICONFIG): $(CITEMPLATE)
 	cat $< | \
