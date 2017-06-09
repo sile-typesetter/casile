@@ -5,6 +5,7 @@ SHELL := zsh
 PROJECTDIR := $(shell cd "$(shell dirname $(firstword $(MAKEFILE_LIST)))/" && pwd)
 CASILEDIR := $(shell cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/" && pwd)
 PROJECT := $(notdir $(PROJECTDIR))
+PUBDIR := $(PROJECTDIR)/pub
 
 # Set the language if not otherwise set
 LANGUAGE ?= en
@@ -235,6 +236,7 @@ figures: $(FIGURES)
 .PHONY: init
 init: check_dependencies update_toolkits update_repository
 	$(and $(OUTPUTDIR),mkdir -p $(OUTPUTDIR))
+	$(and $(PUBDIR),mkdir -p $(PUBDIR))
 
 .PHONY: init_casile
 init_casile: | $(CASILEDIR)/yarn.lock
@@ -322,9 +324,7 @@ sync_files.dat:
 	sort -u $@ | sponge $@
 
 define addtosync =
-	$(DRAFT) || echo $@ >> sync_files.dat
-	$(DRAFT) && grep -v $@ sync_files.dat | sponge sync_files.dat ||:
-	sort -u sync_files.dat | sponge sync_files.dat
+	$(DRAFT) && rm -f $(PUBDIR)/$@ || ln $@ $(PUBDIR)/$@
 endef
 
 # If building in draft mode, scale resolutions down for quick builds
@@ -359,9 +359,8 @@ sync_pre: $(and $(CI),clean)
 	rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/ ||:
 
 .PHONY: sync_post
-sync_post: sync_files.dat $(and $(CI),all)
+sync_post: $(and $(CI),all)
 	$(if $(OUTPUTDIR),,exit 0)
-	sort -u $< | sponge $<
 	for target in $(TARGETS); do
 ifeq ($(ALLTAGS),)
 		tagpath=
@@ -369,11 +368,9 @@ else
 		tagpath=$$target/$(TAGNAME)/
 endif
 		mkdir -p $(OUTPUTDIR)/$$tagpath
-		grep "^$${target}" $< |
-			while read file; do
-				echo Sync $$file to $(OUTPUTDIR)/$$tagpath
-				test -f $$file && rsync -ct $$file $(OUTPUTDIR)/$$tagpath
-			done
+		find $(PUBDIR) \
+			-type f -name "$${target}*" \
+			-execdir rsync -ct {} $(OUTPUTDIR)/$$tagpath \;
 	done
 	$(call post_sync)
 
