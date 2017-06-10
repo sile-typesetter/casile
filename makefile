@@ -151,14 +151,14 @@ endif
 .DELETE_ON_ERROR:
 
 .PHONY: all
-all: $(TARGETS) renderings promotionals
+all: $(TARGETS)
 
 ifeq ($(MAKECMDGOALS),ci)
 CI ?= 1
 endif
 
 .PHONY: ci
-ci: init debug all sync_post stats
+ci: init debug all renderings promotionals sync_post stats
 
 .PHONY: renderings
 renderings: LAYOUTS = $(PUBLAYOUT)
