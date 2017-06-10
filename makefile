@@ -47,7 +47,7 @@ POVRAY ?= povray
 
 # List of supported outputs
 BINDINGS = a4ciltli octavo halfletter a5trim cep
-DISPLAYS = a4 a5 app
+DISPLAYS = a4 a5 app ekran
 PLACARDS = kare genis bant epub
 PAPERSIZES = $(BINDINGS) $(DISPLAYS) $(PLACARDS)
 
