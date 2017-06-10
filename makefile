@@ -323,7 +323,7 @@ $(CICONFIG)_current: $(CICONFIG)
 	git diff-files --quiet -- $<
 
 define addtosync =
-	$(DRAFT) && rm -f $(PUBDIR)/$@ || ln $@ $(PUBDIR)/$@
+	$(DRAFT) && rm -f $(PUBDIR)/$@ || ln -f $@ $(PUBDIR)/$@
 endef
 
 # If building in draft mode, scale resolutions down for quick builds
@@ -552,7 +552,7 @@ $(WEBTARGETS): %.web: %-manifest.yml %-epub-pankart.jpg promotionals renderings
 	$(CASILEDIR)/bin/toc2breaks.lua $* $(firstword $^) $(lastword $^) $@ |
 		while read range out; do
 			pdftk $(word 2,$^) cat $$range output $$out
-			ln $$out $(PUBDIR)/$$out
+			ln -f $$out $(PUBDIR)/$$out
 		done
 	$(addtosync)
 
