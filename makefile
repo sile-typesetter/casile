@@ -552,7 +552,7 @@ $(WEBTARGETS): %.web: %-manifest.yml %-epub-pankart.jpg promotionals renderings
 	$(CASILEDIR)/bin/toc2breaks.lua $* $(firstword $^) $(lastword $^) $@ |
 		while read range out; do
 			pdftk $(word 2,$^) cat $$range output $$out
-			ls $$out $(PUBDIR)/$$out
+			ln $$out $(PUBDIR)/$$out
 		done
 	$(addtosync)
 
