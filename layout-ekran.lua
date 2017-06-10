@@ -2,30 +2,36 @@ CASILE.layout = "ekran"
 
 local class = SILE.documentState.documentClass
 
-SILE.documentState.paperSize = SILE.paperSizeParser("310mm x 170mm")
+SILE.documentState.paperSize = SILE.paperSizeParser(1280 / 96 .. "in x " .. 800 / 96 .. "in")
 SILE.documentState.orgPaperSize = SILE.documentState.paperSize
 
 class:defineMaster({
     id = "right",
     firstContentFrame = "content",
     frames = {
+      page = {
+        left = "0",
+        right = "100%pw",
+        top = "0",
+        bottom = "100%ph"
+      },
       content = {
-        left = "5mm",
-        right = "100%pw-5mm",
-        top = "bottom(runningHead)+5mm",
-        bottom = "top(footnotes)"
+        left = "5%pw",
+        right = "100%pw-5%pw",
+        top = "bottom(runningHead)+1%ph",
+        bottom = "top(footnotes)-1%ph"
       },
       runningHead = {
         left = "left(content)",
         right = "right(content)",
-        top = "5mm",
-        bottom = "18mm"
+        top = "2%ph",
+        bottom = "5%ph"
       },
       footnotes = {
         left = "left(content)",
         right = "right(content)",
         height = "0",
-        bottom = "100%ph-5mm"
+        bottom = "100%ph-5%ph"
       }
     }
   })
