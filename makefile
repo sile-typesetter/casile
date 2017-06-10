@@ -536,7 +536,7 @@ define sile_hook
 	cat -
 endef
 
-%.sil.toc: %.pdf ;
+%.toc: %.pdf ;
 
 %.sil.tov: %.pdf ;
 
@@ -548,8 +548,8 @@ WEBTARGETS = $(foreach TARGET,$(TARGETS),$(TARGET).web)
 .PHONY: $(WEBTARGETS)
 $(WEBTARGETS): %.web: %-manifest.yml %-epub-pankart.jpg promotionals renderings
 
-%-app.info: %-app.sil.toc %-app.pdf %-manifest.yml
-	$(CASILEDIR)/bin/toc2breaks.lua $* $(filter %-app.sil.toc,$^) $(filter %-manifest.yml,$^) $@ |
+%-app.info: %-app.toc %-app.pdf %-manifest.yml
+	$(CASILEDIR)/bin/toc2breaks.lua $* $(filter %-app.toc,$^) $(filter %-manifest.yml,$^) $@ |
 		while read range out; do
 			pdftk $(filter %-app.pdf,$^) cat $$range output $$out
 			ln -f $$out $(PUBDIR)/$$out
