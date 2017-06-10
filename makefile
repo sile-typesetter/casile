@@ -549,9 +549,9 @@ WEBTARGETS = $(foreach TARGET,$(TARGETS),$(TARGET).web)
 $(WEBTARGETS): %.web: %-manifest.yml %-epub-pankart.jpg promotionals renderings
 
 %-app.info: %-app.sil.toc %-app.pdf %-manifest.yml
-	$(CASILEDIR)/bin/toc2breaks.lua $* $(firstword $^) $(lastword $^) $@ |
+	$(CASILEDIR)/bin/toc2breaks.lua $* $(filter %-app.sil.toc,$^) $(filter %-manifest.yml,$^) $@ |
 		while read range out; do
-			pdftk $(word 2,$^) cat $$range output $$out
+			pdftk $(filter %-app.pdf,$^) cat $$range output $$out
 			ln -f $$out $(PUBDIR)/$$out
 		done
 	$(addtosync)

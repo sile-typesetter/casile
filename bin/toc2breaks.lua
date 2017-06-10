@@ -1,4 +1,4 @@
-#!/bin/env lua
+#!/usr/bin/env lua
 
 local project = os.getenv("PROJECT")
 local basename = arg[1]
@@ -12,7 +12,7 @@ local toc = assert(loadstring(doc))()
 local yaml = require("yaml")
 local meta = yaml.loadpath(arg[3])
 
-local share = "https://owncloud.alerque.com/" .. (meta.owncloudshare and "index.php/s/" .. meta.owncloudshare .. "/download?path=%2F&files=" or "remote.php/webdav/viachristus/" .. project .. "/")
+local share = "https://nextcloud.alerque.com/" .. (meta.nextcloudshare and "index.php/s/" .. meta.nextcloudshare .. "/download?path=%2F&files=" or "remote.php/webdav/viachristus/" .. project .. "/")
 
 local infofile = io.open(arg[4], "w")
 if not infofile  then return false end
