@@ -19,7 +19,7 @@ All of the following are utilized in one way or another. Currently the toolkit a
 * [PDFTk][pdftk] is used for manipulating PDFs.
 * [Podofo][podofo] is used to do more stuff with PDFs.
 * [Kindlegen][kindlegen] is needed to generate Amazon's E-Book formats.
-* [Popplar][popplar] is used to do even more stuff with PDFs.
+* [Poppler][poppler] is used to do even more stuff with PDFs.
 * Perl, Python, Lua, Node, Zsh, and a few other language interpreters!
 * Some other stuff (run `make dependencies` to check on them)
 
@@ -287,7 +287,7 @@ These are functions that can be defined in your project's `Makefile` to add addi
 [inkscape]: https://inkscape.org/
 [pdftk]: https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/
 [podofo]: http://podofo.sourceforge.net/
-[popplar]: https://poppler.freedesktop.org/
+[poppler]: https://poppler.freedesktop.org/
 [kindlegen]: https://www.amazon.com/gp/feature.html?docId=1000234621
 [nmcnmm]: https://duckduckgo.com/?q=%22Not+My+Circus%2C+Not+My+Monkeys%22&ia=images
 [zathura]: https://pwmt.org/projects/zathura/
