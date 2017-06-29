@@ -4,7 +4,7 @@ SHELL := zsh
 # Initial setup, environment dependent
 PROJECTDIR := $(shell cd "$(shell dirname $(firstword $(MAKEFILE_LIST)))/" && pwd)
 CASILEDIR := $(shell cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/" && pwd)
-PROJECT := $(notdir $(PROJECTDIR))
+PROJECT := $(notdir $(shell git worktree list | head -n1 | awk '{print $$1}'))
 PUBDIR := $(PROJECTDIR)/pub
 
 # Set the language if not otherwise set
