@@ -341,8 +341,8 @@ time_warp_casile:
 
 define time_warp
 	cd $1
-	git update-index --refresh
-	git diff-index --quiet --cached HEAD || continue
+	git update-index --refresh --ignore-submodules ||:
+	git diff-index --quiet --cached HEAD
 	git ls-files |
 		while read file; do
 			ts=$$(git log -n1 --pretty=format:%cI -- $$file)
