@@ -3,14 +3,10 @@ stages:
 variables:
   GIT_STRATEGY: fetch
   GIT_SUBMODULE_STRATEGY: normal
-  MAKEFLAGS: --output-sync=target
-before_script:
-  - make ci_before
-after_script:
-  - make ci_after
-all:
+  MAKEFLAGS: --jobs=$(nproc) --output-sync=target
+ci:
+  stage: build
   tags:
     - casile
-  stage: build
   script:
-    - make -j $(nproc) ci_script
+    - make ci
