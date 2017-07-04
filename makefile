@@ -150,15 +150,15 @@ endif
 .PRECIOUS: %.pdf %.sil %.toc %.dat %.inc
 .DELETE_ON_ERROR:
 
-.PHONY: all
-all: $(TARGETS)
+.PHONY: books
+books: $(TARGETS)
 
 ifeq ($(MAKECMDGOALS),ci)
 CI ?= 1
 endif
 
 .PHONY: ci
-ci: init debug all renderings promotionals sync_post stats
+ci: init debug books renderings promotionals sync_post stats
 
 .PHONY: renderings
 renderings: LAYOUTS = $(PUBLAYOUT)
@@ -357,7 +357,7 @@ sync_pre: $(and $(CI),clean)
 	rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/ ||:
 
 .PHONY: sync_post
-sync_post: $(and $(CI),all)
+sync_post: $(and $(CI),books)
 	$(if $(OUTPUTDIR),,exit 0)
 	for target in $(TARGETS); do
 ifeq ($(ALLTAGS),)
