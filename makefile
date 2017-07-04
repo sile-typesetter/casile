@@ -62,7 +62,7 @@ ENTRFLAGS := -c -r
 
 # POVray's progress status output doesn't play nice with Gitlab's CI logging
 ifneq ($(CI),)
-POVFLAGS := -V
+POVFLAGS += -V
 endif
 
 # List of extra m4 macro files to apply to every source
