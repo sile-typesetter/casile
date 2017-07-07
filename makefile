@@ -288,7 +288,7 @@ check_dependencies:
 	$(call depend_font,Libertinus Sans)
 
 .PHONY: init_toolkits
-init_toolkits: init_casile time_warp .gitignore
+init_toolkits: init_casile time_warp .gitignore .editorconfig
 
 .PHONY: update_toolkits
 update_toolkits: update_casile
@@ -306,6 +306,10 @@ update_casile: init_casile
 .PHONY: update_repository
 update_repository:
 	git fetch --all --prune --tags
+
+.editorconfig: $(CASILEDIR)/editorconfig
+	$(call skip_if_tracked,$@)
+	cp $< $@
 
 .gitignore: $(CASILEDIR)/gitignore $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)

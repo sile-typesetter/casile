@@ -1,4 +1,5 @@
 .gitignore
+.editorconfig
 
 .avadanlik.lua
 .casile.lua
