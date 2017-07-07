@@ -82,6 +82,12 @@ SILEPATH += $(CASILEDIR)
 # Extra arguments to pass to Pandow
 PANDOCARGS ?=
 
+# Figure out if we're being run from
+ATOM ?= $(shell env | grep -q ATOM_ && echo true || echo false)
+ifeq ($(ATOM),true)
+DRAFT = true
+endif
+
 # Set default document class
 DOCUMENTCLASS ?= cabook
 DOCUMENTOPTIONS ?=
