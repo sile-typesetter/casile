@@ -305,6 +305,7 @@ update_repository:
 	$(call skip_if_tracked,$@)
 	cp $< $@
 	$(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),echo '$(TARGET)-$(PAPERSIZE)*' >> $@;))
+	$(foreach TARGET,$(TARGETS),$(foreach FORMAT,$(FORMATS),echo '$(TARGET).$(FORMAT)' >> $@;))
 	find -path "$(PUBDIR)/*" -type f -exec basename {} \; >> $@
 
 $(CICONFIG): $(CITEMPLATE)
