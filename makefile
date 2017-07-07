@@ -301,7 +301,7 @@ update_casile: init_casile
 update_repository:
 	git fetch --all --prune --tags
 
-.gitignore: $(CASILEDIR)/gitignore
+.gitignore: $(CASILEDIR)/gitignore $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
 	cp $< $@
 	$(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),echo '$(TARGET)-$(PAPERSIZE)*' >> $@;))
