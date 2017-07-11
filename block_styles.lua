@@ -73,21 +73,23 @@ end)
 
 SILE.registerCommand("chapter", function (options, content)
   options.display = options.display or "STRING"
-  options.numbering = options.numbering or true
-  SILE.call("cabook:chapter:before", options, content)
+  options.numbering = CASILE.booleanopt(options.numbering, true)
   SILE.call("set-counter", { id = "footnote", value = 1 })
-  SILE.call("center", {}, function ()
-    SILE.settings.temporarily(function ()
+  SILE.settings.temporarily(function ()
+    SILE.call("center", {}, function ()
       SILE.typesetter:typeset(" ")
       SILE.call("skip", { height = "10%ph" })
-      SILE.call("book:sectioning", {
-        numbering = options.numbering,
-        level = 2,
-        reset = false,
-        display = options.display,
-        prenumber = "book:chapter:pre",
-        postnumber = "book:chapter:post"
-      }, content)
+      SILE.call("cabook:chapter:before", options, content)
+      SILE.call("cabook:font:chapterno", {}, function ()
+        SILE.call("book:sectioning", {
+            numbering = options.numbering,
+            level = 2,
+            reset = false,
+            display = options.display,
+            prenumber = "book:chapter:pre",
+            postnumber = "book:chapter:post"
+          }, content)
+      end)
       SILE.call("cabook:font:chaptertitle", {}, content)
     end)
   end)
