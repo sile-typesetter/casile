@@ -1,106 +1,106 @@
-SILE.registerCommand("cabook:monofont", function (options, content)
+SILE.registerCommand("cabook:font:mono", function (options, content)
   options.family = options.family or "Hack"
   SILE.call("font", options, content)
 end)
 
-SILE.registerCommand("cabook:sansfont", function (options, content)
+SILE.registerCommand("cabook:font:sans", function (options, content)
   options.family = options.family or "Libertinus Sans"
   SILE.call("font", options, content)
 end)
 
-SILE.registerCommand("cabook:seriffont", function (options, content)
+SILE.registerCommand("cabook:font:serif", function (options, content)
   options.family = options.family or "Libertinus Serif"
   SILE.call("font", options, content)
 end)
 
-SILE.registerCommand("cabook:displayfont", function (options, content)
+SILE.registerCommand("cabook:font:display", function (options, content)
   options.family = "Libertinus Serif Display"
   SILE.call("font", options, content)
 end)
 
-SILE.registerCommand("cabook:partfont", function (options, content)
+SILE.registerCommand("cabook:font:parttitle", function (options, content)
   options.weight = options.weight or 600
-  SILE.call("cabook:sansfont", options, content)
+  SILE.call("cabook:font:sans", options, content)
 end)
 
-SILE.registerCommand("cabook:partnumfont", function (options, content)
-  SILE.call("cabook:partfont", options, content)
+SILE.registerCommand("cabook:font:partno", function (options, content)
+  SILE.call("cabook:font:parttitle", options, content)
 end)
 
-SILE.registerCommand("cabook:altseriffont", function (options, content)
-  SILE.call("cabook:seriffont", options, content)
+SILE.registerCommand("cabook:font:alt", function (options, content)
+  SILE.call("cabook:font:serif", options, content)
 end)
 
-SILE.registerCommand("cabook:subparagraphfont", function (options, content)
+SILE.registerCommand("cabook:font:subparagraph", function (options, content)
   options.size = options.size or "11pt"
   options.features = options.features or "+smcp"
-  SILE.call("cabook:altseriffont", options, content)
+  SILE.call("cabook:font:alt", options, content)
 end)
 
-SILE.registerCommand("cabook:footnotefont", function (options, content)
+SILE.registerCommand("cabook:font:footnote", function (options, content)
   options.size = options.size or "8.5pt"
-  SILE.call("cabook:altseriffont", options, content)
+  SILE.call("cabook:font:alt", options, content)
 end)
 
-SILE.registerCommand("cabook:chapterfont", function (options, content)
+SILE.registerCommand("cabook:font:chaptertitle", function (options, content)
   options.weight = options.weight or 600
   options.size = options.size or "16pt"
-  SILE.call("cabook:seriffont", options, content)
+  SILE.call("cabook:font:serif", options, content)
 end)
 
-SILE.registerCommand("cabook:chapternumfont", function (options, content)
+SILE.registerCommand("cabook:font:chapterno", function (options, content)
   options.family = options.family or "Libertinus Serif Display"
   options.size = options.size or "11pt"
   SILE.call("font", options, content)
 end)
 
-SILE.registerCommand("cabook:sectionfont", function (options, content)
+SILE.registerCommand("cabook:font:sectiontitle", function (options, content)
   options.size = options.size or "8.5pt"
-  SILE.call("cabook:chapterfont", options, content)
+  SILE.call("cabook:font:chaptertitle", options, content)
 end)
 
 SILE.registerCommand("cabook:font:dedication", function (options, content)
   options.style = options.style or "Italic"
-  SILE.call("cabook:seriffont", options, content)
+  SILE.call("cabook:font:serif", options, content)
 end)
 
 SILE.registerCommand("verbatim:font", function (options, content)
   options.size = options.size or "10pt"
-  SILE.call("cabook:monofont", options, content)
+  SILE.call("cabook:font:mono", options, content)
 end)
 
-SILE.registerCommand("cabook:page-number-font", function (options, content)
+SILE.registerCommand("cabook:font:folio", function (options, content)
   options.style = options.style or "Roman"
   options.size = options.size or "13pt"
   options.weight = options.weight or 400
-  SILE.call("cabook:altseriffont", options, content)
+  SILE.call("cabook:font:alt", options, content)
 end)
 
-SILE.registerCommand("cabook:left-running-head-font", function (options, content)
+SILE.registerCommand("cabook:font:left-header", function (options, content)
   options.size = options.size or "12pt"
-  SILE.call("cabook:altseriffont", options, content)
+  SILE.call("cabook:font:alt", options, content)
 end)
 
-SILE.registerCommand("cabook:right-running-head-font", function (options, content)
+SILE.registerCommand("cabook:font:right-header", function (options, content)
   options.style = options.style or "Italic"
   options.size = options.size or "12pt"
-  SILE.call("cabook:altseriffont", options, content)
+  SILE.call("cabook:font:alt", options, content)
 end)
 
-SILE.registerCommand("cabook:titlepage-title-font", function (options, content)
-  SILE.call("cabook:partnumfont", options, content)
+SILE.registerCommand("cabook:font:title", function (options, content)
+  SILE.call("cabook:font:partno", options, content)
 end)
 
-SILE.registerCommand("cabook:titlepage-subtitle-font", function (options, content)
-  SILE.call("cabook:partfont", options, content)
+SILE.registerCommand("cabook:font:subtitle", function (options, content)
+  SILE.call("cabook:font:parttitle", options, content)
 end)
 
-SILE.registerCommand("cabook:titlepage-author-font", function (options, content)
-  SILE.call("cabook:partfont", options, content)
+SILE.registerCommand("cabook:font:author", function (options, content)
+  SILE.call("cabook:font:parttitle", options, content)
 end)
 
 SILE.registerCommand("tableofcontents:headerfont", function (options, content)
-  SILE.call("cabook:partfont", options, content)
+  SILE.call("cabook:font:parttitle", options, content)
 end)
 
 SILE.registerCommand("strong", function (options, content)

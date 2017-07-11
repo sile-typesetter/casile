@@ -107,7 +107,7 @@ local init = function (self)
 
   SILE.registerCommand("tableofverses", function (options, content)
     SILE.call("chapter", { numbering = false, appendix = true }, { "Ayet Referans İndeksi" })
-    SILE.call("cabook:seriffont", { size = "0.95em" })
+    SILE.call("cabook:font:serif", { size = "0.95em" })
     local origmethod = SILE.settings.get("linespacing.method")
     local origleader = SILE.settings.get("linespacing.fixed.baselinedistance")
     local origparskip = SILE.settings.get("document.parskip")
