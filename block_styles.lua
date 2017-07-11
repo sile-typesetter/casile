@@ -59,6 +59,8 @@ SILE.registerCommand("cabook:chapter:before", function (options, content)
   if (options.numbering == false or options.numbering == "false") then
     SILE.call("skip", { height = "10ex" })
   end
+  SILE.typesetter:typeset(" ")
+  SILE.call("skip", { height = "10%ph" })
 end)
 
 SILE.registerCommand("cabook:chapter:after", function (options, content)
@@ -77,8 +79,6 @@ SILE.registerCommand("chapter", function (options, content)
   SILE.call("set-counter", { id = "footnote", value = 1 })
   SILE.settings.temporarily(function ()
     SILE.call("center", {}, function ()
-      SILE.typesetter:typeset(" ")
-      SILE.call("skip", { height = "10%ph" })
       SILE.call("cabook:chapter:before", options, content)
       SILE.call("cabook:font:chapterno", {}, function ()
         SILE.call("book:sectioning", {
