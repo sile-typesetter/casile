@@ -59,6 +59,11 @@ SILE.registerCommand("cabook:sectionfont", function (options, content)
   SILE.call("cabook:chapterfont", options, content)
 end)
 
+SILE.registerCommand("cabook:font:dedication", function (options, content)
+  options.style = options.style or "Italic"
+  SILE.call("cabook:seriffont", options, content)
+end)
+
 SILE.registerCommand("verbatim:font", function (options, content)
   options.size = options.size or "10pt"
   SILE.call("cabook:monofont", options, content)
