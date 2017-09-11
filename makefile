@@ -181,8 +181,12 @@ endif
 .PHONY: series_promotionals
 series_promotionals: $(PROJECT)-covers.jpg
 
-$(PROJECT)-covers.png: $(foreach TARGET,$(TARGETS),$(TARGET)-epub-kapak.png)
-	$(MAGICK) $(filter %.png,$^) +append $@
+$(PROJECT)-covers.png: $(foreach TARGET,$(TARGETS),$(TARGET)-epub-kapak.png) $(firstword $(TARGETS))-epub-geometry.zsh
+	source $(filter %-geometry.zsh,$^)
+	$(MAGICK) montage \
+		$(filter %.png,$^) \
+		-geometry $${coverwpm}x$${coverhpm}+0+0 \
+		$@
 	$(addtosync)
 
 .PHONY: clean
