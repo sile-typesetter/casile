@@ -187,7 +187,6 @@ $(PROJECT)-covers.png: $(foreach TARGET,$(TARGETS),$(TARGET)-epub-kapak.png) $(f
 		$(filter %.png,$^) \
 		-geometry $${coverwpm}x$${coverhpm}+0+0 \
 		$@
-	$(addtosync)
 
 .PHONY: clean
 clean: $(and $(CI),init)
