@@ -167,8 +167,7 @@ endif
 ci: init debug books renderings promotionals sync_post stats
 
 .PHONY: renderings
-renderings: LAYOUTS = $(PUBLAYOUT)
-renderings: $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(filter $(BINDINGS),$(LAYOUTS)),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(LAYOUT)-$(RENDERING).jpg)))
+renderings: $(foreach TARGET,$(TARGETS),$(filter $(BINDINGS),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(PUBLAYOUT)-$(RENDERING).jpg)))
 
 .PHONY: promotionals
 promotionals: $(foreach TARGET,$(TARGETS),$(foreach PANKART,$(PLACARDS),$(TARGET)-$(PANKART)-pankart.jpg))
