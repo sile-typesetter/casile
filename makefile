@@ -175,12 +175,16 @@ promotionals: $(foreach TARGET,$(TARGETS),$(foreach PANKART,$(PLACARDS),$(TARGET
 # If a series, add some extra dependencies to convenience builds
 ifneq ($(words $(TARGETS)),1)
 promotionals: series_promotionals
+renderings: series_renderings
 endif
 
 .PHONY: series_promotionals
-series_promotionals: $(PROJECT)-epub-montaj.jpg $(PROJECT)-kare-montaj.jpg
+series_promotionals: $(PROJECT)-epub-pankart-montaj.jpg $(PROJECT)-kare-pankart-montaj.jpg
 
-$(PROJECT)-%-montaj.png: $(foreach TARGET,$(TARGETS),$(TARGET)-%-pankart.png) $(firstword $(TARGETS))-%-geometry.zsh
+.PHONY: series_renderings
+series_renderings: $(PROJECT)-$(PUBLAYOUT)-3b-montaj.jpg
+
+$(PROJECT)-%-pankart-montaj.png: $(foreach TARGET,$(TARGETS),$(TARGET)-%-pankart.png) $(firstword $(TARGETS))-%-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) montage \
 		$(filter %.png,$^) \
@@ -926,7 +930,8 @@ endef
 
 povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
 
-%-3b.pov: %-geometry.zsh | $(povtextures)
+BOOKSCENES = $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(LAYOUTS),$(TARGET)-$(LAYOUT)-3b.pov))
+$(BOOKSCENES): %-3b.pov: %-geometry.zsh | $(povtextures)
 	source $(filter %-geometry.zsh,$^)
 	cat <<- EOF > $@
 		#declare coverwmm = $$coverwmm;
@@ -939,6 +944,10 @@ povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
 		#declare spineimg = "$(word 3,$|)";
 		#declare lights = $(call scale,8,2);
 	EOF
+
+SERIESSCENES = $(foreach LAYOUT,$(LAYOUTS),$(PROJECT)-$(LAYOUT)-3b.pov)
+$(SERIESSCENES): $(PROJECT)-%-3b.pov: $(foreach TARGET,$(TARGETS),$(TARGET)-%-3b.pov)
+	cat $< > $@
 
 define povray
 	headers=$$(mktemp povXXXXXX.inc)
@@ -954,6 +963,9 @@ endef
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
 
 %-3b-istif.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/istif.pov $(povtextures) | %-3b-arka.png
+	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,8000,6000)
+
+$(PROJECT)-%-3b-montaj.png: $(CASILEDIR)/kapak.pov $(PROJECT)-%-3b.pov $(CASILEDIR)/montaj.pov
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,8000,6000)
 
 define pov_crop
