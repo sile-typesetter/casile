@@ -179,9 +179,9 @@ promotionals: series_promotionals
 endif
 
 .PHONY: series_promotionals
-series_promotionals: $(PROJECT)-epub-montage.jpg $(PROJECT)-kare-montage.jpg
+series_promotionals: $(PROJECT)-epub-montaj.jpg $(PROJECT)-kare-montaj.jpg
 
-$(PROJECT)-%-montage.png: $(foreach TARGET,$(TARGETS),$(TARGET)-%-pankart.png) $(firstword $(TARGETS))-%-geometry.zsh
+$(PROJECT)-%-montaj.png: $(foreach TARGET,$(TARGETS),$(TARGET)-%-pankart.png) $(firstword $(TARGETS))-%-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) montage \
 		$(filter %.png,$^) \
