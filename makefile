@@ -119,6 +119,7 @@ height = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:h] $1)
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 parse_bookid = $(firstword $(subst -, ,$(basename $1)))
+series_sort = $(shell series_sort.lua $1)
 
 # Utility to modify recursive variables, see http://stackoverflow.com/a/36863261/313192
 prepend = $(eval $(1) = $(2)$(value $(1)))
@@ -967,7 +968,6 @@ $(SERIESSCENES): $(PROJECT)-%-3b.pov: $(firstword $(TARGETS))-%-3b.pov $(foreach
 		$(subst $(space),$(,)
 		,$(foreach INC,$(filter %.inc,$^),"$(INC)")) }
 	EOF
-
 
 define povray
 	headers=$$(mktemp povXXXXXX.inc)
