@@ -5,9 +5,10 @@
 #local SZ = 0;
 
 union {
-  #for (BookNo,0,BookCount-1)
+  #for (BookNo,1,BookCount)
+    #local SeriesNo = BookCount - BookNo;
     union {
-      Book(Books[BookNo])
+      Book(Books[SeriesNo])
       #local SZ = SZ + BZ + CoverThickness;
       translate < 0, 0, -SZ >
     }
