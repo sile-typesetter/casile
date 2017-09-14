@@ -930,19 +930,30 @@ endef
 
 povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
 
-BOOKSCENES = $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(LAYOUTS),$(TARGET)-$(LAYOUT)-3b.pov))
-$(BOOKSCENES): %-3b.pov: %-geometry.zsh | $(povtextures)
+BOOKSCENESINC = $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(LAYOUTS),$(TARGET)-$(LAYOUT).inc))
+$(BOOKSCENESINC): %.inc: %-geometry.zsh | $(povtextures)
 	source $(filter %-geometry.zsh,$^)
 	cat <<- EOF > $@
-		#declare coverwmm = $$coverwmm;
-		#declare coverhmm = $$coverhmm;
-		#declare spinemm = $$spinemm;
-		#declare coverhwx = $$coverwmm;
-		#declare coverhpx = $$coverhmm;
-		#declare frontimg = "$(word 1,$|)";
-		#declare backimg = "$(word 2,$|)";
-		#declare spineimg = "$(word 3,$|)";
-		#declare lights = $(call scale,8,2);
+		#declare CoverWMM = $$coverwmm;
+		#declare CoverHMM = $$coverhmm;
+		#declare SpineMM = $$spinemm;
+		#declare CoverHWX = $$coverwmm;
+		#declare CoverHPX = $$coverhmm;
+		#declare FrontImg = "$(word 1,$|)";
+		#declare BackImg = "$(word 2,$|)";
+		#declare SpineImg = "$(word 3,$|)";
+	EOF
+
+BOOKSCENES = $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(LAYOUTS),$(TARGET)-$(LAYOUT)-3b.pov))
+$(BOOKSCENES): %-3b.pov: %-geometry.zsh %.inc | $(povtextures)
+	source $(filter %-geometry.zsh,$^)
+	cat <<- EOF > $@
+		#declare DefaultBook = "$(filter %.inc,$^)";
+		#declare Lights = $(call scale,8,2);
+		#declare OutputAspect = $$coverwmm / $$coverhmm;
+		#declare BookAspect = $$coverwmm / $$coverhmm;
+		#declare BookThickness = $$spinemm / $$coverwmm / 2;
+		#declare HalfThick = BookThickness / 2;
 	EOF
 
 SERIESSCENES = $(foreach LAYOUT,$(LAYOUTS),$(PROJECT)-$(LAYOUT)-3b.pov)

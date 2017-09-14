@@ -1,7 +1,7 @@
-#declare viewz = 1;
+#declare ViewZ = 1;
 
-#macro scene ()
+#macro Scene ()
 
-book()
+Book(DefaultBook)
 
 #end

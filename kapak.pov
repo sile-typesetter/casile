@@ -1,14 +1,10 @@
-#declare outputaspect = coverwmm / coverhmm;
-#declare bookaspect = coverwmm / coverhmm;
-#declare bookthickness = spinemm / coverwmm / 2;
-#declare coverthickness = 0.004;
-#declare paperinset = 0.0001;
-#declare halfthick = bookthickness / 2;
-#declare bx = 1 * bookaspect;
-#declare by = 1;
-#declare bz = bookthickness;
+#declare CoverThickness = 0.004;
+#declare PaperInset = 0.0001;
+#declare BX = 1 * BookAspect;
+#declare BY = 1;
+#declare BZ = BookThickness;
 
-#declare paperpigment = pigment {
+#declare PaperPigment = pigment {
 	gradient <0,1,0>
 	color_map {
 		[0.0 color rgb<0.59,0.57,0.55>]
@@ -20,7 +16,7 @@
 	rotate <90,0,0>
 }
 
-#declare bookfinish = finish {
+#declare BookFinish = finish {
 	ambient 0.90
 	diffuse 0.5
 	reflection 0.05
@@ -31,9 +27,9 @@
 background { color rgb<1,1,1> }
 
 camera {
-	location <-1,1.50,1.2*viewz>
-	look_at <.4*bookaspect,0.60,halfthick>
-	right x*outputaspect
+	location <-1,1.50,1.2*ViewZ>
+	look_at <.4*BookAspect,0.60,HalfThick>
+	right x*OutputAspect
 	angle 35
 }
 
@@ -51,93 +47,95 @@ plane
 }
 
 light_source {
-	<-0.2,8,3.0*viewz>
+	<-0.2,8,3.0*ViewZ>
 	color rgb<1,1,1>
-	area_light <0.4, 0, 0>, <0, 0, 0.4>, lights, lights
+	area_light <0.4, 0, 0>, <0, 0, 0.4>, Lights, Lights
 	circular
 }
 
 light_source {
-	<-3,0,-halfthick>
+	<-3,0,-HalfThick>
 	color rgb<0.5,0.5,0.5>
 }
 
-#macro book ()
+#macro Book (ThisBook)
+
+#include ThisBook
 
 // front cover
-box { <0,0,0> <1,1,coverthickness>
+box { <0,0,0> <1,1,CoverThickness>
 	pigment {
 		image_map {
-			png frontimg
+			png FrontImg
 			map_type 0
 			interpolate 2
 		}
 	}
-	scale <bookaspect,1,1>
-	finish { bookfinish }
+	scale <BookAspect,1,1>
+	finish { BookFinish }
 }
 
 // back cover
 box {
-	<0,0,0> <1,1,coverthickness>
+	<0,0,0> <1,1,CoverThickness>
 	pigment {
 		image_map {
-			png backimg
+			png BackImg
 			map_type 0
 			interpolate 2
 		}
 		rotate <0,180,0>
 	}
-	scale <bookaspect,1,1>
-	finish { bookfinish }
-	translate <0,0,bz-coverthickness>
+	scale <BookAspect,1,1>
+	finish { BookFinish }
+	translate <0,0,BZ-CoverThickness>
 }
 
 // spine
 difference {
-	cylinder { <0,0,0>,<0,1,0>,(bz/2)
+	cylinder { <0,0,0>,<0,1,0>,(BZ/2)
 		pigment {
 			image_map {
-				png spineimg
+				png SpineImg
 				map_type 2
 				interpolate 2
 			}
 		}
 		scale <0.1,1,1>
-		translate <0,0,(bz/2)>
-		finish { bookfinish }
+		translate <0,0,(BZ/2)>
+		finish { BookFinish }
 	}
 	box {
-		<0,-0.001,0> <1,1.001,bz>
+		<0,-0.001,0> <1,1.001,BZ>
 	}
 }
 
 // dimensions of pages
-#declare paper = object {
+#declare Paper = object {
 	box {
-		<0,0,0> <1,1,bz-(coverthickness*2)>
-		scale <bookaspect,1,1>
-		translate <0,0,coverthickness>
+		<0,0,0> <1,1,BZ-(CoverThickness*2)>
+		scale <BookAspect,1,1>
+		translate <0,0,CoverThickness>
 	}
 }
 
 // pages box with inset
-box { min_extent(paper) max_extent(paper)-((paperinset*2)*y)-(paperinset*x)
-	translate <0,paperinset,0>
-	pigment {paperpigment}
+box { min_extent(Paper) max_extent(Paper)-((PaperInset*2)*y)-(PaperInset*x)
+	translate <0,PaperInset,0>
+	pigment {PaperPigment}
 	finish {ambient 0.5}
 }
 
 #end
 
-#macro bookflip ()
+#macro BookFlip (ThisBook)
 
 union {
-	book()
+	Book(ThisBook)
 	rotate <0,180,0>
-	translate <bx,0,bz>
+	translate <BX,0,BZ>
 }
 
 #end
 
-scene()
+Scene()
