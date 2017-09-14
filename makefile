@@ -971,7 +971,8 @@ $(SERIESSCENES): $(PROJECT)-%-3b.pov: $(firstword $(TARGETS))-%-3b.pov $(foreach
 
 define povray
 	headers=$$(mktemp povXXXXXX.inc)
-	cat $2 $3 > $$headers
+	echo '#version 3.7;' > $$headers
+	cat $2 $3 >> $$headers
 	$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$(call scale,$5) -H$(call scale,$6) -Q$(call scale,11,4) -O$4
 	rm $$headers
 endef
