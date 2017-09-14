@@ -15,8 +15,10 @@ local books = { ... } -- arg has 0 and -1 keys that aren't the passed arguments
 local seriesmeta = yaml.loadpath(project .. '.yml')
 
 local seriestitles = {}
+local seriesorders = {}
 for _, title in ipairs(seriesmeta.seriestitles) do
   table.insert(seriestitles, title.title)
+  seriesorders[title.title] = title.order
 end
 
 seriessort = function (a, b)
@@ -26,6 +28,9 @@ end
 getorder = function (book)
   local bookid = book:gsub("-.*", "")
   for key,val in ipairs(seriestitles) do
+    if seriesorders[fetchtitle(bookid)] then
+      return seriesorders[fetchtitle(bookid)]
+    end
     if val == fetchtitle(bookid) then
       return key
     end
