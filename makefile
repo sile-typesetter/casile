@@ -12,7 +12,7 @@ LANGUAGE ?= en
 include $(CASILEDIR)/makefile-$(LANGUAGE)
 
 # Find stuff to build that has both a YML and a MD component
-TARGETS ?= $(filter $(basename $(wildcard *.md)),$(basename $(wildcard *.yml)))
+TARGETS ?= $(call series_sort,$(filter $(basename $(wildcard *.md)),$(basename $(wildcard *.yml))))
 
 # List of figures that need building prior to content
 FIGURES ?=
