@@ -957,8 +957,15 @@ $(BOOKSCENES): %-3b.pov: %-geometry.zsh %.inc | $(povtextures)
 	EOF
 
 SERIESSCENES = $(foreach LAYOUT,$(LAYOUTS),$(PROJECT)-$(LAYOUT)-3b.pov)
-$(SERIESSCENES): $(PROJECT)-%-3b.pov: $(foreach TARGET,$(TARGETS),$(TARGET)-%-3b.pov)
-	cat $< > $@
+$(SERIESSCENES): $(PROJECT)-%-3b.pov: $(firstword $(TARGETS))-%-3b.pov $(foreach TARGET,$(TARGETS),$(TARGET)-%.inc)
+	cat <<- EOF > $@
+		#include "$<"
+		#declare BookCount = $(words $(TARGETS));
+		#declare Books = array[BookCount] {
+		$(subst $(space),$(,)
+		,$(foreach INC,$(filter %.inc,$^),"$(INC)")) }
+	EOF
+
 
 define povray
 	headers=$$(mktemp povXXXXXX.inc)
