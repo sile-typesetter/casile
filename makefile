@@ -942,6 +942,8 @@ $(BOOKSCENESINC): %.inc: %-geometry.zsh | $(povtextures)
 		#declare FrontImg = "$(word 1,$|)";
 		#declare BackImg = "$(word 2,$|)";
 		#declare SpineImg = "$(word 3,$|)";
+		#declare BookThickness = $$spinemm / $$coverwmm / 2;
+		#declare HalfThick = BookThickness / 2;
 	EOF
 
 BOOKSCENES = $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(LAYOUTS),$(TARGET)-$(LAYOUT)-3b.pov))

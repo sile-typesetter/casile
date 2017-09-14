@@ -2,7 +2,6 @@
 #declare PaperInset = 0.0001;
 #declare BX = 1 * BookAspect;
 #declare BY = 1;
-#declare BZ = BookThickness;
 
 #declare PaperPigment = pigment {
 	gradient <0,1,0>
@@ -61,6 +60,8 @@ light_source {
 #macro Book (ThisBook)
 
 #include ThisBook
+
+#declare BZ = BookThickness;
 
 // front cover
 box { <0,0,0> <1,1,CoverThickness>
