@@ -4,9 +4,8 @@
 
 camera {
 	location < -BX*2.5, BY*3, -BY*3.5 >
-	look_at < -BX/4, BY/2, 0 >
-	right x/OutputAspect
 	angle 35
+	look_at < -BX/4, BY/2, 0 >
 }
 
 union {

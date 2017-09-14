@@ -27,9 +27,10 @@ background { color rgb<1,1,1> }
 
 camera {
 	location <-1,1.50,1.2*ViewZ>
-	look_at <.4*BookAspect,0.60,HalfThick>
+  up y
 	right x*OutputAspect
 	angle 35
+	look_at <.4*BookAspect,0.60,HalfThick>
 }
 
 plane
