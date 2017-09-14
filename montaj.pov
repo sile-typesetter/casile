@@ -16,7 +16,7 @@ union {
 }
 
 camera {
-	location < -(BX+SZ)*2, BY*2, -BY*4 >
+	location < -(BX+SZ)*3, BY*2, -BY*3 >
 	angle 35
 	look_at < BX/2, BY/2, -SZ/3 >
 }
