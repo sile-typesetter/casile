@@ -25,13 +25,13 @@ class:defineMaster({
         left = "left(content)",
         right = "right(content)",
         top = "2%ph",
-        bottom = "7%ph"
+        bottom = "10%ph"
       },
       footnotes = {
         left = "left(content)",
         right = "right(content)",
         height = "0",
-        bottom = "100%ph-2%ph"
+        bottom = "100%ph-3%ph"
       }
     }
   })
@@ -61,6 +61,12 @@ end)
 
 SILE.registerCommand("output-left-running-head", function (options, content)
   SILE.call("output-right-running-head")
+end)
+
+local oldImprintFont = SILE.Commands["imprint:font"]
+SILE.registerCommand("imprint:font", function (options, content)
+  options.size = options.size or "6.5pt"
+  oldImprintFont(options, content)
 end)
 
 -- Screen based PDF readers don't need blank even numbered pages ;)
