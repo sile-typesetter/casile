@@ -727,3 +727,20 @@ end)
 SILE.registerUnit("%pmed", { relative = true, definition = function (v)
   return v / 100 * (SILE.documentState.orgPaperSize[1] + SILE.documentState.orgPaperSize[2]) / 2
 end})
+
+local parseSize = function (size)
+  return SILE.length.parse(size):absolute().length
+end
+
+constrainSize = function (ideal, max, min)
+  local idealSize = parseSize(ideal)
+  if max then
+    local maxSize = parseSize(max)
+    if idealSize > maxSize then return max end
+  end
+  if min then
+    local minSize = parseSize(min)
+    if idealSize < minSize then return min end
+  end
+  return ideal
+end
