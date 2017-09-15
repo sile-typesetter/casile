@@ -16,8 +16,8 @@ class:defineMaster({
         bottom = "100%ph"
       },
       content = {
-        left = "5%pw",
-        right = "100%pw-5%pw",
+        left = "10%pw",
+        right = "100%pw-10%pw",
         top = "bottom(runningHead)+1%ph",
         bottom = "top(footnotes)-1%ph"
       },
@@ -25,13 +25,13 @@ class:defineMaster({
         left = "left(content)",
         right = "right(content)",
         top = "2%ph",
-        bottom = "5%ph"
+        bottom = "7%ph"
       },
       footnotes = {
         left = "left(content)",
         right = "right(content)",
         height = "0",
-        bottom = "100%ph-5%ph"
+        bottom = "100%ph-2%ph"
       }
     }
   })
