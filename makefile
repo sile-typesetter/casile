@@ -844,7 +844,7 @@ endef
 
 define magick_sembol
 	-gravity south \
-	\( -background none $1 -resize "%[fx:min($$spinepx*0.9-$(call mmtopx,0.5),$(call mmtopx,12))]"x \
+	\( -background none $1 -resize "%[fx:min($$spinepx/100*(100-$$spinemm),$(call mmtopx,12))]"x \
 		$(call magick_sembol_filter) \
 		-splice x%[fx:$(call mmtopx,5)+$$bleedpx] \) \
 	-compose over -composite
