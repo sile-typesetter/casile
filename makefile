@@ -35,6 +35,7 @@ COVERS ?= true # Build covers?
 SCALE ?= 17 # Reduction factor for draft builds
 HIDPI ?= $(call scale,1200) # Default DPI for generated press resources
 LODPI ?= $(call scale,300) # Default DPI for generated consumer resources
+SORTORDER ?= meta # Sort series by: none, alphabetical, date, meta, manual
 
 # Allow overriding executables used
 SILE ?= sile
@@ -119,7 +120,7 @@ height = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:h] $1)
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 parse_bookid = $(firstword $(subst -, ,$(basename $1)))
-series_sort = $(shell PROJECT=$(PROJECT) $(CASILEDIR)/bin/series_sort.lua $1)
+series_sort = $(shell PROJECT=$(PROJECT) SORTORDER=$(SORTORDER) $(CASILEDIR)/bin/series_sort.lua $1)
 
 # Utility to modify recursive variables, see http://stackoverflow.com/a/36863261/313192
 prepend = $(eval $(1) = $(2)$(value $(1)))

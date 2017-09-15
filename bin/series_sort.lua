@@ -2,7 +2,8 @@
 
 local yaml = require("yaml")
 
-local project = os.getenv("PROJECT")
+PROJECT = os.getenv("PROJECT")
+SORTORDER = os.getenv("SORTORDER")
 
 function dump(...)
   local arg = { ... } -- Avoid things that Lua stuffs in arg like args to self()
@@ -12,7 +13,7 @@ end
 local booktitles = {}
 local books = { ... } -- arg has 0 and -1 keys that aren't the passed arguments
 
-local seriesmeta = yaml.loadpath(project .. '.yml')
+local seriesmeta = yaml.loadpath(PROJECT .. '.yml')
 
 local seriestitles = {}
 local seriesorders = {}
@@ -26,15 +27,22 @@ seriessort = function (a, b)
 end
 
 getorder = function (book)
+  if SORTORDER == "alphabetical" then
+    return book
+  end
   local bookid = book:gsub("-.*", "")
   for key,val in ipairs(seriestitles) do
-    if seriesorders[fetchtitle(bookid)] then
-      return seriesorders[fetchtitle(bookid)]
-    end
-    if val == fetchtitle(bookid) then
-      return key
+    if SORTORDER == "manual" then
+      if seriesorders[fetchtitle(bookid)] then
+        return seriesorders[fetchtitle(bookid)]
+      end
+    elseif SORTORDER == "meta" then
+      if val == fetchtitle(bookid) then
+        return key
+      end
     end
   end
+  return 1 -- TODO: add option for sorting by publish date
 end
 
 fetchtitle = function (bookid)
@@ -44,6 +52,8 @@ fetchtitle = function (bookid)
   return booktitles[bookid]
 end
 
-table.sort(books, seriessort)
+if not (SORTORDER == "none") then
+  table.sort(books, seriessort)
+end
 
 print(table.concat(books, " "))
