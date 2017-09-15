@@ -2,7 +2,7 @@ CASILE.layout = "ekran"
 
 local class = SILE.documentState.documentClass
 
-SILE.documentState.paperSize = SILE.paperSizeParser(1280 / 96 .. "in x " .. 800 / 96 .. "in")
+SILE.documentState.paperSize = SILE.paperSizeParser(1920 / 192 .. "in x " .. 1080 / 192 .. "in")
 SILE.documentState.orgPaperSize = SILE.documentState.paperSize
 
 class:defineMaster({
