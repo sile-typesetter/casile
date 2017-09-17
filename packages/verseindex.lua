@@ -76,7 +76,6 @@ local init = function (self)
   SILE.registerCommand("tableofverses:reference", function (options, content)
     if #options.pages < 1 then
       SU.warn("Verse in index doesn't have page marker")
-      SU.debug("casile", content)
       pages = { "0" }
     end
     SILE.process(content)
