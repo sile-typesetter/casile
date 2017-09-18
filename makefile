@@ -389,6 +389,9 @@ endif
 			-type f -name "$${target}*" \
 			-execdir rsync -ct {} $(OUTPUTDIR)/$$tagpath \;
 	done
+	find $(PUBDIR) \
+		-type f -name "$(PROJECT)*" \
+		-execdir rsync -ct {} $(OUTPUTDIR)/$$tagpath \;
 	$(call post_sync)
 
 VIRTUALPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
