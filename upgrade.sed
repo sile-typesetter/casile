@@ -1,0 +1,17 @@
+s#cabook:seriffont#cabook:font:serif#g
+s#cabook:sansfont#cabook:font:sans#g
+s#cabook:monofont#cabook:font:mono#g
+s#cabook:displayfont#cabook:font:display#g
+s#cabook:altseriffont#cabook:font:alt#g
+s#cabook:titlepage-title-font#cabook:font:title#g
+s#cabook:titlepage-subtitle-font#cabook:font:subtitle#g
+s#cabook:titlepage-author-font#cabook:font:author#g
+s#cabook:partfont#cabook:font:parnttitle#g
+s#cabook:partnumfont#cabook:font:partno#g
+s#cabook:chapterfont#cabook:font:chaptertitle#g
+s#cabook:sectionfont#cabook:font:sectiontitle#g
+s#cabook:subparagraphfont#cabook:font:subparagraph#g
+s#cabook:footnotefont#cabook:font:footnote#g
+s#cabook:right-running-head-font#cabook:font:right-header#g
+s#cabook:left-running-head-font#cabook:font:left-header#g
+s#cabook:page-number-font#cabook:font:folio#g
