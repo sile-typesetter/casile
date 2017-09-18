@@ -311,6 +311,13 @@ update_casile: init_casile
 	$(call time_warp,$(CASILEDIR))
 	cd $(CASILEDIR) && yarn upgrade
 
+.PHONY: upgrade_repository
+upgrade_repository: upgrade_casile update_toolkits
+
+.PHONY: upgrade_casile
+upgrade_casile: $(CASILEDIR)/upgrade.sed
+	$(call find_and_munge,*.lua,sed -f $<,Replace old name and functions with new namespaces)
+
 .PHONY: update_repository
 update_repository:
 	git fetch --all --prune --tags
