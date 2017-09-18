@@ -516,6 +516,10 @@ define find_and_munge
 	git diff-index --quiet --cached HEAD || git ci -m "[auto] $3"
 endef
 
+.PHONY: lua_cleanup
+lua_cleanup:
+	$(call find_and_munge,*.lua,sed -e 's/function */function /g',Normalize Lua coding style)
+
 .PHONY: md_cleanup
 md_cleanup:
 	$(call find_and_munge,*.md,msword_escapes.pl,Fixup bad MS word typing habits that Pandoc tries to preserve)
