@@ -1,7 +1,9 @@
 SILE.registerCommand("titlepage", function (options, content)
   if not SILE.Commands["meta:title"] then return end
   SILE.call("nofolios")
-  SILE.call("open-double-page")
+  if not isScreenLayout() then
+    SILE.call("open-double-page")
+  end
   SILE.call("center", {}, function ()
     SILE.call("topfill")
     SILE.call("cabook:font:title", { size = "7%pw" }, function ()
