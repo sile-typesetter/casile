@@ -205,8 +205,8 @@ end)
 -- This is the same as SILE's version but sets our no-headers variable on blank pages
 -- ...and allows opening to an even page
 SILE.registerCommand("open-page", function (options)
-  local odd = CASILE.booleanopt(options.odd, true)
-  local double = CASILE.booleanopt(options.double, isScreenLayout())
+  local odd = CASILE.booleanopt(options.odd, not isScreenLayout())
+  local double = CASILE.booleanopt(options.double, not isScreenLayout())
   local class = SILE.documentState.documentClass
   local count = 0
   repeat 
@@ -218,7 +218,7 @@ SILE.registerCommand("open-page", function (options)
     SILE.typesetter:leaveHmode()
     SILE.Commands["supereject"]()
     count = count + 1
-  until (double and count > 1 or not double) and odd == not class:oddPage()
+  until (not double or count > 1) and (not odd or class:oddPage())
   SILE.typesetter:leaveHmode()
 end)
 
