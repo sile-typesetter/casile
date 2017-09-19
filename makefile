@@ -621,14 +621,14 @@ COVERBACKGROUNDS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out 
 git_background = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
 $(COVERBACKGROUNDS): %-kapak-zemin.png: $$(call git_background,$$@) $$(subst -kapak-zemin.png,-geometry.zsh,$$@)
 	source $(filter %-geometry.zsh,$^)
-	$(if $(filter %.png,$call git_background,$@),true,false) && $(MAGICK) $(filter %.png,$^) \
+	$(if $(filter %.png,$(call git_background,$@)),true,false) && $(MAGICK) $(filter %.png,$^) \
 		-gravity $(COVERGRAVITY) \
 		-extent  "%[fx:w/h>=$${coveraspect}?h*$${coveraspect}:w]x" \
 		-extent "x%[fx:w/h<=$${coveraspect}?w/$${coveraspect}:h]" \
 		-resize $${coverwpx}x$${coverhpx} \
 		$(call magick_zeminfilter) \
 		$@ ||:
-	$(if $(filter %.png,$call git_background,$@),false,true) && $(MAGICK) \
+	$(if $(filter %.png,$(call git_background,$@)),false,true) && $(MAGICK) \
 		-size $${coverwpx}x$${coverhpx}^ $(call magick_zemin_kapak) -composite \
 		$@ ||:
 
