@@ -27,6 +27,7 @@ SILE.registerCommand("titlepage", function (options, content)
 end)
 
 SILE.registerCommand("halftitlepage", function (options, content)
+  if isScreenLayout() then return end
   if not SILE.Commands["meta:title"] then return end
   SILE.call("nofolios")
   SILE.call("center", {}, function ()
