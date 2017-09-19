@@ -206,7 +206,7 @@ end)
 -- ...and allows opening to an even page
 SILE.registerCommand("open-page", function (options)
   local odd = CASILE.booleanopt(options.odd, true)
-  local double = CASILE.booleanopt(options.double, true)
+  local double = CASILE.booleanopt(options.double, isScreenLayout())
   local class = SILE.documentState.documentClass
   local count = 0
   repeat 
