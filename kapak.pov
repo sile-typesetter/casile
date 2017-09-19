@@ -78,10 +78,15 @@ sky_sphere {
 }
 
 light_source {
-	<-0.1,8,3.0*ViewZ>
+	<-0.2,8,3.0*ViewZ>
 	color rgb<1, 1, 1>
 	area_light <0.4, 0, 0>, <0, 0, 0.4>, Lights, Lights
 	circular
+}
+
+light_source {
+	<-3,0,-HalfThick>
+	color rgb<0.5,0.5,0.5>
 }
 
 #macro Book (ThisBook)
@@ -152,8 +157,8 @@ light_source {
 		translate <0,PaperInset,0>
 		pigment { PaperPigment }
 		finish {
-			ambient 0.6
-			emission 0.6
+			ambient 0.4
+			emission 0.4
 		}
 	}
 
