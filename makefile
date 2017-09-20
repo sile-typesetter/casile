@@ -1021,6 +1021,7 @@ $(BOOKSCENES): %-3b.pov: %-geometry.zsh %.inc | $(povtextures)
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
+ifneq ($(TARGETS),$(PROJECT))
 SERIESSCENES = $(call pattern_list,$(PROJECT),$(BINDINGS),-3b.pov)
 $(SERIESSCENES): $(PROJECT)-%-3b.pov: $(firstword $(TARGETS))-%-3b.pov $(call pattern_list,$(TARGETS),-%.inc)
 	cat <<- EOF > $@
@@ -1030,6 +1031,7 @@ $(SERIESSCENES): $(PROJECT)-%-3b.pov: $(firstword $(TARGETS))-%-3b.pov $(call pa
 		$(subst $(space),$(,)
 		,$(foreach INC,$(call series_sort,$(filter %.inc,$^)),"$(INC)")) }
 	EOF
+endif
 
 define povray
 	headers=$$(mktemp povXXXXXX.inc)
