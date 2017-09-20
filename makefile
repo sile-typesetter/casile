@@ -991,10 +991,8 @@ endef
 		$(call magick_emulateprint) \
 		$@
 
-povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
-
 BOOKSCENESINC = $(call pattern_list,$(TARGETS),$(LAYOUTS),.inc)
-$(BOOKSCENESINC): %.inc: %-geometry.zsh | $(povtextures)
+$(BOOKSCENESINC): %.inc: %-geometry.zsh %-pov-on.png %-pov-arka.png %-pov-sirt.png
 	source $(filter %-geometry.zsh,$^)
 	cat <<- EOF > $@
 		#declare CoverWMM = $$coverwmm;
@@ -1002,15 +1000,15 @@ $(BOOKSCENESINC): %.inc: %-geometry.zsh | $(povtextures)
 		#declare SpineMM = $$spinemm;
 		#declare CoverHWX = $$coverwmm;
 		#declare CoverHPX = $$coverhmm;
-		#declare FrontImg = "$(word 1,$|)";
-		#declare BackImg = "$(word 2,$|)";
-		#declare SpineImg = "$(word 3,$|)";
+		#declare FrontImg = "$(filter %-pov-on.png,$^)";
+		#declare BackImg = "$(filter %-pov-arka.png,$^)";
+		#declare SpineImg = "$(filter %-pov-sirt.png,$^)";
 		#declare BookThickness = $$spinemm / $$coverwmm / 2;
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
 BOOKSCENES = $(call pattern_list,$(TARGETS),$(BINDINGS),-3b.pov)
-$(BOOKSCENES): %-3b.pov: %-geometry.zsh %.inc | $(povtextures)
+$(BOOKSCENES): %-3b.pov: %-geometry.zsh %.inc
 	source $(filter %-geometry.zsh,$^)
 	cat <<- EOF > $@
 		#declare DefaultBook = "$(filter %.inc,$^)";
@@ -1043,13 +1041,13 @@ define povray
 	rm $$headers
 endef
 
-%-3b-on.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/on.pov $(povtextures)
+%-3b-on.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/on.pov
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
 
-%-3b-arka.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/arka.pov $(povtextures) | %-3b-on.png
+%-3b-arka.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/arka.pov
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
 
-%-3b-istif.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/istif.pov $(povtextures) | %-3b-arka.png
+%-3b-istif.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/istif.pov
 	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,8000,6000)
 
 $(PROJECT)-%-3b-montaj.png: $(CASILEDIR)/kapak.pov $(PROJECT)-%-3b.pov $(CASILEDIR)/montaj.pov
