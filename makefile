@@ -23,6 +23,7 @@ BLEED ?= 3
 TRIM ?= 10
 PAPERWEIGHT ?= 60
 COVERGRAVITY ?= Center
+SCENELIGHT ?= rgb<1,1,1>
 
 # Build mode flags
 DRAFT ?= false # Take shortcuts, scale things down, be quick about it
@@ -987,8 +988,10 @@ $(SERIESSCENES): $(PROJECT)-%-3b.pov: $(firstword $(TARGETS))-%-3b.pov $(foreach
 
 define povray
 	headers=$$(mktemp povXXXXXX.inc)
-	echo '#version 3.7;' > $$headers
-	cat $2 $3 >> $$headers
+	cat <<- EOF < $2 < $3 > $$headers
+		#version 3.7;
+		#declare SceneLight = $(SCENELIGHT);
+	EOF
 	$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$(call scale,$5) -H$(call scale,$6) -Q$(call scale,11,4) -O$4
 	rm $$headers
 endef

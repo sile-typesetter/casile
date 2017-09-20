@@ -62,7 +62,7 @@ camera {
 plane {
 	y, 0
 	pigment {
-		color rgb<1, 1, 1>
+		color SceneLight
 	}
 	finish {
 		ambient 0.2
@@ -72,7 +72,7 @@ plane {
 
 sky_sphere {
 	pigment {
-		color rgb<1, 1, 1>
+		color SceneLight
 	}
 	emission 1
 }
