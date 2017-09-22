@@ -132,9 +132,7 @@ reverse = $(if $(wordlist 2,2,$(1)),$(call reverse,$(wordlist 2,$(words $(1)),$(
 # Making lists of possible targets is tedious syntax, but just using pattern
 # rules means the targets are not extendable. By hard coding lists of possible
 # targets we get a lot more flexibility. This makes those lists easier to write.
-pattern_list = $(if $(and $(1),$(2)),,$(foreach A,$(1),$(A)))$(if $(and $(2),$(3)),,$(foreach A,$(1),$(foreach B,$(2),$(A)-$(B))))$(if $(and $(3),$(4)),,$(foreach A,$(1),$(foreach B,$(2),$(foreach C,$(3),$(A)-$(B)-$(C)))))$(if $(and $(4),$(5)),,$(foreach A,$(1),$(foreach B,$(2),$(foreach C,$(3),$(foreach D,$(4),$(A)-$(B)-$(C)-$(D))))))
-# $(and $(3),$(or $(4),$(foreach A,$(1),$(foreach B,$(2),$(A)-$(B)$(3)))))
-# $(and $(4),$(foreach A,$(1),$(foreach B,$(2),$(foreach C,$(3),$(A)-$(B)-$(C)$(4)))))
+pattern_list = $(if $(and $(1),$(2)),,$(foreach A,$(1),$(A)))$(if $(and $(2),$(3)),,$(foreach A,$(1),$(foreach B,$(2),$(A)$(B))))$(if $(and $(3),$(4)),,$(foreach A,$(1),$(foreach B,$(2),$(foreach C,$(3),$(A)-$(B)$(C)))))$(if $(and $(4),$(5)),,$(foreach A,$(1),$(foreach B,$(2),$(foreach C,$(3),$(foreach D,$(4),$(A)-$(B)-$(C)$(D))))))
 
 ifeq ($(DRAFT),true)
 $(MAKECMDGOALS): force
