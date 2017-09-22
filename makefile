@@ -175,10 +175,10 @@ endif
 ci: init debug books renderings promotionals sync_post stats
 
 .PHONY: renderings
-renderings: $(foreach TARGET,$(TARGETS),$(filter $(BINDINGS),$(foreach RENDERING,$(RENDERINGS),$(TARGET)-$(PUBLAYOUT)-$(RENDERING).jpg)))
+renderings: $(call pattern_list,$(TARGETS),$(PUBLAYOUT),$(RENDERINGS),.jpg)
 
 .PHONY: promotionals
-promotionals: $(foreach TARGET,$(TARGETS),$(foreach PANKART,$(PLACARDS),$(TARGET)-$(PANKART)-pankart.jpg))
+promotionals: $(call pattern_list,$(TARGETS),$(PLACARDS),-pankart.jpg)
 
 # If a series, add some extra dependencies to convenience builds
 ifneq ($(words $(TARGETS)),1)
@@ -192,7 +192,7 @@ series_promotionals: $(PROJECT)-epub-pankart-montaj.jpg $(PROJECT)-kare-pankart-
 .PHONY: series_renderings
 series_renderings: $(PROJECT)-$(PUBLAYOUT)-3b-montaj.jpg
 
-$(PROJECT)-%-pankart-montaj.png: $(foreach TARGET,$(TARGETS),$(TARGET)-%-pankart.png) $(firstword $(TARGETS))-%-geometry.zsh
+$(PROJECT)-%-pankart-montaj.png: $(call pattern_list,$(TARGETS)-%-pankart.png) $(firstword $(TARGETS))-%-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) montage \
 		$(filter %.png,$^) \
@@ -408,16 +408,16 @@ endif
 		-execdir rsync -ct {} $(OUTPUTDIR)/$$tagpath \;
 	$(call post_sync)
 
-VIRTUALPDFS = $(foreach TARGET,$(TARGETS),$(TARGET).pdf)
+VIRTUALPDFS = $(call pattern_list,$(TARGETS),.pdf)
 .PHONY: $(VIRTUALPDFS)
-$(VIRTUALPDFS): %.pdf: $(foreach LAYOUT,$(LAYOUTS),$$*-$(LAYOUT).pdf) $(foreach LAYOUT,$(LAYOUTS),$(foreach RESOURCE,$(RESOURCES),$(if $(filter $(LAYOUT),$(BINDINGS)),$$*-$(LAYOUT)-$(RESOURCE).pdf,))) ;
+$(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) $(call pattern_list,$$*,$(LAYOUTS),$(RESOURCES),.pdf) ;
 
 coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(BINDINGS),$(call parse_layout,$1)),,%-kapak.pdf),)
 
 # Order is important here, these are included in reverse order so early supercedes late
 onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call parse_layout,$1).lua $(LUALIBS)
 
-FULLPDFS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(PLACARDS),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE).pdf))
+FULLPDFS = $(call pattern_list,$(TARGETS),$(filter-out $(PLACARDS),$(PAPERSIZES)),.pdf)
 $(FULLPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
 $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES)
 	$(call skip_if_lazy,$@)
@@ -445,7 +445,7 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 	fi
 	$(addtosync)
 
-FULLSILS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE).sil))
+FULLSILS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),.sil)
 $(FULLSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_bookid,$$@)-manifest.yml $$(call parse_bookid,$$@)-ayetler-sorted.json $$(call parse_bookid,$$@)-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
@@ -580,11 +580,11 @@ endef
 
 %.sil.tov: %.pdf ;
 
-APPTARGETS = $(foreach TARGET,$(TARGETS),$(TARGET).app)
+APPTARGETS = $(call pattern_list,$(TARGETS),.app)
 .PHONY: $(APPTARGETS)
 $(APPTARGETS): %.app: %-app.info promotionals
 
-WEBTARGETS = $(foreach TARGET,$(TARGETS),$(TARGET).web)
+WEBTARGETS = $(call pattern_list,$(TARGETS),.web)
 .PHONY: $(WEBTARGETS)
 $(WEBTARGETS): %.web: %-manifest.yml %-epub-pankart.jpg promotionals renderings
 
@@ -623,7 +623,7 @@ define skip_if_lazy
 	$(LAZY) && $(if $(filter $1,$(MAKECMDGOALS)),false,true) && test -f $1 && { touch $1; exit 0 } ||:
 endef
 
-COVERBACKGROUNDS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(BINDINGS),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-kapak-zemin.png))
+COVERBACKGROUNDS = $(call pattern_list,$(TARGETS),$(filter-out $(BINDINGS),$(PAPERSIZES)),-kapak-zemin.png)
 git_background = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
 $(COVERBACKGROUNDS): %-kapak-zemin.png: $$(call git_background,$$@) $$(subst -kapak-zemin.png,-geometry.zsh,$$@)
 	source $(filter %-geometry.zsh,$^)
@@ -705,7 +705,7 @@ endef
 	pdftk $$metin background $$bg output $@
 	rm $$metin $$bg
 
-BINDINGFRAGMENTS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter $(BINDINGS),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-cilt-metin.pdf))
+BINDINGFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter $(BINDINGS),$(PAPERSIZES)),-cilt-metin.pdf)
 $(BINDINGFRAGMENTS): %-cilt-metin.pdf: $(CASILEDIR)/cilt.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -cilt-metin,,$$@) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$*)"
@@ -733,7 +733,7 @@ $(BINDINGFRAGMENTS): %-cilt-metin.pdf: $(CASILEDIR)/cilt.xml $$(call parse_booki
 		$(call magick_fragman_sirt) \
 		-composite $@
 
-COVERFRAGMENTS = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(BINDINGS),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-kapak-metin.pdf))
+COVERFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter-out $(BINDINGS),$(PAPERSIZES)),-kapak-metin.pdf)
 $(COVERFRAGMENTS): %-kapak-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$(call parse_bookid,$@))"
@@ -749,7 +749,7 @@ $(COVERFRAGMENTS): %-kapak-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_booki
 		$(call magick_fragman_kapak) \
 		-composite $@
 
-BINDINGIMAGES = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(BINDINGS),$(TARGET)-$(PAPERSIZE)-cilt.png))
+BINDINGIMAGES = $(call pattern_list,$(TARGETS),$(BINDINGS),-cilt.png)
 $(BINDINGIMAGES): %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(AVADANLIKDIR)/vc_sembol_renkli.svg $(AVADANLIKDIR)/vc_logo_renkli.svg %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
@@ -804,12 +804,12 @@ newgeometry = $(shell grep -sq hidpi=$(HIDPI) $1 || echo force)
 geometrybase = $(if $(filter $(BINDINGS),$(call parse_layout,$1)),$1.pdf $1-cilt-metin.pdf,$1-kapak-metin.pdf)
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
-NONBOUNDGEOMETRIES = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-geometry.zsh))
+NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(filter-out $(CILTLI),$(PAPERSIZES)),-geometry.zsh)
 $(NONBOUNDGEOMETRIES): BLEED = 0
 $(NONBOUNDGEOMETRIES): TRIM = 0
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
-GEOMETRIES = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE)-geometry.zsh))
+GEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-geometry.zsh)
 $(GEOMETRIES): %-geometry.zsh: $$(call newgeometry,$$@) $$(call geometrybase,$$*)
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	hidpi=$(HIDPI)
@@ -984,7 +984,7 @@ endef
 
 povtextures = %-pov-on.png %-pov-arka.png %-pov-sirt.png
 
-BOOKSCENESINC = $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(LAYOUTS),$(TARGET)-$(LAYOUT).inc))
+BOOKSCENESINC = $(call pattern_list,$(TARGETS),$(LAYOUTS),.inc)
 $(BOOKSCENESINC): %.inc: %-geometry.zsh | $(povtextures)
 	source $(filter %-geometry.zsh,$^)
 	cat <<- EOF > $@
@@ -1000,7 +1000,7 @@ $(BOOKSCENESINC): %.inc: %-geometry.zsh | $(povtextures)
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
-BOOKSCENES = $(foreach TARGET,$(TARGETS),$(foreach LAYOUT,$(LAYOUTS),$(TARGET)-$(LAYOUT)-3b.pov))
+BOOKSCENES = $(call pattern_list,$(TARGETS),$(LAYOUTS),-3b.pov)
 $(BOOKSCENES): %-3b.pov: %-geometry.zsh %.inc | $(povtextures)
 	source $(filter %-geometry.zsh,$^)
 	cat <<- EOF > $@
@@ -1012,8 +1012,8 @@ $(BOOKSCENES): %-3b.pov: %-geometry.zsh %.inc | $(povtextures)
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
-SERIESSCENES = $(foreach LAYOUT,$(LAYOUTS),$(PROJECT)-$(LAYOUT)-3b.pov)
-$(SERIESSCENES): $(PROJECT)-%-3b.pov: $(firstword $(TARGETS))-%-3b.pov $(foreach TARGET,$(TARGETS),$(TARGET)-%.inc)
+SERIESSCENES = $(call pattern_list,$(PROJECT),$(LAYOUTS)-3b.pov)
+$(SERIESSCENES): $(PROJECT)-%-3b.pov: $(firstword $(TARGETS))-%-3b.pov $(call pattern_list,$(TARGETS),-%.inc)
 	cat <<- EOF > $@
 		#include "$<"
 		#declare BookCount = $(words $(TARGETS));
@@ -1132,9 +1132,9 @@ endef
 	fi
 
 .PHONY: stats
-stats: $(foreach TARGET,$(TARGETS),$(TARGET)-stats) $(and $(CI),init)
+STATSTARGETS = $(call pattern_list,$(TARGETS),-stats)
+stats: $(STATSTARGETS) $(and $(CI),init)
 
-STATSTARGETS = $(foreach TARGET,$(TARGETS),$(TARGET)-stats)
 .PHONY: $(STATSTARGETS)
 $(STATSTARGETS): %-stats:
 	stats.zsh $* $(STATSMONTHS)
