@@ -643,9 +643,19 @@ $(COVERBACKGROUNDS): %-kapak-zemin.png: $$(call git_background,$$@) $$(subst -ka
 %-kapak.png: %-kapak-zemin.png %-fragman-kapak.png %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	@$(MAGICK) $< \
-		\( -gravity center -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_kapak) \) -compose overlay -composite \
-		\( -gravity center $(word 2,$^) -write mpr:metin-kapak \) -compose over -composite \
-		-gravity center -size %[fx:u.w]x%[fx:u.h] \
+		\( -background none \
+			-gravity center \
+			-size $${coverwpx}x$${coverhpx} \
+			xc: \
+			$(call magick_kapak) \
+		\) -compose overlay -composite \
+		\( \
+			-gravity center \
+			$(word 2,$^) \
+			-write mpr:metin-kapak \
+		\) -compose over -composite \
+		-gravity center \
+		-size %[fx:u.w]x%[fx:u.h] \
 		-composite \
 		$@
 
@@ -865,10 +875,12 @@ endef
 
 define magick_sembol
 	-gravity south \
-	\( -background none $1 -resize "%[fx:min($$spinepx/100*(100-$$spinemm),$(call mmtopx,12))]"x \
+	\( -background none \
+		$1 \
+		-resize "%[fx:min($$spinepx/100*(100-$$spinemm),$(call mmtopx,12))]"x \
 		$(call magick_sembol_filter) \
-		-splice x%[fx:$(call mmtopx,5)+$$bleedpx] \) \
-	-compose over -composite
+		-splice x%[fx:$(call mmtopx,5)+$$bleedpx] \
+	\) -compose over -composite
 endef
 
 define magick_sembol_filter
@@ -876,19 +888,25 @@ endef
 
 define magick_logo
 	-gravity southwest \
-	\( \
-	-background none $(AVADANLIKDIR)/vc_logo_renksiz.svg \
-	-channel RGB -negate \
-	-level 20%,60%!  \
-	-resize $(call mmtopx,30)x \
-	-splice %[fx:$$bleedpx+$$coverwpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
+	\( -background none \
+		$(AVADANLIKDIR)/vc_logo_renksiz.svg \
+		-channel RGB -negate \
+		-level 20%,60%!  \
+		-resize $(call mmtopx,30)x \
+		-splice %[fx:$$bleedpx+$$coverwpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
 	\) -compose screen -composite
 endef
 
 define magick_barkod
 	-gravity southeast \
-	\( -background white $1 -resize $(call mmtopx,30)x -bordercolor white -border $(call mmtopx,2) -background none -splice %[fx:$$bleedpx+$$coverwpx+$$spinepx+$$coverwpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \) \
-	-compose over -composite
+	\( -background white \
+		$1 \
+		-resize $(call mmtopx,30)x \
+		-bordercolor white \
+		-border $(call mmtopx,2) \
+		-background none \
+		-splice %[fx:$$bleedpx+$$coverwpx+$$spinepx+$$coverwpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
+	\) -compose over -composite
 endef
 
 define magick_crease
@@ -898,8 +916,15 @@ define magick_crease
 endef
 
 define magick_fray
-	\( +clone -alpha extract -virtual-pixel black -spread 2 -blur 0x4 -threshold 20% -spread 2 -blur 0x0.7 \) \
-	-alpha off -compose copyopacity -composite
+	\( +clone \
+		-alpha extract \
+		-virtual-pixel black \
+		-spread 2 \
+		-blur 0x4 \
+		-threshold 20% \
+		-spread 2 \
+		-blur 0x0.7 \
+	\) -alpha off -compose copyopacity -composite
 endef
 
 define magick_emulateprint
