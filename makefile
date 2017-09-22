@@ -787,6 +787,11 @@ $(COVERFRAGMENTS): %-kapak-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_booki
 newgeometry = $(shell grep -sq hidpi=$(HIDPI) $1 || echo force)
 geometrybase = $(if $(filter $(BINDINGS),$(call parse_layout,$1)),$1.pdf $1-cilt-metin.pdf,$1-kapak-metin.pdf)
 
+# Dial down trim/bleed for non-full-bleed output so we can use the same math
+NONBOUNDGEOMETRIES = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(filter-out $(CILTLI),$(PAPERSIZES)),$(TARGET)-$(PAPERSIZE)-geometry.zsh))
+$(NONBOUNDGEOMETRIES): BLEED = 0
+$(NONBOUNDGEOMETRIES): TRIM = 0
+
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES = $(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),$(TARGET)-$(PAPERSIZE)-geometry.zsh))
 $(GEOMETRIES): %-geometry.zsh: $$(call newgeometry,$$@) $$(call geometrybase,$$*)
