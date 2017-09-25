@@ -1009,7 +1009,7 @@ $(BOOKSCENESINC): %.inc: %-geometry.zsh | $(povtextures)
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
-BOOKSCENES = $(call pattern_list,$(TARGETS),$(LAYOUTS),-3b.pov)
+BOOKSCENES = $(call pattern_list,$(TARGETS),$(BINDINGS),-3b.pov)
 $(BOOKSCENES): %-3b.pov: %-geometry.zsh %.inc | $(povtextures)
 	source $(filter %-geometry.zsh,$^)
 	cat <<- EOF > $@
@@ -1021,7 +1021,7 @@ $(BOOKSCENES): %-3b.pov: %-geometry.zsh %.inc | $(povtextures)
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
-SERIESSCENES = $(call pattern_list,$(PROJECT),$(LAYOUTS)-3b.pov)
+SERIESSCENES = $(call pattern_list,$(PROJECT),$(BINDINGS),-3b.pov)
 $(SERIESSCENES): $(PROJECT)-%-3b.pov: $(firstword $(TARGETS))-%-3b.pov $(call pattern_list,$(TARGETS),-%.inc)
 	cat <<- EOF > $@
 		#include "$<"
