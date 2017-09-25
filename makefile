@@ -178,7 +178,7 @@ ci: init debug books renderings promotionals sync_post stats
 renderings: $(call pattern_list,$(TARGETS),$(PUBLAYOUT),$(RENDERINGS),.jpg)
 
 .PHONY: promotionals
-promotionals: $(call pattern_list,$(TARGETS),$(PLACARDS),-pankart.jpg)
+promotionals: $(call pattern_list,$(TARGETS),$(PLACARDS),-pankart.jpg) $(call pattern_list,$(TARGETS),-icon.png)
 
 # If a series, add some extra dependencies to convenience builds
 ifneq ($(words $(TARGETS)),1)
@@ -663,6 +663,15 @@ $(COVERBACKGROUNDS): %-kapak-zemin.png: $$(call git_background,$$@) $$(subst -ka
 		-size %[fx:u.w]x%[fx:u.h] \
 		-composite \
 		$@
+
+# Gitlab projects need a sub 200kb icon image
+%-icon.png: %-kare-pankart.png
+	$(MAGICK) $< \
+		-define png:extent=200kb \
+		-resize 196x196 \
+		-quality 9 \
+		$@
+	$(addtosync)
 
 define magick_kapak
 		-fill none \
