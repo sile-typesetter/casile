@@ -410,7 +410,7 @@ endif
 
 VIRTUALPDFS = $(call pattern_list,$(TARGETS),.pdf)
 .PHONY: $(VIRTUALPDFS)
-$(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) $(call pattern_list,$$*,$(LAYOUTS),$(RESOURCES),.pdf) ;
+$(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) $(call pattern_list,$$*,$(filter $(BINDINGS),$(LAYOUTS)),$(RESOURCES),.pdf) ;
 
 coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(BINDINGS),$(call parse_layout,$1)),,%-kapak.pdf),)
 
