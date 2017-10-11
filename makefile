@@ -991,7 +991,7 @@ endef
 		$(call magick_emulateprint) \
 		$@
 
-BOOKSCENESINC = $(call pattern_list,$(TARGETS),$(LAYOUTS),.inc)
+BOOKSCENESINC = $(call pattern_list,$(TARGETS),$(BINDINGS),.inc)
 $(BOOKSCENESINC): %.inc: %-geometry.zsh %-pov-on.png %-pov-arka.png %-pov-sirt.png
 	source $(filter %-geometry.zsh,$^)
 	cat <<- EOF > $@
