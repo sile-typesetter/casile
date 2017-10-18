@@ -1087,6 +1087,9 @@ endef
 	kindlegen $< ||:
 	$(addtosync)
 
+.PHONY: $(call pattern_list,$(TARGETS),.ekran)
+%.ekran: %-ekran.pdf %-manifest.yml
+
 # This is obsoleted by YAML merger, but the code might prove useful someday
 # because the results are more flexible that the perl class
 # %.json: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml)
