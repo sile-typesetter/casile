@@ -386,11 +386,6 @@ define scale =
 $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | bc) || echo $1))
 endef
 
-# Create special targets for building mockups PDFs
-MOCKPDFS = $(call pattern_list,$(MOCKUPTARGETS),$(LAYOUTS),.pdf)
-.PHONY: $(MOCKPDFS)
-$(foreach LAYOUT,$(LAYOUTS),$(eval $(MOCKPDFS): %-$(LAYOUT).pdf: | $(MOCKUPBASE)-$(LAYOUT).pdf)))
-
 # Reset file timestamps to git history to avoid un-necessary builds
 .PHONY: time_warp time_warp_casile
 time_warp: time_warp_casile
@@ -444,7 +439,11 @@ coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(BINDINGS),$(call parse
 # Order is important here, these are included in reverse order so early supercedes late
 onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call parse_layout,$1).lua $(LUALIBS)
 
-FULLPDFS = $(call pattern_list,$(TARGETS),$(filter-out $(PLACARDS),$(PAPERSIZES)),.pdf)
+MOCKUPPDFS = $(call pattern_list,$(MOCKUPTARGETS),$(filter-out $(PLACARDS),$(PAPERSIZES)),.pdf)
+$(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
+	pdftk A=$(filter %.pdf,$^) cat $(foreach P,$(shell seq 1 $(call pagecount,$@)),A2-2) output $@
+
+FULLPDFS = $(call pattern_list,$(filter-out $(MOCKUPTARGETS),$(TARGETS)),$(filter-out $(PLACARDS),$(PAPERSIZES)),.pdf)
 $(FULLPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
 $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES)
 	$(call skip_if_lazy,$@)
