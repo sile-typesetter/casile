@@ -14,6 +14,11 @@ include $(CASILEDIR)/makefile-$(LANGUAGE)
 # Find stuff to build that has both a YML and a MD component
 TARGETS ?= $(filter $(basename $(wildcard *.md)),$(basename $(wildcard *.yml)))
 
+# List of targets that don't have content but should be rendered anyway
+MOCKUPS ?=
+MOCKUPBASE ?= $(firstword $(TARGETS))
+MOCKUPFACTOR ?= 1
+
 # List of figures that need building prior to content
 FIGURES ?=
 
@@ -112,9 +117,10 @@ $(space) +=
 depend_font = fc-match "$1" family | grep -qx "$1"
 
 # Assorted utility functions for juggling information about books
-pagecount = $(shell pdfinfo $1 | awk '$$1 == "Pages:" {print $$2}' || echo 0)
-pagew = $(shell pdfinfo $1 | awk '$$1$$2 == "Pagesize:" {print $$3}' || echo 0)
-pageh = $(shell pdfinfo $1 | awk '$$1$$2 == "Pagesize:" {print $$5}' || echo 0)
+mockupbase = $(if $(filter $(MOCKUPS),$(call parse_bookid,$1)),$(subst $(call parse_bookid,$1),$(MOCKUPBASE),$1),$1)
+pagecount = $(shell pdfinfo $(call mockupbase,$1) | awk '$$1 == "Pages:" {printf "%.0f", $$2 * $(MOCKUPFACTOR)}')
+pagew = $(shell pdfinfo $(call mockupbase,$1) | awk '$$1$$2 == "Pagesize:" {print $$3}' || echo 0)
+pageh = $(shell pdfinfo $(call mockupbase,$1) | awk '$$1$$2 == "Pagesize:" {print $$5}' || echo 0)
 spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | bc)
 mmtopx = $(shell echo "$1 * $(HIDPI) * 0.0393701 / 1" | bc)
 mmtopm = $(shell echo "$1 * 96 * .0393701 / 1" | bc)
@@ -228,6 +234,9 @@ debug:
 	@echo MAKECMDGOALS: $(MAKECMDGOALS)
 	@echo MAKEFILE_LIST: $(MAKEFILE_LIST)
 	@echo METADATA: $(METADATA)
+	@echo MOCKUPS: $(MOCKUPS)
+	@echo MOCKUPBASE: $(MOCKUPBASE)
+	@echo MOCKUPFACTOR: $(MOCKUPFACTOR)
 	@echo OUTPUTDIR: $(OUTPUTDIR)
 	@echo PANDOCARGS: $(PANDOCARGS)
 	@echo PARENT: $(PARENT)
@@ -369,6 +378,13 @@ endef
 # If building in draft mode, scale resolutions down for quick builds
 define scale =
 $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | bc) || echo $1))
+endef
+
+# Function for adding mockups
+define addmockup =
+$(eval MOCKUPS += $1)
+$(eval $1-%: MOCKUPFACTOR := $(or $2,1))
+$(eval $(call pattern_list,$1,$(LAYOUTS),.pdf): $1-%: | $(call mockupbase,$1)-%)
 endef
 
 # Reset file timestamps to git history to avoid un-necessary builds
