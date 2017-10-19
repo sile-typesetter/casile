@@ -98,6 +98,9 @@ DOCUMENTOPTIONS ?=
 CITEMPLATE ?= $(CASILEDIR)/travis.yml
 CICONFIG ?= .travis.yml
 
+# List of files that persist across make clean
+PROJECTCONFIGS :=
+
 # Utility variables for later, http://blog.jgc.org/2007/06/escaping-comma-and-space-in-gnu-make.html
 , := ,
 space :=
@@ -201,7 +204,7 @@ $(PROJECT)-%-pankart-montaj.png: $(call pattern_list,$(TARGETS)-%-pankart.png) $
 
 .PHONY: clean
 clean: $(and $(CI),init)
-	git clean -xf
+	git clean -xf $(foreach CONFIG,$(PROJECTCONFIGS),-e $(CONFIG))
 	rm -f $(PUBDIR)/*
 
 .PHONY: debug
@@ -229,6 +232,7 @@ debug:
 	@echo PANDOCARGS: $(PANDOCARGS)
 	@echo PARENT: $(PARENT)
 	@echo PROJECT: $(PROJECT)
+	@echo PROJECTCONFIGS: $(PROJECTCONFIGS)
 	@echo SILE: $(SILE)
 	@echo SILEFLAGS: $(SILEFLAGS)
 	@echo SILEPATH: $(SILEPATH)
@@ -330,10 +334,12 @@ upgrade_casile: $(CASILEDIR)/upgrade.sed
 update_repository:
 	git fetch --all --prune --tags
 
+PROJECTCONFIGS += .editorconfig
 .editorconfig: $(CASILEDIR)/editorconfig
 	$(call skip_if_tracked,$@)
 	cp $< $@
 
+PROJECTCONFIGS += .gitignore
 .gitignore: $(CASILEDIR)/gitignore $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
 	cp $< $@
