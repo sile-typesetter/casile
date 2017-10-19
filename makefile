@@ -851,6 +851,7 @@ $(GEOMETRIES): %-geometry.zsh: $$(call newgeometry,$$@) $$(call geometrybase,$$*
 			coverhpp=%[fx:round(h/$(HIDPI)*$(LODPI))]
 			coveraspect=%[fx:w/h]
 		' $(lastword $(filter %.pdf,$^))[0] || echo false)
+	pagecount=$(call pagecount,$(firstword $(filter %.pdf,$^)))
 	spinemm=$(call spinemm,$(firstword $(filter %.pdf,$^)))
 	spinepx=$(call mmtopx,$(call spinemm,$(firstword $(filter %.pdf,$^))))
 	spinepm=$(call mmtopm,$(call spinemm,$(firstword $(filter %.pdf,$^))))
