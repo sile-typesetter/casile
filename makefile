@@ -15,7 +15,7 @@ include $(CASILEDIR)/makefile-$(LANGUAGE)
 TARGETS ?= $(filter $(basename $(wildcard *.md)),$(basename $(wildcard *.yml)))
 
 # List of targets that don't have content but should be rendered anyway
-MOCKUPS ?=
+MOCKUPTARGETS ?=
 MOCKUPBASE ?= $(firstword $(TARGETS))
 MOCKUPFACTOR ?= 1
 
@@ -38,6 +38,7 @@ STATSMONTHS ?= 1 # How far back to look for commits when building stats
 DEBUG ?= false # Use SILE debug flags, set -x, and the like
 DEBUGTAGS ?= casile # Specific debug flags to set
 COVERS ?= true # Build covers?
+MOCKUPS ?= true # Render mockup books in project
 SCALE ?= 17 # Reduction factor for draft builds
 HIDPI ?= $(call scale,1200) # Default DPI for generated press resources
 LODPI ?= $(call scale,300) # Default DPI for generated consumer resources
@@ -117,7 +118,7 @@ $(space) +=
 depend_font = fc-match "$1" family | grep -qx "$1"
 
 # Assorted utility functions for juggling information about books
-mockupbase = $(if $(filter $(MOCKUPS),$(call parse_bookid,$1)),$(subst $(call parse_bookid,$1),$(MOCKUPBASE),$1),$1)
+mockupbase = $(if $(filter $(MOCKUPTARGETS),$(call parse_bookid,$1)),$(subst $(call parse_bookid,$1),$(MOCKUPBASE),$1),$1)
 pagecount = $(shell pdfinfo $(call mockupbase,$1) | awk '$$1 == "Pages:" {printf "%.0f", $$2 * $(MOCKUPFACTOR)}')
 pagew = $(shell pdfinfo $(call mockupbase,$1) | awk '$$1$$2 == "Pagesize:" {print $$3}' || echo 0)
 pageh = $(shell pdfinfo $(call mockupbase,$1) | awk '$$1$$2 == "Pagesize:" {print $$5}' || echo 0)
@@ -165,6 +166,11 @@ endif
 # Pass debug tags on to SILE
 ifdef DEBUGTAGS
 SILEFLAGS += -d $(subst $( ),$(,),$(DEBUGTAGS))
+endif
+
+# Add mockups to targets
+ifeq ($(strip $(MOCKUPS)),true)
+TARGETS += $(MOCKUPTARGETS)
 endif
 
 .ONESHELL:
@@ -234,7 +240,7 @@ debug:
 	@echo MAKECMDGOALS: $(MAKECMDGOALS)
 	@echo MAKEFILE_LIST: $(MAKEFILE_LIST)
 	@echo METADATA: $(METADATA)
-	@echo MOCKUPS: $(MOCKUPS)
+	@echo MOCKUPTARGETS: $(MOCKUPTARGETS)
 	@echo MOCKUPBASE: $(MOCKUPBASE)
 	@echo MOCKUPFACTOR: $(MOCKUPFACTOR)
 	@echo OUTPUTDIR: $(OUTPUTDIR)
@@ -380,12 +386,10 @@ define scale =
 $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | bc) || echo $1))
 endef
 
-# Function for adding mockups
-define addmockup =
-$(eval MOCKUPS += $1)
-$(eval $1-%: MOCKUPFACTOR := $(or $2,1))
-$(eval $(call pattern_list,$1,$(LAYOUTS),.pdf): $1-%: | $(call mockupbase,$1)-%)
-endef
+# Create special targets for building mockups PDFs
+MOCKPDFS = $(call pattern_list,$(MOCKUPTARGETS),$(LAYOUTS),.pdf)
+.PHONY: $(MOCKPDFS)
+$(foreach LAYOUT,$(LAYOUTS),$(eval $(MOCKPDFS): %-$(LAYOUT).pdf: | $(MOCKUPBASE)-$(LAYOUT).pdf)))
 
 # Reset file timestamps to git history to avoid un-necessary builds
 .PHONY: time_warp time_warp_casile
