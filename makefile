@@ -202,6 +202,7 @@ $(PROJECT)-%-pankart-montaj.png: $(call pattern_list,$(TARGETS)-%-pankart.png) $
 .PHONY: clean
 clean: $(and $(CI),init)
 	git clean -xf
+	rm -f $(PUBDIR)/*
 
 .PHONY: debug
 debug:
