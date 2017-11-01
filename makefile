@@ -1077,7 +1077,6 @@ endef
 %.epub %.odt %.docx: %-processed.md %-manifest.yml %-epub-pankart.jpg
 	$(PANDOC) \
 		$(PANDOCARGS) \
-		--smart \
 		--epub-cover-image=$(lastword $^) \
 		$(word 2,$^) \
 		<($(call strip_lang) < $<) -o $@
