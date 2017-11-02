@@ -217,7 +217,7 @@ $(PROJECT)-%-pankart-montaj.png: $(call pattern_list,$(TARGETS)-%-pankart.png) $
 		$@
 
 .PHONY: clean
-clean: $(and $(CI),init)
+clean: $(and $(CI),init) $(require_pubdir)
 	git clean -xf $(foreach CONFIG,$(PROJECTCONFIGS),-e $(CONFIG))
 	rm -f $(PUBDIR)/*
 
