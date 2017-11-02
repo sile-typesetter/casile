@@ -116,6 +116,8 @@ $(space) +=
 
 # Utility functions for simplifying per-project makefiles
 depend_font = fc-match "$1" family | grep -qx "$1"
+require_outputdir = $(or $(OUTPUTDIR),fail)
+require_pubdir = $(and $(filter-out true,$(DRAFT)),$(or $(PUBDIR),fail))
 
 # Assorted utility functions for juggling information about books
 mockupbase = $(if $(filter $(MOCKUPTARGETS),$(call parse_bookid,$1)),$(subst $(call parse_bookid,$1),$(MOCKUPBASE),$1),$1)
@@ -260,6 +262,8 @@ debug:
 .PHONY: force
 force: ;
 
+.PHONY: fail
+
 .PHONY: list
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
@@ -273,9 +277,10 @@ $(MOCKUPTARGETS): $(foreach FORMAT,$(filter pdf,$(FORMATS)),$$@.$(FORMAT))
 figures: $(FIGURES)
 
 .PHONY: init
-init: check_dependencies init_toolkits update_repository
-	$(and $(OUTPUTDIR),mkdir -p $(OUTPUTDIR))
-	$(and $(PUBDIR),mkdir -p $(PUBDIR))
+init: check_dependencies init_toolkits update_repository $(PUBDIR) $(OUTPUTDIR)
+
+$(PUBDIR) $(OUTPUTDIR):
+	mkdir -p $@
 
 .PHONY: init_casile
 init_casile: time_warp_casile $(CASILEDIR)/yarn.lock
@@ -357,12 +362,12 @@ PROJECTCONFIGS += .editorconfig
 	cp $< $@
 
 PROJECTCONFIGS += .gitignore
-.gitignore: $(CASILEDIR)/gitignore $(MAKEFILE_LIST)
+.gitignore: $(CASILEDIR)/gitignore $(require_pubdir) $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
 	cp $< $@
 	$(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),echo '$(TARGET)-$(PAPERSIZE)*' >> $@;))
 	$(foreach TARGET,$(TARGETS),$(foreach FORMAT,$(FORMATS),echo '$(TARGET).$(FORMAT)' >> $@;))
-	find -path "$(PUBDIR)/*" -type f -exec basename {} \; >> $@
+	find "$(PUBDIR)" -type f -exec basename {} \; >> $@
 
 $(CICONFIG): $(CITEMPLATE)
 	cat $< | \
@@ -414,8 +419,7 @@ sync_pre: $(and $(CI),clean)
 	rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/ ||:
 
 .PHONY: sync_post
-sync_post: $(and $(CI),books)
-	$(if $(OUTPUTDIR),,exit 0)
+sync_post: $(and $(CI),books) $(require_pubdir) $(require_outputdir)
 	for target in $(TARGETS); do
 ifeq ($(ALLTAGS),)
 		tagpath=
@@ -447,7 +451,7 @@ $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
 
 FULLPDFS = $(call pattern_list,$(filter-out $(MOCKUPTARGETS),$(TARGETS)),$(filter-out $(PLACARDS),$(PAPERSIZES)),.pdf)
 $(FULLPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
-$(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES)
+$(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES) $(require_pubdir)
 	$(call skip_if_lazy,$@)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
@@ -517,7 +521,7 @@ preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4)
 %-ciftyonlu.pdf: %.pdf
 	pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $< ||:
 
-%-kirpilmis.pdf: %.pdf
+%-kirpilmis.pdf: %.pdf $(require_pubdir)
 	b=$$(echo "$(TRIM) * 283.465" | bc)
 	w=$$(echo "$(call pagew,$<) * 100 - $$b * 2" | bc)
 	h=$$(echo "$(call pageh,$<) * 100 - $$b * 2" | bc)
@@ -616,7 +620,7 @@ WEBTARGETS = $(call pattern_list,$(TARGETS),.web)
 .PHONY: $(WEBTARGETS)
 $(WEBTARGETS): %.web: %-manifest.yml %-epub-pankart.jpg promotionals renderings
 
-%-app.info: %-app.toc %-app.pdf %-manifest.yml
+%-app.info: %-app.toc %-app.pdf %-manifest.yml $(require_pubdir)
 	$(CASILEDIR)/bin/toc2breaks.lua $* $(filter %-app.toc,$^) $(filter %-manifest.yml,$^) $@ |
 		while read range out; do
 			pdftk $(filter %-app.pdf,$^) cat $$range output $$out
@@ -624,7 +628,7 @@ $(WEBTARGETS): %.web: %-manifest.yml %-epub-pankart.jpg promotionals renderings
 		done
 	$(addtosync)
 
-issue.info:
+issue.info: $(require_pubdir)
 	for source in $(TARGETS); do
 		echo -e "# $$source\n"
 		if test -d $${source}-bolumler; then
@@ -693,7 +697,7 @@ $(COVERBACKGROUNDS): %-kapak-zemin.png: $$(call git_background,$$@) $$(subst -ka
 		$@
 
 # Gitlab projects need a sub 200kb icon image
-%-icon.png: %-kare-pankart.png
+%-icon.png: %-kare-pankart.png $(require_pubdir)
 	$(MAGICK) $< \
 		-define png:extent=200kb \
 		-resize 196x196 \
@@ -827,7 +831,7 @@ $(BINDINGIMAGES): %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt
 			s#SW#$${spinepm}#g;
 		" $< > $@
 
-%-cilt.pdf:	%-cilt.svg %-geometry.zsh
+%-cilt.pdf:	%-cilt.svg %-geometry.zsh $(require_pubdir)
 	source $(filter %-geometry.zsh,$^)
 	$(INKSCAPE) --without-gui \
 		--export-dpi=$$hidpi \
@@ -1096,14 +1100,14 @@ define pov_crop
     -resize $(call scale,4000)x
 endef
 
-%.jpg: %.png
+%.jpg: %.png $(require_pubdir)
 	$(MAGICK) $< \
 		$(if $(findstring 3b,$*),$(call pov_crop),) \
 		-quality 85 \
 		$@
 	$(addtosync)
 
-%.epub %.odt %.docx: %-processed.md %-manifest.yml %-epub-pankart.jpg
+%.epub %.odt %.docx: %-processed.md %-manifest.yml %-epub-pankart.jpg $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		--smart \
@@ -1112,7 +1116,7 @@ endef
 		<($(call strip_lang) < $<) -o $@
 	$(addtosync)
 
-%.mobi: %.epub
+%.mobi: %.epub $(require_pubdir)
 	kindlegen $< ||:
 	$(addtosync)
 
@@ -1124,7 +1128,7 @@ endef
 # %.json: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml)
 # 	jq -s 'reduce .[] as $$item({}; . + $$item)' $(foreach YAML,$^,<(yaml2json $(YAML))) > $@
 
-%-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml)
+%-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml) $(require_pubdir)
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $^ |
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
 			-e '/: [[:digit:]]\+[^[:digit:]]/{s/: \(.*\)/: "\1"/;s/\([[:digit:]]\+\)\\\./\1./g}' \
