@@ -367,6 +367,7 @@ PROJECTCONFIGS += .gitignore
 	cp $< $@
 	$(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),echo '$(TARGET)-$(PAPERSIZE)*' >> $@;))
 	$(foreach TARGET,$(TARGETS),$(foreach FORMAT,$(FORMATS),echo '$(TARGET).$(FORMAT)' >> $@;))
+	$(foreach PAPERSIZE,$(PAPERSIZES),echo '$(PROJECT)-$(PAPERSIZE)*' >> $@;)
 	find "$(PUBDIR)" -type f -exec basename {} \; >> $@
 
 $(CICONFIG): $(CITEMPLATE)
