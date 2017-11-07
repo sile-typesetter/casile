@@ -682,17 +682,17 @@ $(COVERBACKGROUNDS): %-kapak-zemin.png: $$(call git_background,$$@) $$(subst -ka
 	source $(filter %-geometry.zsh,$^)
 	@$(MAGICK) $< \
 		\( -background none \
-			-gravity center \
+			-gravity Center \
 			-size $${coverwpx}x$${coverhpx} \
 			xc: \
 			$(call magick_kapak) \
-		\) -compose overlay -composite \
+		\) -compose Overlay -composite \
 		\( \
-			-gravity center \
+			-gravity Center \
 			$(word 2,$^) \
 			-write mpr:metin-kapak \
-		\) -compose over -composite \
-		-gravity center \
+		\) -compose Over -composite \
+		-gravity Center \
 		-size %[fx:u.w]x%[fx:u.h] \
 		-composite \
 		$@
@@ -797,16 +797,16 @@ $(BINDINGIMAGES): %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
 		$(or $(and $(call git_background,$*-kapak-zemin.png),$(call git_background,$*-kapak-zemin.png) -resize $${imgwpx}x$${imghpx}!),$(call magick_zemin_cilt)) \
 		$(call magick_kenar) \
-		\( -gravity east -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_on) -splice $${bleedpx}x \) -compose overlay -composite \
-		\( -gravity west -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_arka) -splice $${bleedpx}x \) -compose overlay -composite \
-		\( -gravity center -size $${spinepx}x$${coverhpx} -background none xc: $(call magick_sirt) \) -compose overlay -composite \
-		\( -gravity east $(word 1,$^) -splice $${bleedpx}x -write mpr:metin-on \) -compose over -composite \
-		\( -gravity west $(word 2,$^) -splice $${bleedpx}x -write mpr:metin-arka \) -compose over -composite \
-		\( -gravity center $(word 3,$^) -write mpr:metin-sirt \) -compose over -composite \
+		\( -gravity East -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_on) -splice $${bleedpx}x \) -compose Overlay -composite \
+		\( -gravity West -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_arka) -splice $${bleedpx}x \) -compose Overlay -composite \
+		\( -gravity Center -size $${spinepx}x$${coverhpx} -background none xc: $(call magick_sirt) \) -compose Overlay -composite \
+		\( -gravity East $(word 1,$^) -splice $${bleedpx}x -write mpr:metin-on \) -compose Over -composite \
+		\( -gravity West $(word 2,$^) -splice $${bleedpx}x -write mpr:metin-arka \) -compose Over -composite \
+		\( -gravity Center $(word 3,$^) -write mpr:metin-sirt \) -compose Over -composite \
 		$(call magick_sembol,$(word 5,$^))\
 		$(call magick_barkod,$(word 4,$^)) \
 		$(call magick_logo,$(word 6,$^)) \
-		-gravity center -size %[fx:u.w]x%[fx:u.h] \
+		-gravity Center -size %[fx:u.w]x%[fx:u.h] \
 		-composite \
 		$(call magick_cilt) \
 		$@
@@ -908,7 +908,7 @@ define magick_zemin_cilt
 endef
 
 define magick_zemin
-	xc:darkgray
+	xc:DarkGray
 endef
 
 define magick_zeminfilter
@@ -923,31 +923,31 @@ define magick_kenar
 endef
 
 define magick_sembol
-	-gravity south \
+	-gravity South \
 	\( -background none \
 		$1 \
 		-resize "%[fx:min($$spinepx/100*(100-$$spinemm),$(call mmtopx,12))]"x \
 		$(call magick_sembol_filter) \
 		-splice x%[fx:$(call mmtopx,5)+$$bleedpx] \
-	\) -compose over -composite
+	\) -compose Over -composite
 endef
 
 define magick_sembol_filter
 endef
 
 define magick_logo
-	-gravity southwest \
+	-gravity SouthWest \
 	\( -background none \
 		$(AVADANLIKDIR)/vc_logo_renksiz.svg \
 		-channel RGB -negate \
 		-level 20%,60%!  \
 		-resize $(call mmtopx,30)x \
 		-splice %[fx:$$bleedpx+$$coverwpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
-	\) -compose screen -composite
+	\) -compose Screen -composite
 endef
 
 define magick_barkod
-	-gravity southeast \
+	-gravity SouthEast \
 	\( -background white \
 		$1 \
 		-resize $(call mmtopx,30)x \
@@ -955,25 +955,25 @@ define magick_barkod
 		-border $(call mmtopx,2) \
 		-background none \
 		-splice %[fx:$$bleedpx+$$coverwpx+$$spinepx+$$coverwpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
-	\) -compose over -composite
+	\) -compose Over -composite
 endef
 
 define magick_crease
 	-stroke gray95 -strokewidth $(call mmtopx,0.5) \
 	\( -size $${coverwpx}x$${coverhpx} -background none xc: -draw "line %[fx:$1$(call mmtopx,8)],0 %[fx:$1$(call mmtopx,8)],$${coverhpx}" -blur 0x$(call scale,$(call mmtopx,0.2)) -level 0x40%! \) \
-	-compose modulusadd -composite
+	-compose ModulusAdd -composite
 endef
 
 define magick_fray
 	\( +clone \
-		-alpha extract \
+		-alpha Extract \
 		-virtual-pixel black \
 		-spread 2 \
 		-blur 0x4 \
 		-threshold 20% \
 		-spread 2 \
 		-blur 0x0.7 \
-	\) -alpha off -compose copyopacity -composite
+	\) -alpha Off -compose Copyopacity -composite
 endef
 
 define magick_emulateprint
@@ -988,20 +988,20 @@ endef
 
 %-cilt-on.png: %-cilt.png %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
-	$(MAGICK) $< -gravity east -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
+	$(MAGICK) $< -gravity East -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
 
 %-cilt-arka.png: %-cilt.png %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
-	$(MAGICK) $< -gravity west -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
+	$(MAGICK) $< -gravity West -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
 
 %-cilt-sirt.png: %-cilt.png %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
-	$(MAGICK) $< -gravity center -crop $${spinepx}x$${coverhpx}+0+0! $@
+	$(MAGICK) $< -gravity Center -crop $${spinepx}x$${coverhpx}+0+0! $@
 
 %-pov-on.png: %-cilt-printcolor.png %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< \
-		-gravity east -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! \
+		-gravity East -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! \
 		$(call magick_emulateprint) \
 		$(call magick_crease,0+) \
 		$(call magick_fray) \
@@ -1010,7 +1010,7 @@ endef
 %-pov-arka.png: %-cilt-printcolor.png %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< \
-		-gravity west -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! \
+		-gravity West -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! \
 		$(call magick_emulateprint) \
 		$(call magick_crease,w-) \
 		$(call magick_fray) \
@@ -1019,8 +1019,8 @@ endef
 %-pov-sirt.png: %-cilt-printcolor.png %-geometry.zsh
 	source $(filter %-geometry.zsh,$^)
 	$(MAGICK) $< \
-		-gravity center -crop $${spinepx}x$${coverhpx}+0+0! \
-		-gravity center \
+		-gravity Center -crop $${spinepx}x$${coverhpx}+0+0! \
+		-gravity Center \
 		-extent 200%x100% \
 		$(call magick_emulateprint) \
 		$@
@@ -1090,7 +1090,7 @@ $(PROJECT)-%-3b-montaj.png: $(CASILEDIR)/kapak.pov $(PROJECT)-%-3b.pov $(CASILED
 define pov_crop
 	\( +clone \
 		-virtual-pixel edge \
-		-colorspace gray \
+		-colorspace Gray \
 		-edge 3 \
 		-fuzz 40% \
 		-trim -trim \
@@ -1138,8 +1138,8 @@ endef
 
 %-url.png: %-url.svg
 	$(MAGICK) $< \
-		-bordercolor White -border 10x10 \
-		-bordercolor Black -border 4x4 \
+		-bordercolor white -border 10x10 \
+		-bordercolor black -border 4x4 \
 		$@
 
 %-url.svg:
@@ -1165,7 +1165,7 @@ endef
 	$(MAGICK) $< \
 		-bordercolor white -border 10 \
 		-font Hack-Regular -pointsize 36 \
-		label:"ISBN $(shell $(CASILEDIR)/bin/isbn_format.py $*-manifest.yml print mask)" +swap -gravity center -append \
+		label:"ISBN $(shell $(CASILEDIR)/bin/isbn_format.py $*-manifest.yml print mask)" +swap -gravity Center -append \
 		-bordercolor white -border 0x10 \
 		-resize $(call scale,1200)x \
 		$@
