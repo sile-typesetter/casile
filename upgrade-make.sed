@@ -719,3 +719,30 @@ s#\(colorspace \|channel \)YCC#\1YCC#ig
 s#\(colorspace \|channel \)YIQ#\1YIQ#ig
 s#\(colorspace \|channel \)YPbPr#\1YPbPr#ig
 s#\(colorspace \|channel \)YUV#\1YUV#ig
+s#\(morphology \)Correlate#\1Correlate#ig
+s#\(morphology \)Convolve#\1Convolve#ig
+s#\(morphology \)Dilate#\1Dilate#ig
+s#\(morphology \)Erode#\1Erode#ig
+s#\(morphology \)Close#\1Close#ig
+s#\(morphology \)Open#\1Open#ig
+s#\(morphology \)DilateIntensity#\1DilateIntensity#ig
+s#\(morphology \)ErodeIntensity#\1ErodeIntensity#ig
+s#\(morphology \)CloseIntensity#\1CloseIntensity#ig
+s#\(morphology \)OpenIntensity#\1OpenIntensity#ig
+s#\(morphology \)DilateI#\1DilateI#ig
+s#\(morphology \)ErodeI#\1ErodeI#ig
+s#\(morphology \)CloseI#\1CloseI#ig
+s#\(morphology \)OpenI#\1OpenI#ig
+s#\(morphology \)Smooth#\1Smooth#ig
+s#\(morphology \)EdgeOut#\1EdgeOut#ig
+s#\(morphology \)EdgeIn#\1EdgeIn#ig
+s#\(morphology \)Edge#\1Edge#ig
+s#\(morphology \)TopHat#\1TopHat#ig
+s#\(morphology \)BottomHat#\1BottomHat#ig
+s#\(morphology \)Hmt#\1Hmt#ig
+s#\(morphology \)HitNMiss#\1HitNMiss#ig
+s#\(morphology \)HitAndMiss#\1HitAndMiss#ig
+s#\(morphology \)Thinning#\1Thinning#ig
+s#\(morphology \)Thicken#\1Thicken#ig
+s#\(morphology \)Distance#\1Distance#ig
+s#\(morphology \)IterativeDistance#\1IterativeDistance#ig
