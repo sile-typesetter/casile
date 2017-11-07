@@ -1111,7 +1111,6 @@ endef
 %.epub %.odt %.docx: %-processed.md %-manifest.yml %-epub-pankart.jpg $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
-		--smart \
 		--epub-cover-image=$(lastword $^) \
 		$(word 2,$^) \
 		<($(call strip_lang) < $<) -o $@
@@ -1132,7 +1131,6 @@ endef
 %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml) $(require_pubdir)
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $^ |
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
-			-e '/: [[:digit:]]\+[^[:digit:]]/{s/: \(.*\)/: "\1"/;s/\([[:digit:]]\+\)\\\./\1./g}' \
 		    -e '/\(own\|next\)cloudshare: [^"]/s/: \(.*\)$$/: "\1"/' > $@
 	$(addtosync)
 
