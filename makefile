@@ -493,7 +493,7 @@ $(FULLSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_bookid,
 			$(foreach LUA,$(filter %.lua,$|), -V script=$(basename $(LUA))) \
 			--template=$(filter %.sil,$^) \
 			--to=sile \
-			$(filter %-manifest.yml,$^) <( $(call pre_sile_markdown_hook) < $< ) |
+			$(filter %-manifest.yml,$^) =( $(call pre_sile_markdown_hook) < $< ) |
 		$(call sile_hook) > $@
 
 # Send some environment data to a common Lua file to be pulled into all SILE runs
