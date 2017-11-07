@@ -112,3 +112,7 @@ SILE.registerCommand("em", function (options, content)
   SILE.call("font", { style = "Italic" }, content)
   SILE.call("kern", { width = "1pt" })
 end)
+
+SILE.registerCommand("code", function (options, content)
+  SILE.call("cabook:font:mono", options, content)
+end)
