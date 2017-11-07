@@ -686,3 +686,36 @@ s#\(background \|color \|stroke \|pixel \|xc:\)yellow2#\1yellow2#ig
 s#\(background \|color \|stroke \|pixel \|xc:\)yellow3#\1yellow3#ig
 s#\(background \|color \|stroke \|pixel \|xc:\)yellow4#\1yellow4#ig
 s#\(background \|color \|stroke \|pixel \|xc:\)YellowGreen#\1YellowGreen#ig
+s#\(colorspace \|channel \)CIELab#\1CIELab#ig
+s#\(colorspace \|channel \)CMY#\1CMY#ig
+s#\(colorspace \|channel \)CMYK#\1CMYK#ig
+s#\(colorspace \|channel \)Gray#\1Gray#ig
+s#\(colorspace \|channel \)HCL#\1HCL#ig
+s#\(colorspace \|channel \)HCLp#\1HCLp#ig
+s#\(colorspace \|channel \)HSB#\1HSB#ig
+s#\(colorspace \|channel \)HSI#\1HSI#ig
+s#\(colorspace \|channel \)HSL#\1HSL#ig
+s#\(colorspace \|channel \)HSV#\1HSV#ig
+s#\(colorspace \|channel \)HWB#\1HWB#ig
+s#\(colorspace \|channel \)Lab#\1Lab#ig
+s#\(colorspace \|channel \)LCH#\1LCH#ig
+s#\(colorspace \|channel \)LCHab#\1LCHab#ig
+s#\(colorspace \|channel \)LCHuv#\1LCHuv#ig
+s#\(colorspace \|channel \)LMS#\1LMS#ig
+s#\(colorspace \|channel \)Log#\1Log#ig
+s#\(colorspace \|channel \)Luv#\1Luv#ig
+s#\(colorspace \|channel \)OHTA#\1OHTA#ig
+s#\(colorspace \|channel \)Rec601YCbCr#\1Rec601YCbCr#ig
+s#\(colorspace \|channel \)Rec709YCbCr#\1Rec709YCbCr#ig
+s#\(colorspace \|channel \)RGB#\1RGB#ig
+s#\(colorspace \|channel \)scRGB#\1scRGB#ig
+s#\(colorspace \|channel \)sRGB#\1sRGB#ig
+s#\(colorspace \|channel \)Transparent#\1Transparent#ig
+s#\(colorspace \|channel \)xyY#\1xyY#ig
+s#\(colorspace \|channel \)XYZ#\1XYZ#ig
+s#\(colorspace \|channel \)YCbCr#\1YCbCr#ig
+s#\(colorspace \|channel \)YDbDr#\1YDbDr#ig
+s#\(colorspace \|channel \)YCC#\1YCC#ig
+s#\(colorspace \|channel \)YIQ#\1YIQ#ig
+s#\(colorspace \|channel \)YPbPr#\1YPbPr#ig
+s#\(colorspace \|channel \)YUV#\1YUV#ig
