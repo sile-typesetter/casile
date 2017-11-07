@@ -1,5 +1,6 @@
 SILE.registerCommand("cabook:font:mono", function (options, content)
   options.family = options.family or "Hack"
+  options.size = options.size or "0.8em"
   SILE.call("font", options, content)
 end)
 
