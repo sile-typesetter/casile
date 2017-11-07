@@ -1,0 +1,10 @@
+s#-gravity Center#-gravity Center#ig
+s#-gravity East#-gravity East#ig
+s#-gravity Forget#-gravity Forget#ig
+s#-gravity NorthEast#-gravity NorthEast#ig
+s#-gravity North#-gravity North#ig
+s#-gravity NorthWest#-gravity NorthWest#ig
+s#-gravity SouthEast#-gravity SouthEast#ig
+s#-gravity South#-gravity South#ig
+s#-gravity SouthWest#-gravity SouthWest#ig
+s#-gravity West#-gravity West#ig

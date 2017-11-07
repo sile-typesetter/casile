@@ -348,8 +348,9 @@ update_casile: init_casile
 upgrade_repository: upgrade_casile update_toolkits
 
 .PHONY: upgrade_casile
-upgrade_casile: $(CASILEDIR)/upgrade-lua.sed
+upgrade_casile: $(CASILEDIR)/upgrade-lua.sed $(CASILEDIR)/upgrade-make.sed
 	$(call find_and_munge,*.lua,sed -f $(filter %-lua.sed,$^),Replace old Lua variables and functions with new namespaces)
+	$(call find_and_munge,[Mm]akefile,sed -f $(filter %-make.sed,$^),Replace old Makefile variables and functions with new namespaces)
 	$(call find_and_munge,*.yml,sed -e 's/owncloudshare/nextcloudshare/g',Update YAML key names)
 
 .PHONY: update_repository
