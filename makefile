@@ -761,16 +761,19 @@ $(BINDINGFRAGMENTS): %-cilt-metin.pdf: $(CASILEDIR)/cilt.xml $$(call parse_booki
 
 %-fragman-on.png: %-cilt-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
+		-colorspace RGBA \
 		$(call magick_fragman_on) \
 		-composite $@
 
 %-fragman-arka.png: %-cilt-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[1] \
+		-colorspace RGBA \
 		$(call magick_fragman_arka) \
 		-composite $@
 
 %-fragman-sirt.png: %-cilt-metin.pdf | %.pdf
 	$(MAGICK) -density $(HIDPI) $<[2] \
+		-colorspace RGBA \
 		-crop $(call mmtopx,$(call spinemm,$(word 1,$|)))x+0+0 \
 		$(call magick_fragman_sirt) \
 		-composite $@
@@ -788,6 +791,7 @@ $(COVERFRAGMENTS): %-kapak-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_booki
 
 %-fragman-kapak.png: %-kapak-metin.pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
+		-colorspace RGBA \
 		$(call magick_fragman_kapak) \
 		-composite $@
 
