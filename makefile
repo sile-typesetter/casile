@@ -385,7 +385,7 @@ endef
 # Pass or fail target showing whether the CI config is up to date
 .PHONY: $(CICONFIG)_current
 $(CICONFIG)_current: $(CICONFIG)
-	git update-index --refresh
+	git update-index --refresh --ignore-submodules ||:
 	git diff-files --quiet -- $<
 
 define addtosync =
