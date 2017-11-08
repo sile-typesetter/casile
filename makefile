@@ -1113,7 +1113,7 @@ endef
 		$(PANDOCARGS) \
 		--epub-cover-image=$(lastword $^) \
 		$(word 2,$^) \
-		<($(call strip_lang) < $<) -o $@
+		=($(call strip_lang) < $<) -o $@
 	$(addtosync)
 
 %.mobi: %.epub $(require_pubdir)
