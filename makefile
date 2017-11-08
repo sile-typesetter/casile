@@ -75,6 +75,7 @@ endif
 
 # List of extra m4 macro files to apply to every source
 M4MACROS ?=
+
 # List of exta YAML meta data files to splice into each book
 METADATA ?=
 
@@ -366,9 +367,11 @@ PROJECTCONFIGS += .gitignore
 .gitignore: $(CASILEDIR)/gitignore $(require_pubdir) $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
 	cp $< $@
-	$(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),echo '$(TARGET)-$(PAPERSIZE)*' >> $@;))
-	$(foreach TARGET,$(TARGETS),$(foreach FORMAT,$(FORMATS),echo '$(TARGET).$(FORMAT)' >> $@;))
+	$(foreach PROJECTCONFIG,$(PROJECTCONFIGS),echo '$(PROJECTCONFIG)' >> $@;)
+	$(foreach LUAINCLUDE,$(LUAINCLUDES),echo '$(LUAINCLUDE)' >> $@;)
 	$(foreach PAPERSIZE,$(PAPERSIZES),echo '$(PROJECT)-$(PAPERSIZE)*' >> $@;)
+	$(foreach TARGET,$(TARGETS),$(foreach FORMAT,$(FORMATS),echo '$(TARGET).$(FORMAT)' >> $@;))
+	$(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),echo '$(TARGET)-$(PAPERSIZE)*' >> $@;))
 
 $(CICONFIG): $(CITEMPLATE)
 	cat $< | \
