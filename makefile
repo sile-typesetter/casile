@@ -800,16 +800,20 @@ $(COVERFRAGMENTS): %-kapak-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_booki
 
 PUBLISHEREMBLUM := $(PUBLISHERDIR)/emblum.svg
 publisher_emblum.svg: $(PUBLISHEREMBLUM)
+	$(call skip_if_tracked,$@)
 	cp $< $@
 
 publisher_emblum-grey.svg: $(PUBLISHEREMBLUM)
+	$(call skip_if_tracked,$@)
 	cp $< $@
 
 PUBLISHERLOGO := $(PUBLISHERDIR)/logo.svg
 publisher_logo.svg: $(PUBLISHERLOGO)
+	$(call skip_if_tracked,$@)
 	cp $< $@
 
 publisher_logo-grey.svg: $(PUBLISHERLOGO)
+	$(call skip_if_tracked,$@)
 	cp $< $@
 
 BINDINGIMAGES = $(call pattern_list,$(TARGETS),$(BINDINGS),-cilt.png)
