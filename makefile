@@ -595,10 +595,9 @@ define criticToSile
 endef
 
 define strip_lang
-	cat |
-		perl -pne "
-			s/\\\lang.{1,3}\{([^\}]+)}/\1/g
-		"
+	perl -pne "
+		s/\\\lang.{1,3}\{([^\}]+)}/\1/g
+	"
 endef
 
 define markdown_hook
