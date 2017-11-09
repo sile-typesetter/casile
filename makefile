@@ -6,6 +6,7 @@ PROJECTDIR := $(shell cd "$(shell dirname $(firstword $(MAKEFILE_LIST)))/" && pw
 CASILEDIR := $(shell cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/" && pwd)
 PROJECT := $(notdir $(shell git worktree list | head -n1 | awk '{print $$1}'))
 PUBDIR := $(PROJECTDIR)/pub
+PUBLISHERDIR ?= $(CASILEDIR)
 
 # Set the language if not otherwise set
 LANGUAGE ?= en
@@ -798,8 +799,22 @@ $(COVERFRAGMENTS): %-kapak-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_booki
 		$(call magick_fragman_kapak) \
 		-composite $@
 
+PUBLISHEREMBLUM := $(PUBLISHERDIR)/emblum.svg
+publisher_emblum.svg: $(PUBLISHEREMBLUM)
+	cp $< $@
+
+publisher_emblum-grey.svg: $(PUBLISHEREMBLUM)
+	cp $< $@
+
+PUBLISHERLOGO := $(PUBLISHERDIR)/logo.svg
+publisher_logo.svg: $(PUBLISHERLOGO)
+	cp $< $@
+
+publisher_logo-grey.svg: $(PUBLISHERLOGO)
+	cp $< $@
+
 BINDINGIMAGES = $(call pattern_list,$(TARGETS),$(BINDINGS),-cilt.png)
-$(BINDINGIMAGES): %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(AVADANLIKDIR)/vc_sembol_renkli.svg $(AVADANLIKDIR)/vc_logo_renkli.svg %-geometry.zsh
+$(BINDINGIMAGES): %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) publisher_emblum.svg publisher_logo.svg %-geometry.zsh
 	source $*-geometry.zsh
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
 		$(or $(and $(call git_background,$*-kapak-zemin.png),$(call git_background,$*-kapak-zemin.png) -resize $${imgwpx}x$${imghpx}!),$(call magick_zemin_cilt)) \
@@ -810,9 +825,9 @@ $(BINDINGIMAGES): %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt
 		\( -gravity East $*-fragman-on.png -splice $${bleedpx}x -write mpr:metin-on \) -compose Over -composite \
 		\( -gravity West $*-fragman-arka.png -splice $${bleedpx}x -write mpr:metin-arka \) -compose Over -composite \
 		\( -gravity Center $*-fragman-sirt.png -write mpr:metin-sirt \) -compose Over -composite \
-		$(call magick_sembol,$(word 5,$^))\
-		$(call magick_barkod,$(word 4,$^)) \
-		$(call magick_logo,$(word 6,$^)) \
+		$(call magick_sembol,publisher_emblum.svg) \
+		$(call magick_barkod,$(filter %-barkod.png,$^)) \
+		$(call magick_logo,publisher_logo.svg) \
 		-gravity Center -size %[fx:u.w]x%[fx:u.h] \
 		-composite \
 		$(call magick_cilt) \
@@ -945,7 +960,7 @@ endef
 define magick_logo
 	-gravity SouthWest \
 	\( -background none \
-		$(AVADANLIKDIR)/vc_logo_renksiz.svg \
+		publisher_logo-grey.svg \
 		-channel RGB -negate \
 		-level 20%,60%!  \
 		-resize $(call mmtopx,30)x \
