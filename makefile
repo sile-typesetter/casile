@@ -692,7 +692,7 @@ $(COVERBACKGROUNDS): %-kapak-zemin.png: $$(call git_background,$$@) $$(subst -ka
 		\) -compose Overlay -composite \
 		\( \
 			-gravity Center \
-			$(word 2,$^) \
+			$*-fragman-kapak.png \
 			-write mpr:metin-kapak \
 		\) -compose Over -composite \
 		-gravity Center \
@@ -777,7 +777,7 @@ $(BINDINGFRAGMENTS): %-cilt-metin.pdf: $(CASILEDIR)/cilt.xml $$(call parse_booki
 %-fragman-sirt.png: %-cilt-metin.pdf | %.pdf
 	$(MAGICK) -density $(HIDPI) $<[2] \
 		-colorspace RGB \
-		-crop $(call mmtopx,$(call spinemm,$(word 1,$|)))x+0+0 \
+		-crop $(call mmtopx,$(call spinemm,$(firstword $|)))x+0+0 \
 		$(call magick_fragman_sirt) \
 		-composite $@
 
@@ -800,16 +800,16 @@ $(COVERFRAGMENTS): %-kapak-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_booki
 
 BINDINGIMAGES = $(call pattern_list,$(TARGETS),$(BINDINGS),-cilt.png)
 $(BINDINGIMAGES): %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) $(AVADANLIKDIR)/vc_sembol_renkli.svg $(AVADANLIKDIR)/vc_logo_renkli.svg %-geometry.zsh
-	source $(filter %-geometry.zsh,$^)
+	source $*-geometry.zsh
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
 		$(or $(and $(call git_background,$*-kapak-zemin.png),$(call git_background,$*-kapak-zemin.png) -resize $${imgwpx}x$${imghpx}!),$(call magick_zemin_cilt)) \
 		$(call magick_kenar) \
 		\( -gravity East -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_on) -splice $${bleedpx}x \) -compose Overlay -composite \
 		\( -gravity West -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_arka) -splice $${bleedpx}x \) -compose Overlay -composite \
 		\( -gravity Center -size $${spinepx}x$${coverhpx} -background none xc: $(call magick_sirt) \) -compose Overlay -composite \
-		\( -gravity East $(word 1,$^) -splice $${bleedpx}x -write mpr:metin-on \) -compose Over -composite \
-		\( -gravity West $(word 2,$^) -splice $${bleedpx}x -write mpr:metin-arka \) -compose Over -composite \
-		\( -gravity Center $(word 3,$^) -write mpr:metin-sirt \) -compose Over -composite \
+		\( -gravity East $*-fragman-on.png -splice $${bleedpx}x -write mpr:metin-on \) -compose Over -composite \
+		\( -gravity West $*-fragman-arka.png -splice $${bleedpx}x -write mpr:metin-arka \) -compose Over -composite \
+		\( -gravity Center $*-fragman-sirt.png -write mpr:metin-sirt \) -compose Over -composite \
 		$(call magick_sembol,$(word 5,$^))\
 		$(call magick_barkod,$(word 4,$^)) \
 		$(call magick_logo,$(word 6,$^)) \
@@ -1083,16 +1083,16 @@ define povray
 endef
 
 %-3b-on.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/on.pov
-	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
+	$(call povray,$(filter %/kapak.pov,$^),$*-3b.pov,$(filter %/on.pov,$^),$@,6000,8000)
 
 %-3b-arka.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/arka.pov
-	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,6000,8000)
+	$(call povray,$(filter %/kapak.pov,$^),$*-3b.pov,$(filter %/arka.pov,$^),$@,6000,8000)
 
 %-3b-istif.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/istif.pov
-	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,8000,6000)
+	$(call povray,$(filter %/kapak.pov,$^),$*-3b.pov,$(filter %/istif.pov,$^),$@,8000,6000)
 
 $(PROJECT)-%-3b-montaj.png: $(CASILEDIR)/kapak.pov $(PROJECT)-%-3b.pov $(CASILEDIR)/montaj.pov
-	$(call povray,$(word 1,$^),$(word 2,$^),$(word 3,$^),$@,8000,6000)
+	$(call povray,$(filter %/kapak.pov,$^),$(filter %-3b.pov,$^),$(filter %/montaj.pov,$^),$@,8000,6000)
 
 define pov_crop
 	\( +clone \
@@ -1118,9 +1118,9 @@ endef
 %.epub %.odt %.docx: %-processed.md %-manifest.yml %-epub-pankart.jpg $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
-		--epub-cover-image=$(lastword $^) \
-		$(word 2,$^) \
-		=($(call strip_lang) < $<) -o $@
+		--epub-cover-image=$*-epub-pankart.jpg \
+		$*-manifest.yml \
+		=($(call strip_lang) < $*-processed.md) -o $@
 	$(addtosync)
 
 %.mobi: %.epub $(require_pubdir)
