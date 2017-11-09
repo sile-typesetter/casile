@@ -661,8 +661,8 @@ endef
 
 COVERBACKGROUNDS = $(call pattern_list,$(TARGETS),$(filter-out $(BINDINGS),$(PAPERSIZES)),-kapak-zemin.png)
 git_background = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
-$(COVERBACKGROUNDS): %-kapak-zemin.png: $$(call git_background,$$@) $$(subst -kapak-zemin.png,-geometry.zsh,$$@)
-	source $(filter %-geometry.zsh,$^)
+$(COVERBACKGROUNDS): %-kapak-zemin.png: $$(call git_background,$$@) %-geometry.zsh
+	source $*-geometry.zsh
 	$(if $(filter %.png,$(call git_background,$@)),true,false) && $(MAGICK) $(filter %.png,$^) \
 		-gravity $(COVERGRAVITY) \
 		-extent  "%[fx:w/h>=$${coveraspect}?h*$${coveraspect}:w]x" \
@@ -675,14 +675,14 @@ $(COVERBACKGROUNDS): %-kapak-zemin.png: $$(call git_background,$$@) $$(subst -ka
 		$@ ||:
 
 %-pankart.png: %-kapak.png %-geometry.zsh
-	source $(filter %-geometry.zsh,$^)
+	source $*-geometry.zsh
 	$(MAGICK) $< \
 		-resize $${coverwpp}x$${coverhpp}^ \
 		$(and $(filter epub,$(call parse_layout,$@)),-resize 1000x1600^) \
 		$@
 
 %-kapak.png: %-kapak-zemin.png %-fragman-kapak.png %-geometry.zsh
-	source $(filter %-geometry.zsh,$^)
+	source $*-geometry.zsh
 	@$(MAGICK) $< \
 		\( -background none \
 			-gravity Center \
@@ -739,7 +739,7 @@ endef
 	$(COVERS) || exit 0
 	metin=$$(mktemp kapakXXXXXX.pdf)
 	bg=$$(mktemp kapakXXXXXX.pdf)
-	source $(filter %-geometry.zsh,$^)
+	source $*-geometry.zsh
 	$(MAGICK) $< \
 		-density $(LODPI) \
 		-compress jpeg \
@@ -836,7 +836,7 @@ $(BINDINGIMAGES): %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt
 	$(MAGICK) $< $(call magick_printcolor) $@
 
 %-cilt.svg: $(CASILEDIR)/cilt.svg %-cilt-printcolor.png %-geometry.zsh
-	source $(filter %-geometry.zsh,$^)
+	source $*-geometry.zsh
 	ver=$(subst @,\\@,$(call versioninfo,$@))
 	perl -pne "
 			s#IMG#$(filter %.png,$^)#g;
@@ -854,7 +854,7 @@ $(BINDINGIMAGES): %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt
 		" $< > $@
 
 %-cilt.pdf:	%-cilt.svg %-geometry.zsh $(require_pubdir)
-	source $(filter %-geometry.zsh,$^)
+	source $*-geometry.zsh
 	$(INKSCAPE) --without-gui \
 		--export-dpi=$$hidpi \
 		--export-area-page \
@@ -1008,19 +1008,19 @@ define magick_printcolor
 endef
 
 %-cilt-on.png: %-cilt.png %-geometry.zsh
-	source $(filter %-geometry.zsh,$^)
+	source $*-geometry.zsh
 	$(MAGICK) $< -gravity East -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
 
 %-cilt-arka.png: %-cilt.png %-geometry.zsh
-	source $(filter %-geometry.zsh,$^)
+	source $*-geometry.zsh
 	$(MAGICK) $< -gravity West -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
 
 %-cilt-sirt.png: %-cilt.png %-geometry.zsh
-	source $(filter %-geometry.zsh,$^)
+	source $*-geometry.zsh
 	$(MAGICK) $< -gravity Center -crop $${spinepx}x$${coverhpx}+0+0! $@
 
 %-pov-on.png: %-cilt-printcolor.png %-geometry.zsh
-	source $(filter %-geometry.zsh,$^)
+	source $*-geometry.zsh
 	$(MAGICK) $< \
 		-gravity East -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! \
 		$(call magick_emulateprint) \
@@ -1029,7 +1029,7 @@ endef
 		$@
 
 %-pov-arka.png: %-cilt-printcolor.png %-geometry.zsh
-	source $(filter %-geometry.zsh,$^)
+	source $*-geometry.zsh
 	$(MAGICK) $< \
 		-gravity West -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! \
 		$(call magick_emulateprint) \
@@ -1038,7 +1038,7 @@ endef
 		$@
 
 %-pov-sirt.png: %-cilt-printcolor.png %-geometry.zsh
-	source $(filter %-geometry.zsh,$^)
+	source $*-geometry.zsh
 	$(MAGICK) $< \
 		-gravity Center -crop $${spinepx}x$${coverhpx}+0+0! \
 		-gravity Center \
@@ -1048,7 +1048,7 @@ endef
 
 BOOKSCENESINC = $(call pattern_list,$(TARGETS),$(BINDINGS),.inc)
 $(BOOKSCENESINC): %.inc: %-geometry.zsh %-pov-on.png %-pov-arka.png %-pov-sirt.png
-	source $(filter %-geometry.zsh,$^)
+	source $*-geometry.zsh
 	cat <<- EOF > $@
 		#declare CoverWMM = $$coverwmm;
 		#declare CoverHMM = $$coverhmm;
@@ -1064,7 +1064,7 @@ $(BOOKSCENESINC): %.inc: %-geometry.zsh %-pov-on.png %-pov-arka.png %-pov-sirt.p
 
 BOOKSCENES = $(call pattern_list,$(TARGETS),$(BINDINGS),-3b.pov)
 $(BOOKSCENES): %-3b.pov: %-geometry.zsh %.inc
-	source $(filter %-geometry.zsh,$^)
+	source $*-geometry.zsh
 	cat <<- EOF > $@
 		#declare DefaultBook = "$(filter %.inc,$^)";
 		#declare Lights = $(call scale,8,2);
