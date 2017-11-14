@@ -1133,10 +1133,24 @@ endef
 		$@
 	$(addtosync)
 
-%.epub %.odt %.docx: %-processed.md %-manifest.yml %-epub-pankart.jpg $(require_pubdir)
+%.epub: %-processed.md %-manifest.yml %-epub-pankart.jpg $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		--epub-cover-image=$*-epub-pankart.jpg \
+		$*-manifest.yml \
+		=($(call strip_lang) < $*-processed.md) -o $@
+	$(addtosync)
+
+%.odt: %-processed.md %-manifest.yml $(require_pubdir)
+	$(PANDOC) \
+		$(PANDOCARGS) \
+		$*-manifest.yml \
+		=($(call strip_lang) < $*-processed.md) -o $@
+	$(addtosync)
+
+%.docx: %-processed.md %-manifest.yml $(require_pubdir)
+	$(PANDOC) \
+		$(PANDOCARGS) \
 		$*-manifest.yml \
 		=($(call strip_lang) < $*-processed.md) -o $@
 	$(addtosync)
