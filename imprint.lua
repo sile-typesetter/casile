@@ -119,8 +119,10 @@ SILE.registerCommand("meta:distribution", function (options, content)
   local layout = CASILE.layout
   local distros = CASILE.metadata.distribution
   local text = nil
-  for _, d in pairs(distros) do
-    if d.layout == layout then text = d.text end
+  if distros then
+    for _, d in pairs(distros) do
+      if d.layout == layout then text = d.text end
+    end
   end
   if text then
     SILE.call("font", { weight = 600, style = "Bold" }, { "Dağıtım: " })
