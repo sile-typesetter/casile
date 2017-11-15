@@ -1,3 +1,5 @@
+SILE.require("packages/markdown", CASILE.casiledir)
+
 SILE.registerCommand("imprint:font", function (options, content)
   options.weight = options.weight or 400
   options.size = options.size or "9pt"
@@ -22,21 +24,7 @@ SILE.registerCommand("imprint", function (options, content)
         SILE.settings.set("linespacing.fixed.baselinedistance", SILE.length.parse("2.8ex plus 1pt minus 0.5pt"))
 
         if CASILE.metadata.publisher and not (CASILE.layout == "app") then
-          SILE.settings.temporarily(function ()
-            SILE.call("skip", { height = "-6.7em" })
-            SILE.settings.set("document.lskip", SILE.nodefactory.newGlue({ width = imgUnit * 6.5 }))
-            SILE.call("break")
-            SILE.typesetter:typeset("Davutpaşa Cad. Kazım Dinçol San. Sit.")
-            SILE.call("break")
-            SILE.typesetter:typeset("No 81/87, Topkapı, İstanbul, Türkiye")
-            SILE.call("break")
-            SILE.call("font", { family = "Hack", size = "0.8em" }, function ()
-              SILE.typesetter:typeset("https://viachristus.com")
-              SILE.call("break")
-              SILE.typesetter:typeset("yayinlar@viachristus.com")
-            end)
-            SILE.call("par")
-          end)
+          SILE.processMarkdown(SU.contentToString(CASILE.metadata.publisher))
         end
 
         if SILE.Commands["meta:title"] then
