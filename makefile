@@ -807,7 +807,7 @@ publisher_emblum-grey.svg: $(PUBLISHEREMBLUM)
 	$(call skip_if_tracked,$@)
 	cp $< $@
 
-PUBLISHERLOGO := $(PUBLISHERDIR)/logo.svg
+PUBLISHERLOGO ?= $(PUBLISHERDIR)/logo.svg
 publisher_logo.svg: $(PUBLISHERLOGO)
 	$(call skip_if_tracked,$@)
 	cp $< $@
@@ -963,7 +963,7 @@ endef
 define magick_logo
 	-gravity SouthWest \
 	\( -background none \
-		publisher_logo-grey.svg \
+		$1 \
 		-channel RGB -negate \
 		-level 20%,60%!  \
 		-resize $(call mmtopx,30)x \
