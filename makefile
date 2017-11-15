@@ -55,7 +55,7 @@ INKSCAPE ?= inkscape
 POVRAY ?= povray
 
 # List of supported outputs
-BINDINGS = a4ciltli royaloctavo octavo halfletter a5trim cep
+BINDINGS = a4ciltli royaloctavo octavo halfletter a5trim cep a7
 DISPLAYS = a4 a5 app ekran
 PLACARDS = kare genis bant epub
 PAPERSIZES = $(BINDINGS) $(DISPLAYS) $(PLACARDS)
