@@ -55,7 +55,11 @@ local function reconstrainFrameset(fs)
   end
 end
 
-local setup = function(self)
+local setup = function(self, args)
+  bleed = args.bleed or bleed
+  trim = args.trim or trim
+  len = trim - bleed
+
   local papersize = SILE.documentState.paperSize
   local w = papersize[1] + (trim * 2)
   local h = papersize[2] + (trim * 2)
