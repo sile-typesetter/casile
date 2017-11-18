@@ -221,7 +221,7 @@ $(PROJECT)-%-pankart-montaj.png: $(call pattern_list,$(TARGETS)-%-pankart.png) $
 		$@
 
 .PHONY: clean
-clean: $(and $(CI),init) $(require_pubdir)
+clean: $(and $(CI),init) | $(require_pubdir)
 	git clean -xf $(foreach CONFIG,$(PROJECTCONFIGS),-e $(CONFIG))
 	rm -f $(PUBDIR)/*
 
@@ -367,7 +367,7 @@ PROJECTCONFIGS += .editorconfig
 	cp $< $@
 
 PROJECTCONFIGS += .gitignore
-.gitignore: $(CASILEDIR)/gitignore $(require_pubdir) $(MAKEFILE_LIST)
+.gitignore: $(CASILEDIR)/gitignore $(MAKEFILE_LIST) | $(require_pubdir)
 	$(call skip_if_tracked,$@)
 	cp $< $@
 	$(foreach PROJECTCONFIG,$(PROJECTCONFIGS),echo '$(PROJECTCONFIG)' >> $@;)
@@ -426,7 +426,7 @@ sync_pre: $(and $(CI),clean)
 	rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/ ||:
 
 .PHONY: sync_post
-sync_post: $(and $(CI),books) $(require_pubdir) $(require_outputdir)
+sync_post: $(and $(CI),books) | $(require_pubdir) $(require_outputdir)
 	for target in $(TARGETS); do
 ifeq ($(ALLTAGS),)
 		tagpath=
@@ -458,7 +458,7 @@ $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
 
 FULLPDFS = $(call pattern_list,$(filter-out $(MOCKUPTARGETS),$(TARGETS)),$(filter-out $(PLACARDS),$(PAPERSIZES)),.pdf)
 $(FULLPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
-$(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES) $(require_pubdir)
+$(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES) | $(require_pubdir)
 	$(call skip_if_lazy,$@)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
@@ -528,7 +528,7 @@ preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4)
 %-ciftyonlu.pdf: %.pdf
 	pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $< ||:
 
-%-kirpilmis.pdf: %.pdf $(require_pubdir)
+%-kirpilmis.pdf: %.pdf | $(require_pubdir)
 	b=$$(echo "$(TRIM) * 283.465" | bc)
 	w=$$(echo "$(call pagew,$<) * 100 - $$b * 2" | bc)
 	h=$$(echo "$(call pageh,$<) * 100 - $$b * 2" | bc)
@@ -626,7 +626,7 @@ WEBTARGETS = $(call pattern_list,$(TARGETS),.web)
 .PHONY: $(WEBTARGETS)
 $(WEBTARGETS): %.web: %-manifest.yml %-epub-pankart.jpg promotionals renderings
 
-%-app.info: %-app.toc %-app.pdf %-manifest.yml $(require_pubdir)
+%-app.info: %-app.toc %-app.pdf %-manifest.yml | $(require_pubdir)
 	$(CASILEDIR)/bin/toc2breaks.lua $* $(filter %-app.toc,$^) $(filter %-manifest.yml,$^) $@ |
 		while read range out; do
 			pdftk $(filter %-app.pdf,$^) cat $$range output $$out
@@ -634,7 +634,7 @@ $(WEBTARGETS): %.web: %-manifest.yml %-epub-pankart.jpg promotionals renderings
 		done
 	$(addtosync)
 
-issue.info: $(require_pubdir)
+issue.info: | $(require_pubdir)
 	for source in $(TARGETS); do
 		echo -e "# $$source\n"
 		if test -d $${source}-bolumler; then
@@ -703,7 +703,7 @@ $(COVERBACKGROUNDS): %-kapak-zemin.png: $$(call git_background,$$@) %-geometry.z
 		$@
 
 # Gitlab projects need a sub 200kb icon image
-%-icon.png: %-kare-pankart.png $(require_pubdir)
+%-icon.png: %-kare-pankart.png | $(require_pubdir)
 	$(MAGICK) $< \
 		-define png:extent=200kb \
 		-resize 196x196 \
@@ -859,7 +859,7 @@ $(BINDINGIMAGES): %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt
 			s#SW#$${spinepm}#g;
 		" $< > $@
 
-%-cilt.pdf:	%-cilt.svg %-geometry.zsh $(require_pubdir)
+%-cilt.pdf:	%-cilt.svg %-geometry.zsh | $(require_pubdir)
 	source $*-geometry.zsh
 	$(INKSCAPE) --without-gui \
 		--export-dpi=$$hidpi \
@@ -1136,14 +1136,14 @@ define pov_crop
     -resize $(call scale,4000)x
 endef
 
-%.jpg: %.png $(require_pubdir)
+%.jpg: %.png | $(require_pubdir)
 	$(MAGICK) $< \
 		$(if $(findstring 3b,$*),$(call pov_crop),) \
 		-quality 85 \
 		$@
 	$(addtosync)
 
-%.epub: %-processed.md %-manifest.yml %-epub-pankart.jpg $(require_pubdir)
+%.epub: %-processed.md %-manifest.yml %-epub-pankart.jpg | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		--epub-cover-image=$*-epub-pankart.jpg \
@@ -1151,21 +1151,21 @@ endef
 		=($(call strip_lang) < $*-processed.md) -o $@
 	$(addtosync)
 
-%.odt: %-processed.md %-manifest.yml $(require_pubdir)
+%.odt: %-processed.md %-manifest.yml | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$*-manifest.yml \
 		=($(call strip_lang) < $*-processed.md) -o $@
 	$(addtosync)
 
-%.docx: %-processed.md %-manifest.yml $(require_pubdir)
+%.docx: %-processed.md %-manifest.yml | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$*-manifest.yml \
 		=($(call strip_lang) < $*-processed.md) -o $@
 	$(addtosync)
 
-%.mobi: %.epub $(require_pubdir)
+%.mobi: %.epub | $(require_pubdir)
 	kindlegen $< ||:
 	$(addtosync)
 
@@ -1177,7 +1177,7 @@ endef
 # %.json: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml)
 # 	jq -s 'reduce .[] as $$item({}; . + $$item)' $(foreach YAML,$^,<(yaml2json $(YAML))) > $@
 
-%-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml) $(require_pubdir)
+%-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml) | $(require_pubdir)
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $(filter %.yml,$^) |
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
 		    -e '/\(own\|next\)cloudshare: [^"]/s/: \(.*\)$$/: "\1"/' > $@
