@@ -27,6 +27,8 @@ FIGURES ?=
 FORMATS ?= pdf epub
 BLEED ?= 3
 TRIM ?= 10
+NOBLEED ?= 0
+NOTRIM ?= 0
 PAPERWEIGHT ?= 60
 COVERGRAVITY ?= Center
 SCENELIGHT ?= rgb<1,1,1>
@@ -872,8 +874,8 @@ geometrybase = $(if $(filter $(BINDINGS),$(call parse_layout,$1)),$1.pdf $1-cilt
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
 NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(filter-out $(CILTLI),$(PAPERSIZES)),-geometry.zsh)
-$(NONBOUNDGEOMETRIES): BLEED = 0
-$(NONBOUNDGEOMETRIES): TRIM = 0
+$(NONBOUNDGEOMETRIES): BLEED = $(NOBLEED)
+$(NONBOUNDGEOMETRIES): TRIM = $(NOTRIM)
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-geometry.zsh)
