@@ -1,4 +1,4 @@
-LAYOUTS ?= a4 a4ciltli royaloctavo octavo halfletter a5 a5trim cep a7 a7kart a7trimkart app ekran kartvizit
+LAYOUTS ?= a4 a4ciltli royaloctavo octavo halfletter a5 a5trim cep a6 a7 a7kart a7trimkart app ekran kartvizit
 RESOURCES ?= cilt
 RENDERINGS = 3b-on 3b-arka 3b-istif
 
