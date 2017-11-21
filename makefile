@@ -551,7 +551,7 @@ endef
 
 define find_and_munge
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
-	find $(PROJECTDIR) -maxdepth 2 -name '$1' $(foreach PATH,$(shell git submodule | cut -d\  -f3),-not -path '*/$(PATH)/*') |
+	find $(PROJECTDIR) -maxdepth 2 -name '$1' $(foreach PATH,$(shell git submodule | awk '{print $$2}'),-not -path '*/$(PATH)/*') |
 		grep -f <(git ls-files | sed -e 's/$$/$$/;s#^#./#') |
 		while read f; do
 			grep -q "esyscmd.*cat.* $$(basename $$f)-bolumler/" $$f && continue # skip compilations that are mostly M4
