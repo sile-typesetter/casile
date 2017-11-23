@@ -3,7 +3,6 @@ local trim = 10 * 2.83465
 local len = trim - bleed
 
 local outcounter = 1
-local date = SILE.require("packages.date").exports
 
 local outputMarks = function()
   local page = SILE.getFrame("page")
