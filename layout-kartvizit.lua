@@ -1,4 +1,4 @@
-CASILE.layout = "a7trimkart"
+CASILE.layout = "kartvizit"
 
 local class = SILE.documentState.documentClass
 
