@@ -141,9 +141,9 @@ end)
 
 SILE.registerCommand("book:sectioning", function (options, content)
   local content = SU.subContent(content)
-  options.skiptoc = CASILE.booleanopt(options.skiptoc, false)
-  options.numbering = CASILE.booleanopt(options.numbering, true)
-  options.reset = CASILE.booleanopt(options.reset, false)
+  options.skiptoc = SU.boolean(options.skiptoc, false)
+  options.numbering = SU.boolean(options.numbering, true)
+  options.reset = SU.boolean(options.reset, false)
   local level = SU.required(options, "level", "book:sectioning")
   if options.numbering then
     SILE.call("increment-multilevel-counter", {
@@ -197,8 +197,8 @@ end)
 -- This is the same as SILE's version but sets our no-headers variable on blank pages
 -- ...and allows opening to an even page
 SILE.registerCommand("open-page", function (options)
-  local odd = CASILE.booleanopt(options.odd, not isScreenLayout())
-  local double = CASILE.booleanopt(options.double, not isScreenLayout())
+  local odd = SU.boolean(options.odd, not isScreenLayout())
+  local double = SU.boolean(options.double, not isScreenLayout())
   local class = SILE.documentState.documentClass
   local count = 0
   repeat 
@@ -517,7 +517,7 @@ SILE.registerCommand("poetry", function ()
 end)
 
 SILE.registerCommand("dedication", function (options, content)
-  options.eject = CASILE.booleanopt(options.eject, true)
+  options.eject = SU.boolean(options.eject, true)
   SILE.scratch.headers.skipthispage = true
   SILE.call("center", {}, function ()
     SILE.settings.set("linespacing.method", "fit-font")
