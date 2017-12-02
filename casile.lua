@@ -672,16 +672,6 @@ SILE.registerCommand("pubDateFormat", function (options, content)
   SILE.call("date", { format = "%B %Y", time = ts, locale = "tr_TR.utf-8" })
 end, "Output publication dates in proper format for imprint page")
 
-setCommandDefaults = function (command, newOptions)
-  local oldCommand = SILE.Commands[command]
-  SILE.Commands[command] = function (options, content)
-    for k, v in pairs(newOptions) do
-      options[k] = options[k] or v
-    end
-    return oldCommand(options, content)
-  end
-end
-
 local originalTypesetter = SILE.typesetter.typeset
 dropcapNextLetter = function ()
   SILE.typesetter.typeset = function (self, text)
