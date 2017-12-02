@@ -33,7 +33,7 @@ SILE.registerCommand("open-double-page", function ()
   SILE.typesetter:leaveHmode();
 end)
 
-setCommandDefaults("imprint:font", { size = "7pt" })
+SILE.setCommandDefaults("imprint:font", { size = "7pt" })
 
 SILE.registerCommand("href", function (options, content)
   SILE.call("markverse", options, content)

@@ -22,7 +22,7 @@ SILE.call("switch-master-one-page", { id = "right" })
 
 if class.options.crop() == "true" then class:setupCrop() end
 
-setCommandDefaults("imprint:font", { size = "7pt" })
+SILE.setCommandDefaults("imprint:font", { size = "7pt" })
 
 SILE.registerCommand("href", function (options, content)
   SILE.call("markverse", options, content)
