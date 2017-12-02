@@ -139,14 +139,6 @@ SILE.registerCommand("aki", function ()
   SILE.call("penalty", { penalty = -1 })
 end)
 
-CASILE.booleanopt = function(value, default)
-  if value == "false" then return false end
-  if value == false then return false end
-  if value == "true" then return true end
-  if value == true then return true end
-  return default
-end
-
 SILE.registerCommand("book:sectioning", function (options, content)
   local content = SU.subContent(content)
   options.skiptoc = CASILE.booleanopt(options.skiptoc, false)
