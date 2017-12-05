@@ -67,7 +67,8 @@ PLACARDS = $(_square) $(_wide) $(_banner) epub
 PAPERSIZES = $(SOFTBACKS) $(HARDBACKS) $(STAPLES) $(STACKS) $(DISPLAYS) $(PLACARDS)
 RENDERINGS = $(_3b)-$(_front) $(_3b)-$(_back) $(_3b)-$(_pile)
 RESOURCES ?= $(_binding)
-LAYOUTS ?= a4 a4ciltli royaloctavo octavo halfletter a5 a5trim cep a6 a7 a7kart a7trimkart $(_app) $(_screen) $(_businesscard)
+PUBLAYOUT ?= a4
+LAYOUTS ?= $(PUBLAYOUT)
 
 # Default to running multiple jobs
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
