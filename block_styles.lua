@@ -78,7 +78,7 @@ end)
 
 SILE.registerCommand("chapter", function (options, content)
   options.display = options.display or "STRING"
-  options.numbering = CASILE.booleanopt(options.numbering, true)
+  options.numbering = SU.boolean(options.numbering, true)
   SILE.call("set-counter", { id = "footnote", value = 1 })
   SILE.settings.temporarily(function ()
     SILE.call("center", {}, function ()
