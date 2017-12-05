@@ -862,4 +862,4 @@ s#BINDING#SOFTBACK#g
 /^[^#_]/s#\bzemin\b#$(_background)#g
 /^[^#_]/s#\bmetin\b#$(_text)#g
 /^[^#_]/s#\bfragman\b#$(_fragment)#g
-/^[^#_]/s#\bgeometry\b#$(_geometry)#g
+/^[^#_]/s#\bgeometry.zsh\b#$(_geometry).zsh#g
