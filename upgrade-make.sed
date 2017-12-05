@@ -878,3 +878,4 @@ s#\bmagick_kenar\b#magick_border#g
 s#\bmagick_sembol\b#magick_emblum#g
 s#\bmagick_barkod\b#magick_barcode#g
 s#\bPUBLAYOUT\b#PUBLAYOUTS#g
+s#\bPUBLAYOUTS\b#RENDERED#g
