@@ -879,3 +879,7 @@ s#\bmagick_sembol\b#magick_emblum#g
 s#\bmagick_barkod\b#magick_barcode#g
 s#\bPUBLAYOUT\b#PUBLAYOUTS#g
 s#\bPUBLAYOUTS\b#RENDERED#g
+s#\b_softback\b#_paperback#g
+s#\b_hardback\b#_hardcover#g
+s#\bSOFTBACK#PAPERBACK#g
+s#\bHARDBACK#HARDCOVER#g
