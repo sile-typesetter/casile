@@ -1,0 +1,1 @@
+s#owncloudshare#nextcloudshare#g
