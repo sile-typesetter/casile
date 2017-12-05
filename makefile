@@ -11,6 +11,7 @@ PUBLISHERDIR ?= $(CASILEDIR)
 # Set the language if not otherwise set
 LANGUAGE ?= en
 include $(CASILEDIR)/makefile-$(LANGUAGE)
+unlocalize = $(or $(strip $(shell sed -ne '/= $1$$/{s/^_//;s/ .*$$//;p}' < $(CASILEDIR)/makefile-$(LANGUAGE))),$1)
 
 # Find stuff to build that has both a YML and a MD component
 TARGETS ?= $(filter $(basename $(wildcard *.md)),$(basename $(wildcard *.yml)))
