@@ -58,17 +58,17 @@ INKSCAPE ?= inkscape
 POVRAY ?= povray
 
 # Categorize supported outputs
-SOFTBACKS = a4ciltli halfletter a5trim cep
-SOFTBACKRESOURCES ?= $(_binding)
-HARDBACKS = royaloctavo octavo
-HARDBACKRESOURCES ?= $(_case) $(_jacket)
+PAPERBACKS = a4ciltli halfletter a5trim cep
+PAPERBACKRESOURCES ?= $(_binding)
+HARDCOVERS = royaloctavo octavo
+HARDCOVERRESOURCES ?= $(_case) $(_jacket)
 STAPLES = a6 a7 a5
 STAPLERESOURCES = $(_binding)
 STACKS = a4 a7kart a7trimkart $(_businesscard)
 DISPLAYS = $(_app) $(_screen)
 PLACARDS = $(_square) $(_wide) $(_banner) epub
-PAPERSIZES = $(SOFTBACKS) $(HARDBACKS) $(STAPLES) $(STACKS) $(DISPLAYS) $(PLACARDS)
-RENDERED = $(SOFTBACKS) $(HARDBACKS) $(STAPLES) $(STACKS)
+PAPERSIZES = $(PAPERBACKS) $(HARDCOVERS) $(STAPLES) $(STACKS) $(DISPLAYS) $(PLACARDS)
+RENDERED = $(PAPERBACKS) $(HARDCOVERS) $(STAPLES) $(STACKS)
 RENDERINGS = $(_3b)-$(_front) $(_3b)-$(_back) $(_3b)-$(_pile)
 
 # Set default output format(s)
@@ -147,7 +147,7 @@ mmtopt = $(shell echo "$1 * 2.83465 / 1" | bc)
 width = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:w] $1)
 height = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:h] $1)
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
-parse_binding = $(filter $(_softback) $(_hardback) $(_staple) $(_stack),$(subst -, ,$(basename $1)))
+parse_binding = $(filter $(_paperback) $(_hardcover) $(_staple) $(_stack),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
 parse_bookid = $(firstword $(subst -, ,$(basename $1)))
 series_sort = $(shell PROJECT=$(PROJECT) SORTORDER=$(SORTORDER) $(CASILEDIR)/bin/series_sort.lua $1)
@@ -459,11 +459,11 @@ endif
 VIRTUALPDFS = $(call pattern_list,$(TARGETS),.pdf)
 .PHONY: $(VIRTUALPDFS)
 $(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) \
-                       $(call pattern_list,$$*,$(filter $(SOFTBACKS),$(LAYOUTS)),$(SOFTBACKRESOURCES),.pdf) \
-                       $(call pattern_list,$$*,$(filter $(HARDBACKS),$(LAYOUTS)),$(HARDBACKRESOURCES),.pdf) \
+                       $(call pattern_list,$$*,$(filter $(PAPERBACKS),$(LAYOUTS)),$(PAPERBACKRESOURCES),.pdf) \
+                       $(call pattern_list,$$*,$(filter $(HARDCOVERS),$(LAYOUTS)),$(HARDCOVERRESOURCES),.pdf) \
                        $(call pattern_list,$$*,$(filter $(STAPLES),$(LAYOUTS)),$(STAPLERESOURCES),.pdf) ;
 
-coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(SOFTBACKS) $(HARDBACKS) $(STAPLES),$(call parse_layout,$1)),,%-$(_cover).pdf),)
+coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(PAPERBACKS) $(HARDCOVERS) $(STAPLES),$(call parse_layout,$1)),,%-$(_cover).pdf),)
 
 # Order is important here, these are included in reverse order so early supersedes late
 onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call unlocalize,$(call parse_layout,$1)).lua $(LUALIBS)
@@ -677,7 +677,7 @@ define skip_if_lazy
 	$(LAZY) && $(if $(filter $1,$(MAKECMDGOALS)),false,true) && test -f $1 && { touch $1; exit 0 } ||:
 endef
 
-COVERBACKGROUNDS = $(call pattern_list,$(TARGETS),$(filter-out $(SOFTBACKS),$(PAPERSIZES)),-$(_cover)-$(_background).png)
+COVERBACKGROUNDS = $(call pattern_list,$(TARGETS),$(filter-out $(PAPERBACKS),$(PAPERSIZES)),-$(_cover)-$(_background).png)
 git_background = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
 $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@) %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
@@ -767,8 +767,8 @@ endef
 	pdftk $${text} background $$bg output $@
 	rm $${text} $$bg
 
-SOFTBACKFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter $(SOFTBACKS),$(PAPERSIZES)),-$(_binding)-$(_text).pdf)
-$(SOFTBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/softbackbinding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_layout,$$@)).lua $(LUALIBS)
+PAPERBACKFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter $(PAPERBACKS),$(PAPERSIZES)),-$(_binding)-$(_text).pdf)
+$(PAPERBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/softbackbinding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_layout,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$*)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -798,7 +798,7 @@ $(SOFTBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/softbackbinding.x
 		$(call magick_fragment_spine) \
 		-composite $@
 
-COVERFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter-out $(SOFTBACKS),$(PAPERSIZES)),-$(_cover)-$(_text).pdf)
+COVERFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter-out $(PAPERBACKS),$(PAPERSIZES)),-$(_cover)-$(_text).pdf)
 $(COVERFRAGMENTS): %-$(_cover)-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_layout,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$(call parse_bookid,$@))"
@@ -833,8 +833,8 @@ publisher_logo-grey.svg: $(PUBLISHERLOGO)
 	$(call skip_if_tracked,$@)
 	cp $< $@
 
-SOFTBACKIMAGES = $(call pattern_list,$(TARGETS),$(SOFTBACKS),-$(_binding).png)
-$(SOFTBACKIMAGES): %-$(_binding).png: %-$(_fragment)-$(_front).png %-$(_fragment)-$(_back).png %-$(_fragment)-$(_spine).png $$(call strip_layout,$$*-barkod.png) publisher_emblum.svg publisher_logo.svg %-$(_geometry).zsh
+PAPERBACKIMAGES = $(call pattern_list,$(TARGETS),$(PAPERBACKS),-$(_binding).png)
+$(PAPERBACKIMAGES): %-$(_binding).png: %-$(_fragment)-$(_front).png %-$(_fragment)-$(_back).png %-$(_fragment)-$(_spine).png $$(call strip_layout,$$*-barkod.png) publisher_emblum.svg publisher_logo.svg %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
 		$(or $(and $(call git_background,$*-$(_cover)-$(_background).png),$(call git_background,$*-$(_cover)-$(_background).png) -resize $${imgwpx}x$${imghpx}!),$(call magick_background_binding)) \
@@ -885,10 +885,10 @@ $(SOFTBACKIMAGES): %-$(_binding).png: %-$(_fragment)-$(_front).png %-$(_fragment
 	$(addtosync)
 
 newgeometry = $(shell grep -sq hidpi=$(HIDPI) $1 || echo force)
-geometrybase = $(if $(filter $(SOFTBACKS),$(call parse_layout,$1)),$1.pdf $1-$(_binding)-$(_text).pdf,$1-$(_cover)-$(_text).pdf)
+geometrybase = $(if $(filter $(PAPERBACKS),$(call parse_layout,$1)),$1.pdf $1-$(_binding)-$(_text).pdf,$1-$(_cover)-$(_text).pdf)
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
-NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(filter-out $(SOFTBACKS),$(PAPERSIZES)),-$(_geometry).zsh)
+NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(filter-out $(PAPERBACKS),$(PAPERSIZES)),-$(_geometry).zsh)
 $(NONBOUNDGEOMETRIES): BLEED = $(NOBLEED)
 $(NONBOUNDGEOMETRIES): TRIM = $(NOTRIM)
 
@@ -1075,7 +1075,7 @@ endef
 		$(call magick_emulateprint) \
 		$@
 
-BOOKSCENESINC = $(call pattern_list,$(TARGETS),$(SOFTBACKS),.inc)
+BOOKSCENESINC = $(call pattern_list,$(TARGETS),$(PAPERBACKS),.inc)
 $(BOOKSCENESINC): %.inc: %-$(_geometry).zsh %-pov-$(_front).png %-pov-$(_back).png %-pov-$(_spine).png
 	source $*-$(_geometry).zsh
 	cat <<- EOF > $@
@@ -1091,7 +1091,7 @@ $(BOOKSCENESINC): %.inc: %-$(_geometry).zsh %-pov-$(_front).png %-pov-$(_back).p
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
-BOOKSCENES = $(call pattern_list,$(TARGETS),$(SOFTBACKS),-$(_3b).pov)
+BOOKSCENES = $(call pattern_list,$(TARGETS),$(PAPERBACKS),-$(_3b).pov)
 $(BOOKSCENES): %-$(_3b).pov: %-$(_geometry).zsh %.inc
 	source $*-$(_geometry).zsh
 	cat <<- EOF > $@
@@ -1104,7 +1104,7 @@ $(BOOKSCENES): %-$(_3b).pov: %-$(_geometry).zsh %.inc
 	EOF
 
 ifneq ($(TARGETS),$(PROJECT))
-SERIESSCENES = $(call pattern_list,$(PROJECT),$(SOFTBACKS),-$(_3b).pov)
+SERIESSCENES = $(call pattern_list,$(PROJECT),$(PAPERBACKS),-$(_3b).pov)
 $(SERIESSCENES): $(PROJECT)-%-$(_3b).pov: $(firstword $(TARGETS))-%-$(_3b).pov $(call pattern_list,$(TARGETS),-%.inc)
 	cat <<- EOF > $@
 		#include "$<"
