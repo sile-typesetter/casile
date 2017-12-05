@@ -9,3 +9,4 @@ _banner := banner
 _businesscard := businesscard
 _poster := poster
 _app := app
+_screen := screen
