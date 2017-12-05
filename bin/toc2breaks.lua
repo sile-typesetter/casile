@@ -44,11 +44,11 @@ local out = basename .. "-app.pdf"
 infow(share .. out, true)
 
 infow("MEDIA:")
-local out = basename .. "-kare-pankart.jpg"
+local out = basename .. "-square-poster.jpg"
 infow(share .. out, true)
-local out = basename .. "-genis-pankart.jpg"
+local out = basename .. "-wide-poster.jpg"
 infow(share .. out, true)
-local out = basename .. "-bant-pankart.jpg"
+local out = basename .. "-banner-poster.jpg"
 infow(share .. out, true)
 
 local labels = {}

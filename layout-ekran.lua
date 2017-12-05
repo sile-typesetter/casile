@@ -1,4 +1,4 @@
-CASILE.layout = "ekran"
+CASILE.layout = "screen"
 
 local class = SILE.documentState.documentClass
 
