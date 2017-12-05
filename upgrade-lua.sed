@@ -16,4 +16,4 @@ s#\(ca\)\?book:right-running-head-font#cabook:font:right-header#g
 s#\(ca\)\?book:left-running-head-font#cabook:font:left-header#g
 s#\(ca\)\?book:page-number-font#cabook:font:folio#g
 s#CASILE.booleanopt#SU.boolean#g
-s#setCommandDefaults#SILE.setCommandDefaults#g
+s#\(SILE.\)\?setCommandDefaults#SILE.setCommandDefaults#g
