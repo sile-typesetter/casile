@@ -58,10 +58,13 @@ INKSCAPE ?= inkscape
 POVRAY ?= povray
 
 # List of supported outputs
-SOFTBACKS = a4ciltli royaloctavo octavo halfletter a5trim cep a6 a7
-DISPLAYS = a4 a5 a7kart a7trimkart $(_app) $(_screen) $(_businesscard)
+SOFTBACKS = a4ciltli halfletter a5trim cep
+HARDBACKS = royaloctavo octavo
+STAPLES = a6 a7 a5
+STACKS = a4 a7kart a7trimkart $(_businesscard)
+DISPLAYS = $(_app) $(_screen)
 PLACARDS = $(_square) $(_wide) $(_banner) epub
-PAPERSIZES = $(SOFTBACKS) $(DISPLAYS) $(PLACARDS)
+PAPERSIZES = $(SOFTBACKS) $(HARDBACKS) $(STAPLES) $(STACKS) $(DISPLAYS) $(PLACARDS)
 RENDERINGS = $(_3b)-$(_front) $(_3b)-$(_back) $(_3b)-$(_pile)
 RESOURCES ?= $(_binding)
 LAYOUTS ?= a4 a4ciltli royaloctavo octavo halfletter a5 a5trim cep a6 a7 a7kart a7trimkart $(_app) $(_screen) $(_businesscard)
@@ -451,7 +454,7 @@ VIRTUALPDFS = $(call pattern_list,$(TARGETS),.pdf)
 .PHONY: $(VIRTUALPDFS)
 $(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) $(call pattern_list,$$*,$(filter $(SOFTBACKS),$(LAYOUTS)),$(RESOURCES),.pdf) ;
 
-coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(SOFTBACKS),$(call parse_layout,$1)),,%-$(_cover).pdf),)
+coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(SOFTBACKS) $(HARDBACKS) $(STAPLES),$(call parse_layout,$1)),,%-$(_cover).pdf),)
 
 # Order is important here, these are included in reverse order so early supersedes late
 onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call unlocalize,$(call parse_layout,$1)).lua $(LUALIBS)
