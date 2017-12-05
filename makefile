@@ -59,14 +59,16 @@ POVRAY ?= povray
 
 # Categorize supported outputs
 SOFTBACKS = a4ciltli halfletter a5trim cep
+SOFTBACKRESOURCES ?= $(_binding)
 HARDBACKS = royaloctavo octavo
+HARDBACKRESOURCES ?= $(_case) $(_jacket)
 STAPLES = a6 a7 a5
+STAPLERESOURCES = $(_binding)
 STACKS = a4 a7kart a7trimkart $(_businesscard)
 DISPLAYS = $(_app) $(_screen)
 PLACARDS = $(_square) $(_wide) $(_banner) epub
 PAPERSIZES = $(SOFTBACKS) $(HARDBACKS) $(STAPLES) $(STACKS) $(DISPLAYS) $(PLACARDS)
 RENDERINGS = $(_3b)-$(_front) $(_3b)-$(_back) $(_3b)-$(_pile)
-RESOURCES ?= $(_binding)
 
 # Set default output format(s)
 PUBLAYOUTS ?= a4
@@ -455,7 +457,10 @@ endif
 
 VIRTUALPDFS = $(call pattern_list,$(TARGETS),.pdf)
 .PHONY: $(VIRTUALPDFS)
-$(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) $(call pattern_list,$$*,$(filter $(SOFTBACKS),$(LAYOUTS)),$(RESOURCES),.pdf) ;
+$(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) \
+                       $(call pattern_list,$$*,$(filter $(SOFTBACKS),$(LAYOUTS)),$(SOFTBACKRESOURCES),.pdf) \
+                       $(call pattern_list,$$*,$(filter $(HARDBACKS),$(LAYOUTS)),$(HARDBACKRESOURCES),.pdf) \
+                       $(call pattern_list,$$*,$(filter $(STAPLES),$(LAYOUTS)),$(STAPLERESOURCES),.pdf) ;
 
 coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(SOFTBACKS) $(HARDBACKS) $(STAPLES),$(call parse_layout,$1)),,%-$(_cover).pdf),)
 
