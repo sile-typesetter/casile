@@ -677,7 +677,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		-extent  "%[fx:w/h>=$${coveraspect}?h*$${coveraspect}:w]x" \
 		-extent "x%[fx:w/h<=$${coveraspect}?w/$${coveraspect}:h]" \
 		-resize $${coverwpx}x$${coverhpx} \
-		$(call magick_zeminfilter) \
+		$(call magick_background_filter) \
 		$@ ||:
 	$(if $(filter %.png,$(call git_background,$@)),false,true) && $(MAGICK) \
 		-size $${coverwpx}x$${coverhpx}^ $(call magick_zemin_kapak) -composite \
@@ -697,7 +697,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 			-gravity Center \
 			-size $${coverwpx}x$${coverhpx} \
 			xc: \
-			$(call magick_kapak) \
+			$(call magick_cover) \
 		\) -compose Overlay -composite \
 		\( \
 			-gravity Center \
@@ -717,7 +717,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		$@
 	$(addtosync)
 
-define magick_kapak
+define magick_cover
 		-fill none \
 		-fuzz 5% \
 		-draw 'color 1,1 replace' \
@@ -773,20 +773,20 @@ $(SOFTBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/softbackbinding.x
 %-$(_fragment)-$(_front).png: %-$(_binding)-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace RGB \
-		$(call magick_fragman_on) \
+		$(call magick_fragment_front) \
 		-composite $@
 
 %-$(_fragment)-$(_back).png: %-$(_binding)-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[1] \
 		-colorspace RGB \
-		$(call magick_fragman_arka) \
+		$(call magick_fragment_back) \
 		-composite $@
 
 %-$(_fragment)-$(_spine).png: %-$(_binding)-$(_text).pdf | %.pdf
 	$(MAGICK) -density $(HIDPI) $<[2] \
 		-colorspace RGB \
 		-crop $(call mmtopx,$(call spinemm,$(firstword $|)))x+0+0 \
-		$(call magick_fragman_sirt) \
+		$(call magick_fragment_spine) \
 		-composite $@
 
 COVERFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter-out $(SOFTBACKS),$(PAPERSIZES)),-$(_cover)-$(_text).pdf)
@@ -803,7 +803,7 @@ $(COVERFRAGMENTS): %-$(_cover)-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call pars
 %-$(_fragment)-$(_cover).png: %-$(_cover)-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace RGB \
-		$(call magick_fragman_kapak) \
+		$(call magick_fragment_cover) \
 		-composite $@
 
 PUBLISHEREMBLUM := $(PUBLISHERDIR)/emblum.svg
@@ -828,20 +828,20 @@ SOFTBACKIMAGES = $(call pattern_list,$(TARGETS),$(SOFTBACKS),-$(_binding).png)
 $(SOFTBACKIMAGES): %-$(_binding).png: %-$(_fragment)-$(_front).png %-$(_fragment)-$(_back).png %-$(_fragment)-$(_spine).png $$(call strip_layout,$$*-barkod.png) publisher_emblum.svg publisher_logo.svg %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
-		$(or $(and $(call git_background,$*-$(_cover)-$(_background).png),$(call git_background,$*-$(_cover)-$(_background).png) -resize $${imgwpx}x$${imghpx}!),$(call magick_zemin_cilt)) \
-		$(call magick_kenar) \
-		\( -gravity East -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_on) -splice $${bleedpx}x \) -compose Overlay -composite \
-		\( -gravity West -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_arka) -splice $${bleedpx}x \) -compose Overlay -composite \
-		\( -gravity Center -size $${spinepx}x$${coverhpx} -background none xc: $(call magick_sirt) \) -compose Overlay -composite \
+		$(or $(and $(call git_background,$*-$(_cover)-$(_background).png),$(call git_background,$*-$(_cover)-$(_background).png) -resize $${imgwpx}x$${imghpx}!),$(call magick_background_binding)) \
+		$(call magick_border) \
+		\( -gravity East -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_front) -splice $${bleedpx}x \) -compose Overlay -composite \
+		\( -gravity West -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_back) -splice $${bleedpx}x \) -compose Overlay -composite \
+		\( -gravity Center -size $${spinepx}x$${coverhpx} -background none xc: $(call magick_spine) \) -compose Overlay -composite \
 		\( -gravity East $*-$(_fragment)-$(_front).png -splice $${bleedpx}x -write mpr:text-front \) -compose Over -composite \
 		\( -gravity West $*-$(_fragment)-$(_back).png -splice $${bleedpx}x -write mpr:text-front \) -compose Over -composite \
 		\( -gravity Center $*-$(_fragment)-$(_spine).png -write mpr:text-front \) -compose Over -composite \
-		$(call magick_sembol,publisher_emblum.svg) \
-		$(call magick_barkod,$(filter %-barkod.png,$^)) \
+		$(call magick_emblum,publisher_emblum.svg) \
+		$(call magick_barcode,$(filter %-barkod.png,$^)) \
 		$(call magick_logo,publisher_logo.svg) \
 		-gravity Center -size %[fx:u.w]x%[fx:u.h] \
 		-composite \
-		$(call magick_cilt) \
+		$(call magick_binding) \
 		$@
 
 %-$(_binding)-printcolor.png: %-$(_binding).png
@@ -944,7 +944,7 @@ define magick_zemin_kapak
 	$(call magick_zemin)
 endef
 
-define magick_zemin_cilt
+define magick_background_binding
 	$(call magick_zemin)
 endef
 
@@ -952,18 +952,18 @@ define magick_zemin
 	xc:DarkGray
 endef
 
-define magick_zeminfilter
+define magick_background_filter
 	-normalize
 endef
 
-define magick_kenar
+define magick_border
 	-fill none -strokewidth 1 \
 	$(shell $(DRAFT) && echo -n '-stroke gray50' || echo -n '-stroke transparent') \
 	-draw "rectangle $$bleedpx,$$bleedpx %[fx:w-$$bleedpx],%[fx:h-$$bleedpx]" \
 	-draw "rectangle %[fx:$$bleedpx+$$coverwpx],$$bleedpx %[fx:w-$$bleedpx-$$coverwpx],%[fx:h-$$bleedpx]"
 endef
 
-define magick_sembol
+define magick_emblum
 	-gravity South \
 	\( -background none \
 		$1 \
@@ -987,7 +987,7 @@ define magick_logo
 	\) -compose Screen -composite
 endef
 
-define magick_barkod
+define magick_barcode
 	-gravity SouthEast \
 	\( -background white \
 		$1 \
