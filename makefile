@@ -57,13 +57,13 @@ INKSCAPE ?= inkscape
 POVRAY ?= povray
 
 # List of supported outputs
-BINDINGS = a4ciltli royaloctavo octavo halfletter a5trim cep a6 a7
-DISPLAYS = a4 a5 a7kart a7trimkart app ekran kartvizit
-PLACARDS = kare genis bant epub
-PAPERSIZES = $(BINDINGS) $(DISPLAYS) $(PLACARDS)
-RENDERINGS = 3b-on 3b-arka 3b-istif
-RESOURCES ?= cilt
-LAYOUTS ?= a4 a4ciltli royaloctavo octavo halfletter a5 a5trim cep a6 a7 a7kart a7trimkart app ekran kartvizit
+SOFTBACKS = a4ciltli royaloctavo octavo halfletter a5trim cep a6 a7
+DISPLAYS = a4 a5 a7kart a7trimkart $(_app) $(_screen) $(_businesscard)
+PLACARDS = $(_square) $(_wide) $(_banner) epub
+PAPERSIZES = $(SOFTBACKS) $(DISPLAYS) $(PLACARDS)
+RENDERINGS = $(_3b)-$(_front) $(_3b)-$(_back) $(_3b)-$(_pile)
+RESOURCES ?= $(_binding)
+LAYOUTS ?= a4 a4ciltli royaloctavo octavo halfletter a5 a5trim cep a6 a7 a7kart a7trimkart $(_app) $(_screen) $(_businesscard)
 
 # Default to running multiple jobs
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
@@ -202,7 +202,7 @@ ci: init debug books renderings promotionals sync_post stats
 renderings: $(call pattern_list,$(TARGETS),$(PUBLAYOUT),$(RENDERINGS),.jpg)
 
 .PHONY: promotionals
-promotionals: $(call pattern_list,$(TARGETS),$(PLACARDS),-pankart.jpg) $(call pattern_list,$(TARGETS),-icon.png)
+promotionals: $(call pattern_list,$(TARGETS),$(PLACARDS),-$(_poster).jpg) $(call pattern_list,$(TARGETS),-icon.png)
 
 # If a series, add some extra dependencies to convenience builds
 ifneq ($(words $(TARGETS)),1)
@@ -211,16 +211,16 @@ renderings: series_renderings
 endif
 
 .PHONY: series_promotionals
-series_promotionals: $(PROJECT)-epub-pankart-montaj.jpg $(PROJECT)-kare-pankart-montaj.jpg
+series_promotionals: $(PROJECT)-epub-$(_poster)-$(_montage).jpg $(PROJECT)-$(_square)-$(_poster)-$(_montage).jpg
 
 .PHONY: series_renderings
-series_renderings: $(PROJECT)-$(PUBLAYOUT)-3b-montaj.jpg
+series_renderings: $(PROJECT)-$(PUBLAYOUT)-$(_3b)-$(_montage).jpg
 
-$(PROJECT)-%-pankart-montaj.png: $(call pattern_list,$(TARGETS)-%-pankart.png) $(firstword $(TARGETS))-%-geometry.zsh
-	source $(filter %-geometry.zsh,$^)
+$(PROJECT)-%-$(_poster)-$(_montage).png: $(call pattern_list,$(TARGETS)-%-$(_poster).png) $(firstword $(TARGETS))-%-$(_geometry).zsh
+	source $(filter %-$(_geometry).zsh,$^)
 	$(MAGICK) montage \
 		$(filter %.png,$^) \
-		-geometry $${coverwpm}x$${coverhpm}+0+0 \
+		-$(_geometry) $${coverwpm}x$${coverhpm}+0+0 \
 		$@
 
 .PHONY: clean
@@ -448,9 +448,9 @@ endif
 
 VIRTUALPDFS = $(call pattern_list,$(TARGETS),.pdf)
 .PHONY: $(VIRTUALPDFS)
-$(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) $(call pattern_list,$$*,$(filter $(BINDINGS),$(LAYOUTS)),$(RESOURCES),.pdf) ;
+$(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) $(call pattern_list,$$*,$(filter $(SOFTBACKS),$(LAYOUTS)),$(RESOURCES),.pdf) ;
 
-coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(BINDINGS),$(call parse_layout,$1)),,%-kapak.pdf),)
+coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(SOFTBACKS),$(call parse_layout,$1)),,%-$(_cover).pdf),)
 
 # Order is important here, these are included in reverse order so early supersedes late
 onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call parse_layout,$1).lua $(LUALIBS)
@@ -465,7 +465,7 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 	$(call skip_if_lazy,$@)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
-	# account for TOC issue: https://github.com/simoncozens/sile/issues/230
+	# account for TOC $(_issue): https://github.com/simoncozens/sile/issues/230
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	if $(DRAFT); then
 		$(SILE) $(SILEFLAGS) $< -o $@
@@ -479,23 +479,23 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 		[[ $${pg1} -ne $${pg2} ]] && $(SILE) $(SILEFLAGS) $< -o $@ ||:
 	fi
 	# If we have a special cover page for this format, swap it out for the half title page
-	if $(COVERS) && [[ -f $*-kapak.pdf ]]; then
+	if $(COVERS) && [[ -f $*-$(_cover).pdf ]]; then
 		pdftk $@ dump_data_utf8 output $*.dat
-		pdftk C=$*-kapak.pdf B=$@ cat C1 B2-end output $*.tmp.pdf
+		pdftk C=$*-$(_cover).pdf B=$@ cat C1 B2-end output $*.tmp.pdf
 		pdftk $*.tmp.pdf update_info_utf8 $*.dat output $@
 		rm $*.tmp.pdf
 	fi
 	$(addtosync)
 
 FULLSILS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),.sil)
-$(FULLSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_bookid,$$@)-manifest.yml $$(call parse_bookid,$$@)-ayetler-sorted.json $$(call parse_bookid,$$@)-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
+$(FULLSILS): %.sil: $$(call parse_bookid,$$@)-$(_processede).md $$(call parse_bookid,$$@)-manifest.yml $$(call parse_bookid,$$@)-$(_verses)-$(_sorted).json $$(call parse_bookid,$$@)-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
 			--wrap=preserve \
 			-V documentclass="$(DOCUMENTCLASS)" \
 			$(if $(DOCUMENTOPTIONS),-V classoptions="$(DOCUMENTOPTIONS)",) \
 			-V metadatafile="$(filter %-manifest.yml,$^)" \
-			-V versesfile="$(filter %-ayetler-sorted.json,$^)" \
+			-V versesfile="$(filter %-$(_verses)-$(_sorted).json,$^)" \
 			-V versioninfo="$(call versioninfo,$@)" \
 			-V urlinfo="$(call urlinfo,$@)" \
 			-V qrimg="./$(filter %-url.png,$^)" \
@@ -517,7 +517,7 @@ $(FULLSILS): %.sil: $$(call parse_bookid,$$@)-processed.md $$(call parse_bookid,
 SILEFLAGS += $(foreach LUAINCLUDE,$(call reverse,$(LUAINCLUDES)),-I $(LUAINCLUDE))
 
 preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $(wildcard $1.m4)
-%-processed.md: %.md $$(call preprocess_macros,$$*) $$(wildcard $$*-bolumler/*.md) | figures
+%-$(_processede).md: %.md $$(call preprocess_macros,$$*) $$(wildcard $$*-bolumler/*.md) | figures
 	if $(DIFF) && $(if $(PARENT),true,false); then
 		branch2criticmark.zsh $(PARENT) $<
 	else
@@ -531,7 +531,7 @@ preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4)
 %-ciftyonlu.pdf: %.pdf
 	pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $< ||:
 
-%-kirpilmis.pdf: %.pdf | $(require_pubdir)
+%-$(_cropped).pdf: %.pdf | $(require_pubdir)
 	b=$$(echo "$(TRIM) * 283.465" | bc)
 	w=$$(echo "$(call pagew,$<) * 100 - $$b * 2" | bc)
 	h=$$(echo "$(call pageh,$<) * 100 - $$b * 2" | bc)
@@ -621,23 +621,23 @@ endef
 
 %.sil.tov: %.pdf ;
 
-APPTARGETS = $(call pattern_list,$(TARGETS),.app)
+APPTARGETS = $(call pattern_list,$(TARGETS),.$(_app))
 .PHONY: $(APPTARGETS)
-$(APPTARGETS): %.app: %-app.info promotionals
+$(APPTARGETS): %.$(_app): %-$(_app).info promotionals
 
 WEBTARGETS = $(call pattern_list,$(TARGETS),.web)
 .PHONY: $(WEBTARGETS)
-$(WEBTARGETS): %.web: %-manifest.yml %-epub-pankart.jpg promotionals renderings
+$(WEBTARGETS): %.web: %-manifest.yml %-epub-$(_poster).jpg promotionals renderings
 
-%-app.info: %-app.toc %-app.pdf %-manifest.yml | $(require_pubdir)
-	$(CASILEDIR)/bin/toc2breaks.lua $* $(filter %-app.toc,$^) $(filter %-manifest.yml,$^) $@ |
+%-$(_app).info: %-$(_app).toc %-$(_app).pdf %-manifest.yml | $(require_pubdir)
+	$(CASILEDIR)/bin/toc2breaks.lua $* $(filter %-$(_app).toc,$^) $(filter %-manifest.yml,$^) $@ |
 		while read range out; do
-			pdftk $(filter %-app.pdf,$^) cat $$range output $$out
+			pdftk $(filter %-$(_app).pdf,$^) cat $$range output $$out
 			ln -f $$out $(PUBDIR)/$$out
 		done
 	$(addtosync)
 
-issue.info: | $(require_pubdir)
+$(_issue).info: | $(require_pubdir)
 	for source in $(TARGETS); do
 		echo -e "# $$source\n"
 		if test -d $${source}-bolumler; then
@@ -664,10 +664,10 @@ define skip_if_lazy
 	$(LAZY) && $(if $(filter $1,$(MAKECMDGOALS)),false,true) && test -f $1 && { touch $1; exit 0 } ||:
 endef
 
-COVERBACKGROUNDS = $(call pattern_list,$(TARGETS),$(filter-out $(BINDINGS),$(PAPERSIZES)),-kapak-zemin.png)
+COVERBACKGROUNDS = $(call pattern_list,$(TARGETS),$(filter-out $(SOFTBACKS),$(PAPERSIZES)),-$(_cover)-$(_background).png)
 git_background = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
-$(COVERBACKGROUNDS): %-kapak-zemin.png: $$(call git_background,$$@) %-geometry.zsh
-	source $*-geometry.zsh
+$(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@) %-$(_geometry).zsh
+	source $*-$(_geometry).zsh
 	$(if $(filter %.png,$(call git_background,$@)),true,false) && $(MAGICK) $(filter %.png,$^) \
 		-gravity $(COVERGRAVITY) \
 		-extent  "%[fx:w/h>=$${coveraspect}?h*$${coveraspect}:w]x" \
@@ -679,15 +679,15 @@ $(COVERBACKGROUNDS): %-kapak-zemin.png: $$(call git_background,$$@) %-geometry.z
 		-size $${coverwpx}x$${coverhpx}^ $(call magick_zemin_kapak) -composite \
 		$@ ||:
 
-%-pankart.png: %-kapak.png %-geometry.zsh
-	source $*-geometry.zsh
+%-$(_poster).png: %-$(_cover).png %-$(_geometry).zsh
+	source $*-$(_geometry).zsh
 	$(MAGICK) $< \
 		-resize $${coverwpp}x$${coverhpp}^ \
 		$(and $(filter epub,$(call parse_layout,$@)),-resize 1000x1600^) \
 		$@
 
-%-kapak.png: %-kapak-zemin.png %-fragman-kapak.png %-geometry.zsh
-	source $*-geometry.zsh
+%-$(_cover).png: %-$(_cover)-$(_background).png %-$(_fragment)-$(_cover).png %-$(_geometry).zsh
+	source $*-$(_geometry).zsh
 	@$(MAGICK) $< \
 		\( -background none \
 			-gravity Center \
@@ -697,8 +697,8 @@ $(COVERBACKGROUNDS): %-kapak-zemin.png: $$(call git_background,$$@) %-geometry.z
 		\) -compose Overlay -composite \
 		\( \
 			-gravity Center \
-			$*-fragman-kapak.png \
-			-write mpr:metin-kapak \
+			$*-$(_fragment)-$(_cover).png \
+			-write mpr:$(_text)-$(_cover) \
 		\) -compose Over -composite \
 		-gravity Center \
 		-size %[fx:u.w]x%[fx:u.h] \
@@ -706,7 +706,7 @@ $(COVERBACKGROUNDS): %-kapak-zemin.png: $$(call git_background,$$@) %-geometry.z
 		$@
 
 # Gitlab projects need a sub 200kb icon image
-%-icon.png: %-kare-pankart.png | $(require_pubdir)
+%-icon.png: %-$(_square)-$(_poster).png | $(require_pubdir)
 	$(MAGICK) $< \
 		-define png:extent=200kb \
 		-resize 196x196 \
@@ -718,14 +718,14 @@ define magick_kapak
 		-fill none \
 		-fuzz 5% \
 		-draw 'color 1,1 replace' \
-		+write mpr:metin \
-		\( mpr:metin \
+		+write mpr:$(_text) \
+		\( mpr:$(_text) \
 			-channel RGBA \
 			-morphology Dilate:%[fx:w/500] Octagon \
 			-channel RGB \
 			-negate \
 		\) -composite \
-		\( mpr:metin \
+		\( mpr:$(_text) \
 			-channel RGBA \
 			-morphology Dilate:%[fx:w/200] Octagon \
 			-resize 25% \
@@ -736,27 +736,27 @@ define magick_kapak
 			-channel RGB \
 			-negate \
 		\) -composite \
-		\( mpr:metin \
+		\( mpr:$(_text) \
 		\) -composite
 endef
 
-%-kapak.pdf: %-kapak.png %-kapak-metin.pdf %-geometry.zsh
+%-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf %-$(_geometry).zsh
 	$(COVERS) || exit 0
-	metin=$$(mktemp kapakXXXXXX.pdf)
+	$(_text)=$$(mktemp kapakXXXXXX.pdf)
 	bg=$$(mktemp kapakXXXXXX.pdf)
-	source $*-geometry.zsh
+	source $*-$(_geometry).zsh
 	$(MAGICK) $< \
 		-density $(LODPI) \
 		-compress jpeg \
 		-quality 50 \
 		+repage \
 		$$bg
-	pdftk $(filter %.pdf,$^) cat 1 output $$metin
-	pdftk $$metin background $$bg output $@
-	rm $$metin $$bg
+	pdftk $(filter %.pdf,$^) cat 1 output $$$(_text)
+	pdftk $$$(_text) background $$bg output $@
+	rm $$$(_text) $$bg
 
-BINDINGFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter $(BINDINGS),$(PAPERSIZES)),-cilt-metin.pdf)
-$(BINDINGFRAGMENTS): %-cilt-metin.pdf: $(CASILEDIR)/softbackbinding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -cilt-metin,,$$@) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+SOFTBACKFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter $(SOFTBACKS),$(PAPERSIZES)),-$(_binding)-$(_text).pdf)
+$(SOFTBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/softbackbinding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$*)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -767,27 +767,27 @@ $(BINDINGFRAGMENTS): %-cilt-metin.pdf: $(CASILEDIR)/softbackbinding.xml $$(call 
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
-%-fragman-on.png: %-cilt-metin.pdf
+%-$(_fragment)-$(_front).png: %-$(_binding)-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace RGB \
 		$(call magick_fragman_on) \
 		-composite $@
 
-%-fragman-arka.png: %-cilt-metin.pdf
+%-$(_fragment)-$(_back).png: %-$(_binding)-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[1] \
 		-colorspace RGB \
 		$(call magick_fragman_arka) \
 		-composite $@
 
-%-fragman-sirt.png: %-cilt-metin.pdf | %.pdf
+%-$(_fragment)-$(_spine).png: %-$(_binding)-$(_text).pdf | %.pdf
 	$(MAGICK) -density $(HIDPI) $<[2] \
 		-colorspace RGB \
 		-crop $(call mmtopx,$(call spinemm,$(firstword $|)))x+0+0 \
 		$(call magick_fragman_sirt) \
 		-composite $@
 
-COVERFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter-out $(BINDINGS),$(PAPERSIZES)),-kapak-metin.pdf)
-$(COVERFRAGMENTS): %-kapak-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+COVERFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter-out $(SOFTBACKS),$(PAPERSIZES)),-$(_cover)-$(_text).pdf)
+$(COVERFRAGMENTS): %-$(_cover)-$(_text).pdf: $(CASILEDIR)/$(_cover).xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$(call parse_bookid,$@))"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -797,7 +797,7 @@ $(COVERFRAGMENTS): %-kapak-metin.pdf: $(CASILEDIR)/kapak.xml $$(call parse_booki
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
-%-fragman-kapak.png: %-kapak-metin.pdf
+%-$(_fragment)-$(_cover).png: %-$(_cover)-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace RGB \
 		$(call magick_fragman_kapak) \
@@ -821,18 +821,18 @@ publisher_logo-grey.svg: $(PUBLISHERLOGO)
 	$(call skip_if_tracked,$@)
 	cp $< $@
 
-BINDINGIMAGES = $(call pattern_list,$(TARGETS),$(BINDINGS),-cilt.png)
-$(BINDINGIMAGES): %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt.png $$(call strip_layout,$$*-barkod.png) publisher_emblum.svg publisher_logo.svg %-geometry.zsh
-	source $*-geometry.zsh
+SOFTBACKIMAGES = $(call pattern_list,$(TARGETS),$(SOFTBACKS),-$(_binding).png)
+$(SOFTBACKIMAGES): %-$(_binding).png: %-$(_fragment)-$(_front).png %-$(_fragment)-$(_back).png %-$(_fragment)-$(_spine).png $$(call strip_layout,$$*-barkod.png) publisher_emblum.svg publisher_logo.svg %-$(_geometry).zsh
+	source $*-$(_geometry).zsh
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
-		$(or $(and $(call git_background,$*-kapak-zemin.png),$(call git_background,$*-kapak-zemin.png) -resize $${imgwpx}x$${imghpx}!),$(call magick_zemin_cilt)) \
+		$(or $(and $(call git_background,$*-$(_cover)-$(_background).png),$(call git_background,$*-$(_cover)-$(_background).png) -resize $${imgwpx}x$${imghpx}!),$(call magick_zemin_cilt)) \
 		$(call magick_kenar) \
 		\( -gravity East -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_on) -splice $${bleedpx}x \) -compose Overlay -composite \
 		\( -gravity West -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_arka) -splice $${bleedpx}x \) -compose Overlay -composite \
 		\( -gravity Center -size $${spinepx}x$${coverhpx} -background none xc: $(call magick_sirt) \) -compose Overlay -composite \
-		\( -gravity East $*-fragman-on.png -splice $${bleedpx}x -write mpr:metin-on \) -compose Over -composite \
-		\( -gravity West $*-fragman-arka.png -splice $${bleedpx}x -write mpr:metin-arka \) -compose Over -composite \
-		\( -gravity Center $*-fragman-sirt.png -write mpr:metin-sirt \) -compose Over -composite \
+		\( -gravity East $*-$(_fragment)-$(_front).png -splice $${bleedpx}x -write mpr:$(_text)-$(_front) \) -compose Over -composite \
+		\( -gravity West $*-$(_fragment)-$(_back).png -splice $${bleedpx}x -write mpr:$(_text)-$(_back) \) -compose Over -composite \
+		\( -gravity Center $*-$(_fragment)-$(_spine).png -write mpr:$(_text)-$(_spine) \) -compose Over -composite \
 		$(call magick_sembol,publisher_emblum.svg) \
 		$(call magick_barkod,$(filter %-barkod.png,$^)) \
 		$(call magick_logo,publisher_logo.svg) \
@@ -841,11 +841,11 @@ $(BINDINGIMAGES): %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt
 		$(call magick_cilt) \
 		$@
 
-%-cilt-printcolor.png: %-cilt.png
+%-$(_binding)-printcolor.png: %-$(_binding).png
 	$(MAGICK) $< $(call magick_printcolor) $@
 
-%-cilt.svg: $(CASILEDIR)/cilt.svg %-cilt-printcolor.png %-geometry.zsh
-	source $*-geometry.zsh
+%-$(_binding).svg: $(CASILEDIR)/$(_binding).svg %-$(_binding)-printcolor.png %-$(_geometry).zsh
+	source $*-$(_geometry).zsh
 	ver=$(subst @,\\@,$(call versioninfo,$@))
 	perl -pne "
 			s#IMG#$(filter %.png,$^)#g;
@@ -862,8 +862,8 @@ $(BINDINGIMAGES): %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt
 			s#SW#$${spinepm}#g;
 		" $< > $@
 
-%-cilt.pdf:	%-cilt.svg %-geometry.zsh | $(require_pubdir)
-	source $*-geometry.zsh
+%-$(_binding).pdf:	%-$(_binding).svg %-$(_geometry).zsh | $(require_pubdir)
+	source $*-$(_geometry).zsh
 	$(INKSCAPE) --without-gui \
 		--export-dpi=$$hidpi \
 		--export-area-page \
@@ -873,16 +873,16 @@ $(BINDINGIMAGES): %-cilt.png: %-fragman-on.png %-fragman-arka.png %-fragman-sirt
 	$(addtosync)
 
 newgeometry = $(shell grep -sq hidpi=$(HIDPI) $1 || echo force)
-geometrybase = $(if $(filter $(BINDINGS),$(call parse_layout,$1)),$1.pdf $1-cilt-metin.pdf,$1-kapak-metin.pdf)
+geometrybase = $(if $(filter $(SOFTBACKS),$(call parse_layout,$1)),$1.pdf $1-$(_binding)-$(_text).pdf,$1-$(_cover)-$(_text).pdf)
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
-NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(filter-out $(CILTLI),$(PAPERSIZES)),-geometry.zsh)
+NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(filter-out $(SOFTBACKS),$(PAPERSIZES)),-$(_geometry).zsh)
 $(NONBOUNDGEOMETRIES): BLEED = $(NOBLEED)
 $(NONBOUNDGEOMETRIES): TRIM = $(NOTRIM)
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
-GEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-geometry.zsh)
-$(GEOMETRIES): %-geometry.zsh: $$(call newgeometry,$$@) $$(call geometrybase,$$*)
+GEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_geometry).zsh)
+$(GEOMETRIES): %-$(_geometry).zsh: $$(call newgeometry,$$@) $$(call geometrybase,$$*)
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	hidpi=$(HIDPI)
 	lodpi=$(HIDPI)
@@ -1024,20 +1024,20 @@ define magick_printcolor
 	+level 0%,110%,0.7
 endef
 
-%-cilt-on.png: %-cilt.png %-geometry.zsh
-	source $*-geometry.zsh
+%-$(_binding)-$(_front).png: %-$(_binding).png %-$(_geometry).zsh
+	source $*-$(_geometry).zsh
 	$(MAGICK) $< -gravity East -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
 
-%-cilt-arka.png: %-cilt.png %-geometry.zsh
-	source $*-geometry.zsh
+%-$(_binding)-$(_back).png: %-$(_binding).png %-$(_geometry).zsh
+	source $*-$(_geometry).zsh
 	$(MAGICK) $< -gravity West -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
 
-%-cilt-sirt.png: %-cilt.png %-geometry.zsh
-	source $*-geometry.zsh
+%-$(_binding)-$(_spine).png: %-$(_binding).png %-$(_geometry).zsh
+	source $*-$(_geometry).zsh
 	$(MAGICK) $< -gravity Center -crop $${spinepx}x$${coverhpx}+0+0! $@
 
-%-pov-on.png: %-cilt-printcolor.png %-geometry.zsh
-	source $*-geometry.zsh
+%-pov-$(_front).png: %-$(_binding)-printcolor.png %-$(_geometry).zsh
+	source $*-$(_geometry).zsh
 	$(MAGICK) $< \
 		-gravity East -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! \
 		$(call magick_emulateprint) \
@@ -1045,8 +1045,8 @@ endef
 		$(call magick_fray) \
 		$@
 
-%-pov-arka.png: %-cilt-printcolor.png %-geometry.zsh
-	source $*-geometry.zsh
+%-pov-$(_back).png: %-$(_binding)-printcolor.png %-$(_geometry).zsh
+	source $*-$(_geometry).zsh
 	$(MAGICK) $< \
 		-gravity West -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! \
 		$(call magick_emulateprint) \
@@ -1054,8 +1054,8 @@ endef
 		$(call magick_fray) \
 		$@
 
-%-pov-sirt.png: %-cilt-printcolor.png %-geometry.zsh
-	source $*-geometry.zsh
+%-pov-$(_spine).png: %-$(_binding)-printcolor.png %-$(_geometry).zsh
+	source $*-$(_geometry).zsh
 	$(MAGICK) $< \
 		-gravity Center -crop $${spinepx}x$${coverhpx}+0+0! \
 		-gravity Center \
@@ -1063,25 +1063,25 @@ endef
 		$(call magick_emulateprint) \
 		$@
 
-BOOKSCENESINC = $(call pattern_list,$(TARGETS),$(BINDINGS),.inc)
-$(BOOKSCENESINC): %.inc: %-geometry.zsh %-pov-on.png %-pov-arka.png %-pov-sirt.png
-	source $*-geometry.zsh
+BOOKSCENESINC = $(call pattern_list,$(TARGETS),$(SOFTBACKS),.inc)
+$(BOOKSCENESINC): %.inc: %-$(_geometry).zsh %-pov-$(_front).png %-pov-$(_back).png %-pov-$(_spine).png
+	source $*-$(_geometry).zsh
 	cat <<- EOF > $@
 		#declare CoverWMM = $$coverwmm;
 		#declare CoverHMM = $$coverhmm;
 		#declare SpineMM = $$spinemm;
 		#declare CoverHWX = $$coverwmm;
 		#declare CoverHPX = $$coverhmm;
-		#declare FrontImg = "$(filter %-pov-on.png,$^)";
-		#declare BackImg = "$(filter %-pov-arka.png,$^)";
-		#declare SpineImg = "$(filter %-pov-sirt.png,$^)";
+		#declare FrontImg = "$(filter %-pov-$(_front).png,$^)";
+		#declare BackImg = "$(filter %-pov-$(_back).png,$^)";
+		#declare SpineImg = "$(filter %-pov-$(_spine).png,$^)";
 		#declare BookThickness = $$spinemm / $$coverwmm / 2;
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
-BOOKSCENES = $(call pattern_list,$(TARGETS),$(BINDINGS),-3b.pov)
-$(BOOKSCENES): %-3b.pov: %-geometry.zsh %.inc
-	source $*-geometry.zsh
+BOOKSCENES = $(call pattern_list,$(TARGETS),$(SOFTBACKS),-$(_3b).pov)
+$(BOOKSCENES): %-$(_3b).pov: %-$(_geometry).zsh %.inc
+	source $*-$(_geometry).zsh
 	cat <<- EOF > $@
 		#declare DefaultBook = "$(filter %.inc,$^)";
 		#declare Lights = $(call scale,8,2);
@@ -1092,8 +1092,8 @@ $(BOOKSCENES): %-3b.pov: %-geometry.zsh %.inc
 	EOF
 
 ifneq ($(TARGETS),$(PROJECT))
-SERIESSCENES = $(call pattern_list,$(PROJECT),$(BINDINGS),-3b.pov)
-$(SERIESSCENES): $(PROJECT)-%-3b.pov: $(firstword $(TARGETS))-%-3b.pov $(call pattern_list,$(TARGETS),-%.inc)
+SERIESSCENES = $(call pattern_list,$(PROJECT),$(SOFTBACKS),-$(_3b).pov)
+$(SERIESSCENES): $(PROJECT)-%-$(_3b).pov: $(firstword $(TARGETS))-%-$(_3b).pov $(call pattern_list,$(TARGETS),-%.inc)
 	cat <<- EOF > $@
 		#include "$<"
 		#declare BookCount = $(words $(TARGETS));
@@ -1113,17 +1113,17 @@ define povray
 	rm $$headers
 endef
 
-%-3b-on.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/on.pov
-	$(call povray,$(filter %/kapak.pov,$^),$*-3b.pov,$(filter %/on.pov,$^),$@,6000,8000)
+%-$(_3b)-$(_front).png: $(CASILEDIR)/$(_cover).pov %-$(_3b).pov $(CASILEDIR)/$(_front).pov
+	$(call povray,$(filter %/$(_cover).pov,$^),$*-$(_3b).pov,$(filter %/$(_front).pov,$^),$@,6000,8000)
 
-%-3b-arka.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/arka.pov
-	$(call povray,$(filter %/kapak.pov,$^),$*-3b.pov,$(filter %/arka.pov,$^),$@,6000,8000)
+%-$(_3b)-$(_back).png: $(CASILEDIR)/$(_cover).pov %-$(_3b).pov $(CASILEDIR)/$(_back).pov
+	$(call povray,$(filter %/$(_cover).pov,$^),$*-$(_3b).pov,$(filter %/$(_back).pov,$^),$@,6000,8000)
 
-%-3b-istif.png: $(CASILEDIR)/kapak.pov %-3b.pov $(CASILEDIR)/istif.pov
-	$(call povray,$(filter %/kapak.pov,$^),$*-3b.pov,$(filter %/istif.pov,$^),$@,8000,6000)
+%-$(_3b)-$(_pile).png: $(CASILEDIR)/$(_cover).pov %-$(_3b).pov $(CASILEDIR)/$(_pile).pov
+	$(call povray,$(filter %/$(_cover).pov,$^),$*-$(_3b).pov,$(filter %/$(_pile).pov,$^),$@,8000,6000)
 
-$(PROJECT)-%-3b-montaj.png: $(CASILEDIR)/kapak.pov $(PROJECT)-%-3b.pov $(CASILEDIR)/montaj.pov
-	$(call povray,$(filter %/kapak.pov,$^),$(filter %-3b.pov,$^),$(filter %/montaj.pov,$^),$@,8000,6000)
+$(PROJECT)-%-$(_3b)-$(_montage).png: $(CASILEDIR)/$(_cover).pov $(PROJECT)-%-$(_3b).pov $(CASILEDIR)/$(_montage).pov
+	$(call povray,$(filter %/$(_cover).pov,$^),$(filter %-$(_3b).pov,$^),$(filter %/$(_montage).pov,$^),$@,8000,6000)
 
 define pov_crop
 	\( +clone \
@@ -1141,39 +1141,39 @@ endef
 
 %.jpg: %.png | $(require_pubdir)
 	$(MAGICK) $< \
-		$(if $(findstring 3b,$*),$(call pov_crop),) \
+		$(if $(findstring $(_3b),$*),$(call pov_crop),) \
 		-quality 85 \
 		$@
 	$(addtosync)
 
-%.epub: %-processed.md %-manifest.yml %-epub-pankart.jpg | $(require_pubdir)
+%.epub: %-$(_processede).md %-manifest.yml %-epub-$(_poster).jpg | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
-		--epub-cover-image=$*-epub-pankart.jpg \
+		--epub-cover-image=$*-epub-$(_poster).jpg \
 		$*-manifest.yml \
-		=($(call strip_lang) < $*-processed.md) -o $@
+		=($(call strip_lang) < $*-$(_processede).md) -o $@
 	$(addtosync)
 
-%.odt: %-processed.md %-manifest.yml | $(require_pubdir)
+%.odt: %-$(_processede).md %-manifest.yml | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$*-manifest.yml \
-		=($(call strip_lang) < $*-processed.md) -o $@
+		=($(call strip_lang) < $*-$(_processede).md) -o $@
 	$(addtosync)
 
-%.docx: %-processed.md %-manifest.yml | $(require_pubdir)
+%.docx: %-$(_processede).md %-manifest.yml | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$*-manifest.yml \
-		=($(call strip_lang) < $*-processed.md) -o $@
+		=($(call strip_lang) < $*-$(_processede).md) -o $@
 	$(addtosync)
 
 %.mobi: %.epub | $(require_pubdir)
 	kindlegen $< ||:
 	$(addtosync)
 
-.PHONY: $(call pattern_list,$(TARGETS),.ekran)
-%.ekran: %-ekran.pdf %-manifest.yml
+.PHONY: $(call pattern_list,$(TARGETS),.$(_screen))
+%.$(_screen): %-$(_screen).pdf %-manifest.yml
 
 # This is obsoleted by YAML merger, but the code might prove useful someday
 # because the results are more flexible that the perl class
@@ -1235,13 +1235,13 @@ stats: $(STATSTARGETS) $(and $(CI),init)
 $(STATSTARGETS): %-stats:
 	stats.zsh $* $(STATSMONTHS)
 
-%-ayetler.json: %-processed.md
+%-$(_verses).json: %-$(_processede).md
 	# cd $(CASILEDIR)
 	# yarn add bible-passage-reference-parser
 	$(if $(HEAD),head -n$(HEAD),cat) $< |
 		extract_references.js > $@
 
-%-ayetler-sorted.json: %-ayetler.json
+%-$(_verses)-$(_sorted).json: %-$(_verses).json
 	jq 'sort_by(.seq)' $< > $@
 
 normalize_references: $(SOURCES)
