@@ -3,3 +3,7 @@ _front := front
 _back := back
 _spine := spine
 _pile := pile
+_square := square
+_wide := wide
+_banner := banner
+_businesscard := businesscard

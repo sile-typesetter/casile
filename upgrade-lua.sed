@@ -17,3 +17,7 @@ s#\(ca\)\?book:left-running-head-font#cabook:font:left-header#g
 s#\(ca\)\?book:page-number-font#cabook:font:folio#g
 s#CASILE.booleanopt#SU.boolean#g
 s#\(SILE.\)\?setCommandDefaults#SILE.setCommandDefaults#g
+s#\bkare\b#square#g
+s#\bgenis\b#wide#g
+s#\bbant\b#banner#g
+s#\bkartvizit\b#businesscard#g

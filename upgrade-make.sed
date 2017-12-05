@@ -840,3 +840,7 @@ s#BINDING#SOFTBACK#g
 /^[^#_]/s#\barka\b#$(_back)#g
 /^[^#_]/s#\bsirt\b#$(_spine)#g
 /^[^#_]/s#\bistif\b#$(_pile)#g
+/^[^#_]/s#\bkare\b#$(_square)#g
+/^[^#_]/s#\bgenis\b#$(_wide)#g
+/^[^#_]/s#\bbant\b#$(_banner)#g
+/^[^#_]/s#\bkartvizit\b#$(_businesscard)#g
