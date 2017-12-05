@@ -454,7 +454,7 @@ $(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) $(call pattern_l
 coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(SOFTBACKS),$(call parse_layout,$1)),,%-$(_cover).pdf),)
 
 # Order is important here, these are included in reverse order so early supersedes late
-onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call parse_layout,$1).lua $(LUALIBS)
+onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call unlocalize,$(call parse_layout,$1)).lua $(LUALIBS)
 
 MOCKUPPDFS = $(call pattern_list,$(MOCKUPTARGETS),$(filter-out $(PLACARDS),$(PAPERSIZES)),.pdf)
 $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
@@ -756,7 +756,7 @@ endef
 	rm $${text} $$bg
 
 SOFTBACKFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter $(SOFTBACKS),$(PAPERSIZES)),-$(_binding)-$(_text).pdf)
-$(SOFTBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/softbackbinding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+$(SOFTBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/softbackbinding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_layout,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$*)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -787,7 +787,7 @@ $(SOFTBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/softbackbinding.x
 		-composite $@
 
 COVERFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter-out $(SOFTBACKS),$(PAPERSIZES)),-$(_cover)-$(_text).pdf)
-$(COVERFRAGMENTS): %-$(_cover)-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+$(COVERFRAGMENTS): %-$(_cover)-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_layout,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$(call parse_bookid,$@))"
 		metadatafile = "$(filter %-manifest.yml,$^)"
