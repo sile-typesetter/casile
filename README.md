@@ -31,9 +31,9 @@ I've published a number of books this way already and have dozens more in progre
 
 Major TODO items include:
 
-- [ ] Remove hard coded resources specific to [Via Christus Publishers][viachristus] such as logos, default copyright notices, etc.
+- [x] Remove hard coded resources specific to [Via Christus Publishers][viachristus] such as logos, default copyright notices, etc.
 - [ ] Contribute the changes from my fork of Pandoc upstream.
-- [ ] Make it usable in English (or any language?) instead of having all the options hard coded in Turkish.
+- [x] Make it usable in English (or any language?) instead of having all the options hard coded in Turkish.
 - [ ] Integrate code from my _other_ toolkit that has Bible specific publishing tools.
 
 ## Usage
