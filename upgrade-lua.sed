@@ -21,3 +21,4 @@ s#\bkare\b#square#g
 s#\bgenis\b#wide#g
 s#\bbant\b#banner#g
 s#\bkartvizit\b#businesscard#g
+s#\bpankart\b#poster#g

@@ -7,3 +7,4 @@ _square := square
 _wide := wide
 _banner := banner
 _businesscard := businesscard
+_poster := poster
