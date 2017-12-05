@@ -829,3 +829,4 @@ s#\(alpha \)Remove#\1Remove#ig
 s#\(alpha \)Set#\1Set#ig
 s#\(alpha \)Shape#\1Shape#ig
 s#\(alpha \)Transparent#\1Transparent#ig
+s#BINDING#SOFTBACK#g
