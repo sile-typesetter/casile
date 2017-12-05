@@ -57,7 +57,7 @@ MAGICK ?= magick
 INKSCAPE ?= inkscape
 POVRAY ?= povray
 
-# List of supported outputs
+# Categorize supported outputs
 SOFTBACKS = a4ciltli halfletter a5trim cep
 HARDBACKS = royaloctavo octavo
 STAPLES = a6 a7 a5
@@ -67,6 +67,8 @@ PLACARDS = $(_square) $(_wide) $(_banner) epub
 PAPERSIZES = $(SOFTBACKS) $(HARDBACKS) $(STAPLES) $(STACKS) $(DISPLAYS) $(PLACARDS)
 RENDERINGS = $(_3b)-$(_front) $(_3b)-$(_back) $(_3b)-$(_pile)
 RESOURCES ?= $(_binding)
+
+# Set default output format(s)
 PUBLAYOUT ?= a4
 LAYOUTS ?= $(PUBLAYOUT)
 
@@ -219,7 +221,7 @@ endif
 series_promotionals: $(PROJECT)-epub-$(_poster)-$(_montage).jpg $(PROJECT)-$(_square)-$(_poster)-$(_montage).jpg
 
 .PHONY: series_renderings
-series_renderings: $(PROJECT)-$(PUBLAYOUT)-$(_3b)-$(_montage).jpg
+series_renderings: $(call pattern_list,$(PROJECT),$(PUBLAYOUT),-$(_3b)-$(_montage).jpg)
 
 $(PROJECT)-%-$(_poster)-$(_montage).png: $(call pattern_list,$(TARGETS)-%-$(_poster).png) $(firstword $(TARGETS))-%-$(_geometry).zsh
 	source $(filter %-$(_geometry).zsh,$^)
