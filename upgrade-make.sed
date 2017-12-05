@@ -863,3 +863,17 @@ s#BINDING#SOFTBACK#g
 /^[^#_]/s#\bmetin\b#$(_text)#g
 /^[^#_]/s#\bfragman\b#$(_fragment)#g
 /^[^#_]/s#\bgeometry.zsh\b#$(_geometry).zsh#g
+s#\bmagick_zeminfilter\b#magick_background_filter#g
+s#\bmagick_kapak\b#magick_cover#g
+s#\bmagick_on\b#magick_front#g
+s#\bmagick_arka\b#magick_back#g
+s#\bmagick_sirt\b#magick_spine#g
+s#\bmagick_cilt\b#magick_binding#g
+s#\bmagick_fragman_kapak\b#magick_fragment_cover#g
+s#\bmagick_fragman_on\b#magick_fragment_front#g
+s#\bmagick_fragman_arka\b#magick_fragment_back#g
+s#\bmagick_fragman_sirt\b#magick_fragment_spine#g
+s#\bmagick_zemin_cilt\b#magick_background_binding#g
+s#\bmagick_kenar\b#magick_border#g
+s#\bmagick_sembol\b#magick_emblum#g
+s#\bmagick_barkod\b#magick_barcode#g
