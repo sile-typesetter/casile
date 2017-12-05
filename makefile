@@ -82,7 +82,7 @@ endif
 # List of extra m4 macro files to apply to every source
 M4MACROS ?=
 
-# List of exta YAML meta data files to splice into each book
+# List of extra YAML meta data files to splice into each book
 METADATA ?=
 
 # Extra lua files to include before processing documents
@@ -94,7 +94,7 @@ LUALIBS += $(CASILEDIR)/casile.lua
 # Tell sile to look here for stuff before it’s internal stuff
 SILEPATH += $(CASILEDIR)
 
-# Extra arguments to pass to Pandow
+# Extra arguments to pass to Pandoc
 PANDOCARGS ?=
 
 # Figure out if we're being run from
@@ -149,7 +149,7 @@ append = $(eval $(1) = $(value $(1))$(2))
 reverse = $(if $(wordlist 2,2,$(1)),$(call reverse,$(wordlist 2,$(words $(1)),$(1))) $(firstword $(1)),$(1))
 
 # Making lists of possible targets is tedious syntax, but just using pattern
-# rules means the targets are not extendable. By hard coding lists of possible
+# rules means the targets are not extendible. By hard coding lists of possible
 # targets we get a lot more flexibility. This makes those lists easier to write.
 pattern_list = $(if $(and $(1),$(2)),,$(foreach A,$(1),$(A)))$(if $(and $(2),$(3)),,$(foreach A,$(1),$(foreach B,$(2),$(A)$(B))))$(if $(and $(3),$(4)),,$(foreach A,$(1),$(foreach B,$(2),$(foreach C,$(3),$(A)-$(B)$(C)))))$(if $(and $(4),$(5)),,$(foreach A,$(1),$(foreach B,$(2),$(foreach C,$(3),$(foreach D,$(4),$(A)-$(B)-$(C)$(D))))))
 
@@ -157,7 +157,7 @@ ifeq ($(DRAFT),true)
 $(MAKECMDGOALS): force
 endif
 
-# For watch targets, treat exta parameters as things to pass to the next make
+# For watch targets, treat extra parameters as things to pass to the next make
 ifeq (watch,$(firstword $(MAKECMDGOALS)))
   WATCHARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
   $(eval $(WATCHARGS):;@:)
@@ -177,7 +177,7 @@ ifdef DEBUGTAGS
 SILEFLAGS += -d $(subst $( ),$(,),$(DEBUGTAGS))
 endif
 
-# Add mockups to targets
+# Add mock-ups to targets
 ifeq ($(strip $(MOCKUPS)),true)
 TARGETS += $(MOCKUPTARGETS)
 endif
@@ -403,7 +403,7 @@ define scale =
 $(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | bc) || echo $1))
 endef
 
-# Reset file timestamps to git history to avoid un-necessary builds
+# Reset file timestamps to git history to avoid unnecessary builds
 .PHONY: time_warp time_warp_casile
 time_warp: time_warp_casile
 	$(call time_warp,$(PROJECTDIR))
@@ -452,7 +452,7 @@ $(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) $(call pattern_l
 
 coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(BINDINGS),$(call parse_layout,$1)),,%-kapak.pdf),)
 
-# Order is important here, these are included in reverse order so early supercedes late
+# Order is important here, these are included in reverse order so early supersedes late
 onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call parse_layout,$1).lua $(LUALIBS)
 
 MOCKUPPDFS = $(call pattern_list,$(MOCKUPTARGETS),$(filter-out $(PLACARDS),$(PAPERSIZES)),.pdf)
