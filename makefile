@@ -753,7 +753,7 @@ endef
 	rm $$metin $$bg
 
 BINDINGFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter $(BINDINGS),$(PAPERSIZES)),-cilt-metin.pdf)
-$(BINDINGFRAGMENTS): %-cilt-metin.pdf: $(CASILEDIR)/cilt.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -cilt-metin,,$$@) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+$(BINDINGFRAGMENTS): %-cilt-metin.pdf: $(CASILEDIR)/softbackbinding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -cilt-metin,,$$@) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$*)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
