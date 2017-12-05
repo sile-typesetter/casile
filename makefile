@@ -61,6 +61,9 @@ BINDINGS = a4ciltli royaloctavo octavo halfletter a5trim cep a6 a7
 DISPLAYS = a4 a5 a7kart a7trimkart app ekran kartvizit
 PLACARDS = kare genis bant epub
 PAPERSIZES = $(BINDINGS) $(DISPLAYS) $(PLACARDS)
+RENDERINGS = 3b-on 3b-arka 3b-istif
+RESOURCES ?= cilt
+LAYOUTS ?= a4 a4ciltli royaloctavo octavo halfletter a5 a5trim cep a6 a7 a7kart a7trimkart app ekran kartvizit
 
 # Default to running multiple jobs
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)

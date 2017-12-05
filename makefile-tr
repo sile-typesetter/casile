@@ -1,16 +1,3 @@
-LAYOUTS ?= a4 a4ciltli royaloctavo octavo halfletter a5 a5trim cep a6 a7 a7kart a7trimkart app ekran kartvizit
-RESOURCES ?= cilt
-RENDERINGS = 3b-on 3b-arka 3b-istif
-
-CILTLI = $(BINDINGS)
-KAPAKLI = $(DISPLAYS)
-PANKARTLI = $(PLACARDS)
-
-CILTFRAGMANLAR = $(BINDINGFRAGMENTS)
-KAPAKFRAGMANLAR = $(COVERFRAGMENTS)
-
-git_zemin = $(git_background)
-
 _3d := 3b
 _front := on
 _back := arka
