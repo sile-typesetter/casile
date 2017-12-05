@@ -10,3 +10,5 @@ CILTFRAGMANLAR = $(BINDINGFRAGMENTS)
 KAPAKFRAGMANLAR = $(COVERFRAGMENTS)
 
 git_zemin = $(git_background)
+
+_3d := 3b

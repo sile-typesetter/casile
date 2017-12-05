@@ -1,3 +1,5 @@
 LAYOUTS ?= a4 a4bound royaloctavo octavo halfletter a5 a5trim pocket a6 a7 a7kart a7trimkart app screen business
 RESOURCES ?= binding
 RENDERINGS = 3d-front 3d-back 3d-stacks
+
+_3d := 3d
