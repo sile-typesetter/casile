@@ -831,3 +831,7 @@ s#\(alpha \)Shape#\1Shape#ig
 s#\(alpha \)Transparent#\1Transparent#ig
 s#BINDING#SOFTBACK#g
 /^[^#_]/s#\b3b\b#$(_3b)#g
+/^[^#_]/s#\bon\b#$(_front)#g
+/^[^#_]/s#\barka\b#$(_back)#g
+/^[^#_]/s#\bsirt\b#$(_spine)#g
+/^[^#_]/s#\bistif\b#$(_pile)#g

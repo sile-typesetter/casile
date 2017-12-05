@@ -12,3 +12,7 @@ KAPAKFRAGMANLAR = $(COVERFRAGMENTS)
 git_zemin = $(git_background)
 
 _3d := 3b
+_front := on
+_back := arka
+_spine := sirt
+_pile := istif

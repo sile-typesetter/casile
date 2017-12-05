@@ -3,3 +3,7 @@ RESOURCES ?= binding
 RENDERINGS = 3d-front 3d-back 3d-stacks
 
 _3d := 3d
+_front := front
+_back := back
+_spine := spine
+_pile := pile
