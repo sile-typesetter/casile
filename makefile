@@ -69,8 +69,8 @@ RENDERINGS = $(_3b)-$(_front) $(_3b)-$(_back) $(_3b)-$(_pile)
 RESOURCES ?= $(_binding)
 
 # Set default output format(s)
-PUBLAYOUT ?= a4
-LAYOUTS ?= $(PUBLAYOUT)
+PUBLAYOUTS ?= a4
+LAYOUTS ?= $(PUBLAYOUTS)
 
 # Default to running multiple jobs
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
@@ -206,7 +206,7 @@ endif
 ci: init debug books renderings promotionals sync_post stats
 
 .PHONY: renderings
-renderings: $(call pattern_list,$(TARGETS),$(PUBLAYOUT),$(RENDERINGS),.jpg)
+renderings: $(call pattern_list,$(TARGETS),$(PUBLAYOUTS),$(RENDERINGS),.jpg)
 
 .PHONY: promotionals
 promotionals: $(call pattern_list,$(TARGETS),$(PLACARDS),-$(_poster).jpg) $(call pattern_list,$(TARGETS),-icon.png)
@@ -221,7 +221,7 @@ endif
 series_promotionals: $(PROJECT)-epub-$(_poster)-$(_montage).jpg $(PROJECT)-$(_square)-$(_poster)-$(_montage).jpg
 
 .PHONY: series_renderings
-series_renderings: $(call pattern_list,$(PROJECT),$(PUBLAYOUT),-$(_3b)-$(_montage).jpg)
+series_renderings: $(call pattern_list,$(PROJECT),$(PUBLAYOUTS),-$(_3b)-$(_montage).jpg)
 
 $(PROJECT)-%-$(_poster)-$(_montage).png: $(call pattern_list,$(TARGETS)-%-$(_poster).png) $(firstword $(TARGETS))-%-$(_geometry).zsh
 	source $(filter %-$(_geometry).zsh,$^)
