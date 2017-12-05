@@ -367,7 +367,7 @@ upgrade_repository: upgrade_casile update_toolkits
 upgrade_casile: $(CASILEDIR)/upgrade-lua.sed $(CASILEDIR)/upgrade-make.sed $(CASILEDIR)/upgrade-yaml.sed
 	$(call find_and_munge,*.lua,sed -f $(filter %-lua.sed,$^),Replace old Lua variables and functions with new namespaces)
 	$(call find_and_munge,[Mm]akefile*,sed -f $(filter %-make.sed,$^),Replace old Makefile variables and functions with new namespaces)
-	$(call find_and_munge,*.yml,sed -f $(filter %-yaml.sed,$^),Replace old Makefile variables and functions with new namespaces)
+	$(call find_and_munge,*.yml,sed -f $(filter %-yaml.sed,$^),Replace old YAML key names)
 
 .PHONY: update_repository
 update_repository:
@@ -1218,7 +1218,7 @@ endef
 			--scale=5 \
 			--barcode=69 \
 			--height=30 \
-			--data=$(shell $(CASILEDIR)/bin/isbn_format.py $< print) |\
+			--data=$(shell $(CASILEDIR)/bin/isbn_format.py $< paperback) |\
 		sed -e 's/Helvetica\( Regular\)\?/TeX Gyre Heros/g' \
 		> $@
 
@@ -1226,11 +1226,11 @@ endef
 	$(MAGICK) $< \
 		-bordercolor white -border 10 \
 		-font Hack-Regular -pointsize 36 \
-		label:"ISBN $(shell $(CASILEDIR)/bin/isbn_format.py $*-manifest.yml print mask)" +swap -gravity Center -append \
+		label:"ISBN $(shell $(CASILEDIR)/bin/isbn_format.py $*-manifest.yml paperback mask)" +swap -gravity Center -append \
 		-bordercolor white -border 0x10 \
 		-resize $(call scale,1200)x \
 		$@
-	if [[ $(shell $(CASILEDIR)/bin/isbn_format.py $*-manifest.yml print) == 9786056644504 ]]; then
+	if [[ $(shell $(CASILEDIR)/bin/isbn_format.py $*-manifest.yml paperback) == 9786056644504 ]]; then
 		$(MAGICK) $@ \
 			-stroke red \
 			-strokewidth $(call scale,10) \
