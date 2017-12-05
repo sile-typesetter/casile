@@ -8,3 +8,4 @@ _wide := wide
 _banner := banner
 _businesscard := businesscard
 _poster := poster
+_app := app
