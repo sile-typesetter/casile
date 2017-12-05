@@ -220,7 +220,7 @@ $(PROJECT)-%-$(_poster)-$(_montage).png: $(call pattern_list,$(TARGETS)-%-$(_pos
 	source $(filter %-$(_geometry).zsh,$^)
 	$(MAGICK) montage \
 		$(filter %.png,$^) \
-		-$(_geometry) $${coverwpm}x$${coverhpm}+0+0 \
+		-geometry $${coverwpm}x$${coverhpm}+0+0 \
 		$@
 
 .PHONY: clean
@@ -698,7 +698,6 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		\( \
 			-gravity Center \
 			$*-$(_fragment)-$(_cover).png \
-			-write mpr:$(_text)-$(_cover) \
 		\) -compose Over -composite \
 		-gravity Center \
 		-size %[fx:u.w]x%[fx:u.h] \
@@ -718,14 +717,14 @@ define magick_kapak
 		-fill none \
 		-fuzz 5% \
 		-draw 'color 1,1 replace' \
-		+write mpr:$(_text) \
-		\( mpr:$(_text) \
+		+write mpr:text \
+		\( mpr:text \
 			-channel RGBA \
 			-morphology Dilate:%[fx:w/500] Octagon \
 			-channel RGB \
 			-negate \
 		\) -composite \
-		\( mpr:$(_text) \
+		\( mpr:text \
 			-channel RGBA \
 			-morphology Dilate:%[fx:w/200] Octagon \
 			-resize 25% \
@@ -736,13 +735,13 @@ define magick_kapak
 			-channel RGB \
 			-negate \
 		\) -composite \
-		\( mpr:$(_text) \
+		\( mpr:text \
 		\) -composite
 endef
 
 %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf %-$(_geometry).zsh
 	$(COVERS) || exit 0
-	$(_text)=$$(mktemp kapakXXXXXX.pdf)
+	text=$$(mktemp kapakXXXXXX.pdf)
 	bg=$$(mktemp kapakXXXXXX.pdf)
 	source $*-$(_geometry).zsh
 	$(MAGICK) $< \
@@ -751,9 +750,9 @@ endef
 		-quality 50 \
 		+repage \
 		$$bg
-	pdftk $(filter %.pdf,$^) cat 1 output $$$(_text)
-	pdftk $$$(_text) background $$bg output $@
-	rm $$$(_text) $$bg
+	pdftk $(filter %.pdf,$^) cat 1 output $${text}
+	pdftk $${text} background $$bg output $@
+	rm $${text} $$bg
 
 SOFTBACKFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter $(SOFTBACKS),$(PAPERSIZES)),-$(_binding)-$(_text).pdf)
 $(SOFTBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/softbackbinding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
@@ -787,7 +786,7 @@ $(SOFTBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/softbackbinding.x
 		-composite $@
 
 COVERFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter-out $(SOFTBACKS),$(PAPERSIZES)),-$(_cover)-$(_text).pdf)
-$(COVERFRAGMENTS): %-$(_cover)-$(_text).pdf: $(CASILEDIR)/$(_cover).xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
+$(COVERFRAGMENTS): %-$(_cover)-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call parse_layout,$$@).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$(call parse_bookid,$@))"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -830,9 +829,9 @@ $(SOFTBACKIMAGES): %-$(_binding).png: %-$(_fragment)-$(_front).png %-$(_fragment
 		\( -gravity East -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_on) -splice $${bleedpx}x \) -compose Overlay -composite \
 		\( -gravity West -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_arka) -splice $${bleedpx}x \) -compose Overlay -composite \
 		\( -gravity Center -size $${spinepx}x$${coverhpx} -background none xc: $(call magick_sirt) \) -compose Overlay -composite \
-		\( -gravity East $*-$(_fragment)-$(_front).png -splice $${bleedpx}x -write mpr:$(_text)-$(_front) \) -compose Over -composite \
-		\( -gravity West $*-$(_fragment)-$(_back).png -splice $${bleedpx}x -write mpr:$(_text)-$(_back) \) -compose Over -composite \
-		\( -gravity Center $*-$(_fragment)-$(_spine).png -write mpr:$(_text)-$(_spine) \) -compose Over -composite \
+		\( -gravity East $*-$(_fragment)-$(_front).png -splice $${bleedpx}x -write mpr:text-front \) -compose Over -composite \
+		\( -gravity West $*-$(_fragment)-$(_back).png -splice $${bleedpx}x -write mpr:text-front \) -compose Over -composite \
+		\( -gravity Center $*-$(_fragment)-$(_spine).png -write mpr:text-front \) -compose Over -composite \
 		$(call magick_sembol,publisher_emblum.svg) \
 		$(call magick_barkod,$(filter %-barkod.png,$^)) \
 		$(call magick_logo,publisher_logo.svg) \
@@ -1113,17 +1112,17 @@ define povray
 	rm $$headers
 endef
 
-%-$(_3b)-$(_front).png: $(CASILEDIR)/$(_cover).pov %-$(_3b).pov $(CASILEDIR)/$(_front).pov
-	$(call povray,$(filter %/$(_cover).pov,$^),$*-$(_3b).pov,$(filter %/$(_front).pov,$^),$@,6000,8000)
+%-$(_3b)-$(_front).png: $(CASILEDIR)/cover.pov %-$(_3b).pov $(CASILEDIR)/$(_front).pov
+	$(call povray,$(filter %/cover.pov,$^),$*-$(_3b).pov,$(filter %/$(_front).pov,$^),$@,6000,8000)
 
-%-$(_3b)-$(_back).png: $(CASILEDIR)/$(_cover).pov %-$(_3b).pov $(CASILEDIR)/$(_back).pov
-	$(call povray,$(filter %/$(_cover).pov,$^),$*-$(_3b).pov,$(filter %/$(_back).pov,$^),$@,6000,8000)
+%-$(_3b)-$(_back).png: $(CASILEDIR)/cover.pov %-$(_3b).pov $(CASILEDIR)/$(_back).pov
+	$(call povray,$(filter %/cover.pov,$^),$*-$(_3b).pov,$(filter %/$(_back).pov,$^),$@,6000,8000)
 
-%-$(_3b)-$(_pile).png: $(CASILEDIR)/$(_cover).pov %-$(_3b).pov $(CASILEDIR)/$(_pile).pov
-	$(call povray,$(filter %/$(_cover).pov,$^),$*-$(_3b).pov,$(filter %/$(_pile).pov,$^),$@,8000,6000)
+%-$(_3b)-$(_pile).png: $(CASILEDIR)/cover.pov %-$(_3b).pov $(CASILEDIR)/$(_pile).pov
+	$(call povray,$(filter %/cover.pov,$^),$*-$(_3b).pov,$(filter %/$(_pile).pov,$^),$@,8000,6000)
 
-$(PROJECT)-%-$(_3b)-$(_montage).png: $(CASILEDIR)/$(_cover).pov $(PROJECT)-%-$(_3b).pov $(CASILEDIR)/$(_montage).pov
-	$(call povray,$(filter %/$(_cover).pov,$^),$(filter %-$(_3b).pov,$^),$(filter %/$(_montage).pov,$^),$@,8000,6000)
+$(PROJECT)-%-$(_3b)-$(_montage).png: $(CASILEDIR)/cover.pov $(PROJECT)-%-$(_3b).pov $(CASILEDIR)/$(_montage).pov
+	$(call povray,$(filter %/cover.pov,$^),$(filter %-$(_3b).pov,$^),$(filter %/$(_montage).pov,$^),$@,8000,6000)
 
 define pov_crop
 	\( +clone \
