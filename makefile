@@ -61,17 +61,11 @@ POVRAY ?= povray
 # Categorize supported outputs
 PAPERSIZES = $(call localize,$(subst layout-,,$(notdir $(basename $(wildcard $(CASILEDIR)/layout-*.lua)))))
 BINDINGS = $(call localize,print paperback hardcover coil stapled)
-PAPERBACKS = a4ciltli halfletter a5trim cep
-PAPERBACKRESOURCES ?= $(_binding)
-HARDCOVERS = royaloctavo octavo
-HARDCOVERRESOURCES ?= $(_case) $(_jacket)
-STAPLES = a6 a7 a5
-STAPLERESOURCES = $(_binding)
-STACKS = a4 a7kart a7trimkart $(_businesscard)
+
 DISPLAYS = $(_app) $(_screen)
 PLACARDS = $(_square) $(_wide) $(_banner) epub
-PAPERSIZES = $(PAPERBACKS) $(HARDCOVERS) $(STAPLES) $(STACKS) $(DISPLAYS) $(PLACARDS)
-RENDERED = $(PAPERBACKS) $(HARDCOVERS) $(STAPLES) $(STACKS)
+
+RENDERED = $(filter $(filter-out $(DISPLAYS) $(PLACARDS),$(PAPERSIZES)),$(LAYOUTS))
 RENDERINGS = $(_3b)-$(_front) $(_3b)-$(_back) $(_3b)-$(_pile)
 
 # Set default output format(s)
@@ -215,7 +209,7 @@ endif
 ci: init debug books renderings promotionals sync_post stats
 
 .PHONY: renderings
-renderings: $(call pattern_list,$(TARGETS),$(filter $(RENDERED),$(LAYOUTS)),$(RENDERINGS),.jpg)
+renderings: $(call pattern_list,$(TARGETS),$(RENDERED),$(RENDERINGS),.jpg)
 
 .PHONY: promotionals
 promotionals: $(call pattern_list,$(TARGETS),$(PLACARDS),-$(_poster).jpg) $(call pattern_list,$(TARGETS),-icon.png)
@@ -464,23 +458,35 @@ endif
 		-execdir rsync -ct {} $(OUTPUTDIR)/$$tagpath \;
 	$(call post_sync)
 
+# Just needing a PDF format isn't enough without knowing what layouts to build
 VIRTUALPDFS = $(call pattern_list,$(TARGETS),.pdf)
 .PHONY: $(VIRTUALPDFS)
-$(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) \
-                       $(call pattern_list,$$*,$(filter $(PAPERBACKS),$(LAYOUTS)),$(PAPERBACKRESOURCES),.pdf) \
-                       $(call pattern_list,$$*,$(filter $(HARDCOVERS),$(LAYOUTS)),$(HARDCOVERRESOURCES),.pdf) \
-                       $(call pattern_list,$$*,$(filter $(STAPLES),$(LAYOUTS)),$(STAPLERESOURCES),.pdf) ;
+$(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) ;
 
-coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(PAPERBACKS) $(HARDCOVERS) $(STAPLES),$(call parse_papersize,$1)),,%-$(_cover).pdf),)
+# Some layouts have matching extra resources to build such as covers
+PAPERBACKTARGETS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_paperback).pdf)
+$(PAPERBACKTARGETS): $$(basename $$@)-$(_binding).pdf
+
+HARDCOVERTARGETS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_hardcover).pdf)
+$(HARDCOVERTARGETS): $$(basename $$@)-$(_case).pdf $$(basename $@)-$(_jacket).pdf
+
+COILTARGETS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_coil).pdf)
+$(COILTARGETS): $$(basename $@)-$(_cover).pdf
+
+STAPLEDTARGETS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_stapled).pdf)
+$(STAPLEDTARGETS): $$(basename $@)-$(_cover).pdf
+
+# Some layouts have matching resources that need to be built first and included
+coverpreq = $(if $(filter true,$(COVERS)),$(if $(strip $(filter $(_print),$(call parse_binding,$1)) $(filter $(DISPLAYS) $(PLACARDS),$(call parse_papersize,$1))),$(basename $1)-$(_cover).pdf,),)
 
 # Order is important here, these are included in reverse order so early supersedes late
 onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call unlocalize,$(call parse_papersize,$1)).lua $(LUALIBS)
 
-MOCKUPPDFS = $(call pattern_list,$(MOCKUPTARGETS),$(filter-out $(PLACARDS),$(PAPERSIZES)),.pdf)
+MOCKUPPDFS = $(call pattern_list,$(MOCKUPTARGETS),$(filter-out $(PLACARDS),$(PAPERSIZES)),$(BINDINGS),.pdf)
 $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
 	pdftk A=$(filter %.pdf,$^) cat $(foreach P,$(shell seq 1 $(call pagecount,$@)),A2-2) output $@
 
-FULLPDFS = $(call pattern_list,$(filter-out $(MOCKUPTARGETS),$(TARGETS)),$(filter-out $(PLACARDS),$(PAPERSIZES)),.pdf)
+FULLPDFS = $(call pattern_list,$(filter-out $(MOCKUPTARGETS),$(TARGETS)),$(filter-out $(PLACARDS),$(PAPERSIZES)),$(BINDINGS),.pdf)
 $(FULLPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
 $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES) | $(require_pubdir)
 	$(call skip_if_lazy,$@)
@@ -500,9 +506,10 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 		[[ $${pg1} -ne $${pg2} ]] && $(SILE) $(SILEFLAGS) $< -o $@ ||:
 	fi
 	# If we have a special cover page for this format, swap it out for the half title page
-	if $(COVERS) && [[ -f $*-$(_cover).pdf ]]; then
+	coverfile=$(filter %-$(_cover).pdf,$^)
+	if $(COVERS) && [[ -f $${coverfile} ]]; then
 		pdftk $@ dump_data_utf8 output $*.dat
-		pdftk C=$*-$(_cover).pdf B=$@ cat C1 B2-end output $*.tmp.pdf
+		pdftk C=$${coverfile} B=$@ cat C1 B2-end output $*.tmp.pdf
 		pdftk $*.tmp.pdf update_info_utf8 $*.dat output $@
 		rm $*.tmp.pdf
 	fi
