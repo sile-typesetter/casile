@@ -516,7 +516,7 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 	$(addtosync)
 
 FULLSILS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),.sil)
-$(FULLSILS): %.sil: $$(call parse_bookid,$$@)-$(_processede).md $$(call parse_bookid,$$@)-manifest.yml $$(call parse_bookid,$$@)-$(_verses)-$(_sorted).json $$(call parse_bookid,$$@)-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
+$(FULLSILS): %.sil: $$(call parse_bookid,$$@)-$(_processed).md $$(call parse_bookid,$$@)-manifest.yml $$(call parse_bookid,$$@)-$(_verses)-$(_sorted).json $$(call parse_bookid,$$@)-url.png $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
 			--wrap=preserve \
@@ -545,7 +545,7 @@ $(FULLSILS): %.sil: $$(call parse_bookid,$$@)-$(_processede).md $$(call parse_bo
 SILEFLAGS += $(foreach LUAINCLUDE,$(call reverse,$(LUAINCLUDES)),-I $(LUAINCLUDE))
 
 preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(wildcard $(PROJECT).m4) $(wildcard $1.m4)
-%-$(_processede).md: %.md $$(call preprocess_macros,$$*) $$(wildcard $$*-bolumler/*.md) | figures
+%-$(_processed).md: %.md $$(call preprocess_macros,$$*) $$(wildcard $$*-bolumler/*.md) | figures
 	if $(DIFF) && $(if $(PARENT),true,false); then
 		branch2criticmark.zsh $(PARENT) $<
 	else
@@ -1173,26 +1173,26 @@ endef
 		$@
 	$(addtosync)
 
-%.epub: %-$(_processede).md %-manifest.yml %-epub-$(_poster).jpg | $(require_pubdir)
+%.epub: %-$(_processed).md %-manifest.yml %-epub-$(_poster).jpg | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		--epub-cover-image=$*-epub-$(_poster).jpg \
 		$*-manifest.yml \
-		=($(call strip_lang) < $*-$(_processede).md) -o $@
+		=($(call strip_lang) < $*-$(_processed).md) -o $@
 	$(addtosync)
 
-%.odt: %-$(_processede).md %-manifest.yml | $(require_pubdir)
+%.odt: %-$(_processed).md %-manifest.yml | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$*-manifest.yml \
-		=($(call strip_lang) < $*-$(_processede).md) -o $@
+		=($(call strip_lang) < $*-$(_processed).md) -o $@
 	$(addtosync)
 
-%.docx: %-$(_processede).md %-manifest.yml | $(require_pubdir)
+%.docx: %-$(_processed).md %-manifest.yml | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$*-manifest.yml \
-		=($(call strip_lang) < $*-$(_processede).md) -o $@
+		=($(call strip_lang) < $*-$(_processed).md) -o $@
 	$(addtosync)
 
 %.mobi: %.epub | $(require_pubdir)
@@ -1262,7 +1262,7 @@ stats: $(STATSTARGETS) $(and $(CI),init)
 $(STATSTARGETS): %-stats:
 	stats.zsh $* $(STATSMONTHS)
 
-%-$(_verses).json: %-$(_processede).md
+%-$(_verses).json: %-$(_processed).md
 	# cd $(CASILEDIR)
 	# yarn add bible-passage-reference-parser
 	$(if $(HEAD),head -n$(HEAD),cat) $< |

@@ -854,7 +854,7 @@ s#BINDING#SOFTBACK#g
 /^[^#_]/s#\barkalionlu\b#$(_twosided)#g
 /^[^#_]/s#\bkirpilmis\b#$(_cropped)#g
 /^[^#_]/s#\bdecropped\b#$(_cropped)#g
-/^[^#_]/s#\bprocessed\b#$(_processede)#g
+/^[^#_]/s#\bprocessed\b#$(_processed)#g
 /^[^#_]/s#\bsorted\b#$(_sorted)#g
 /^[^#_]/s#\bissue\b#$(_issue)#g
 /^[^#_]/s#\bkapak\b#$(_cover)#g
