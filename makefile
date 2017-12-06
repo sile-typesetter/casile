@@ -11,6 +11,7 @@ PUBLISHERDIR ?= $(CASILEDIR)
 # Set the language if not otherwise set
 LANGUAGE ?= en
 include $(CASILEDIR)/makefile-$(LANGUAGE)
+localize = $(foreach WORD,$1,$(or $(_$(WORD)),$(WORD)))
 unlocalize = $(or $(strip $(shell sed -ne '/= $1$$/{s/^_//;s/ .*$$//;p}' < $(CASILEDIR)/makefile-$(LANGUAGE))),$1)
 
 # Find stuff to build that has both a YML and a MD component
@@ -58,6 +59,8 @@ INKSCAPE ?= inkscape
 POVRAY ?= povray
 
 # Categorize supported outputs
+PAPERSIZES = $(call localize,$(subst layout-,,$(notdir $(basename $(wildcard $(CASILEDIR)/layout-*.lua)))))
+BINDINGS = $(call localize,print paperback hardcover coil stapled)
 PAPERBACKS = a4ciltli halfletter a5trim cep
 PAPERBACKRESOURCES ?= $(_binding)
 HARDCOVERS = royaloctavo octavo
@@ -147,8 +150,9 @@ mmtopt = $(shell echo "$1 * 2.83465 / 1" | bc)
 width = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:w] $1)
 height = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:h] $1)
 parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
-parse_binding = $(filter $(_paperback) $(_hardcover) $(_staple) $(_stack),$(subst -, ,$(basename $1)))
 strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
+parse_binding = $(filter $(BINDINGS),$(subst -, ,$(basename $1)))
+strip_binding = $(filter-out $1,$(foreach BINDING,$(BINDINGS),$(subst -$(BINDING)-,-,$1)))
 parse_bookid = $(firstword $(subst -, ,$(basename $1)))
 series_sort = $(shell PROJECT=$(PROJECT) SORTORDER=$(SORTORDER) $(CASILEDIR)/bin/series_sort.lua $1)
 
@@ -252,7 +256,9 @@ debug:
 	@echo FIGURES: $(FIGURES)
 	@echo FORMATS: $(FORMATS)
 	@echo INPUTDIR: $(INPUTDIR)
+	@echo PAPERSIZES: $(PAPERSIZES)
 	@echo LAYOUTS: $(LAYOUTS)
+	@echo BINDINGS: $(BINDINGS)
 	@echo LUAINCLUDES: $(LUAINCLUDES)
 	@echo LUALIBS: $(LUALIBS)
 	@echo M4MACROS: $(M4MACROS)
