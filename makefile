@@ -890,7 +890,7 @@ $(PAPERBACKIMAGES): %-$(_binding).png: %-$(_fragment)-$(_front).png %-$(_fragmen
 			s#SW#$${spinepm}#g;
 		" $< > $@
 
-%-$(_binding).pdf:	%-$(_binding).svg %-$(_geometry).zsh | $(require_pubdir)
+%-$(_binding).pdf: %-$(_binding).svg %-$(_geometry).zsh | $(require_pubdir)
 	source $*-$(_geometry).zsh
 	$(INKSCAPE) --without-gui \
 		--export-dpi=$$hidpi \
@@ -901,7 +901,7 @@ $(PAPERBACKIMAGES): %-$(_binding).png: %-$(_fragment)-$(_front).png %-$(_fragmen
 	$(addtosync)
 
 newgeometry = $(shell grep -sq hidpi=$(HIDPI) $1 || echo force)
-geometrybase = $(if $(filter $(PAPERBACKS),$(call parse_papersize,$1)),$1.pdf $1-$(_binding)-$(_text).pdf,$1-$(_cover)-$(_text).pdf)
+geometrybase = $(or $(and $(filter $(_paperback) $(_coil) $(_stapled),$(call parse_binding,$1)),$1.pdf $1-$(_binding)-$(_text).pdf),$(and $(filter $(_hardcover),$(call parse_binding,$1)),$1.pdf $1-$(_jacket)-$(_text).pdf),$1-$(_cover)-$(_text).pdf)
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
 NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(filter-out $(PAPERBACKS),$(PAPERSIZES)),-$(_geometry).zsh)
@@ -909,8 +909,8 @@ $(NONBOUNDGEOMETRIES): BLEED = $(NOBLEED)
 $(NONBOUNDGEOMETRIES): TRIM = $(NOTRIM)
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
-GEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_geometry).zsh)
-$(GEOMETRIES): %-$(_geometry).zsh: $$(call newgeometry,$$@) $$(call geometrybase,$$*)
+GEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_geometry).zsh)
+$(GEOMETRIES): %-$(_geometry).zsh: $$(call geometrybase,$$*) $$(call newgeometry,$$@)
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	hidpi=$(HIDPI)
 	lodpi=$(HIDPI)
