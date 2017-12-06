@@ -149,10 +149,12 @@ mmtopm = $(shell echo "$1 * 96 * .0393701 / 1" | bc)
 mmtopt = $(shell echo "$1 * 2.83465 / 1" | bc)
 width = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:w] $1)
 height = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:h] $1)
-parse_layout = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
-strip_layout = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE)-,-,$1)))
+parse_layout = $(substr $(_),-,$(filter $(PAPERSIZES) $(BINDINGS),$(subst -, ,$(basename $1))))
+strip_layout = $(filter-out $1,$(foreach PAPERORBINDING,$(PAPERSIZES) $(BINDINGS),$(subst -$(PAPERORBINDING),,$1)))
+parse_papersize = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
+strip_papersize = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE),,$1)))
 parse_binding = $(filter $(BINDINGS),$(subst -, ,$(basename $1)))
-strip_binding = $(filter-out $1,$(foreach BINDING,$(BINDINGS),$(subst -$(BINDING)-,-,$1)))
+strip_binding = $(filter-out $1,$(foreach BINDING,$(BINDINGS),$(subst -$(BINDING),,$1)))
 parse_bookid = $(firstword $(subst -, ,$(basename $1)))
 series_sort = $(shell PROJECT=$(PROJECT) SORTORDER=$(SORTORDER) $(CASILEDIR)/bin/series_sort.lua $1)
 
@@ -469,10 +471,10 @@ $(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) \
                        $(call pattern_list,$$*,$(filter $(HARDCOVERS),$(LAYOUTS)),$(HARDCOVERRESOURCES),.pdf) \
                        $(call pattern_list,$$*,$(filter $(STAPLES),$(LAYOUTS)),$(STAPLERESOURCES),.pdf) ;
 
-coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(PAPERBACKS) $(HARDCOVERS) $(STAPLES),$(call parse_layout,$1)),,%-$(_cover).pdf),)
+coverpreq = $(if $(filter true,$(COVERS)),$(if $(filter $(PAPERBACKS) $(HARDCOVERS) $(STAPLES),$(call parse_papersize,$1)),,%-$(_cover).pdf),)
 
 # Order is important here, these are included in reverse order so early supersedes late
-onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call unlocalize,$(call parse_layout,$1)).lua $(LUALIBS)
+onpaperlibs = $(wildcard $(call parse_bookid,$1).lua) $(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$(call unlocalize,$(call parse_papersize,$1)).lua $(LUALIBS)
 
 MOCKUPPDFS = $(call pattern_list,$(MOCKUPTARGETS),$(filter-out $(PLACARDS),$(PAPERSIZES)),.pdf)
 $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
@@ -702,7 +704,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 	source $*-$(_geometry).zsh
 	$(MAGICK) $< \
 		-resize $${coverwpp}x$${coverhpp}^ \
-		$(and $(filter epub,$(call parse_layout,$@)),-resize 1000x1600^) \
+		$(and $(filter epub,$(call parse_papersize,$@)),-resize 1000x1600^) \
 		$@
 
 %-$(_cover).png: %-$(_cover)-$(_background).png %-$(_fragment)-$(_cover).png %-$(_geometry).zsh
@@ -774,7 +776,7 @@ endef
 	rm $${text} $$bg
 
 PAPERBACKFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter $(PAPERBACKS),$(PAPERSIZES)),-$(_binding)-$(_text).pdf)
-$(PAPERBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/softbackbinding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_layout,$$@)).lua $(LUALIBS)
+$(PAPERBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/softbackbinding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$*)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -805,7 +807,7 @@ $(PAPERBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/softbackbinding.
 		-composite $@
 
 COVERFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter-out $(PAPERBACKS),$(PAPERSIZES)),-$(_cover)-$(_text).pdf)
-$(COVERFRAGMENTS): %-$(_cover)-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_layout,$$@)).lua $(LUALIBS)
+$(COVERFRAGMENTS): %-$(_cover)-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(wildcard $$(call parse_bookid,$$@).lua) $$(wildcard $(PROJECT).lua) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$(call parse_bookid,$@))"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -891,7 +893,7 @@ $(PAPERBACKIMAGES): %-$(_binding).png: %-$(_fragment)-$(_front).png %-$(_fragmen
 	$(addtosync)
 
 newgeometry = $(shell grep -sq hidpi=$(HIDPI) $1 || echo force)
-geometrybase = $(if $(filter $(PAPERBACKS),$(call parse_layout,$1)),$1.pdf $1-$(_binding)-$(_text).pdf,$1-$(_cover)-$(_text).pdf)
+geometrybase = $(if $(filter $(PAPERBACKS),$(call parse_papersize,$1)),$1.pdf $1-$(_binding)-$(_text).pdf,$1-$(_cover)-$(_text).pdf)
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
 NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(filter-out $(PAPERBACKS),$(PAPERSIZES)),-$(_geometry).zsh)
