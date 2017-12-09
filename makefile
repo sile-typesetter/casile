@@ -495,7 +495,7 @@ MOCKUPPDFS = $(call pattern_list,$(MOCKUPTARGETS),$(filter-out $(PLACARDS),$(PAP
 $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
 	pdftk A=$(filter %.pdf,$^) cat $(foreach P,$(shell seq 1 $(call pagecount,$@)),A2-2) output $@
 
-FULLPDFS = $(call pattern_list,$(filter-out $(MOCKUPTARGETS),$(TARGETS)),$(filter-out $(PLACARDS),$(PAPERSIZES)),$(BINDINGS),.pdf)
+FULLPDFS = $(call pattern_list,$(REALTARGETS),$(filter-out $(PLACARDS),$(PAPERSIZES)),$(BINDINGS),.pdf)
 $(FULLPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
 $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES) | $(require_pubdir)
 	$(call skip_if_lazy,$@)
@@ -792,7 +792,7 @@ endef
 	pdftk $${text} background $$bg output $@
 	rm $${text} $$bg
 
-PAPERBACKFRAGMENTS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(_paperback)-$(_binding)-$(_text).pdf)
+PAPERBACKFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter %-$(_paperback),$(LAYOUTS)),-$(_binding)-$(_text).pdf)
 $(PAPERBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/paperback-binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
@@ -878,11 +878,11 @@ $(PAPERBACKIMAGES): %-$(_binding).png: %-$(_fragment)-$(_front).png %-$(_fragmen
 		$(call magick_binding) \
 		$@
 
-%-$(_binding)-printcolor.png: %-$(_binding).png
+%-printcolor.png: %.png
 	$(MAGICK) $< $(call magick_printcolor) $@
 
-%-$(_binding).svg: $(CASILEDIR)/binding.svg %-$(_binding)-printcolor.png %-$(_binding)-$(_geometry).zsh
-	source $*-$(_geometry).zsh
+%-$(_paperback)-$(_binding).svg: $(CASILEDIR)/paperback-binding.svg $$(basename $$@)-printcolor.png %-$(_paperback)-$(_geometry).zsh
+	source $*-$(_paperback)-$(_geometry).zsh
 	ver=$(subst @,\\@,$(call versioninfo,$@))
 	perl -pne "
 			s#IMG#$(filter %.png,$^)#g;
