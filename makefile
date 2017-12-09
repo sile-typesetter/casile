@@ -881,7 +881,7 @@ $(PAPERBACKIMAGES): %-$(_binding).png: %-$(_fragment)-$(_front).png %-$(_fragmen
 %-$(_binding)-printcolor.png: %-$(_binding).png
 	$(MAGICK) $< $(call magick_printcolor) $@
 
-%-$(_binding).svg: $(CASILEDIR)/$(_binding).svg %-$(_binding)-printcolor.png %-$(_geometry).zsh
+%-$(_binding).svg: $(CASILEDIR)/binding.svg %-$(_binding)-printcolor.png %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
 	ver=$(subst @,\\@,$(call versioninfo,$@))
 	perl -pne "
