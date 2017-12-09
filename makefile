@@ -240,7 +240,7 @@ series_promotionals: $(PROJECT)-epub-$(_poster)-$(_montage).jpg $(PROJECT)-$(_sq
 .PHONY: series_renderings
 series_renderings: $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3b)-$(_montage).jpg)
 
-$(PROJECT)-%-$(_poster)-$(_montage).png: $(call pattern_list,$(TARGETS)-%-$(_poster).png) $(firstword $(TARGETS))-%-$(_geometry).zsh
+$(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(TARGETS),%,-$(_poster).png) $(firstword $(TARGETS))-%-$(_geometry).zsh
 	source $(filter %-$(_geometry).zsh,$^)
 	$(MAGICK) montage \
 		$(filter %.png,$^) \
