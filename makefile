@@ -858,7 +858,7 @@ publisher_logo-grey.svg: $(PUBLISHERLOGO)
 	$(call skip_if_tracked,$@)
 	cp $< $@
 
-PAPERBACKIMAGES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(_paperback)-$(_binding).png)
+PAPERBACKIMAGES = $(call pattern_list,$(TARGETS),$(filter %-$(_paperback),$(LAYOUTS)),-$(_binding).png)
 $(PAPERBACKIMAGES): %-$(_binding).png: %-$(_fragment)-$(_front).png %-$(_fragment)-$(_back).png %-$(_fragment)-$(_spine).png $$(call strip_layout,$$*-barkod.png) publisher_emblum.svg publisher_logo.svg %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
@@ -881,7 +881,7 @@ $(PAPERBACKIMAGES): %-$(_binding).png: %-$(_fragment)-$(_front).png %-$(_fragmen
 %-$(_binding)-printcolor.png: %-$(_binding).png
 	$(MAGICK) $< $(call magick_printcolor) $@
 
-%-$(_binding).svg: $(CASILEDIR)/binding.svg %-$(_binding)-printcolor.png %-$(_geometry).zsh
+%-$(_binding).svg: $(CASILEDIR)/binding.svg %-$(_binding)-printcolor.png %-$(_binding)-$(_geometry).zsh
 	source $*-$(_geometry).zsh
 	ver=$(subst @,\\@,$(call versioninfo,$@))
 	perl -pne "
