@@ -793,7 +793,7 @@ endef
 	rm $${text} $$bg
 
 PAPERBACKFRAGMENTS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(_paperback)-$(_binding)-$(_text).pdf)
-$(PAPERBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/softbackbinding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
+$(PAPERBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/paperback-binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
