@@ -62,14 +62,14 @@ INKSCAPE ?= inkscape
 POVRAY ?= povray
 
 # Categorize supported outputs
-PAPERSIZES = $(call localize,$(subst layout-,,$(notdir $(basename $(wildcard $(CASILEDIR)/layout-*.lua)))))
-BINDINGS = $(call localize,print paperback hardcover coil stapled)
+PAPERSIZES := $(call localize,$(subst layout-,,$(notdir $(basename $(wildcard $(CASILEDIR)/layout-*.lua)))))
+BINDINGS := $(call localize,print paperback hardcover coil stapled)
 
-DISPLAYS = $(_app) $(_screen)
-PLACARDS = $(_square) $(_wide) $(_banner) epub
+DISPLAYS := $(_app) $(_screen)
+PLACARDS := $(_square) $(_wide) $(_banner) epub
 
-RENDERED = $(filter $(call pattern_list,$(filter-out $(DISPLAYS) $(PLACARDS),$(PAPERSIZES)),-%),$(LAYOUTS))
-RENDERINGS = $(_3b)-$(_front) $(_3b)-$(_back) $(_3b)-$(_pile)
+RENDERED := $(filter $(call pattern_list,$(filter-out $(DISPLAYS) $(PLACARDS),$(PAPERSIZES)),-%),$(LAYOUTS))
+RENDERINGS := $(_3b)-$(_front) $(_3b)-$(_back) $(_3b)-$(_pile)
 
 # Set default output format(s)
 LAYOUTS ?= a4-$(_print)
