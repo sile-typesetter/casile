@@ -12,11 +12,8 @@ PUBLISHERDIR ?= $(CASILEDIR)
 LANGUAGE ?= en
 
 # Localization functions (source is a key => val file _and_ its inverse)
-LANGFILE ?= $(CASILEDIR)/makefile-$(LANGUAGE)
-ifneq ($(wildcard $(LANGFILE)),)
-include $(LANGFILE)
-$(eval $(shell awk -F' := ' '/^_/ { gsub(/_/, "", $$1); print "__" $$2 " := " $$1 }' < $(LANGFILE)))
-endif
+-include $(CASILEDIR)/makefile-$(LANGUAGE) $(CASILEDIR)/makefile-$(LANGUAGE)-reversed
+
 localize = $(foreach WORD,$1,$(or $(_$(WORD)),$(WORD)))
 unlocalize = $(foreach WORD,$1,$(or $(__$(WORD)),$(WORD)))
 
@@ -402,6 +399,9 @@ $(CICONFIG): $(CITEMPLATE)
 	cat $< | \
 		$(call ci_setup) | \
 		sponge $@
+
+$(CASILEDIR)/makefile-%-reversed: $(CASILEDIR)/makefile-%
+	@awk -F' := ' '/^_/ { gsub(/_/, "", $$1); print "__" $$2 " := " $$1 }' < $< > $@
 
 define ci_setup
 	cat -
