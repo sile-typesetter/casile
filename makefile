@@ -10,9 +10,15 @@ PUBLISHERDIR ?= $(CASILEDIR)
 
 # Set the language if not otherwise set
 LANGUAGE ?= en
-include $(CASILEDIR)/makefile-$(LANGUAGE)
+
+# Localization functions (source is a key => val file _and_ its inverse)
+LANGFILE ?= $(CASILEDIR)/makefile-$(LANGUAGE)
+ifneq ($(wildcard $(LANGFILE)),)
+include $(LANGFILE)
+$(eval $(shell awk -F' := ' '/^_/ { gsub(/_/, "", $$1); print "__" $$2 " := " $$1 }' < $(LANGFILE)))
+endif
 localize = $(foreach WORD,$1,$(or $(_$(WORD)),$(WORD)))
-unlocalize = $(or $(strip $(shell sed -ne '/= $1$$/{s/^_//;s/ .*$$//;p}' < $(CASILEDIR)/makefile-$(LANGUAGE))),$1)
+unlocalize = $(foreach WORD,$1,$(or $(__$(WORD)),$(WORD)))
 
 # Find stuff to build that has both a YML and a MD component
 TARGETS ?= $(filter $(basename $(wildcard *.md)),$(basename $(wildcard *.yml)))
