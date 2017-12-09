@@ -702,7 +702,7 @@ define skip_if_lazy
 	$(LAZY) && $(if $(filter $1,$(MAKECMDGOALS)),false,true) && test -f $1 && { touch $1; exit 0 } ||:
 endef
 
-COVERBACKGROUNDS = $(call pattern_list,$(TARGETS),$(filter-out $(PAPERBACKS),$(PAPERSIZES)),-$(_cover)-$(_background).png)
+COVERBACKGROUNDS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_cover)-$(_background).png)
 git_background = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
 $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@) %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
@@ -724,7 +724,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		$(and $(filter epub,$(call parse_papersize,$@)),-resize 1000x1600^) \
 		$@
 
-%-$(_cover).png: %-$(_cover)-$(_background).png %-$(_fragment)-$(_cover).png %-$(_geometry).zsh
+%-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_fragment).png %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
 	@$(MAGICK) $< \
 		\( -background none \
@@ -735,7 +735,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		\) -compose Overlay -composite \
 		\( \
 			-gravity Center \
-			$*-$(_fragment)-$(_cover).png \
+			$*-$(_cover)-$(_fragment).png \
 		\) -compose Over -composite \
 		-gravity Center \
 		-size %[fx:u.w]x%[fx:u.h] \
@@ -792,8 +792,8 @@ endef
 	pdftk $${text} background $$bg output $@
 	rm $${text} $$bg
 
-PAPERBACKFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter %-$(_paperback),$(LAYOUTS)),-$(_binding)-$(_text).pdf)
-$(PAPERBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/paperback-binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
+BINDINGFRAGMENTS = $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_binding)-$(_text).pdf)
+$(BINDINGFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -804,19 +804,19 @@ $(PAPERBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/paperback-bindin
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
-%-$(_fragment)-$(_front).png: %-$(_binding)-$(_text).pdf
+%-$(_fragment)-$(_front).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace RGB \
 		$(call magick_fragment_front) \
 		-composite $@
 
-%-$(_fragment)-$(_back).png: %-$(_binding)-$(_text).pdf
+%-$(_fragment)-$(_back).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[1] \
 		-colorspace RGB \
 		$(call magick_fragment_back) \
 		-composite $@
 
-%-$(_fragment)-$(_spine).png: %-$(_binding)-$(_text).pdf | %.pdf
+%-$(_fragment)-$(_spine).png: %-$(_text).pdf | %.pdf
 	$(MAGICK) -density $(HIDPI) $<[2] \
 		-colorspace RGB \
 		-crop $(call mmtopx,$(call spinemm,$(firstword $|)))x+0+0 \
@@ -824,7 +824,7 @@ $(PAPERBACKFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/paperback-bindin
 		-composite $@
 
 COVERFRAGMENTS = $(call pattern_list,$(TARGETS),$(filter-out $(PAPERBACKS),$(PAPERSIZES)),-$(_cover)-$(_text).pdf)
-$(COVERFRAGMENTS): %-$(_cover)-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
+$(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -834,7 +834,7 @@ $(COVERFRAGMENTS): %-$(_cover)-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call pars
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
-%-$(_fragment)-$(_cover).png: %-$(_cover)-$(_text).pdf
+%-$(_fragment).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace RGB \
 		$(call magick_fragment_cover) \
@@ -858,8 +858,8 @@ publisher_logo-grey.svg: $(PUBLISHERLOGO)
 	$(call skip_if_tracked,$@)
 	cp $< $@
 
-PAPERBACKIMAGES = $(call pattern_list,$(TARGETS),$(filter %-$(_paperback),$(LAYOUTS)),-$(_binding).png)
-$(PAPERBACKIMAGES): %-$(_binding).png: %-$(_fragment)-$(_front).png %-$(_fragment)-$(_back).png %-$(_fragment)-$(_spine).png $$(call strip_layout,$$*-barkod.png) publisher_emblum.svg publisher_logo.svg %-$(_geometry).zsh
+BINDINGIMAGES = $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_binding).png)
+$(BINDINGIMAGES): %-.png: %-$(_fragment)-$(_front).png %-$(_fragment)-$(_back).png %-$(_fragment)-$(_spine).png $$(call strip_layout,$$*-barkod.png) publisher_emblum.svg publisher_logo.svg %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
 		$(or $(and $(call git_background,$*-$(_cover)-$(_background).png),$(call git_background,$*-$(_cover)-$(_background).png) -resize $${imgwpx}x$${imghpx}!),$(call magick_background_binding)) \
@@ -881,8 +881,8 @@ $(PAPERBACKIMAGES): %-$(_binding).png: %-$(_fragment)-$(_front).png %-$(_fragmen
 %-printcolor.png: %.png
 	$(MAGICK) $< $(call magick_printcolor) $@
 
-%-$(_paperback)-$(_binding).svg: $(CASILEDIR)/paperback-binding.svg $$(basename $$@)-printcolor.png %-$(_paperback)-$(_geometry).zsh
-	source $*-$(_paperback)-$(_geometry).zsh
+%-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printcolor.png %-$(_geometry).zsh
+	source $*-$(_geometry).zsh
 	ver=$(subst @,\\@,$(call versioninfo,$@))
 	perl -pne "
 			s#IMG#$(filter %.png,$^)#g;
@@ -918,7 +918,7 @@ $(NONBOUNDGEOMETRIES): BLEED = $(NOBLEED)
 $(NONBOUNDGEOMETRIES): TRIM = $(NOTRIM)
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
-GEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_geometry).zsh)
+GEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_geometry).zsh) $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_geometry).zsh)
 $(GEOMETRIES): %-$(_geometry).zsh: $$(call geometrybase,$$*) $$(call newgeometry,$$@)
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	hidpi=$(HIDPI)
