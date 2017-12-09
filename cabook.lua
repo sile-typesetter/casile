@@ -2,6 +2,7 @@ local book = SILE.require("classes/book")
 local plain = SILE.require("classes/plain")
 local cabook = book { id = "cabook" }
 
+cabook:declareOption("binding", "print") -- print, paperback, hardcover, coil, stapled
 cabook:declareOption("crop", "true")
 cabook:declareOption("background", "true")
 cabook:declareOption("verseindex", "false")

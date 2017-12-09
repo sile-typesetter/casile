@@ -1,12 +1,33 @@
-LAYOUTS ?= a4 a4ciltli royaloctavo octavo halfletter a5 a5trim cep a6 a7 a7kart a7trimkart app ekran kartvizit
-RESOURCES ?= cilt
-RENDERINGS = 3b-on 3b-arka 3b-istif
-
-CILTLI = $(BINDINGS)
-KAPAKLI = $(DISPLAYS)
-PANKARTLI = $(PLACARDS)
-
-CILTFRAGMANLAR = $(BINDINGFRAGMENTS)
-KAPAKFRAGMANLAR = $(COVERFRAGMENTS)
-
-git_zemin = $(git_background)
+_3d := 3b
+_front := on
+_back := arka
+_spine := sirt
+_pile := istif
+_square := kare
+_wide := genis
+_banner := bant
+_businesscard := kartvizit
+_poster := pankart
+_app := uygulama
+_screen := ekran
+_verses := ayetler
+_twosided := ciftyonlu
+_cropped := kirpilmis
+_processed := islenmis
+_issue := mesele
+_montage := montaj
+_sorted := siralanmis
+_cover := kapak
+_binding := cilt
+_background := zemin
+_text := metin
+_fragment := fragman
+_geometry := ebatlar
+_jacket := somiz
+_print := cikti
+_paperback := kartonkapakli
+_hardcover := sertkapakli
+_coil := spiral
+_stapled := zimbali
+_case := kap
+_slipcase := kilif

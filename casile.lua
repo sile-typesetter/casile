@@ -728,9 +728,9 @@ constrainSize = function (ideal, max, min)
 end
 
 isWideLayout = function()
-  return CASILE.layout == "bant" or CASILE.layout == "genis" or CASILE.layout == "ekran"
+  return CASILE.layout == "banner" or CASILE.layout == "wide" or CASILE.layout == "screen"
 end
 
 isScreenLayout = function()
-  return CASILE.layout == "app" or CASILE.layout == "ekran"
+  return CASILE.layout == "app" or CASILE.layout == "screen"
 end

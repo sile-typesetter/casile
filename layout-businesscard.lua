@@ -1,4 +1,4 @@
-CASILE.layout = "kartvizit"
+CASILE.layout = "businesscard"
 
 local class = SILE.documentState.documentClass
 
