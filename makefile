@@ -75,7 +75,7 @@ RENDERED = $(filter $(call pattern_list,$(filter-out $(DISPLAYS) $(PLACARDS),$(P
 RENDERINGS = $(_3b)-$(_front) $(_3b)-$(_back) $(_3b)-$(_pile)
 
 # Set default output format(s)
-LAYOUTS ?= a4
+LAYOUTS ?= a4-$(_print)
 
 # Default to running multiple jobs
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
