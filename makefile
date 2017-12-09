@@ -93,17 +93,14 @@ endif
 # List of extra m4 macro files to apply to every source
 M4MACROS ?=
 PROJECTMACRO := $(wildcard $(PROJECT).m4)
-$(foreach TARGET,$(TARGETS),$(eval TARGETMACROS_$(TARGET) := $(wildcard $(TARGET).lua)))
 
 # List of extra YAML meta data files to splice into each book
 METADATA ?=
 PROJECTYAML = $(wildcard $(PROJECT).yml)
-$(foreach TARGET,$(TARGETS),$(eval TARGETYAMLS_$(TARGET) := $(wildcard $(TARGET).yml)))
 
 # Extra lua files to include before processing documents
 LUAINCLUDES += .casile.lua
 PROJECTLUA := $(wildcard $(PROJECT).lua)
-$(foreach TARGET,$(TARGETS),$(eval TARGETLUAS_$(TARGET) := $(wildcard $(TARGET).lua)))
 
 # Primary libraries to include (loaded in reverse order so this one is first)
 LUALIBS += $(CASILEDIR)/casile.lua
@@ -203,6 +200,11 @@ endif
 ifeq ($(strip $(MOCKUPS)),true)
 TARGETS += $(MOCKUPTARGETS)
 endif
+
+# Probe for available sources relevant to each target once
+$(foreach TARGET,$(TARGETS),$(eval TARGETMACROS_$(TARGET) := $(wildcard $(TARGET).lua)))
+$(foreach TARGET,$(TARGETS),$(eval TARGETYAMLS_$(TARGET) := $(wildcard $(TARGET).yml)))
+$(foreach TARGET,$(TARGETS),$(eval TARGETLUAS_$(TARGET) := $(wildcard $(TARGET).lua)))
 
 .ONESHELL:
 .SECONDEXPANSION:
