@@ -479,17 +479,10 @@ VIRTUALPDFS = $(call pattern_list,$(TARGETS),.pdf)
 $(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) ;
 
 # Some layouts have matching extra resources to build such as covers
-PAPERBACKTARGETS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_paperback).pdf)
-$(PAPERBACKTARGETS): $$(basename $$@)-$(_binding).pdf
-
-HARDCOVERTARGETS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_hardcover).pdf)
-$(HARDCOVERTARGETS): $$(basename $$@)-$(_case).pdf $$(basename $@)-$(_jacket).pdf
-
-COILTARGETS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_coil).pdf)
-$(COILTARGETS): $$(basename $@)-$(_cover).pdf
-
-STAPLEDTARGETS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_stapled).pdf)
-$(STAPLEDTARGETS): $$(basename $@)-$(_cover).pdf
+$(VIRTUALPDFS): $$(call pattern_list,$$(basename $$@),$(filter %-$(_paperback),$(LAYOUTS)),$(_binding),.pdf)
+$(VIRTUALPDFS): $$(call pattern_list,$$(basename $$@),$(filter %-$(_hardcover),$(LAYOUTS)),$(_case) $(jacket),.pdf)
+$(VIRTUALPDFS): $$(call pattern_list,$$(basename $$@),$(filter %-$(_coil),$(LAYOUTS)),$(_cover),.pdf)
+$(VIRTUALPDFS): $$(call pattern_list,$$(basename $$@),$(filter %-$(_stapled),$(LAYOUTS)),$(_cover),.pdf)
 
 # Some layouts have matching resources that need to be built first and included
 coverpreq = $(if $(filter true,$(COVERS)),$(if $(strip $(filter $(_print),$(call parse_binding,$1)) $(filter $(DISPLAYS) $(PLACARDS),$(call parse_papersize,$1))),$(basename $1)-$(_cover).pdf,),)
