@@ -793,7 +793,7 @@ endef
 	rm $${text} $$bg
 
 BINDINGFRAGMENTS = $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_binding)-$(_text).pdf)
-$(BINDINGFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
+$(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -816,10 +816,11 @@ $(BINDINGFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_book
 		$(call magick_fragment_back) \
 		-composite $@
 
-%-$(_fragment)-$(_spine).png: %-$(_text).pdf | %.pdf
+%-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(subst -$(_binding),,$$*)-$(_geometry).zsh
+	source $(filter %-$(_geometry).zsh,$|)
 	$(MAGICK) -density $(HIDPI) $<[2] \
 		-colorspace RGB \
-		-crop $(call mmtopx,$(call spinemm,$(firstword $|)))x+0+0 \
+		-crop $${spinepx}x+0+0 \
 		$(call magick_fragment_spine) \
 		-composite $@
 
@@ -859,7 +860,7 @@ publisher_logo-grey.svg: $(PUBLISHERLOGO)
 	cp $< $@
 
 BINDINGIMAGES = $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_binding).png)
-$(BINDINGIMAGES): %-.png: %-$(_fragment)-$(_front).png %-$(_fragment)-$(_back).png %-$(_fragment)-$(_spine).png $$(call strip_layout,$$*-barkod.png) publisher_emblum.svg publisher_logo.svg %-$(_geometry).zsh
+$(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png $$(basename $$@)-$(_fragment)-$(_back).png $$(basename $$@)-$(_fragment)-$(_spine).png $$(call strip_layout,$$*-barkod.png) publisher_emblum.svg publisher_logo.svg %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
 		$(or $(and $(call git_background,$*-$(_cover)-$(_background).png),$(call git_background,$*-$(_cover)-$(_background).png) -resize $${imgwpx}x$${imghpx}!),$(call magick_background_binding)) \
@@ -867,9 +868,9 @@ $(BINDINGIMAGES): %-.png: %-$(_fragment)-$(_front).png %-$(_fragment)-$(_back).p
 		\( -gravity East -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_front) -splice $${bleedpx}x \) -compose Overlay -composite \
 		\( -gravity West -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_back) -splice $${bleedpx}x \) -compose Overlay -composite \
 		\( -gravity Center -size $${spinepx}x$${coverhpx} -background none xc: $(call magick_spine) \) -compose Overlay -composite \
-		\( -gravity East $*-$(_fragment)-$(_front).png -splice $${bleedpx}x -write mpr:text-front \) -compose Over -composite \
-		\( -gravity West $*-$(_fragment)-$(_back).png -splice $${bleedpx}x -write mpr:text-front \) -compose Over -composite \
-		\( -gravity Center $*-$(_fragment)-$(_spine).png -write mpr:text-front \) -compose Over -composite \
+		\( -gravity East $(filter %-$(_front).png,$^) -splice $${bleedpx}x -write mpr:text-front \) -compose Over -composite \
+		\( -gravity West $(filter %-$(_back).png,$^) -splice $${bleedpx}x -write mpr:text-front \) -compose Over -composite \
+		\( -gravity Center $(filter %-$(_spine).png,$^) -write mpr:text-front \) -compose Over -composite \
 		$(call magick_emblum,publisher_emblum.svg) \
 		$(call magick_barcode,$(filter %-barkod.png,$^)) \
 		$(call magick_logo,publisher_logo.svg) \
