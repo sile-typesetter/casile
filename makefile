@@ -67,11 +67,11 @@ POVRAY ?= povray
 PAPERSIZES := $(call localize,$(subst layout-,,$(notdir $(basename $(wildcard $(CASILEDIR)/layout-*.lua)))))
 BINDINGS := $(call localize,print paperback hardcover coil stapled)
 
-DISPLAYS := $(_app) $(_screen)
-PLACARDS := $(_square) $(_wide) $(_banner) epub
+DISPLAYS ?= $(_app) $(_screen)
+PLACARDS ?= $(_square) $(_wide) $(_banner) epub
 
-RENDERED := $(filter $(call pattern_list,$(filter-out $(DISPLAYS) $(PLACARDS),$(PAPERSIZES)),-%),$(LAYOUTS))
-RENDERINGS := $(_3b)-$(_front) $(_3b)-$(_back) $(_3b)-$(_pile)
+RENDERED ?= $(filter $(call pattern_list,$(filter-out $(DISPLAYS) $(PLACARDS),$(PAPERSIZES)),-%),$(LAYOUTS))
+RENDERINGS ?= $(_3b)-$(_front) $(_3b)-$(_back) $(_3b)-$(_pile)
 
 # Set default output format(s)
 LAYOUTS ?= a4-$(_print)
@@ -235,7 +235,7 @@ endif
 series_promotionals: $(PROJECT)-epub-$(_poster)-$(_montage).jpg $(PROJECT)-$(_square)-$(_poster)-$(_montage).jpg
 
 .PHONY: series_renderings
-series_renderings: $(call pattern_list,$(PROJECT),$(filter $(RENDERED),$(LAYOUTS)),-$(_3b)-$(_montage).jpg)
+series_renderings: $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3b)-$(_montage).jpg)
 
 $(PROJECT)-%-$(_poster)-$(_montage).png: $(call pattern_list,$(TARGETS)-%-$(_poster).png) $(firstword $(TARGETS))-%-$(_geometry).zsh
 	source $(filter %-$(_geometry).zsh,$^)
