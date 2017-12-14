@@ -108,6 +108,8 @@ LUALIBS += $(CASILEDIR)/casile.lua
 # Extensible list of files for git to ignore
 IGNORES += $(PROJECTCONFIGS)
 IGNORES += $(LUAINCLUDES)
+IGNORES += $(FIGURES)
+IGNORES += $(PUBLISHERLOGO) $(PUBLISHEREMBLUM)
 IGNORES += $(foreach PAPERSIZE,$(PAPERSIZES),$(PROJECT)-$(PAPERSIZE)*)
 IGNORES += $(foreach TARGET,$(TARGETS),$(foreach FORMAT,$(FORMATS),$(TARGET).$(FORMAT)))
 IGNORES += $(call pattern_list,$(TARGETS),$(PAPERSIZES),*)
