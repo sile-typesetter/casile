@@ -105,6 +105,13 @@ PROJECTLUA := $(wildcard $(PROJECT).lua)
 # Primary libraries to include (loaded in reverse order so this one is first)
 LUALIBS += $(CASILEDIR)/casile.lua
 
+# Extensible list of files for git to ignore
+IGNORES += $(PROJECTCONFIGS)
+IGNORES += $(LUAINCLUDES)
+IGNORES += $(foreach PAPERSIZE,$(PAPERSIZES),$(PROJECT)-$(PAPERSIZE)*)
+IGNORES += $(foreach TARGET,$(TARGETS),$(foreach FORMAT,$(FORMATS),$(TARGET).$(FORMAT)))
+IGNORES += $(call pattern_list,$(TARGETS),$(PAPERSIZES),*)
+
 # Tell sile to look here for stuff before it’s internal stuff
 SILEPATH += $(CASILEDIR)
 
@@ -400,11 +407,7 @@ PROJECTCONFIGS += .gitignore
 .gitignore: $(CASILEDIR)/gitignore $(MAKEFILE_LIST) | $(require_pubdir)
 	$(call skip_if_tracked,$@)
 	cp $< $@
-	$(foreach PROJECTCONFIG,$(PROJECTCONFIGS),echo '$(PROJECTCONFIG)' >> $@;)
-	$(foreach LUAINCLUDE,$(LUAINCLUDES),echo '$(LUAINCLUDE)' >> $@;)
-	$(foreach PAPERSIZE,$(PAPERSIZES),echo '$(PROJECT)-$(PAPERSIZE)*' >> $@;)
-	$(foreach TARGET,$(TARGETS),$(foreach FORMAT,$(FORMATS),echo '$(TARGET).$(FORMAT)' >> $@;))
-	$(foreach TARGET,$(TARGETS),$(foreach PAPERSIZE,$(PAPERSIZES),echo '$(TARGET)-$(PAPERSIZE)*' >> $@;))
+	$(foreach IGNORE,$(IGNORES),echo '$(IGNORE)' >> $@;)
 
 $(CICONFIG): $(CITEMPLATE)
 	cat $< | \
