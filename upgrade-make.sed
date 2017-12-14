@@ -836,7 +836,7 @@ s#\bKAPAKFRAGMANLAR\b#COVERFRAGMENTS#g
 s#\bgit_zemin\b#git_background#g
 s#BINDING#SOFTBACK#g
 /^[^#_]/s#\b3b\b#$(_3b)#g
-/^[^#_]/s#\bon\b#$(_front)#g
+/^[^#_]/s#\bon\b\([^[:space:]]\)#$(_front)\1#g
 /^[^#_]/s#\barka\b#$(_back)#g
 /^[^#_]/s#\bsirt\b#$(_spine)#g
 /^[^#_]/s#\bistif\b#$(_pile)#g
