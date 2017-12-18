@@ -32,3 +32,4 @@ _stapled := stapled
 _case := case
 _slipcase := slipcase
 _barcode := barcode
+_booklet := booklet

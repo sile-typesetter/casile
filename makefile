@@ -575,8 +575,9 @@ INTERMEDIATES += *-$(_processed).md
 		$(call md_cleanup) |
 		$(call markdown_hook) > $@
 
-%-ciftyonlu.pdf: %.pdf
-	pdfbook --short-edge --suffix ciftyonlu --noautoscale true -- $< ||:
+%-$(_booklet).pdf: %.pdf | $(require_pubdir)
+	pdfbook --short-edge --noautoscale true --papersize "{$(call pageh,$<)pt,$$(($(call pagew,$<)*2))pt}" --outfile $@ -- $<
+	$(addtosync)
 
 %-$(_cropped).pdf: %.pdf | $(require_pubdir)
 	b=$$(echo "$(TRIM) * 283.465" | bc)
