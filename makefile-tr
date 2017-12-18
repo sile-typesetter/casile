@@ -33,3 +33,5 @@ _case := kap
 _slipcase := kilif
 _barcode := barkod
 _booklet := kitapcik
+_odd := tek
+_even := cift

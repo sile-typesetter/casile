@@ -33,3 +33,5 @@ _case := case
 _slipcase := slipcase
 _barcode := barcode
 _booklet := booklet
+_odd := odd
+_even := even

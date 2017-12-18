@@ -586,6 +586,12 @@ INTERMEDIATES += *-$(_processed).md
 	podofobox $< $@ media $$b $$b $$w $$h
 	$(addtosync)
 
+%-$(_even).pdf: %.pdf
+	pdftk $< cat even output $@
+
+%-$(_odd).pdf: %.pdf
+	pdftk $< cat odd output $@
+
 define versioninfo
 $(shell
 	echo -en "$(call parse_bookid,$1)@"
