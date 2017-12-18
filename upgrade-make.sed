@@ -829,12 +829,11 @@ s#\(alpha \)Remove#\1Remove#ig
 s#\(alpha \)Set#\1Set#ig
 s#\(alpha \)Shape#\1Shape#ig
 s#\(alpha \)Transparent#\1Transparent#ig
-s#\bCILTLI\b#BINDINGS#g
+s#\bCILTLI\b#PAPERBACKS#g
 s#\bKAPAKLI\b#DISPLAYS#g
-s#\bCILTFRAGMANLAR\b#BINDINGFRAGMENTS#g
+s#\bCILTFRAGMANLAR\b#PAPERBACKFRAGMENTS#g
 s#\bKAPAKFRAGMANLAR\b#COVERFRAGMENTS#g
 s#\bgit_zemin\b#git_background#g
-s#BINDING#SOFTBACK#g
 /^[^#_]/s#\b3b\b#$(_3b)#g
 /^[^#_]/s#\bon\b\([^[:space:]]\)#$(_front)\1#g
 /^[^#_]/s#\barka\b#$(_back)#g
