@@ -588,15 +588,17 @@ INTERMEDIATES += *-$(_processed).md
 
 %-cropleft.pdf: %.pdf
 	t=$$(echo "$(TRIM) * 283.465" | bc)
-	w=$$(echo "$(call pagew,$<) * 100 - $$t" | bc)
+	t2=$$(echo "($(TRIM) - 1) * 283.465" | bc)
+	w=$$(echo "$(call pagew,$<) * 100 - $$t2" | bc)
 	h=$$(echo "$(call pageh,$<) * 100" | bc)
 	podofobox $< $@ media 0 0 $$w $$h
 
 %-cropright.pdf: %.pdf
 	t=$$(echo "$(TRIM) * 283.465" | bc)
-	w=$$(echo "$(call pagew,$<) * 100 - $$t" | bc)
+	t2=$$(echo "($(TRIM) - 1) * 283.465 - 100" | bc)
+	w=$$(echo "$(call pagew,$<) * 100 - $$t2" | bc)
 	h=$$(echo "$(call pageh,$<) * 100" | bc)
-	podofobox $< $@ media $$t 0 $$w $$h
+	podofobox $< $@ media $$t2 0 $$w $$h
 
 %-$(_spineless).pdf: %-$(_odd)-cropright.pdf %-$(_even)-cropleft.pdf | $(require_pubdir)
 	pdftk A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
