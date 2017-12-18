@@ -579,6 +579,13 @@ INTERMEDIATES += *-$(_processed).md
 	pdfbook --short-edge --noautoscale true --papersize "{$(call pageh,$<)pt,$$(($(call pagew,$<)*2))pt}" --outfile $@ -- $<
 	$(addtosync)
 
+%-topbottom.pdf: %-set1.pdf %-set2.pdf
+	pdftk A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
+
+%-a4proof.pdf: %-topbottom.pdf
+	pdfjam --nup 1x2 --paper a4paper --outfile $@ -- $<
+	# pdftk A=$(word 1,$^) B=$(word 2,$^) cat A B output $@
+
 %-cropleft.pdf: %.pdf
 	t=$$(echo "$(TRIM) * 283.465" | bc)
 	w=$$(echo "$(call pagew,$<) * 100 - $$t" | bc)
@@ -600,6 +607,12 @@ INTERMEDIATES += *-$(_processed).md
 	h=$$(echo "$(call pageh,$<) * 100 - $$t * 2" | bc)
 	podofobox $< $@ media $$t $$t $$w $$h
 	$(addtosync)
+
+%-set1.pdf: %.pdf
+	pdftk $< cat 1-$$(($(call pagecount,$<)/2)) output $@
+
+%-set2.pdf: %.pdf
+	pdftk $< cat $$(($(call pagecount,$<)/2+1))-end output $@
 
 %-$(_even).pdf: %.pdf
 	pdftk $< cat even output $@
