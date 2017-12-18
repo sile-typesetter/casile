@@ -862,6 +862,7 @@ s#BINDING#SOFTBACK#g
 /^[^#_]/s#\bzemin\b#$(_background)#g
 /^[^#_]/s#\bmetin\b#$(_text)#g
 /^[^#_]/s#\bfragman\b#$(_fragment)#g
+/^[^#_]/s#\bbarkod\b#$(_barcode)#g
 /^[^#_]/s#\bgeometry.zsh\b#$(_geometry).zsh#g
 s#\bmagick_zeminfilter\b#magick_background_filter#g
 s#\bmagick_kapak\b#magick_cover#g

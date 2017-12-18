@@ -30,3 +30,4 @@ _coil := coil
 _stapled := stapled
 _case := case
 _slipcase := slipcase
+_barcode := barcode
