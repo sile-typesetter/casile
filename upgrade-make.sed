@@ -834,7 +834,7 @@ s#\bKAPAKLI\b#DISPLAYS#g
 s#\bCILTFRAGMANLAR\b#PAPERBACKFRAGMENTS#g
 s#\bKAPAKFRAGMANLAR\b#COVERFRAGMENTS#g
 s#\bgit_zemin\b#git_background#g
-/^[^#_]/s#\b3b\b#$(_3b)#g
+/^[^#_]/s#\b3b\b#$(_3d)#g
 /^[^#_]/s#\bon\b\([^[:space:]]\)#$(_front)\1#g
 /^[^#_]/s#\barka\b#$(_back)#g
 /^[^#_]/s#\bsirt\b#$(_spine)#g
@@ -883,3 +883,4 @@ s#\b_softback\b#_paperback#g
 s#\b_hardback\b#_hardcover#g
 s#\bSOFTBACK#PAPERBACK#g
 s#\bHARDBACK#HARDCOVER#g
+s#(_3b)#(_3d)#g
