@@ -132,7 +132,7 @@ $endfor$
 \imprint
 \tableofcontents
 $body$
-\novbreak\medskip\novbreak\center{\novbreak\book:chapter:post{}}
+\cabook:chapter:post
 $if(seriestitle)$
 \seriespage:pre
 \seriespage:series{$seriestitle$}
