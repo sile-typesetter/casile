@@ -129,7 +129,7 @@ endif
 
 # Set default document class
 DOCUMENTCLASS ?= cabook
-DOCUMENTOPTIONS ?=
+DOCUMENTOPTIONS ?= binding=$(call unlocalize,$(call parse_binding,$@))
 
 # Default template for setting up Gitlab CI runners
 CITEMPLATE ?= $(CASILEDIR)/travis.yml
