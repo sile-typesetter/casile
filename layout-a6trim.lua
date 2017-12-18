@@ -1,8 +1,8 @@
-CASILE.layout = "a6"
+CASILE.layout = "a6trim"
 
 local class = SILE.documentState.documentClass
 
-SILE.documentState.paperSize = SILE.paperSizeParser("105mm x 148mm")
+SILE.documentState.paperSize = SILE.paperSizeParser("90mm x 135mm")
 SILE.documentState.orgPaperSize = SILE.documentState.paperSize
 
 class:defineMaster({
