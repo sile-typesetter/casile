@@ -35,3 +35,4 @@ _barcode := barkod
 _booklet := kitapcik
 _odd := tek
 _even := cift
+_spineless := sirtsiz

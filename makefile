@@ -575,15 +575,30 @@ INTERMEDIATES += *-$(_processed).md
 		$(call md_cleanup) |
 		$(call markdown_hook) > $@
 
-%-$(_booklet).pdf: %.pdf | $(require_pubdir)
+%-$(_booklet).pdf: %-$(_spineless).pdf | $(require_pubdir)
 	pdfbook --short-edge --noautoscale true --papersize "{$(call pageh,$<)pt,$$(($(call pagew,$<)*2))pt}" --outfile $@ -- $<
 	$(addtosync)
 
+%-cropleft.pdf: %.pdf
+	t=$$(echo "$(TRIM) * 283.465" | bc)
+	w=$$(echo "$(call pagew,$<) * 100 - $$t" | bc)
+	h=$$(echo "$(call pageh,$<) * 100" | bc)
+	podofobox $< $@ media 0 0 $$w $$h
+
+%-cropright.pdf: %.pdf
+	t=$$(echo "$(TRIM) * 283.465" | bc)
+	w=$$(echo "$(call pagew,$<) * 100 - $$t" | bc)
+	h=$$(echo "$(call pageh,$<) * 100" | bc)
+	podofobox $< $@ media $$t 0 $$w $$h
+
+%-$(_spineless).pdf: %-$(_odd)-cropright.pdf %-$(_even)-cropleft.pdf | $(require_pubdir)
+	pdftk A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
+
 %-$(_cropped).pdf: %.pdf | $(require_pubdir)
-	b=$$(echo "$(TRIM) * 283.465" | bc)
-	w=$$(echo "$(call pagew,$<) * 100 - $$b * 2" | bc)
-	h=$$(echo "$(call pageh,$<) * 100 - $$b * 2" | bc)
-	podofobox $< $@ media $$b $$b $$w $$h
+	t=$$(echo "$(TRIM) * 283.465" | bc)
+	w=$$(echo "$(call pagew,$<) * 100 - $$t * 2" | bc)
+	h=$$(echo "$(call pageh,$<) * 100 - $$t * 2" | bc)
+	podofobox $< $@ media $$t $$t $$w $$h
 	$(addtosync)
 
 %-$(_even).pdf: %.pdf

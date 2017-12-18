@@ -35,3 +35,4 @@ _barcode := barcode
 _booklet := booklet
 _odd := odd
 _even := even
+_spineless := spineless
