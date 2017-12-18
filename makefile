@@ -161,7 +161,7 @@ mmtopm = $(shell echo "$1 * 96 * .0393701 / 1" | bc)
 mmtopt = $(shell echo "$1 * 2.83465 / 1" | bc)
 width = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:w] $1)
 height = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:h] $1)
-parse_layout = $(substr $(_),-,$(filter $(PAPERSIZES) $(BINDINGS),$(subst -, ,$(basename $1))))
+parse_layout = $(call parse_papersize,$1)-$(call parse_binding,$1)
 strip_layout = $(filter-out $1,$(foreach PAPERORBINDING,$(PAPERSIZES) $(BINDINGS),$(subst -$(PAPERORBINDING),,$1)))
 parse_papersize = $(filter $(PAPERSIZES),$(subst -, ,$(basename $1)))
 strip_papersize = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE),,$1)))
@@ -586,21 +586,21 @@ INTERMEDIATES += *-$(_processed).md
 	pdfjam --nup 1x2 --noautoscale true --paper a4paper --outfile $@ -- $<
 	# pdftk A=$(word 1,$^) B=$(word 2,$^) cat A B output $@
 
-%-cropleft.pdf: %.pdf %-$(_geometry).zsh
-	source $*-$(_geometry).zsh
+%-cropleft.pdf: %.pdf | $$(call parse_bookid,$$@)-$$(call parse_layout,$$@)-$(_geometry).zsh
+	source $(filter %-$(_geometry).zsh,$|)
 	t=$$(echo "$(TRIM) * 283.465" | bc)
 	s=$$(echo "$${spinemm} * 283.465 / 4" | bc)
 	w=$$(echo "$(call pagew,$<) * 100 - $$t + $$s" | bc)
 	h=$$(echo "$(call pageh,$<) * 100" | bc)
 	podofobox $< $@ media 0 0 $$w $$h
 
-%-cropright.pdf: %.pdf %-$(_geometry).zsh
-	source $*-$(_geometry).zsh
+%-cropright.pdf: %.pdf | $$(call parse_bookid,$$@)-$$(call parse_layout,$$@)-$(_geometry).zsh
+	source $(filter %-$(_geometry).zsh,$|)
 	t=$$(echo "$(TRIM) * 283.465" | bc)
 	s=$$(echo "$${spinemm} * 283.465 / 4" | bc)
 	w=$$(echo "$(call pagew,$<) * 100 - $$t + $$s" | bc)
 	h=$$(echo "$(call pageh,$<) * 100" | bc)
-	podofobox $< $@ media $$t2 0 $$w $$h
+	podofobox $< $@ media $$(($$t-$$s)) 0 $$w $$h
 
 %-$(_spineless).pdf: %-$(_odd)-cropright.pdf %-$(_even)-cropleft.pdf
 	pdftk A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
