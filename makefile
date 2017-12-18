@@ -887,7 +887,7 @@ $(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$
 		$(call magick_fragment_cover) \
 		-composite $@
 
-PUBLISHEREMBLUM := $(PUBLISHERDIR)/emblum.svg
+PUBLISHEREMBLUM ?= $(PUBLISHERDIR)/emblum.svg
 publisher_emblum.svg: $(PUBLISHEREMBLUM)
 	$(call skip_if_tracked,$@)
 	cp $< $@
