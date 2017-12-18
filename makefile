@@ -491,7 +491,7 @@ $(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) ;
 $(VIRTUALPDFS): $$(call pattern_list,$$(basename $$@),$(filter %-$(_paperback),$(LAYOUTS)),$(_binding),.pdf)
 $(VIRTUALPDFS): $$(call pattern_list,$$(basename $$@),$(filter %-$(_hardcover),$(LAYOUTS)),$(_case) $(jacket),.pdf)
 $(VIRTUALPDFS): $$(call pattern_list,$$(basename $$@),$(filter %-$(_coil),$(LAYOUTS)),$(_cover),.pdf)
-$(VIRTUALPDFS): $$(call pattern_list,$$(basename $$@),$(filter %-$(_stapled),$(LAYOUTS)),$(_cover),.pdf)
+$(VIRTUALPDFS): $$(call pattern_list,$$(basename $$@),$(filter %-$(_stapled),$(LAYOUTS)),$(_binding),.pdf)
 
 # Some layouts have matching resources that need to be built first and included
 coverpreq = $(and $(filter true,$(COVERS)),$(filter $(_print),$(call parse_binding,$1)),$(filter-out $(DISPLAYS) $(PLACARDS),$(call parse_papersize,$1)),$(basename $1)-$(_cover).pdf)
