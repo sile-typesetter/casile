@@ -71,7 +71,7 @@ DISPLAYS ?= $(_app) $(_screen)
 PLACARDS ?= $(_square) $(_wide) $(_banner) epub
 
 RENDERED ?= $(filter $(call pattern_list,$(filter-out $(DISPLAYS) $(PLACARDS),$(PAPERSIZES)),-%),$(LAYOUTS))
-RENDERINGS ?= $(_3b)-$(_front) $(_3b)-$(_back) $(_3b)-$(_pile)
+RENDERINGS ?= $(_3d)-$(_front) $(_3d)-$(_back) $(_3d)-$(_pile)
 
 # Set default output format(s)
 LAYOUTS ?= a4-$(_print)
@@ -248,7 +248,7 @@ endif
 series_promotionals: $(PROJECT)-epub-$(_poster)-$(_montage).jpg $(PROJECT)-$(_square)-$(_poster)-$(_montage).jpg
 
 .PHONY: series_renderings
-series_renderings: $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3b)-$(_montage).jpg)
+series_renderings: $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3d)-$(_montage).jpg)
 
 $(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(TARGETS),%,-$(_poster).png) $(firstword $(TARGETS))-%-$(_geometry).zsh
 	source $(filter %-$(_geometry).zsh,$^)
@@ -1165,8 +1165,8 @@ $(BOOKSCENESINC): %.inc: %-$(_geometry).zsh %-pov-$(_front).png %-pov-$(_back).p
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
-BOOKSCENES = $(call pattern_list,$(TARGETS),$(RENDERED),-$(_3b).pov)
-$(BOOKSCENES): %-$(_3b).pov: %-$(_geometry).zsh %.inc
+BOOKSCENES = $(call pattern_list,$(TARGETS),$(RENDERED),-$(_3d).pov)
+$(BOOKSCENES): %-$(_3d).pov: %-$(_geometry).zsh %.inc
 	source $*-$(_geometry).zsh
 	cat <<- EOF > $@
 		#declare DefaultBook = "$(filter %.inc,$^)";
@@ -1178,8 +1178,8 @@ $(BOOKSCENES): %-$(_3b).pov: %-$(_geometry).zsh %.inc
 	EOF
 
 ifneq ($(TARGETS),$(PROJECT))
-SERIESSCENES = $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3b).pov)
-$(SERIESSCENES): $(PROJECT)-%-$(_3b).pov: $(firstword $(TARGETS))-%-$(_3b).pov $(call pattern_list,$(TARGETS),-%.inc)
+SERIESSCENES = $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3d).pov)
+$(SERIESSCENES): $(PROJECT)-%-$(_3d).pov: $(firstword $(TARGETS))-%-$(_3d).pov $(call pattern_list,$(TARGETS),-%.inc)
 	cat <<- EOF > $@
 		#include "$<"
 		#declare BookCount = $(words $(TARGETS));
@@ -1199,17 +1199,17 @@ define povray
 	rm $$headers
 endef
 
-%-$(_3b)-$(_front).png: $(CASILEDIR)/cover.pov %-$(_3b).pov $(CASILEDIR)/$(_front).pov
-	$(call povray,$(filter %/cover.pov,$^),$*-$(_3b).pov,$(filter %/$(_front).pov,$^),$@,6000,8000)
+%-$(_3d)-$(_front).png: $(CASILEDIR)/cover.pov %-$(_3d).pov $(CASILEDIR)/$(_front).pov
+	$(call povray,$(filter %/cover.pov,$^),$*-$(_3d).pov,$(filter %/$(_front).pov,$^),$@,6000,8000)
 
-%-$(_3b)-$(_back).png: $(CASILEDIR)/cover.pov %-$(_3b).pov $(CASILEDIR)/$(_back).pov
-	$(call povray,$(filter %/cover.pov,$^),$*-$(_3b).pov,$(filter %/$(_back).pov,$^),$@,6000,8000)
+%-$(_3d)-$(_back).png: $(CASILEDIR)/cover.pov %-$(_3d).pov $(CASILEDIR)/$(_back).pov
+	$(call povray,$(filter %/cover.pov,$^),$*-$(_3d).pov,$(filter %/$(_back).pov,$^),$@,6000,8000)
 
-%-$(_3b)-$(_pile).png: $(CASILEDIR)/cover.pov %-$(_3b).pov $(CASILEDIR)/$(_pile).pov
-	$(call povray,$(filter %/cover.pov,$^),$*-$(_3b).pov,$(filter %/$(_pile).pov,$^),$@,8000,6000)
+%-$(_3d)-$(_pile).png: $(CASILEDIR)/cover.pov %-$(_3d).pov $(CASILEDIR)/$(_pile).pov
+	$(call povray,$(filter %/cover.pov,$^),$*-$(_3d).pov,$(filter %/$(_pile).pov,$^),$@,8000,6000)
 
-$(PROJECT)-%-$(_3b)-$(_montage).png: $(CASILEDIR)/cover.pov $(PROJECT)-%-$(_3b).pov $(CASILEDIR)/$(_montage).pov
-	$(call povray,$(filter %/cover.pov,$^),$(filter %-$(_3b).pov,$^),$(filter %/$(_montage).pov,$^),$@,8000,6000)
+$(PROJECT)-%-$(_3d)-$(_montage).png: $(CASILEDIR)/cover.pov $(PROJECT)-%-$(_3d).pov $(CASILEDIR)/$(_montage).pov
+	$(call povray,$(filter %/cover.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/$(_montage).pov,$^),$@,8000,6000)
 
 define pov_crop
 	\( +clone \
@@ -1227,7 +1227,7 @@ endef
 
 %.jpg: %.png | $(require_pubdir)
 	$(MAGICK) $< \
-		$(if $(findstring $(_3b),$*),$(call pov_crop),) \
+		$(if $(findstring $(_3d),$*),$(call pov_crop),) \
 		-quality 85 \
 		$@
 	$(addtosync)
