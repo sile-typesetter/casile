@@ -23,6 +23,7 @@ _background := background
 _text := text
 _fragment := fragment
 _geometry := geometry
+_jacket := jacket
 _print := print
 _paperback := paperback
 _hardcover := hardcover
