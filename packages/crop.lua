@@ -3,15 +3,25 @@ local trim = 10 * 2.83465
 local len = trim - bleed
 
 local outcounter = 1
+local cropbinding = SILE.documentState.documentClass.options.binding() == "stapled"
+-- cropbinding = false
 
 local outputMarks = function()
   local page = SILE.getFrame("page")
+
+  -- Top left
   SILE.outputter.rule(page:left() - bleed, page:top(), -len, 0.5)
   SILE.outputter.rule(page:left(), page:top() - bleed, 0.5, -len)
+
+  -- Top  right
   SILE.outputter.rule(page:right() + bleed, page:top(), len, 0.5)
   SILE.outputter.rule(page:right(), page:top() - bleed, 0.5, -len)
+
+  -- Bottom left
   SILE.outputter.rule(page:left() - bleed, page:bottom(), -len, 0.5)
   SILE.outputter.rule(page:left(), page:bottom() + bleed, 0.5, len)
+
+  -- Bottom right
   SILE.outputter.rule(page:right() + bleed, page:bottom(), len, 0.5)
   SILE.outputter.rule(page:right(), page:bottom() + bleed, 0.5, len)
 
@@ -62,19 +72,15 @@ local setup = function(self, args)
   end
 
   local papersize = SILE.documentState.paperSize
-  local w = papersize[1] + (trim * 2)
+  local w = papersize[1] + (trim * (cropbinding and 2 or 2))
   local h = papersize[2] + (trim * 2)
-  local sheetsize = w .. "pt x " .. h .. "pt"
-  local size = SILE.paperSizeParser(sheetsize)
   local oldsize = SILE.documentState.paperSize
-  SILE.documentState.paperSize = size
-  local offsetx = ( SILE.documentState.paperSize[1] - oldsize[1] ) / 2
-  local offsety = ( SILE.documentState.paperSize[2] - oldsize[2] ) / 2
+  SILE.documentState.paperSize = SILE.paperSizeParser(w .. "pt x " .. h .. "pt")
   local page = SILE.getFrame("page")
-  page:constrain("right", oldsize[1] + offsetx)
-  page:constrain("left", offsetx)
-  page:constrain("bottom", oldsize[2] + offsety)
-  page:constrain("top", offsety)
+  page:constrain("right", oldsize[1] + trim)
+  page:constrain("left", trim)
+  page:constrain("bottom", oldsize[2] + trim)
+  page:constrain("top", trim)
   if SILE.scratch.masters then
     for k,v in pairs(SILE.scratch.masters) do
       reconstrainFrameset(v.frames)
