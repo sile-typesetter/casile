@@ -583,7 +583,7 @@ INTERMEDIATES += *-$(_processed).md
 	pdftk A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
 
 %-a4proof.pdf: %-topbottom.pdf
-	pdfjam --nup 1x2 --paper a4paper --outfile $@ -- $<
+	pdfjam --nup 1x2 --noautoscale true --paper a4paper --outfile $@ -- $<
 	# pdftk A=$(word 1,$^) B=$(word 2,$^) cat A B output $@
 
 %-cropleft.pdf: %.pdf
