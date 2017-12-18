@@ -494,7 +494,7 @@ $(VIRTUALPDFS): $$(call pattern_list,$$(basename $$@),$(filter %-$(_coil),$(LAYO
 $(VIRTUALPDFS): $$(call pattern_list,$$(basename $$@),$(filter %-$(_stapled),$(LAYOUTS)),$(_cover),.pdf)
 
 # Some layouts have matching resources that need to be built first and included
-coverpreq = $(if $(filter true,$(COVERS)),$(if $(strip $(filter $(_print),$(call parse_binding,$1)) $(filter $(DISPLAYS) $(PLACARDS),$(call parse_papersize,$1))),$(basename $1)-$(_cover).pdf,),)
+coverpreq = $(and $(filter true,$(COVERS)),$(filter $(_print),$(call parse_binding,$1)),$(filter-out $(DISPLAYS) $(PLACARDS),$(call parse_papersize,$1)),$(basename $1)-$(_cover).pdf)
 
 # Order is important here, these are included in reverse order so early supersedes late
 onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(CASILEDIR)/layout-$(call unlocalize,$(call parse_papersize,$1)).lua $(LUALIBS)
@@ -524,7 +524,7 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 	fi
 	# If we have a special cover page for this format, swap it out for the half title page
 	coverfile=$(filter %-$(_cover).pdf,$^)
-	if $(COVERS) && [[ -f $${coverfile} ]]; then
+	if $(COVERS); then
 		pdftk $@ dump_data_utf8 output $*.dat
 		pdftk C=$${coverfile} B=$@ cat C1 B2-end output $*.tmp.pdf
 		pdftk $*.tmp.pdf update_info_utf8 $*.dat output $@
