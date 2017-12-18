@@ -586,21 +586,23 @@ INTERMEDIATES += *-$(_processed).md
 	pdfjam --nup 1x2 --noautoscale true --paper a4paper --outfile $@ -- $<
 	# pdftk A=$(word 1,$^) B=$(word 2,$^) cat A B output $@
 
-%-cropleft.pdf: %.pdf
+%-cropleft.pdf: %.pdf %-$(_geometry).zsh
+	source $*-$(_geometry).zsh
 	t=$$(echo "$(TRIM) * 283.465" | bc)
-	t2=$$(echo "($(TRIM) - 1) * 283.465" | bc)
-	w=$$(echo "$(call pagew,$<) * 100 - $$t2" | bc)
+	s=$$(echo "$${spinemm} * 283.465 / 4" | bc)
+	w=$$(echo "$(call pagew,$<) * 100 - $$t + $$s" | bc)
 	h=$$(echo "$(call pageh,$<) * 100" | bc)
 	podofobox $< $@ media 0 0 $$w $$h
 
-%-cropright.pdf: %.pdf
+%-cropright.pdf: %.pdf %-$(_geometry).zsh
+	source $*-$(_geometry).zsh
 	t=$$(echo "$(TRIM) * 283.465" | bc)
-	t2=$$(echo "($(TRIM) - 1) * 283.465 - 100" | bc)
-	w=$$(echo "$(call pagew,$<) * 100 - $$t2" | bc)
+	s=$$(echo "$${spinemm} * 283.465 / 4" | bc)
+	w=$$(echo "$(call pagew,$<) * 100 - $$t + $$s" | bc)
 	h=$$(echo "$(call pageh,$<) * 100" | bc)
 	podofobox $< $@ media $$t2 0 $$w $$h
 
-%-$(_spineless).pdf: %-$(_odd)-cropright.pdf %-$(_even)-cropleft.pdf | $(require_pubdir)
+%-$(_spineless).pdf: %-$(_odd)-cropright.pdf %-$(_even)-cropleft.pdf
 	pdftk A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
 
 %-$(_cropped).pdf: %.pdf | $(require_pubdir)
