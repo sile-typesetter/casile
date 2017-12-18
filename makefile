@@ -867,7 +867,7 @@ publisher_logo-grey.svg: $(PUBLISHERLOGO)
 	cp $< $@
 
 BINDINGIMAGES = $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_binding).png)
-$(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png $$(basename $$@)-$(_fragment)-$(_back).png $$(basename $$@)-$(_fragment)-$(_spine).png $$(call strip_layout,$$*-barkod.png) publisher_emblum.svg publisher_logo.svg %-$(_geometry).zsh
+$(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png $$(basename $$@)-$(_fragment)-$(_back).png $$(basename $$@)-$(_fragment)-$(_spine).png $$(call strip_layout,$$*-$(_barcode).png) publisher_emblum.svg publisher_logo.svg %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
 		$(or $(and $(call git_background,$*-$(_cover)-$(_background).png),$(call git_background,$*-$(_cover)-$(_background).png) -resize $${imgwpx}x$${imghpx}!),$(call magick_background_binding)) \
@@ -879,7 +879,7 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 		\( -gravity West $(filter %-$(_back).png,$^) -splice $${bleedpx}x -write mpr:text-front \) -compose Over -composite \
 		\( -gravity Center $(filter %-$(_spine).png,$^) -write mpr:text-front \) -compose Over -composite \
 		$(call magick_emblum,publisher_emblum.svg) \
-		$(call magick_barcode,$(filter %-barkod.png,$^)) \
+		$(call magick_barcode,$(filter %-$(_barcode).png,$^)) \
 		$(call magick_logo,publisher_logo.svg) \
 		-gravity Center -size %[fx:u.w]x%[fx:u.h] \
 		-composite \
@@ -1246,7 +1246,7 @@ endef
 			--data=$(call urlinfo,$@) \
 		> $@
 
-%-barkod.svg: %-manifest.yml
+%-$(_barcode).svg: %-manifest.yml
 	zint --direct \
 			--filetype=svg \
 			--scale=5 \
@@ -1256,7 +1256,7 @@ endef
 		sed -e 's/Helvetica\( Regular\)\?/TeX Gyre Heros/g' \
 		> $@
 
-%-barkod.png: %-barkod.svg
+%-$(_barcode).png: %-$(_barcode).svg
 	$(MAGICK) $< \
 		-bordercolor white -border 10 \
 		-font Hack-Regular -pointsize 36 \
