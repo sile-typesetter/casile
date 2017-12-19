@@ -1207,17 +1207,17 @@ define povray
 	rm $$headers
 endef
 
-%-$(_3d)-$(_front).png: $(CASILEDIR)/cover.pov %-$(_3d).pov $(CASILEDIR)/$(_front).pov
-	$(call povray,$(filter %/cover.pov,$^),$*-$(_3d).pov,$(filter %/$(_front).pov,$^),$@,6000,8000)
+%-$(_3d)-$(_front).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/$(_front).pov
+	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/$(_front).pov,$^),$@,6000,8000)
 
-%-$(_3d)-$(_back).png: $(CASILEDIR)/cover.pov %-$(_3d).pov $(CASILEDIR)/$(_back).pov
-	$(call povray,$(filter %/cover.pov,$^),$*-$(_3d).pov,$(filter %/$(_back).pov,$^),$@,6000,8000)
+%-$(_3d)-$(_back).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/$(_back).pov
+	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/$(_back).pov,$^),$@,6000,8000)
 
-%-$(_3d)-$(_pile).png: $(CASILEDIR)/cover.pov %-$(_3d).pov $(CASILEDIR)/$(_pile).pov
-	$(call povray,$(filter %/cover.pov,$^),$*-$(_3d).pov,$(filter %/$(_pile).pov,$^),$@,8000,6000)
+%-$(_3d)-$(_pile).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/$(_pile).pov
+	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/$(_pile).pov,$^),$@,8000,6000)
 
-$(PROJECT)-%-$(_3d)-$(_montage).png: $(CASILEDIR)/cover.pov $(PROJECT)-%-$(_3d).pov $(CASILEDIR)/$(_montage).pov
-	$(call povray,$(filter %/cover.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/$(_montage).pov,$^),$@,8000,6000)
+$(PROJECT)-%-$(_3d)-$(_montage).png: $(CASILEDIR)/book.pov $(PROJECT)-%-$(_3d).pov $(CASILEDIR)/$(_montage).pov
+	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/$(_montage).pov,$^),$@,8000,6000)
 
 define pov_crop
 	\( +clone \
