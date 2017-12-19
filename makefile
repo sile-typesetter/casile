@@ -1135,7 +1135,7 @@ endef
 	$(MAGICK) $< \
 		-gravity East -crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! \
 		$(call magick_emulateprint) \
-		$(call magick_crease,0+) \
+		$(and $(filter $(_paperback),$(call parse_binding,$@)),$(call magick_crease,0+)) \
 		$(call magick_fray) \
 		$@
 
@@ -1144,7 +1144,7 @@ endef
 	$(MAGICK) $< \
 		-gravity West -crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! \
 		$(call magick_emulateprint) \
-		$(call magick_crease,w-) \
+		$(and $(filter $(_paperback),$(call parse_binding,$@)),$(call magick_crease,w-)) \
 		$(call magick_fray) \
 		$@
 
