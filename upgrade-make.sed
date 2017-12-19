@@ -873,6 +873,8 @@ s#\bmagick_fragman_kapak\b#magick_fragment_cover#g
 s#\bmagick_fragman_on\b#magick_fragment_front#g
 s#\bmagick_fragman_arka\b#magick_fragment_back#g
 s#\bmagick_fragman_sirt\b#magick_fragment_spine#g
+s#\bmagick_zemin\b#magick_background#g
+s#\bmagick_zemin_kapak\b#magick_background_cover#g
 s#\bmagick_zemin_cilt\b#magick_background_binding#g
 s#\bmagick_kenar\b#magick_border#g
 s#\bmagick_sembol\b#magick_emblum#g
