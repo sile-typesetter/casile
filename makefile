@@ -1161,11 +1161,6 @@ BOOKSCENESINC = $(call pattern_list,$(TARGETS),$(RENDERED),.inc)
 $(BOOKSCENESINC): %.inc: %-$(_geometry).zsh %-pov-$(_front).png %-pov-$(_back).png %-pov-$(_spine).png
 	source $*-$(_geometry).zsh
 	cat <<- EOF > $@
-		#declare CoverWMM = $$pagewmm;
-		#declare CoverHMM = $$pagehmm;
-		#declare SpineMM = $$spinemm;
-		#declare CoverHWX = $$pagewmm;
-		#declare CoverHPX = $$pagehmm;
 		#declare FrontImg = "$(filter %-pov-$(_front).png,$^)";
 		#declare BackImg = "$(filter %-pov-$(_back).png,$^)";
 		#declare SpineImg = "$(filter %-pov-$(_spine).png,$^)";
