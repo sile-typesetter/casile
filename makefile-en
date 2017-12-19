@@ -36,3 +36,4 @@ _booklet := booklet
 _odd := odd
 _even := even
 _spineless := spineless
+_imprint := imprint
