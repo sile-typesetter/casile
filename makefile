@@ -188,8 +188,8 @@ endif
 
 # For watch targets, treat extra parameters as things to pass to the next make
 ifeq (watch,$(firstword $(MAKECMDGOALS)))
-  WATCHARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-  $(eval $(WATCHARGS):;@:)
+WATCHARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+$(eval $(WATCHARGS):;@:)
 endif
 
 export PATH := $(CASILEDIR)/bin:$(PATH)
@@ -1071,7 +1071,7 @@ define magick_logo
 	\( -background none \
 		$1 \
 		-channel RGB -negate \
-		-level 20%,60%!  \
+		-level 20%,60%! \
 		-resize $(call mmtopx,30)x \
 		-splice %[fx:$$bleedpx+$$pagewpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
 	\) -compose Screen -composite
@@ -1227,9 +1227,9 @@ define pov_crop
 		-trim -trim \
 		-set option:fuzzy_trim "%[fx:w*1.2]x%[fx:h*1.2]+%[fx:page.x-w*0.1]+%[fx:page.y-h*0.1]" \
 		+delete \
-    \) \
-    -crop %[fuzzy_trim] \
-    -resize $(call scale,4000)x
+	\) \
+	-crop %[fuzzy_trim] \
+	-resize $(call scale,4000)x
 endef
 
 %.jpg: %.png | $(require_pubdir)
@@ -1276,7 +1276,7 @@ endef
 %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML) $$(TARGETYAMLS_$$*) | $(require_pubdir)
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $(filter %.yml,$^) |
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
-		    -e '/\(own\|next\)cloudshare: [^"]/s/: \(.*\)$$/: "\1"/' > $@
+			-e '/\(own\|next\)cloudshare: [^"]/s/: \(.*\)$$/: "\1"/' > $@
 	$(addtosync)
 
 INTERMEDIATES += *-url.*
