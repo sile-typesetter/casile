@@ -884,3 +884,5 @@ s#\b_hardback\b#_hardcover#g
 s#\bSOFTBACK#PAPERBACK#g
 s#\bHARDBACK#HARDCOVER#g
 s#(_3b)#(_3d)#g
+s#cover\([wh]..\)\b#page\1#g
+s#coveraspect#pageaspect#g
