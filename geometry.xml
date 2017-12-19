@@ -1,0 +1,7 @@
+<sile class="cabook" crop="false" background="false">
+<define command="output-right-running-head"></define>
+<script>
+  SILE.require("layout-" .. papersize, CASILE.casiledir)
+  SILE.typesetter:typeset(".")
+</script>
+</sile>

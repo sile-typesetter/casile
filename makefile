@@ -586,7 +586,7 @@ INTERMEDIATES += *-$(_processed).md
 	pdfjam --nup 1x2 --noautoscale true --paper a4paper --outfile $@ -- $<
 	# pdftk A=$(word 1,$^) B=$(word 2,$^) cat A B output $@
 
-%-cropleft.pdf: %.pdf | $$(call parse_bookid,$$@)-$$(call parse_layout,$$@)-$(_geometry).zsh
+%-cropleft.pdf: %.pdf | $$(call geometryfile,$$@)
 	source $(filter %-$(_geometry).zsh,$|)
 	t=$$(echo "$(TRIM) * 283.465" | bc)
 	s=$$(echo "$${spinemm} * 283.465 / 4" | bc)
@@ -594,7 +594,7 @@ INTERMEDIATES += *-$(_processed).md
 	h=$$(echo "$(call pageh,$<) * 100" | bc)
 	podofobox $< $@ media 0 0 $$w $$h
 
-%-cropright.pdf: %.pdf | $$(call parse_bookid,$$@)-$$(call parse_layout,$$@)-$(_geometry).zsh
+%-cropright.pdf: %.pdf | $$(call geometryfile,$$@)
 	source $(filter %-$(_geometry).zsh,$|)
 	t=$$(echo "$(TRIM) * 283.465" | bc)
 	s=$$(echo "$${spinemm} * 283.465 / 4" | bc)
@@ -864,7 +864,7 @@ $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(cal
 		$(call magick_fragment_back) \
 		-composite $@
 
-%-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(subst -$(_binding),,$$*)-$(_geometry).zsh
+%-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(call geometryfile,$$@)
 	source $(filter %-$(_geometry).zsh,$|)
 	$(MAGICK) -density $(HIDPI) $<[2] \
 		-colorspace RGB \
@@ -959,16 +959,23 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 	$(addtosync)
 
 newgeometry = $(shell grep -sq hidpi=$(HIDPI) $1 || echo force)
-geometrybase = $(or $(and $(filter $(_paperback) $(_coil) $(_stapled),$(call parse_binding,$1)),$1.pdf $1-$(_binding)-$(_text).pdf),$(and $(filter $(_hardcover),$(call parse_binding,$1)),$1.pdf $1-$(_jacket)-$(_text).pdf),$1-$(_cover)-$(_text).pdf)
+geometrybase = $(call parse_bookid,$1)-$(call parse_layout,$1).pdf $(_geometry)-$(call parse_papersize,$1).pdf
+geometryfile = $(call parse_bookid,$1)-$(call parse_layout,$1)-$(_geometry).zsh
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
 NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(filter-out $(PAPERBACKS),$(PAPERSIZES)),-$(_geometry).zsh)
 $(NONBOUNDGEOMETRIES): BLEED = $(NOBLEED)
 $(NONBOUNDGEOMETRIES): TRIM = $(NOTRIM)
 
+$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml .casile.lua
+	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
+	$(SILE) $(SILEFLAGS) \
+		-e "papersize = '$(call unlocalize,$*)'" \
+		$< -o $@
+
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_geometry).zsh) $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_geometry).zsh)
-$(GEOMETRIES): %-$(_geometry).zsh: $$(call geometrybase,$$*) $$(call newgeometry,$$@)
+$(GEOMETRIES): %-$(_geometry).zsh: $$(call geometrybase,$$@) $$(call newgeometry,$$@)
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	hidpi=$(HIDPI)
 	lodpi=$(HIDPI)
@@ -992,12 +999,12 @@ $(GEOMETRIES): %-$(_geometry).zsh: $$(call geometrybase,$$*) $$(call newgeometry
 			coverhpt=%[fx:round(h/$(HIDPI)*72)]
 			coverhpp=%[fx:round(h/$(HIDPI)*$(LODPI))]
 			coveraspect=%[fx:w/h]
-		' $(lastword $(filter %.pdf,$^))[0] || echo false)
-	pagecount=$(call pagecount,$(firstword $(filter %.pdf,$^)))
-	spinemm=$(call spinemm,$(firstword $(filter %.pdf,$^)))
-	spinepx=$(call mmtopx,$(call spinemm,$(firstword $(filter %.pdf,$^))))
-	spinepm=$(call mmtopm,$(call spinemm,$(firstword $(filter %.pdf,$^))))
-	spinept=$(call mmtopt,$(call spinemm,$(firstword $(filter %.pdf,$^))))
+		' $(filter $(_geometry)-%.pdf,$^)[0] || echo false)
+	pagecount=$(call pagecount,$(filter %.pdf,$<))
+	spinemm=$(call spinemm,$(filter %.pdf,$<))
+	spinepx=$(call mmtopx,$(call spinemm,$(filter %.pdf,$<)))
+	spinepm=$(call mmtopm,$(call spinemm,$(filter %.pdf,$<)))
+	spinept=$(call mmtopt,$(call spinemm,$(filter %.pdf,$<)))
 	fbwmm=$$(($$coverwmm+$$bleedmm))
 	fbwpx=$$(($$coverwpx+$$bleedpx))
 	fbwpm=$$(($$coverwpm+$$bleedpm))
