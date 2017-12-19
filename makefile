@@ -582,9 +582,9 @@ INTERMEDIATES += *-$(_processed).md
 %-topbottom.pdf: %-set1.pdf %-set2.pdf
 	pdftk A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
 
-%-a4proof.pdf: %-topbottom.pdf
+%-a4proof.pdf: %-topbottom.pdf | $(require_pubdir)
 	pdfjam --nup 1x2 --noautoscale true --paper a4paper --outfile $@ -- $<
-	# pdftk A=$(word 1,$^) B=$(word 2,$^) cat A B output $@
+	$(addtosync)
 
 %-cropleft.pdf: %.pdf | $$(call geometryfile,$$@)
 	source $(filter %-$(_geometry).zsh,$|)
