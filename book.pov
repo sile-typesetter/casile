@@ -134,7 +134,12 @@ light_source {
 					interpolate 2
 				}
 			}
-			scale <0.1,1,1>
+			#if (strcmp(BindingType, "paperback")=0)
+				scale <0.1,1,1>
+			#end
+			#if (strcmp(BindingType, "stapled")=0)
+				scale <2,1,1>
+			#end
 			translate <0,0,(BZ/2)>
 			finish { BookFinish }
 		}
