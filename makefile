@@ -1169,6 +1169,7 @@ $(BOOKSCENESINC): %.inc: %-$(_geometry).zsh %-pov-$(_front).png %-pov-$(_back).p
 		#declare FrontImg = "$(filter %-pov-$(_front).png,$^)";
 		#declare BackImg = "$(filter %-pov-$(_back).png,$^)";
 		#declare SpineImg = "$(filter %-pov-$(_spine).png,$^)";
+		#declare BindingType = "$(call unlocalize,$(call parse_binding,$@))";
 		#declare BookThickness = $$spinemm / $$pagewmm / 2;
 		#declare HalfThick = BookThickness / 2;
 	EOF
