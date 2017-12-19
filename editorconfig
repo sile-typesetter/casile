@@ -9,3 +9,7 @@ indent_size = 2
 [makefile*]
 indent_style = tab
 indent_size = 4
+
+[*.pov]
+indent_style = tab
+indent_size = 2
