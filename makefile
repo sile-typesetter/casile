@@ -588,16 +588,16 @@ INTERMEDIATES += *-$(_processed).md
 
 %-cropleft.pdf: %.pdf | $$(call geometryfile,$$@)
 	source $(filter %-$(_geometry).zsh,$|)
-	t=$$(echo "$(TRIM) * 283.465" | bc)
-	s=$$(echo "$${spinemm} * 283.465 / 4" | bc)
+	t=$$(echo "$${trimpt} * 100" | bc)
+	s=$$(echo "$${spinept} * 100 / 4" | bc)
 	w=$$(echo "$(call pagew,$<) * 100 - $$t + $$s" | bc)
 	h=$$(echo "$(call pageh,$<) * 100" | bc)
 	podofobox $< $@ media 0 0 $$w $$h
 
 %-cropright.pdf: %.pdf | $$(call geometryfile,$$@)
 	source $(filter %-$(_geometry).zsh,$|)
-	t=$$(echo "$(TRIM) * 283.465" | bc)
-	s=$$(echo "$${spinemm} * 283.465 / 4" | bc)
+	t=$$(echo "$${trimpt} * 100" | bc)
+	s=$$(echo "$${spinept} * 100 / 4" | bc)
 	w=$$(echo "$(call pagew,$<) * 100 - $$t + $$s" | bc)
 	h=$$(echo "$(call pageh,$<) * 100" | bc)
 	podofobox $< $@ media $$(($$t-$$s)) 0 $$w $$h
@@ -605,8 +605,9 @@ INTERMEDIATES += *-$(_processed).md
 %-$(_spineless).pdf: %-$(_odd)-cropright.pdf %-$(_even)-cropleft.pdf
 	pdftk A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
 
-%-$(_cropped).pdf: %.pdf | $(require_pubdir)
-	t=$$(echo "$(TRIM) * 283.465" | bc)
+%-$(_cropped).pdf: %.pdf | $$(call geometryfile,$$@) $(require_pubdir)
+	source $(filter %-$(_geometry).zsh,$|)
+	t=$$(echo "$${trimpt} * 100" | bc)
 	w=$$(echo "$(call pagew,$<) * 100 - $$t * 2" | bc)
 	h=$$(echo "$(call pageh,$<) * 100 - $$t * 2" | bc)
 	podofobox $< $@ media $$t $$t $$w $$h
