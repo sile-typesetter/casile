@@ -964,7 +964,7 @@ geometrybase = $(call parse_bookid,$1)-$(call parse_layout,$1).pdf $(_geometry)-
 geometryfile = $(call parse_bookid,$1)-$(call parse_layout,$1)-$(_geometry).zsh
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
-NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(filter $(_print),$(PAPERSIZES)),$(BINDINGS),-$(_geometry).zsh)
+NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(_print) $(DISPLAYS) $(PLACARDS),-$(_geometry).zsh)
 $(NONBOUNDGEOMETRIES): BLEED = $(NOBLEED)
 $(NONBOUNDGEOMETRIES): TRIM = $(NOTRIM)
 
