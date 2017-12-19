@@ -254,7 +254,7 @@ $(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(TARGETS),%,-$(_p
 	source $(filter %-$(_geometry).zsh,$^)
 	$(MAGICK) montage \
 		$(filter %.png,$^) \
-		-geometry $${coverwpm}x$${coverhpm}+0+0 \
+		-geometry $${pagewpm}x$${pagehpm}+0+0 \
 		$@
 
 .PHONY: clean
@@ -756,19 +756,19 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 	source $*-$(_geometry).zsh
 	$(if $(filter %.png,$(call git_background,$@)),true,false) && $(MAGICK) $(filter %.png,$^) \
 		-gravity $(COVERGRAVITY) \
-		-extent  "%[fx:w/h>=$${coveraspect}?h*$${coveraspect}:w]x" \
-		-extent "x%[fx:w/h<=$${coveraspect}?w/$${coveraspect}:h]" \
-		-resize $${coverwpx}x$${coverhpx} \
+		-extent  "%[fx:w/h>=$${pageaspect}?h*$${pageaspect}:w]x" \
+		-extent "x%[fx:w/h<=$${pageaspect}?w/$${pageaspect}:h]" \
+		-resize $${pagewpx}x$${pagehpx} \
 		$(call magick_background_filter) \
 		$@ ||:
 	$(if $(filter %.png,$(call git_background,$@)),false,true) && $(MAGICK) \
-		-size $${coverwpx}x$${coverhpx}^ $(call magick_zemin_kapak) -composite \
+		-size $${pagewpx}x$${pagehpx}^ $(call magick_background_cover) -composite \
 		$@ ||:
 
 %-$(_poster).png: %-$(_cover).png %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
 	$(MAGICK) $< \
-		-resize $${coverwpp}x$${coverhpp}^ \
+		-resize $${pagewpp}x$${pagehpp}^ \
 		$(and $(filter epub,$(call parse_papersize,$@)),-resize 1000x1600^) \
 		$@
 
@@ -777,7 +777,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 	@$(MAGICK) $< \
 		\( -background none \
 			-gravity Center \
-			-size $${coverwpx}x$${coverhpx} \
+			-size $${pagewpx}x$${pagehpx} \
 			xc: \
 			$(call magick_cover) \
 		\) -compose Overlay -composite \
@@ -913,9 +913,9 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
 		$(or $(and $(call git_background,$*-$(_cover)-$(_background).png),$(call git_background,$*-$(_cover)-$(_background).png) -resize $${imgwpx}x$${imghpx}!),$(call magick_background_binding)) \
 		$(call magick_border) \
-		\( -gravity East -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_front) -splice $${bleedpx}x \) -compose Overlay -composite \
-		\( -gravity West -size $${coverwpx}x$${coverhpx} -background none xc: $(call magick_back) -splice $${bleedpx}x \) -compose Overlay -composite \
-		\( -gravity Center -size $${spinepx}x$${coverhpx} -background none xc: $(call magick_spine) \) -compose Overlay -composite \
+		\( -gravity East -size $${pagewpx}x$${pagehpx} -background none xc: $(call magick_front) -splice $${bleedpx}x \) -compose Overlay -composite \
+		\( -gravity West -size $${pagewpx}x$${pagehpx} -background none xc: $(call magick_back) -splice $${bleedpx}x \) -compose Overlay -composite \
+		\( -gravity Center -size $${spinepx}x$${pagehpx} -background none xc: $(call magick_spine) \) -compose Overlay -composite \
 		\( -gravity East $(filter %-$(_front).png,$^) -splice $${bleedpx}x -write mpr:text-front \) -compose Over -composite \
 		\( -gravity West $(filter %-$(_back).png,$^) -splice $${bleedpx}x -write mpr:text-front \) -compose Over -composite \
 		\( -gravity Center $(filter %-$(_spine).png,$^) -write mpr:text-front \) -compose Over -composite \
@@ -936,15 +936,15 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 	perl -pne "
 			s#IMG#$(filter %.png,$^)#g;
 			s#VER#$${ver}#g;
-			s#CANVASX#$${ciltwmm}mm#g;
-			s#CANVASY#$${coverhmm}mm#g;
+			s#CANVASX#$${bindingwmm}mm#g;
+			s#CANVASY#$${pagehmm}mm#g;
 			s#IMW#$${imgwpm}#g;
 			s#IMH#$${imghpm}#g;
-			s#WWW#$${ciltwpm}#g;
-			s#HHH#$${coverhpm}#g;
+			s#WWW#$${bindingwpm}#g;
+			s#HHH#$${pagehpm}#g;
 			s#BLEED#$${bleedpm}#g;
 			s#TRIM#$${trimpm}#g;
-			s#CW#$${coverwpm}#g;
+			s#CW#$${pagewpm}#g;
 			s#SW#$${spinepm}#g;
 		" $< > $@
 
@@ -988,57 +988,57 @@ $(GEOMETRIES): %-$(_geometry).zsh: $$(call geometrybase,$$@) $$(call newgeometry
 	trimpm=$(call mmtopm,$(TRIM))
 	trimpt=$(call mmtopt,$(TRIM))
 	$(shell $(IDENTIFY) -density $(HIDPI) -format '
-			coverwmm=%[fx:round(w/$(HIDPI)*25.399986)]
-			coverwpx=%[fx:w]
-			coverwpm=%[fx:round(w/$(HIDPI)*90)]
-			coverwpt=%[fx:round(w/$(HIDPI)*72)]
-			coverwpp=%[fx:round(w/$(HIDPI)*$(LODPI))]
-			coverhmm=%[fx:round(h/$(HIDPI)*25.399986)]
-			coverhpx=%[fx:h]
-			coverhpm=%[fx:round(h/$(HIDPI)*90)]
-			coverhpt=%[fx:round(h/$(HIDPI)*72)]
-			coverhpp=%[fx:round(h/$(HIDPI)*$(LODPI))]
-			coveraspect=%[fx:w/h]
+			pagewmm=%[fx:round(w/$(HIDPI)*25.399986)]
+			pagewpx=%[fx:w]
+			pagewpm=%[fx:round(w/$(HIDPI)*90)]
+			pagewpt=%[fx:round(w/$(HIDPI)*72)]
+			pagewpp=%[fx:round(w/$(HIDPI)*$(LODPI))]
+			pagehmm=%[fx:round(h/$(HIDPI)*25.399986)]
+			pagehpx=%[fx:h]
+			pagehpm=%[fx:round(h/$(HIDPI)*90)]
+			pagehpt=%[fx:round(h/$(HIDPI)*72)]
+			pagehpp=%[fx:round(h/$(HIDPI)*$(LODPI))]
+			pageaspect=%[fx:w/h]
 		' $(filter $(_geometry)-%.pdf,$^)[0] || echo false)
 	pagecount=$(call pagecount,$(filter %.pdf,$<))
 	spinemm=$(call spinemm,$(filter %.pdf,$<))
 	spinepx=$(call mmtopx,$(call spinemm,$(filter %.pdf,$<)))
 	spinepm=$(call mmtopm,$(call spinemm,$(filter %.pdf,$<)))
 	spinept=$(call mmtopt,$(call spinemm,$(filter %.pdf,$<)))
-	fbwmm=$$(($$coverwmm+$$bleedmm))
-	fbwpx=$$(($$coverwpx+$$bleedpx))
-	fbwpm=$$(($$coverwpm+$$bleedpm))
-	fbwpt=$$(($$coverwpt+$$bleedpt))
-	ftwmm=$$(($$coverwmm+$$trimmm*2))
-	ftwpx=$$(($$coverwpx+$$trimpx*2))
-	ftwpm=$$(($$coverwpm+$$trimpm*2))
-	ftwpt=$$(($$coverwpt+$$trimpt*2))
-	fthmm=$$(($$coverhmm+$$trimmm*2))
-	fthpx=$$(($$coverhpx+$$trimpx*2))
-	fthpm=$$(($$coverhpm+$$trimpm*2))
-	fthpt=$$(($$coverhpt+$$trimpt*2))
-	ciltwmm=$$(($$coverwmm+$$spinemm+$$coverwmm))
-	ciltwpx=$$(($$coverwpx+$$spinepx+$$coverwpx))
-	ciltwpm=$$(($$coverwpm+$$spinepm+$$coverwpm))
-	ciltwpt=$$(($$coverwpt+$$spinept+$$coverwpt))
-	imgwmm=$$(($$ciltwmm+$$bleedmm*2))
-	imgwpx=$$(($$ciltwpx+$$bleedpx*2))
-	imgwpm=$$(($$ciltwpm+$$bleedpm*2))
-	imgwpt=$$(($$ciltwpt+$$bleedpt*2))
-	imghmm=$$(($$coverhmm+$$bleedmm*2))
-	imghpx=$$(($$coverhpx+$$bleedpx*2))
-	imghpm=$$(($$coverhpm+$$bleedpm*2))
-	imghpt=$$(($$coverhpt+$$bleedpt*2))
+	fbwmm=$$(($$pagewmm+$$bleedmm))
+	fbwpx=$$(($$pagewpx+$$bleedpx))
+	fbwpm=$$(($$pagewpm+$$bleedpm))
+	fbwpt=$$(($$pagewpt+$$bleedpt))
+	ftwmm=$$(($$pagewmm+$$trimmm*2))
+	ftwpx=$$(($$pagewpx+$$trimpx*2))
+	ftwpm=$$(($$pagewpm+$$trimpm*2))
+	ftwpt=$$(($$pagewpt+$$trimpt*2))
+	fthmm=$$(($$pagehmm+$$trimmm*2))
+	fthpx=$$(($$pagehpx+$$trimpx*2))
+	fthpm=$$(($$pagehpm+$$trimpm*2))
+	fthpt=$$(($$pagehpt+$$trimpt*2))
+	bindingwmm=$$(($$pagewmm+$$spinemm+$$pagewmm))
+	bindingwpx=$$(($$pagewpx+$$spinepx+$$pagewpx))
+	bindingwpm=$$(($$pagewpm+$$spinepm+$$pagewpm))
+	bindingwpt=$$(($$pagewpt+$$spinept+$$pagewpt))
+	imgwmm=$$(($$bindingwmm+$$bleedmm*2))
+	imgwpx=$$(($$bindingwpx+$$bleedpx*2))
+	imgwpm=$$(($$bindingwpm+$$bleedpm*2))
+	imgwpt=$$(($$bindingwpt+$$bleedpt*2))
+	imghmm=$$(($$pagehmm+$$bleedmm*2))
+	imghpx=$$(($$pagehpx+$$bleedpx*2))
+	imghpm=$$(($$pagehpm+$$bleedpm*2))
+	imghpt=$$(($$pagehpt+$$bleedpt*2))
 
-define magick_zemin_kapak
-	$(call magick_zemin)
+define magick_background_cover
+	$(call magick_background)
 endef
 
 define magick_background_binding
-	$(call magick_zemin)
+	$(call magick_background)
 endef
 
-define magick_zemin
+define magick_background
 	xc:DarkGray
 endef
 
@@ -1050,7 +1050,7 @@ define magick_border
 	-fill none -strokewidth 1 \
 	$(shell $(DRAFT) && echo -n '-stroke gray50' || echo -n '-stroke transparent') \
 	-draw "rectangle $$bleedpx,$$bleedpx %[fx:w-$$bleedpx],%[fx:h-$$bleedpx]" \
-	-draw "rectangle %[fx:$$bleedpx+$$coverwpx],$$bleedpx %[fx:w-$$bleedpx-$$coverwpx],%[fx:h-$$bleedpx]"
+	-draw "rectangle %[fx:$$bleedpx+$$pagewpx],$$bleedpx %[fx:w-$$bleedpx-$$pagewpx],%[fx:h-$$bleedpx]"
 endef
 
 define magick_emblum
@@ -1073,7 +1073,7 @@ define magick_logo
 		-channel RGB -negate \
 		-level 20%,60%!  \
 		-resize $(call mmtopx,30)x \
-		-splice %[fx:$$bleedpx+$$coverwpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
+		-splice %[fx:$$bleedpx+$$pagewpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
 	\) -compose Screen -composite
 endef
 
@@ -1085,13 +1085,13 @@ define magick_barcode
 		-bordercolor white \
 		-border $(call mmtopx,2) \
 		-background none \
-		-splice %[fx:$$bleedpx+$$coverwpx+$$spinepx+$$coverwpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
+		-splice %[fx:$$bleedpx+$$pagewpx+$$spinepx+$$pagewpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
 	\) -compose Over -composite
 endef
 
 define magick_crease
 	-stroke gray95 -strokewidth $(call mmtopx,0.5) \
-	\( -size $${coverwpx}x$${coverhpx} -background none xc: -draw "line %[fx:$1$(call mmtopx,8)],0 %[fx:$1$(call mmtopx,8)],$${coverhpx}" -blur 0x$(call scale,$(call mmtopx,0.2)) -level 0x40%! \) \
+	\( -size $${pagewpx}x$${pagehpx} -background none xc: -draw "line %[fx:$1$(call mmtopx,8)],0 %[fx:$1$(call mmtopx,8)],$${pagehpx}" -blur 0x$(call scale,$(call mmtopx,0.2)) -level 0x40%! \) \
 	-compose ModulusAdd -composite
 endef
 
@@ -1119,20 +1119,20 @@ endef
 
 %-$(_binding)-$(_front).png: %-$(_binding).png %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
-	$(MAGICK) $< -gravity East -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
+	$(MAGICK) $< -gravity East -crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! $@
 
 %-$(_binding)-$(_back).png: %-$(_binding).png %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
-	$(MAGICK) $< -gravity West -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! $@
+	$(MAGICK) $< -gravity West -crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! $@
 
 %-$(_binding)-$(_spine).png: %-$(_binding).png %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
-	$(MAGICK) $< -gravity Center -crop $${spinepx}x$${coverhpx}+0+0! $@
+	$(MAGICK) $< -gravity Center -crop $${spinepx}x$${pagehpx}+0+0! $@
 
 %-pov-$(_front).png: %-$(_binding)-printcolor.png %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
 	$(MAGICK) $< \
-		-gravity East -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! \
+		-gravity East -crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! \
 		$(call magick_emulateprint) \
 		$(call magick_crease,0+) \
 		$(call magick_fray) \
@@ -1141,7 +1141,7 @@ endef
 %-pov-$(_back).png: %-$(_binding)-printcolor.png %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
 	$(MAGICK) $< \
-		-gravity West -crop $${coverwpx}x$${coverhpx}+$${bleedpx}+0! \
+		-gravity West -crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! \
 		$(call magick_emulateprint) \
 		$(call magick_crease,w-) \
 		$(call magick_fray) \
@@ -1150,7 +1150,7 @@ endef
 %-pov-$(_spine).png: %-$(_binding)-printcolor.png %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
 	$(MAGICK) $< \
-		-gravity Center -crop $${spinepx}x$${coverhpx}+0+0! \
+		-gravity Center -crop $${spinepx}x$${pagehpx}+0+0! \
 		-gravity Center \
 		-extent 200%x100% \
 		$(call magick_emulateprint) \
@@ -1160,15 +1160,15 @@ BOOKSCENESINC = $(call pattern_list,$(TARGETS),$(RENDERED),.inc)
 $(BOOKSCENESINC): %.inc: %-$(_geometry).zsh %-pov-$(_front).png %-pov-$(_back).png %-pov-$(_spine).png
 	source $*-$(_geometry).zsh
 	cat <<- EOF > $@
-		#declare CoverWMM = $$coverwmm;
-		#declare CoverHMM = $$coverhmm;
+		#declare CoverWMM = $$pagewmm;
+		#declare CoverHMM = $$pagehmm;
 		#declare SpineMM = $$spinemm;
-		#declare CoverHWX = $$coverwmm;
-		#declare CoverHPX = $$coverhmm;
+		#declare CoverHWX = $$pagewmm;
+		#declare CoverHPX = $$pagehmm;
 		#declare FrontImg = "$(filter %-pov-$(_front).png,$^)";
 		#declare BackImg = "$(filter %-pov-$(_back).png,$^)";
 		#declare SpineImg = "$(filter %-pov-$(_spine).png,$^)";
-		#declare BookThickness = $$spinemm / $$coverwmm / 2;
+		#declare BookThickness = $$spinemm / $$pagewmm / 2;
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
@@ -1178,9 +1178,9 @@ $(BOOKSCENES): %-$(_3d).pov: %-$(_geometry).zsh %.inc
 	cat <<- EOF > $@
 		#declare DefaultBook = "$(filter %.inc,$^)";
 		#declare Lights = $(call scale,8,2);
-		#declare OutputAspect = $$coverwmm / $$coverhmm;
-		#declare BookAspect = $$coverwmm / $$coverhmm;
-		#declare BookThickness = $$spinemm / $$coverwmm / 2;
+		#declare OutputAspect = $$pagewmm / $$pagehmm;
+		#declare BookAspect = $$pagewmm / $$pagehmm;
+		#declare BookThickness = $$spinemm / $$pagewmm / 2;
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
