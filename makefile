@@ -37,6 +37,7 @@ TRIM ?= 10
 NOBLEED ?= 0
 NOTRIM ?= 0
 PAPERWEIGHT ?= 60
+STAPLECOUNT ?= 2
 COVERGRAVITY ?= Center
 SCENELIGHT ?= rgb<1,1,1>
 
@@ -1165,6 +1166,7 @@ $(BOOKSCENESINC): %.inc: %-$(_geometry).zsh %-pov-$(_front).png %-pov-$(_back).p
 		#declare BackImg = "$(filter %-pov-$(_back).png,$^)";
 		#declare SpineImg = "$(filter %-pov-$(_spine).png,$^)";
 		#declare BindingType = "$(call unlocalize,$(call parse_binding,$@))";
+		#declare StapleCount = $(STAPLECOUNT);
 		#declare BookThickness = $$spinemm / $$pagewmm / 2;
 		#declare HalfThick = BookThickness / 2;
 	EOF
@@ -1179,6 +1181,7 @@ $(BOOKSCENES): %-$(_3d).pov: %-$(_geometry).zsh %.inc
 		#declare BookAspect = $$pagewmm / $$pagehmm;
 		#declare BookThickness = $$spinemm / $$pagewmm / 2;
 		#declare HalfThick = BookThickness / 2;
+		#declare toMM = 1 / $$pagehmm;
 	EOF
 
 ifneq ($(TARGETS),$(PROJECT))

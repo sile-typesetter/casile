@@ -27,6 +27,7 @@ global_settings {
 #declare PaperInset = 0.0001;
 #declare BX = 1 * BookAspect;
 #declare BY = 1;
+#declare StapleMM = 13;
 
 #declare PaperPigment = pigment {
 	gradient <0,1,0>
@@ -147,6 +148,26 @@ light_source {
 			<0,-0.001,0> <1,1.001,BZ>
 		}
 	}
+
+	#macro Staple ()
+		box {
+			<-BZ-(0.25*toMM),0,BZ/2-(0.25*toMM)> <0,StapleMM*toMM,BZ/2+(0.25*toMM)>
+			pigment {
+				color rgb<0.88,0.87,0.86>
+			}
+		}
+	#end
+
+	#if (strcmp(BindingType, "stapled")=0)
+		#declare StapleSpacing = (1 / StapleCount);
+		#for (i, 1, StapleCount)
+			union {
+				Staple()
+				translate <0,StapleSpacing/2 - StapleMM*toMM/2,0>
+				translate <0,StapleSpacing*(i-1),0>
+			}
+		#end
+	#end
 
 	// dimensions of pages
 	#declare Paper = object {
