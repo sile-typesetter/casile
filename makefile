@@ -750,7 +750,7 @@ define skip_if_lazy
 	$(LAZY) && $(if $(filter $1,$(MAKECMDGOALS)),false,true) && test -f $1 && { touch $1; exit 0 } ||:
 endef
 
-COVERBACKGROUNDS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_cover)-$(_background).png)
+COVERBACKGROUNDS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_cover)-$(_background).png)
 git_background = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
 $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@) %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
@@ -963,7 +963,7 @@ geometrybase = $(call parse_bookid,$1)-$(call parse_layout,$1).pdf $(_geometry)-
 geometryfile = $(call parse_bookid,$1)-$(call parse_layout,$1)-$(_geometry).zsh
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
-NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(filter-out $(PAPERBACKS),$(PAPERSIZES)),-$(_geometry).zsh)
+NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(filter $(_print),$(PAPERSIZES)),$(BINDINGS),-$(_geometry).zsh)
 $(NONBOUNDGEOMETRIES): BLEED = $(NOBLEED)
 $(NONBOUNDGEOMETRIES): TRIM = $(NOTRIM)
 
@@ -974,7 +974,7 @@ $(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml .casile.lua
 		$< -o $@
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
-GEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_geometry).zsh) $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_geometry).zsh)
+GEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_geometry).zsh)
 $(GEOMETRIES): %-$(_geometry).zsh: $$(call geometrybase,$$@) $$(call newgeometry,$$@)
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	hidpi=$(HIDPI)
