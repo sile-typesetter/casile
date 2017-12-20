@@ -252,7 +252,7 @@ series_promotionals: $(PROJECT)-epub-$(_poster)-$(_montage).jpg $(PROJECT)-$(_sq
 series_renderings: $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3d)-$(_montage).jpg)
 
 $(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(TARGETS),%,-$(_poster).png) $(firstword $(TARGETS))-%-$(_geometry).zsh
-	source $(filter %-$(_geometry).zsh,$^)
+	$(sourcegeometry)
 	$(MAGICK) montage \
 		$(filter %.png,$^) \
 		-geometry $${pagewpm}x$${pagehpm}+0+0 \
@@ -588,7 +588,7 @@ INTERMEDIATES += *-$(_processed).md
 	$(addtosync)
 
 %-cropleft.pdf: %.pdf | $$(call geometryfile,$$@)
-	source $(filter %-$(_geometry).zsh,$|)
+	$(sourcegeometry)
 	t=$$(echo "$${trimpt} * 100" | bc)
 	s=$$(echo "$${spinept} * 100 / 4" | bc)
 	w=$$(echo "$(call pagew,$<) * 100 - $$t + $$s" | bc)
@@ -596,7 +596,7 @@ INTERMEDIATES += *-$(_processed).md
 	podofobox $< $@ media 0 0 $$w $$h
 
 %-cropright.pdf: %.pdf | $$(call geometryfile,$$@)
-	source $(filter %-$(_geometry).zsh,$|)
+	$(sourcegeometry)
 	t=$$(echo "$${trimpt} * 100" | bc)
 	s=$$(echo "$${spinept} * 100 / 4" | bc)
 	w=$$(echo "$(call pagew,$<) * 100 - $$t + $$s" | bc)
@@ -607,7 +607,7 @@ INTERMEDIATES += *-$(_processed).md
 	pdftk A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
 
 %-$(_cropped).pdf: %.pdf | $$(call geometryfile,$$@) $(require_pubdir)
-	source $(filter %-$(_geometry).zsh,$|)
+	$(sourcegeometry)
 	t=$$(echo "$${trimpt} * 100" | bc)
 	w=$$(echo "$(call pagew,$<) * 100 - $$t * 2" | bc)
 	h=$$(echo "$(call pageh,$<) * 100 - $$t * 2" | bc)
@@ -754,8 +754,8 @@ endef
 
 COVERBACKGROUNDS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_cover)-$(_background).png)
 git_background = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
-$(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@) %-$(_geometry).zsh
-	source $*-$(_geometry).zsh
+$(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@) $$(call geometryfile,$$@)
+	$(sourcegeometry)
 	$(if $(filter %.png,$(call git_background,$@)),true,false) && $(MAGICK) $(filter %.png,$^) \
 		-gravity $(COVERGRAVITY) \
 		-extent  "%[fx:w/h>=$${pageaspect}?h*$${pageaspect}:w]x" \
@@ -767,15 +767,15 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		-size $${pagewpx}x$${pagehpx}^ $(call magick_background_cover) -composite \
 		$@ ||:
 
-%-$(_poster).png: %-$(_cover).png %-$(_geometry).zsh
-	source $*-$(_geometry).zsh
+%-$(_poster).png: %-$(_cover).png $$(call geometryfile,$$@)
+	$(sourcegeometry)
 	$(MAGICK) $< \
 		-resize $${pagewpp}x$${pagehpp}^ \
 		$(and $(filter epub,$(call parse_papersize,$@)),-resize 1000x1600^) \
 		$@
 
-%-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_fragment).png %-$(_geometry).zsh
-	source $*-$(_geometry).zsh
+%-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_fragment).png $$(call geometryfile,$$@)
+	$(sourcegeometry)
 	@$(MAGICK) $< \
 		\( -background none \
 			-gravity Center \
@@ -827,11 +827,11 @@ define magick_cover
 		\) -composite
 endef
 
-%-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf %-$(_geometry).zsh
+%-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf $$(call geometryfile,$$@)
 	$(COVERS) || exit 0
 	text=$$(mktemp kapakXXXXXX.pdf)
 	bg=$$(mktemp kapakXXXXXX.pdf)
-	source $*-$(_geometry).zsh
+	$(sourcegeometry)
 	$(MAGICK) $< \
 		-density $(LODPI) \
 		-compress jpeg \
@@ -867,7 +867,7 @@ $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(cal
 		-composite $@
 
 %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(call geometryfile,$$@)
-	source $(filter %-$(_geometry).zsh,$|)
+	$(sourcegeometry)
 	$(MAGICK) -density $(HIDPI) $<[2] \
 		-colorspace RGB \
 		-crop $${spinepx}x+0+0 \
@@ -910,8 +910,8 @@ publisher_logo-grey.svg: $(PUBLISHERLOGO)
 	cp $< $@
 
 BINDINGIMAGES = $(call pattern_list,$(TARGETS),$(filter-out %-$(_print),$(LAYOUTS)),-$(_binding).png)
-$(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png $$(basename $$@)-$(_fragment)-$(_back).png $$(basename $$@)-$(_fragment)-$(_spine).png $$(call parse_bookid,$$@)-$(_barcode).png publisher_emblum.svg publisher_logo.svg %-$(_geometry).zsh
-	source $*-$(_geometry).zsh
+$(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png $$(basename $$@)-$(_fragment)-$(_back).png $$(basename $$@)-$(_fragment)-$(_spine).png $$(call parse_bookid,$$@)-$(_barcode).png publisher_emblum.svg publisher_logo.svg $$(call geometryfile,$$@)
+	$(sourcegeometry)
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
 		$(or $(and $(call git_background,$*-$(_cover)-$(_background).png),$(call git_background,$*-$(_cover)-$(_background).png) -resize $${imgwpx}x$${imghpx}!),$(call magick_background_binding)) \
 		$(call magick_border) \
@@ -932,8 +932,8 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 %-printcolor.png: %.png
 	$(MAGICK) $< $(call magick_printcolor) $@
 
-%-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printcolor.png %-$(_geometry).zsh
-	source $*-$(_geometry).zsh
+%-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printcolor.png $$(call geometryfile,$$@)
+	$(sourcegeometry)
 	ver=$(subst @,\\@,$(call versioninfo,$@))
 	perl -pne "
 			s#IMG#$(filter %.png,$^)#g;
@@ -950,8 +950,8 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 			s#SW#$${spinepm}#g;
 		" $< > $@
 
-%-$(_binding).pdf: %-$(_binding).svg %-$(_geometry).zsh | $(require_pubdir)
-	source $*-$(_geometry).zsh
+%-$(_binding).pdf: %-$(_binding).svg $$(call geometryfile,$$@) | $(require_pubdir)
+	$(sourcegeometry)
 	$(INKSCAPE) --without-gui \
 		--export-dpi=$$hidpi \
 		--export-area-page \
@@ -963,6 +963,7 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 newgeometry = $(shell grep -sq hidpi=$(HIDPI) $1 || echo force)
 geometrybase = $(call parse_bookid,$1)-$(call parse_layout,$1).pdf $(_geometry)-$(call parse_papersize,$1).pdf
 geometryfile = $(call parse_bookid,$1)-$(call parse_layout,$1)-$(_geometry).zsh
+sourcegeometry = source $(filter %-$(_geometry).zsh,$^ $|)
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
 NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(_print) $(DISPLAYS) $(PLACARDS),-$(_geometry).zsh)
@@ -1121,16 +1122,16 @@ define magick_printcolor
 	+level 0%,110%,0.7
 endef
 
-%-$(_binding)-$(_front).png: %-$(_binding).png %-$(_geometry).zsh
-	source $*-$(_geometry).zsh
+%-$(_binding)-$(_front).png: %-$(_binding).png $$(call geometryfile,$$@)
+	$(sourcegeometry)
 	$(MAGICK) $< -gravity East -crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! $@
 
-%-$(_binding)-$(_back).png: %-$(_binding).png %-$(_geometry).zsh
-	source $*-$(_geometry).zsh
+%-$(_binding)-$(_back).png: %-$(_binding).png $$(call geometryfile,$$@)
+	$(sourcegeometry)
 	$(MAGICK) $< -gravity West -crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! $@
 
-%-$(_binding)-$(_spine).png: %-$(_binding).png %-$(_geometry).zsh
-	source $*-$(_geometry).zsh
+%-$(_binding)-$(_spine).png: %-$(_binding).png $$(call geometryfile,$$@)
+	$(sourcegeometry)
 	$(MAGICK) $< -gravity Center -crop $${spinepx}x$${pagehpx}+0+0! $@
 
 define pagetopng =
@@ -1144,19 +1145,19 @@ define pagetopng =
 endef
 
 %-$(_print)-pov-$(_front).png: %-$(_print).pdf $$(call geometryfile,$$@)
-	source $(filter %-$(_geometry).zsh,$^)
+	$(sourcegeometry)
 	$(call pagetopng,1)
 
 %-$(_print)-pov-$(_back).png: %-$(_print).pdf $$(call geometryfile,$$@)
-	source $(filter %-$(_geometry).zsh,$^)
+	$(sourcegeometry)
 	$(call pagetopng,$(call pagecount,$<))
 
 %-$(_print)-pov-$(_spine).png: $$(call geometryfile,$$@)
-	source $(filter %-$(_geometry).zsh,$^)
+	$(sourcegeometry)
 	$(MAGICK) -size $${pagewpx}x$${pagehpx} xc:none $@
 
-%-pov-$(_front).png: %-$(_binding)-printcolor.png %-$(_geometry).zsh
-	source $*-$(_geometry).zsh
+%-pov-$(_front).png: %-$(_binding)-printcolor.png $$(call geometryfile,$$@)
+	$(sourcegeometry)
 	$(MAGICK) $< \
 		-gravity East -crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! \
 		$(call magick_emulateprint) \
@@ -1164,8 +1165,8 @@ endef
 		$(call magick_fray) \
 		$@
 
-%-pov-$(_back).png: %-$(_binding)-printcolor.png %-$(_geometry).zsh
-	source $*-$(_geometry).zsh
+%-pov-$(_back).png: %-$(_binding)-printcolor.png $$(call geometryfile,$$@)
+	$(sourcegeometry)
 	$(MAGICK) $< \
 		-gravity West -crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! \
 		$(call magick_emulateprint) \
@@ -1173,8 +1174,8 @@ endef
 		$(call magick_fray) \
 		$@
 
-%-pov-$(_spine).png: %-$(_binding)-printcolor.png %-$(_geometry).zsh
-	source $*-$(_geometry).zsh
+%-pov-$(_spine).png: %-$(_binding)-printcolor.png $$(call geometryfile,$$@)
+	$(sourcegeometry)
 	$(MAGICK) $< \
 		-gravity Center -crop $${spinepx}x$${pagehpx}+0+0! \
 		-gravity Center \
@@ -1183,8 +1184,8 @@ endef
 		$@
 
 BOOKSCENESINC = $(call pattern_list,$(TARGETS),$(RENDERED),.inc)
-$(BOOKSCENESINC): %.inc: %-$(_geometry).zsh %-pov-$(_front).png %-pov-$(_back).png %-pov-$(_spine).png
-	source $*-$(_geometry).zsh
+$(BOOKSCENESINC): %.inc: $$(call geometryfile,$$@) %-pov-$(_front).png %-pov-$(_back).png %-pov-$(_spine).png
+	$(sourcegeometry)
 	cat <<- EOF > $@
 		#declare FrontImg = "$(filter %-pov-$(_front).png,$^)";
 		#declare BackImg = "$(filter %-pov-$(_back).png,$^)";
@@ -1196,8 +1197,8 @@ $(BOOKSCENESINC): %.inc: %-$(_geometry).zsh %-pov-$(_front).png %-pov-$(_back).p
 	EOF
 
 BOOKSCENES = $(call pattern_list,$(TARGETS),$(RENDERED),-$(_3d).pov)
-$(BOOKSCENES): %-$(_3d).pov: %-$(_geometry).zsh %.inc
-	source $*-$(_geometry).zsh
+$(BOOKSCENES): %-$(_3d).pov: $$(call geometryfile,$$@) %.inc
+	$(sourcegeometry)
 	cat <<- EOF > $@
 		#declare DefaultBook = "$(filter %.inc,$^)";
 		#declare Lights = $(call scale,8,2);
