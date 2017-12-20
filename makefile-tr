@@ -37,3 +37,5 @@ _odd := tek
 _even := cift
 _spineless := sirtsiz
 _imprint := kunye
+_page := sayfa
+_end := son
