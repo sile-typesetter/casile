@@ -969,6 +969,8 @@ NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(_print) $(DI
 $(NONBOUNDGEOMETRIES): BLEED = $(NOBLEED)
 $(NONBOUNDGEOMETRIES): TRIM = $(NOTRIM)
 
+$(IGNORES) += $(_geometry)-*.pdf
+
 $(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml .casile.lua
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) $(SILEFLAGS) \
