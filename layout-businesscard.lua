@@ -2,7 +2,7 @@ CASILE.layout = "businesscard"
 
 local class = SILE.documentState.documentClass
 
-SILE.documentState.paperSize = SILE.paperSizeParser("80mm x 50mm")
+SILE.documentState.paperSize = SILE.paperSizeParser("84mm x 52mm")
 SILE.documentState.orgPaperSize = SILE.documentState.paperSize
 
 class:defineMaster({
