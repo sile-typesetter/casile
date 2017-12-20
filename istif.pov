@@ -2,17 +2,18 @@
 
 #macro Scene ()
 
-#declare Count = 0.5 / BookThickness;
+#declare Count = BX / BookThickness;
 
 camera {
-	location < -BX*2.5, BY*3, -BY*3.5 >
+	location < -(BX+BY)*1.25, (BX+BY)*1.75, -(BX+BY)*2.5 >
 	angle 35
-	look_at < -BX/4, BY/2, 0 >
+	look_at < 0, BY/2, 0 >
 }
 
+// Uprights in the background
 union {
 	#declare i = 0;
-	#while(i < Count * 2)
+	#while(i < Count*1.5)
 		union {
 			Book(DefaultBook)
 			translate < BZ, 0, -BZ >
@@ -23,40 +24,47 @@ union {
 	#end
 }
 
+// Forward facing leaning stack
 union {
 	#declare i = 0;
-	#while(i < Count + 1)
+	#while(i < Count/4+1)
 		union {
 			Book(DefaultBook)
-			translate < 0, -BY, -BZ*2 >
+			translate < 0, -1, BookThickness >
 			rotate < 15, 0, 0 >
-			translate < -BZ/3*i, BY-BZ, -BZ*i >
-			// translate <0+i*.02,0,-i*bookthickness>
+			translate < 0, .96+(BookThickness*.52), -BookThickness-.26 >
+			// translate < -BZ/3*i, BY-BZ, -BZ*i >
+			translate <0+i*.01,0,-BookThickness*i>
 		}
 		#declare i = i + 1;
 	#end
-	translate < BZ, 0, 0 >
-	rotate < 0, 20, 0 >
+	// translate < 0, 0, .29 >
+	translate < min(BX/10,BookThickness*10), 0, 0 >
+	rotate < 0, 15, 0 >
 }
 
+// Twisted flat stack on the left
 union {
 	#declare i = 0;
-	#while(i < Count)
+	#while(i < Count/2-1)
 		union {
-			#if(i < 5)
-				Book(DefaultBook)
-			#else
+			#if(i+1 >= Count/2-1)
 				BookFlip(DefaultBook)
+			#else
+				Book(DefaultBook)
 			#end
 			rotate < 90, 0, 0 >
-			translate < -BX, BZ, 0 >
-			rotate < 0, 8*i, 0 >
-			translate < -BX*i/10, BZ*i, 0 >
+			translate < -BX/2, BZ, -BY/2 >
+			rotate < 0, (30/Count)*i, 0 >
+			#if(i+1 >= Count/2-1)
+			rotate < 0, 10, 0 >
+			#end
+			translate < -BX/1.5, BZ*i, -BY/2 >
 		}
 		#declare i = i + 1;
 	#end
-	rotate < 0, -25, 0 >
-	translate < -BX/6, 0, -BX/8 >
+	rotate < 0, -15, 0 >
+	translate < -.29, 0, BY>
 }
 
 // union {
