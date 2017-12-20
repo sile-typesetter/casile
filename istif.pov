@@ -2,6 +2,8 @@
 
 #macro Scene ()
 
+#declare Count = 0.5 / BookThickness;
+
 camera {
 	location < -BX*2.5, BY*3, -BY*3.5 >
 	angle 35
@@ -10,7 +12,7 @@ camera {
 
 union {
 	#declare i = 0;
-	#while(i < 10)
+	#while(i < Count * 2)
 		union {
 			Book(DefaultBook)
 			translate < BZ, 0, -BZ >
@@ -23,7 +25,7 @@ union {
 
 union {
 	#declare i = 0;
-	#while(i < 5)
+	#while(i < Count + 1)
 		union {
 			Book(DefaultBook)
 			translate < 0, -BY, -BZ*2 >
@@ -39,7 +41,7 @@ union {
 
 union {
 	#declare i = 0;
-	#while(i < 6)
+	#while(i < Count)
 		union {
 			#if(i < 5)
 				Book(DefaultBook)
