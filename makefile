@@ -909,7 +909,7 @@ publisher_logo-grey.svg: $(PUBLISHERLOGO)
 	$(call skip_if_tracked,$@)
 	cp $< $@
 
-BINDINGIMAGES = $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_binding).png)
+BINDINGIMAGES = $(call pattern_list,$(TARGETS),$(filter-out %-$(_print),$(LAYOUTS)),-$(_binding).png)
 $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png $$(basename $$@)-$(_fragment)-$(_back).png $$(basename $$@)-$(_fragment)-$(_spine).png $$(call parse_bookid,$$@)-$(_barcode).png publisher_emblum.svg publisher_logo.svg %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
@@ -1132,6 +1132,28 @@ endef
 %-$(_binding)-$(_spine).png: %-$(_binding).png %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
 	$(MAGICK) $< -gravity Center -crop $${spinepx}x$${pagehpx}+0+0! $@
+
+define pagetopng =
+	$(MAGICK) -density $(HIDPI) \
+		-background white \
+		$<[$$(($1-1))] \
+		-flatten \
+		-colorspace rgb \
+		-crop $${pagewpx}x$${pagehpx}+$${bleedpx}+$${bleedpx}! \
+		$@
+endef
+
+%-$(_print)-pov-$(_front).png: %-$(_print).pdf $$(call geometryfile,$$@)
+	source $(filter %-$(_geometry).zsh,$^)
+	$(call pagetopng,1)
+
+%-$(_print)-pov-$(_back).png: %-$(_print).pdf $$(call geometryfile,$$@)
+	source $(filter %-$(_geometry).zsh,$^)
+	$(call pagetopng,$(call pagecount,$<))
+
+%-$(_print)-pov-$(_spine).png: $$(call geometryfile,$$@)
+	source $(filter %-$(_geometry).zsh,$^)
+	$(MAGICK) -size $${pagewpx}x$${pagehpx} xc:none $@
 
 %-pov-$(_front).png: %-$(_binding)-printcolor.png %-$(_geometry).zsh
 	source $*-$(_geometry).zsh
