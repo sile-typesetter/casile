@@ -126,36 +126,38 @@ light_source {
 	}
 
 	// spine
-	difference {
-		cylinder { <0,0,0>,<0,1,0>,(BZ/2)
-			pigment {
-				image_map {
-					png SpineImg
-					map_type 2
-					interpolate 2
+	#if (strcmp(BindingType, "print")!=0)
+		difference {
+			cylinder { <0,0,0>,<0,1,0>,(BZ/2)
+				pigment {
+					image_map {
+						png SpineImg
+						map_type 2
+						interpolate 2
+					}
+				}
+				#if (strcmp(BindingType, "paperback")=0)
+					scale <0.1,1,1>
+				#end
+				#if (strcmp(BindingType, "stapled")=0)
+					scale <2,1,1>
+				#end
+				translate <0,0,(BZ/2)>
+				finish { BookFinish }
+			}
+			box {
+				<0,-0.001,0> <1,1.001,BZ>
+			}
+		}
+
+		#macro Staple ()
+			box {
+				<-BZ-(0.25*toMM),0,BZ/2-(0.25*toMM)> <0,StapleMM*toMM,BZ/2+(0.25*toMM)>
+				pigment {
+					color rgb<0.88,0.87,0.86>
 				}
 			}
-			#if (strcmp(BindingType, "paperback")=0)
-				scale <0.1,1,1>
-			#end
-			#if (strcmp(BindingType, "stapled")=0)
-				scale <2,1,1>
-			#end
-			translate <0,0,(BZ/2)>
-			finish { BookFinish }
-		}
-		box {
-			<0,-0.001,0> <1,1.001,BZ>
-		}
-	}
-
-	#macro Staple ()
-		box {
-			<-BZ-(0.25*toMM),0,BZ/2-(0.25*toMM)> <0,StapleMM*toMM,BZ/2+(0.25*toMM)>
-			pigment {
-				color rgb<0.88,0.87,0.86>
-			}
-		}
+		#end
 	#end
 
 	#if (strcmp(BindingType, "stapled")=0)
