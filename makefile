@@ -1192,6 +1192,7 @@ $(BOOKSCENESINC): %.inc: $$(geometryfile) %-pov-$(_front).png %-pov-$(_back).png
 		#declare SpineImg = "$(filter %-pov-$(_spine).png,$^)";
 		#declare BindingType = "$(call unlocalize,$(call parse_binding,$@))";
 		#declare StapleCount = $(STAPLECOUNT);
+		#declare PaperWeight = $(PAPERWEIGHT);
 		#declare BookThickness = $$spinemm / $$pagewmm / 2;
 		#declare HalfThick = BookThickness / 2;
 	EOF

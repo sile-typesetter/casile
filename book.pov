@@ -96,6 +96,12 @@ light_source {
 
 	#declare BZ = BookThickness;
 
+	#if (strcmp(BindingType, "print")=0)
+		#declare CoverThickness = PaperWeight / 866 * toMM;
+	#else
+		#declare CoverThickness = 0.004;
+	#end
+
 	// front cover
 	box { <0,0,0> <1,1,CoverThickness>
 		pigment {
