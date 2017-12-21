@@ -1140,7 +1140,7 @@ define pagetopng =
 		$<[$$(($1-1))] \
 		-flatten \
 		-colorspace rgb \
-		-crop $${pagewpx}x$${pagehpx}+$${bleedpx}+$${bleedpx}! \
+		-crop $${pagewpx}x$${pagehpx}+$${trimpx}+$${trimpx}! \
 		$@
 endef
 
