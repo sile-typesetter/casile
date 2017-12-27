@@ -53,11 +53,11 @@ global_settings {
 background { color rgb<1,1,1> }
 
 camera {
-	location <-1,1.50,1.2*ViewZ>
+	location <-(BY)*2,1.50,(BX+BY)*ViewZ>
 	up y
-	right x*OutputAspect
+	right x*6/8
 	angle 35
-	look_at <.4*BookAspect,0.60,HalfThick>
+	look_at <BX*0.4,0.60,HalfThick>
 }
 
 plane {

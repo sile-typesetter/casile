@@ -6,6 +6,8 @@
 
 camera {
 	location < -(BX+BY)*1.25, (BX+BY)*1.75, -(BX+BY)*2.5 >
+	up y
+	right x*8/6
 	angle 35
 	look_at < 0, BY/2, 0 >
 }

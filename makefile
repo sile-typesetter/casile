@@ -1203,7 +1203,6 @@ $(BOOKSCENES): %-$(_3d).pov: $$(geometryfile) %.inc
 	cat <<- EOF > $@
 		#declare DefaultBook = "$(filter %.inc,$^)";
 		#declare Lights = $(call scale,8,2);
-		#declare OutputAspect = $$pagewmm / $$pagehmm;
 		#declare BookAspect = $$pagewmm / $$pagehmm;
 		#declare BookThickness = $$spinemm / $$pagewmm / 2;
 		#declare HalfThick = BookThickness / 2;
