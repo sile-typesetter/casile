@@ -226,12 +226,18 @@ $(foreach TARGET,$(TARGETS),$(eval TARGETLUAS_$(TARGET) := $(wildcard $(TARGET).
 .PHONY: books
 books: $(TARGETS)
 
+# Setup target dependencies to mimic stages of a CI pipeline
 ifeq ($(MAKECMDGOALS),ci)
 CI ?= 1
+sync_pre: init debug
+sync_post: books renderings promotionals
+books: sync_pre
+renderings: sync_pre
+promotionals: sync_pre
 endif
 
 .PHONY: ci
-ci: init debug books renderings promotionals sync_post stats
+ci: init debug sync_pre books renderings promotionals sync_post
 
 .PHONY: renderings
 renderings: $(call pattern_list,$(TARGETS),$(RENDERED),$(RENDERINGS),.jpg)
@@ -461,12 +467,12 @@ define time_warp
 endef
 
 .PHONY: sync_pre
-sync_pre: $(and $(CI),clean)
+sync_pre: | $(require_pubdir) $(require_outputdir)
 	$(call pre_sync)
 	rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/ ||:
 
 .PHONY: sync_post
-sync_post: $(and $(CI),books) | $(require_pubdir) $(require_outputdir)
+sync_post: | $(require_pubdir) $(require_outputdir)
 	for target in $(TARGETS); do
 ifeq ($(ALLTAGS),)
 		tagpath=
