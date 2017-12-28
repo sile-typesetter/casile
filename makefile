@@ -67,6 +67,12 @@ MAGICK ?= magick
 INKSCAPE ?= inkscape
 POVRAY ?= povray
 
+# Set default output format(s)
+LAYOUTS ?= a4-$(_print)
+
+# Add any specifically targeted outputs to input layouts
+LAYOUTS += $(filter $(foreach BINDING,$(BINDINGS),%-$(BINDING)),$(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL))))
+
 # Categorize supported outputs
 PAPERSIZES := $(call localize,$(subst layout-,,$(notdir $(basename $(wildcard $(CASILEDIR)/layout-*.lua)))))
 BINDINGS := $(call localize,print paperback hardcover coil stapled)
@@ -76,9 +82,6 @@ PLACARDS ?= $(_square) $(_wide) $(_banner) epub
 
 RENDERED ?= $(filter $(call pattern_list,$(filter-out $(DISPLAYS) $(PLACARDS),$(PAPERSIZES)),-%),$(LAYOUTS))
 RENDERINGS ?= $(_3d)-$(_front) $(_3d)-$(_back) $(_3d)-$(_pile)
-
-# Set default output format(s)
-LAYOUTS ?= a4-$(_print)
 
 # Default to running multiple jobs
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
@@ -765,7 +768,7 @@ define skip_if_lazy
 	$(LAZY) && $(if $(filter $1,$(MAKECMDGOALS)),false,true) && test -f $1 && { touch $1; exit 0 } ||:
 endef
 
-COVERBACKGROUNDS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_cover)-$(_background).png)
+COVERBACKGROUNDS = $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_cover)-$(_background).png)
 git_background = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
 $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@) $$(geometryfile)
 	$(sourcegeometry)
@@ -992,7 +995,7 @@ $(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml .casile.lua
 		$< -o $@
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
-GEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_geometry).zsh)
+GEOMETRIES = $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_geometry).zsh)
 $(GEOMETRIES): %-$(_geometry).zsh: $$(call geometrybase,$$@) $$(call newgeometry,$$@)
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	hidpi=$(HIDPI)
