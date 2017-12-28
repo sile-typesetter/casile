@@ -204,9 +204,10 @@ export PATH := $(CASILEDIR)/bin:$(PATH)
 export HOSTNAME := $(shell hostname)
 export PROJECT := $(PROJECT)
 
+LOCALSILE ?= $(HOME)/projects/sile
 ifeq ($(DEBUG),true)
-SILE = /home/caleb/projects/sile/sile
-.SHELLFLAGS = +o nomatch -e -x -c
+SILE = $(LOCALSILE)/sile
+.SHELLFLAGS += -x
 endif
 
 # Pass debug tags on to SILE
