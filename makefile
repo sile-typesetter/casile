@@ -1,5 +1,5 @@
 SHELL := zsh
-.SHELLFLAGS = +o nomatch -e -c
+.SHELLFLAGS := +o nomatch -e -c
 
 # Initial setup, environment dependent
 PROJECTDIR := $(shell cd "$(shell dirname $(firstword $(MAKEFILE_LIST)))/" && pwd)
@@ -77,11 +77,11 @@ LAYOUTS += $(filter $(foreach BINDING,$(BINDINGS),%-$(BINDING)),$(foreach GOAL,$
 PAPERSIZES := $(call localize,$(subst layout-,,$(notdir $(basename $(wildcard $(CASILEDIR)/layout-*.lua)))))
 BINDINGS := $(call localize,print paperback hardcover coil stapled)
 
-DISPLAYS ?= $(_app) $(_screen)
-PLACARDS ?= $(_square) $(_wide) $(_banner) epub
+DISPLAYS := $(_app) $(_screen)
+PLACARDS := $(_square) $(_wide) $(_banner) epub
+RENDERINGS := $(_3d)-$(_front) $(_3d)-$(_back) $(_3d)-$(_pile)
 
 RENDERED ?= $(filter $(call pattern_list,$(filter-out $(DISPLAYS) $(PLACARDS),$(PAPERSIZES)),-%),$(LAYOUTS))
-RENDERINGS ?= $(_3d)-$(_front) $(_3d)-$(_back) $(_3d)-$(_pile)
 
 # Default to running multiple jobs
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
@@ -154,8 +154,8 @@ $(space) +=
 
 # Utility functions for simplifying per-project makefiles
 depend_font = fc-match "$1" family | grep -qx "$1"
-require_outputdir = $(or $(OUTPUTDIR),fail)
-require_pubdir = $(and $(filter-out true,$(DRAFT)),$(or $(PUBDIR),fail))
+require_outputdir := $(or $(OUTPUTDIR),fail)
+require_pubdir := $(and $(filter-out true,$(DRAFT)),$(or $(PUBDIR),fail))
 
 # Assorted utility functions for juggling information about books
 mockupbase = $(if $(filter $(MOCKUPTARGETS),$(call parse_bookid,$1)),$(subst $(call parse_bookid,$1),$(MOCKUPBASE),$1),$1)
