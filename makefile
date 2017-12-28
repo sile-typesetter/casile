@@ -14,6 +14,9 @@ LANGUAGE ?= en
 # Localization functions (source is a key => val file _and_ its inverse)
 -include $(CASILEDIR)/makefile-$(LANGUAGE) $(CASILEDIR)/makefile-$(LANGUAGE)-reversed
 
+# Empty recipies for anything we _don't_ want to bother rebuilding:
+$(MAKEFILE_LIST):;
+
 localize = $(foreach WORD,$1,$(or $(_$(WORD)),$(WORD)))
 unlocalize = $(foreach WORD,$1,$(or $(__$(WORD)),$(WORD)))
 
@@ -79,7 +82,7 @@ LAYOUTS ?= a4-$(_print)
 
 # Default to running multiple jobs
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
-MAKEFLAGS = "-j $(JOBS)"
+MAKEFLAGS += "-j $(JOBS)"
 
 # Over-ride entr arguments, defaults to just clear
 # Add -r to kill and restart jobs on activity
@@ -222,6 +225,10 @@ $(foreach TARGET,$(TARGETS),$(eval TARGETLUAS_$(TARGET) := $(wildcard $(TARGET).
 .SECONDARY:
 .PRECIOUS: %.pdf %.sil %.toc %.dat %.inc
 .DELETE_ON_ERROR:
+
+# Disable as many default suffix and pattern rules as we can (makes debug output saner)
+.SUFFIXES:
+MAKEFLAGS += --no-builtin-rules
 
 .PHONY: books
 books: $(TARGETS)
