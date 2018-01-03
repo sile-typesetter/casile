@@ -543,7 +543,7 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 	fi
 	# If we have a special cover page for this format, swap it out for the half title page
 	coverfile=$(filter %-$(_cover).pdf,$^)
-	if $(COVERS); then
+	if $(COVERS) && [[ -f $coverfile ]]; then
 		pdftk $@ dump_data_utf8 output $*.dat
 		pdftk C=$${coverfile} B=$@ cat C1 B2-end output $*.tmp.pdf
 		pdftk $*.tmp.pdf update_info_utf8 $*.dat output $@
