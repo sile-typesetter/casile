@@ -1385,7 +1385,7 @@ $(STATSTARGETS): %-stats:
 %-$(_verses)-$(_sorted).json: %-$(_verses).json
 	jq 'sort_by(.seq)' $< > $@
 
-normalize_references: $(SOURCES)
+normalize_references: $(MARKDOWNSOURCES)
 	$(call find_and_munge,*.md,normalize_references.js,Normalize verse references using BCV parser)
 
 define split_chapters
@@ -1397,8 +1397,8 @@ define split_chapters
 endef
 
 split_chapters:
-	$(if $(SOURCES),,exit 0)
-	$(foreach SOURCE,$(SOURCES),$(call split_chapters,$(SOURCE)))
+	$(if $(MARKDOWNSOURCES),,exit 0)
+	$(foreach SOURCE,$(MARKDOWNSOURCES),$(call split_chapters,$(SOURCE).md))
 
 watch:
 	git ls-files --recurse-submodules |
