@@ -158,7 +158,8 @@ light_source {
 
 		#macro Staple ()
 			box {
-				<-BZ-(0.25*toMM),0,BZ/2-(0.25*toMM)> <0,StapleMM*toMM,BZ/2+(0.25*toMM)>
+				<-BZ/2-(0.5*toMM),0,BZ/2-(0.25*toMM)>
+				<0,StapleMM*toMM,BZ/2+(0.25*toMM)>
 				pigment {
 					color rgb<0.88,0.87,0.86>
 				}
