@@ -132,7 +132,7 @@ light_source {
 	}
 
 	// spine
-	#if (strcmp(BindingType, "print")!=0)
+	#if (strcmp(BindingType, "print")!=0 & strcmp(BindingType, "coil")!=0 )
 		difference {
 			cylinder { <0,0,0>,<0,1,0>,(BZ/2)
 				pigment {
@@ -155,25 +155,59 @@ light_source {
 				<0,-0.001,0> <1,1.001,BZ>
 			}
 		}
+	#end
 
-		#macro Staple ()
-			box {
-				<-BZ/2-(0.5*toMM),0,BZ/2-(0.25*toMM)>
-				<0,StapleMM*toMM,BZ/2+(0.25*toMM)>
+	#macro Staple ()
+		box {
+			<-BZ/2-(0.5*toMM),0,BZ/2-(0.25*toMM)>
+			<0,StapleMM*toMM,BZ/2+(0.25*toMM)>
+			pigment {
+				color rgb<0.88,0.87,0.86>
+			}
+		}
+	#end
+
+	#macro Coil ()
+		difference {
+			cylinder {
+				<0,0,BZ/2>
+				<0,CoilWidth*toMM,BZ/2>
+				BZ/2+5*toMM
 				pigment {
-					color rgb<0.88,0.87,0.86>
+					color CoilColor
 				}
 			}
-		#end
+			cylinder {
+				<0,-0.0001,BZ/2>
+				<0,CoilWidth*toMM+0.0001,BZ/2>
+				BZ/2+4*toMM
+				pigment {
+					color CoilColor
+				}
+			}
+		}
 	#end
 
 	#if (strcmp(BindingType, "stapled")=0)
-		#declare StapleSpacing = (1 / StapleCount);
+		#declare StapleSpacing = 1 / StapleCount;
 		#for (i, 1, StapleCount)
 			union {
 				Staple()
 				translate <0,StapleSpacing/2 - StapleMM*toMM/2,0>
 				translate <0,StapleSpacing*(i-1),0>
+			}
+		#end
+	#end
+
+	#if (strcmp(BindingType, "coil")=0)
+		#declare CoilCount = int(1 / (CoilSpacing*toMM + CoilWidth*toMM));
+		// #error concat("FROG FACE: ", str(CoilCount,5,0))
+		#for (i, 1, CoilCount)
+			union {
+				Coil()
+				translate <0,(1 - CoilWidth*CoilCount*toMM - CoilSpacing*CoilCount*toMM),0>
+				translate <0,CoilWidth*toMM*(i-1),0>
+				translate <0,CoilSpacing*toMM*(i-1),0>
 			}
 		#end
 	#end

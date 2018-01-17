@@ -42,6 +42,9 @@ NOBLEED ?= 0
 NOTRIM ?= 0
 PAPERWEIGHT ?= 60
 STAPLECOUNT ?= 2
+COILSPACING ?= 12
+COILWIDTH ?= 8
+COILCOLOR ?= rgb<.7,.7,.7>
 COVERGRAVITY ?= Center
 SCENELIGHT ?= rgb<1,1,1>
 
@@ -1212,6 +1215,9 @@ $(BOOKSCENESINC): %.inc: $$(geometryfile) %-pov-$(_front).png %-pov-$(_back).png
 		#declare SpineImg = "$(filter %-pov-$(_spine).png,$^)";
 		#declare BindingType = "$(call unlocalize,$(call parse_binding,$@))";
 		#declare StapleCount = $(STAPLECOUNT);
+		#declare CoilSpacing = $(COILSPACING);
+		#declare CoilWidth = $(COILWIDTH);
+		#declare CoilColor = $(COILCOLOR);
 		#declare PaperWeight = $(PAPERWEIGHT);
 		#declare BookThickness = $$spinemm / $$pagewmm / 2;
 		#declare HalfThick = BookThickness / 2;
