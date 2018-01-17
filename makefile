@@ -72,7 +72,8 @@ POVRAY ?= povray
 LAYOUTS ?= a4-$(_print)
 
 # Add any specifically targeted outputs to input layouts
-LAYOUTS += $(filter $(foreach BINDING,$(BINDINGS),%-$(BINDING)),$(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL))))
+GOALLAYOUTS = $(filter $(foreach BINDING,$(BINDINGS),%-$(BINDING)),$(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL))))
+LAYOUTS += $(GOALLAYOUTS)
 
 # Categorize supported outputs
 PAPERSIZES := $(call localize,$(subst layout-,,$(notdir $(basename $(wildcard $(CASILEDIR)/layout-*.lua)))))
@@ -83,6 +84,7 @@ PLACARDS := $(_square) $(_wide) $(_banner) epub
 RENDERINGS := $(_3d)-$(_front) $(_3d)-$(_back) $(_3d)-$(_pile)
 
 RENDERED ?= $(filter $(call pattern_list,$(filter-out $(DISPLAYS) $(PLACARDS),$(PAPERSIZES)),-%),$(LAYOUTS))
+RENDERED += $(GOALLAYOUTS)
 
 # Default to running multiple jobs
 JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
