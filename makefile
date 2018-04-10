@@ -570,6 +570,7 @@ $(FULLSILS): %.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-$(_processed
 			-V qrimg="./$(filter %-url.png,$^)" \
 			$(foreach LUA,$(filter %.lua,$|), -V script=$(basename $(LUA))) \
 			--template=$(filter %.sil,$^) \
+			--from=markdown-raw_tex \
 			--to=sile \
 			$(filter %-manifest.yml,$^) =( $(call pre_sile_markdown_hook) < $< ) |
 		$(call sile_hook) > $@
