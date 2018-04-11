@@ -1207,7 +1207,7 @@ endef
 		$(call magick_emulateprint) \
 		$@
 
-BOOKSCENESINC = $(call pattern_list,$(TARGETS),$(RENDERED),.inc)
+BOOKSCENESINC = $(sort $(call pattern_list,$(TARGETS),$(RENDERED),.inc))
 $(BOOKSCENESINC): %.inc: $$(geometryfile) %-pov-$(_front).png %-pov-$(_back).png %-pov-$(_spine).png
 	$(sourcegeometry)
 	cat <<- EOF > $@
@@ -1224,7 +1224,7 @@ $(BOOKSCENESINC): %.inc: $$(geometryfile) %-pov-$(_front).png %-pov-$(_back).png
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
-BOOKSCENES = $(call pattern_list,$(TARGETS),$(RENDERED),-$(_3d).pov)
+BOOKSCENES = $(sort $(call pattern_list,$(TARGETS),$(RENDERED),-$(_3d).pov))
 $(BOOKSCENES): %-$(_3d).pov: $$(geometryfile) %.inc
 	$(sourcegeometry)
 	cat <<- EOF > $@
@@ -1237,7 +1237,7 @@ $(BOOKSCENES): %-$(_3d).pov: $$(geometryfile) %.inc
 	EOF
 
 ifneq ($(TARGETS),$(PROJECT))
-SERIESSCENES = $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3d).pov)
+SERIESSCENES = $(sort $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3d).pov))
 $(SERIESSCENES): $(PROJECT)-%-$(_3d).pov: $(firstword $(TARGETS))-%-$(_3d).pov $(call pattern_list,$(TARGETS),-%.inc)
 	cat <<- EOF > $@
 		#include "$<"
