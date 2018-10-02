@@ -6,13 +6,7 @@ basename="$1"
 : ${2:=2}
 let months=$2-1
 
-function countchars () {
-    perl -pne 's/\s//g' | wc -c
-}
-
-function countwords () {
-    perl -pne 's/[^\s\w]//g' | wc -w
-}
+. ${CASILEDIR}/bin/functions.zsh
 
 function list_sources () {
 	git ls-files | pcregrep "$basename.*(md|yml)"
