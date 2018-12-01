@@ -368,7 +368,7 @@ check_dependencies:
 	hash $(IDENTIFY)
 	hash $(MAGICK)
 	hash $(POVRAY)
-	hash yaml2json
+	# hash yaml2json
 	hash jq
 	hash zint
 	hash pdfinfo
