@@ -23,6 +23,7 @@ $(MAKEFILE_LIST):;
 
 MARKDOWNSOURCES ?= $(call find,*.md)
 LUASOURCES ?= $(call find,*.lua)
+MAKESOURCES ?= $(call find,[Mm]akefile*)
 YAMLSOURCES ?= $(call find,*.yml)
 
 # Find stuff to build that has both a YML and a MD component
@@ -360,6 +361,9 @@ init_toolkits: init_casile time_warp .gitignore .editorconfig
 .PHONY: update_toolkits
 update_toolkits: update_casile
 
+.PHONY: upgrade_toolkits
+upgrade_toolkits: upgrade_casile
+
 .PHONY: init_casile
 init_casile: time_warp_casile
 	cd $(CASILEDIR) && yarn install
@@ -371,12 +375,12 @@ update_casile: init_casile
 	cd $(CASILEDIR) && yarn upgrade
 
 .PHONY: upgrade_repository
-upgrade_repository: upgrade_casile update_toolkits
+upgrade_repository: upgrade_toolkits $(CICONFIG)_current
 
 .PHONY: upgrade_casile
-upgrade_casile: $(CASILEDIR)/upgrade-lua.sed $(CASILEDIR)/upgrade-make.sed $(CASILEDIR)/upgrade-yaml.sed
+upgrade_casile: update_casile $(CASILEDIR)/upgrade-lua.sed $(CASILEDIR)/upgrade-make.sed $(CASILEDIR)/upgrade-yaml.sed
 	$(call munge,$(LUASOURCES),sed -f $(filter %-lua.sed,$^),Replace old Lua variables and functions with new namespaces)
-	$(call munge,$(call find,[Mm]akefile*),sed -f $(filter %-make.sed,$^),Replace old Makefile variables and functions with new namespaces)
+	$(call munge,$(MAKESOURCES),sed -f $(filter %-make.sed,$^),Replace old Makefile variables and functions with new namespaces)
 	$(call munge,$(YAMLSOURCES),sed -f $(filter %-yaml.sed,$^),Replace old YAML key names)
 
 .PHONY: update_repository
