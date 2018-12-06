@@ -22,9 +22,9 @@ localize = $(foreach WORD,$1,$(or $(_$(WORD)),$(WORD)))
 unlocalize = $(foreach WORD,$1,$(or $(__$(WORD)),$(WORD)))
 
 # Find stuff to build that has both a YML and a MD component
-MARKDOWNSOURCES := $(basename $(wildcard *.md))
-YAMLSOURCES := $(basename $(wildcard *.yml))
-TARGETS ?= $(filter $(MARKDOWNSOURCES),$(YAMLSOURCES))
+MARKDOWNSOURCES := $(call find,*.md)
+YAMLSOURCES := $(call find,*.yml)
+TARGETS ?= $(filter $(basename $(MARKDOWNSOURCES)),$(basename $(YAMLSOURCES)))
 
 # List of targets that don't have content but should be rendered anyway
 MOCKUPTARGETS ?=
@@ -666,7 +666,30 @@ $(shell
 	fi)
 endef
 
+define find
+$(shell
+	find $(PROJECTDIR) \
+			-maxdepth 2 \
+			-name '$1' \
+			$(foreach PATH,$(shell git submodule | awk '{print $$2}'),-not -path '*/$(PATH)/*') |
+			grep -f <(git ls-files | sed -e 's/$$/$$/;s#^#./#') |
+		xargs echo)
+endef
+
+define munge
+$(shell
+	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
+	for f in $1; do
+		grep -q "esyscmd.*cat.* $$(basename $$f)-bolumler/" $$f && continue # skip compilations that are mostly M4
+		git diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
+		$2 < $$f | sponge $$f
+		git add -- $$f
+	done
+	git diff-index --quiet --cached HEAD || git ci -m "[auto] $3")
+endef
+
 define find_and_munge
+	$(warning Using obsolete combined find_and_munge command, please migrate to separate commands)
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
 	find $(PROJECTDIR) -maxdepth 2 -name '$1' $(foreach PATH,$(shell git submodule | awk '{print $$2}'),-not -path '*/$(PATH)/*') |
 		grep -f <(git ls-files | sed -e 's/$$/$$/;s#^#./#') |
@@ -680,8 +703,8 @@ define find_and_munge
 endef
 
 .PHONY: lua_cleanup
-lua_cleanup:
-	$(call find_and_munge,*.lua,sed -e 's/function */function /g',Normalize Lua coding style)
+lua_cleanup: $(call find,*.lua)
+	$(call munge,$<,sed -e 's/function */function /g',Normalize Lua coding style)
 
 .PHONY: md_cleanup
 md_cleanup:
@@ -1397,7 +1420,7 @@ $(STATSTARGETS): %-stats:
 	jq 'sort_by(.seq)' $< > $@
 
 normalize_references: $(MARKDOWNSOURCES)
-	$(call find_and_munge,*.md,normalize_references.js,Normalize verse references using BCV parser)
+	$(call find_and_munge,$<,normalize_references.js,Normalize verse references using BCV parser)
 
 define split_chapters
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
@@ -1409,7 +1432,7 @@ endef
 
 split_chapters:
 	$(if $(MARKDOWNSOURCES),,exit 0)
-	$(foreach SOURCE,$(MARKDOWNSOURCES),$(call split_chapters,$(SOURCE).md))
+	$(foreach SOURCE,$(MARKDOWNSOURCES),$(call split_chapters,$(SOURCE)))
 
 watch:
 	git ls-files --recurse-submodules |
