@@ -26,7 +26,7 @@ LUASOURCES ?= $(call find,*.lua)
 YAMLSOURCES ?= $(call find,*.yml)
 
 # Find stuff to build that has both a YML and a MD component
-TARGETS ?= $(filter $(basename $(MARKDOWNSOURCES)),$(basename $(YAMLSOURCES)))
+TARGETS ?= $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(notdir $(YAMLSOURCES))))
 
 # List of targets that don't have content but should be rendered anyway
 MOCKUPTARGETS ?=
