@@ -21,9 +21,11 @@ $(MAKEFILE_LIST):;
 localize = $(foreach WORD,$1,$(or $(_$(WORD)),$(WORD)))
 unlocalize = $(foreach WORD,$1,$(or $(__$(WORD)),$(WORD)))
 
+MARKDOWNSOURCES = $(call find,*.md)
+LUASOURCES = $(call find,*.lua)
+YAMLSOURCES = $(call find,*.yml)
+
 # Find stuff to build that has both a YML and a MD component
-MARKDOWNSOURCES := $(call find,*.md)
-YAMLSOURCES := $(call find,*.yml)
 TARGETS ?= $(filter $(basename $(MARKDOWNSOURCES)),$(basename $(YAMLSOURCES)))
 
 # List of targets that don't have content but should be rendered anyway
@@ -419,9 +421,9 @@ upgrade_repository: upgrade_casile update_toolkits
 
 .PHONY: upgrade_casile
 upgrade_casile: $(CASILEDIR)/upgrade-lua.sed $(CASILEDIR)/upgrade-make.sed $(CASILEDIR)/upgrade-yaml.sed
-	$(call find_and_munge,*.lua,sed -f $(filter %-lua.sed,$^),Replace old Lua variables and functions with new namespaces)
-	$(call find_and_munge,[Mm]akefile*,sed -f $(filter %-make.sed,$^),Replace old Makefile variables and functions with new namespaces)
-	$(call find_and_munge,*.yml,sed -f $(filter %-yaml.sed,$^),Replace old YAML key names)
+	$(call munge,$(LUASOURCES),sed -f $(filter %-lua.sed,$^),Replace old Lua variables and functions with new namespaces)
+	$(call munge,$(call find,[Mm]akefile*),sed -f $(filter %-make.sed,$^),Replace old Makefile variables and functions with new namespaces)
+	$(call munge,$(YAMLSOURCES),sed -f $(filter %-yaml.sed,$^),Replace old YAML key names)
 
 .PHONY: update_repository
 update_repository:
@@ -599,7 +601,7 @@ INTERMEDIATES += *-$(_processed).md
 	fi |
 		renumber_footnotes.pl |
 		$(call criticToSile) |
-		$(call md_cleanup) |
+		$(call normalize_markdown) |
 		$(call markdown_hook) > $@
 
 %-$(_booklet).pdf: %-$(_spineless).pdf | $(require_pubdir)
@@ -677,7 +679,6 @@ $(shell
 endef
 
 define munge
-$(shell
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
 	for f in $1; do
 		grep -q "esyscmd.*cat.* $$(basename $$f)-bolumler/" $$f && continue # skip compilations that are mostly M4
@@ -685,7 +686,7 @@ $(shell
 		$2 < $$f | sponge $$f
 		git add -- $$f
 	done
-	git diff-index --quiet --cached HEAD || git ci -m "[auto] $3")
+	git diff-index --quiet --cached HEAD || git ci -m "[auto] $3"
 endef
 
 define find_and_munge
@@ -702,30 +703,32 @@ define find_and_munge
 	git diff-index --quiet --cached HEAD || git ci -m "[auto] $3"
 endef
 
-.PHONY: lua_cleanup
-lua_cleanup: $(call find,*.lua)
-	$(call munge,$<,sed -e 's/function */function /g',Normalize Lua coding style)
+.PHONY: normalize_lua
+normalize_lua: $(LUASOURCES)
+	$(call munge,$^,sed -e 's/function */function /g',Normalize Lua coding style)
 
-.PHONY: md_cleanup
-md_cleanup:
-	$(call find_and_munge,*.md,msword_escapes.pl,Fixup bad MS word typing habits that Pandoc tries to preserve)
-	$(call find_and_munge,*.md,lazy_quotes.pl,Replace lazy double single quotes with real doubles)
-	$(call find_and_munge,*.md,smart_quotes.pl,Replace straight quotation marks with typographic variants)
-	$(call find_and_munge,*.md,figure_dash.pl,Convert hyphens between numbers to figure dashes)
-	$(call find_and_munge,*.md,unicode_symbols.pl,Replace lazy ASCI shortcuts with Unicode symbols)
-	$(call find_and_munge,*.md,italic_reorder.pl,Fixup italics around names and parethesised translations)
-	$(call find_and_munge,*.md,$(PANDOC) --atx-headers --wrap=preserve --to=markdown-smart,Normalize and tidy Markdown syntax using Pandoc)
-	#(call find_and_munge,*.md,reorder_punctuation.pl,Cleanup punctuation mark order, footnote markers, etc.)
-	#(call find_and_munge,*.md,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
+.PHONY: normalize_markdown
+normalize_markdown: $(MARKDOWNSOURCES)
+	$(call munge,$^,msword_escapes.pl,Fixup bad MS word typing habits that Pandoc tries to preserve)
+	$(call munge,$^,lazy_quotes.pl,Replace lazy double single quotes with real doubles)
+	$(call munge,$^,smart_quotes.pl,Replace straight quotation marks with typographic variants)
+	$(call munge,$^,figure_dash.pl,Convert hyphens between numbers to figure dashes)
+	$(call munge,$^,unicode_symbols.pl,Replace lazy ASCI shortcuts with Unicode symbols)
+	$(call munge,$^,italic_reorder.pl,Fixup italics around names and parethesised translations)
+	$(call munge,$^,$(PANDOC) --atx-headers --wrap=preserve --to=markdown-smart,Normalize and tidy Markdown syntax using Pandoc)
+	#(call munge,$^,reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
+	#(call munge,$^,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
 
-define md_cleanup
+define normalize_markdown
 	$(if $(HEAD),head -n$(HEAD),cat) |
 	( $(DIFF) && cat || (
+		msword_escapes.pl |
+		lazy_quotes.pl |
 		smart_quotes.pl |
 		figure_dash.pl |
-		reorder_punctuation.pl |
-		link_verses.js |
-		unicode_symbols.pl
+		unicode_symbols.pl |
+		italic_reorder.pl |
+		link_verses.js
 	) )
 endef
 
@@ -1419,8 +1422,12 @@ $(STATSTARGETS): %-stats:
 %-$(_verses)-$(_sorted).json: %-$(_verses).json
 	jq 'sort_by(.seq)' $< > $@
 
+.PHONY: normalize_references
 normalize_references: $(MARKDOWNSOURCES)
-	$(call find_and_munge,$<,normalize_references.js,Normalize verse references using BCV parser)
+	$(call munge,$^,normalize_references.js,Normalize verse references using BCV parser)
+
+.PHONY: normalize
+normalize: normalize_lua normalize_markdown normalize_references
 
 define split_chapters
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
