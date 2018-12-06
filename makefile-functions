@@ -1,3 +1,50 @@
+# Utility variables for later, http://blog.jgc.org/2007/06/escaping-comma-and-space-in-gnu-make.html
+, := ,
+space :=
+space +=
+$(space) :=
+$(space) +=
+
+# Utility functions for simplifying per-project makefiles
+depend_font = fc-match "$1" family | grep -qx "$1"
+require_outputdir := $(or $(OUTPUTDIR),fail)
+require_pubdir := $(and $(filter-out true,$(DRAFT)),$(or $(PUBDIR),fail))
+
+# Assorted utility functions for juggling information about books
+mockupbase = $(if $(filter $(MOCKUPTARGETS),$(call parse_bookid,$1)),$(subst $(call parse_bookid,$1),$(MOCKUPBASE),$1),$1)
+pagecount = $(shell pdfinfo $(call mockupbase,$1) | awk '$$1 == "Pages:" {printf "%.0f", $$2 * $(MOCKUPFACTOR)}')
+pagew = $(shell pdfinfo $(call mockupbase,$1) | awk '$$1$$2 == "Pagesize:" {print $$3}' || echo 0)
+pageh = $(shell pdfinfo $(call mockupbase,$1) | awk '$$1$$2 == "Pagesize:" {print $$5}' || echo 0)
+spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | bc)
+mmtopx = $(shell echo "$1 * $(HIDPI) * 0.0393701 / 1" | bc)
+mmtopm = $(shell echo "$1 * 96 * .0393701 / 1" | bc)
+mmtopt = $(shell echo "$1 * 2.83465 / 1" | bc)
+width = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:w] $1)
+height = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:h] $1)
+parse_layout = $(call parse_papersize,$1)-$(call parse_binding,$1)
+strip_layout = $(filter-out $1,$(foreach PAPERORBINDING,$(PAPERSIZES) $(BINDINGS),$(subst -$(PAPERORBINDING),,$1)))
+parse_papersize = $(or $(filter $(PAPERSIZES),$(subst -, ,$(basename $1))),a4)
+strip_papersize = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE),,$1)))
+parse_binding = $(or $(filter $(BINDINGS),$(subst -, ,$(basename $1))),$(_print))
+strip_binding = $(filter-out $1,$(foreach BINDING,$(BINDINGS),$(subst -$(BINDING),,$1)))
+parse_bookid = $(firstword $(subst -, ,$(basename $1)))
+series_sort = $(shell PROJECT=$(PROJECT) SORTORDER=$(SORTORDER) $(CASILEDIR)/bin/series_sort.lua $1)
+
+# Utility to modify recursive variables, see http://stackoverflow.com/a/36863261/313192
+prepend = $(eval $(1) = $(2)$(value $(1)))
+append = $(eval $(1) = $(value $(1))$(2))
+
+reverse = $(if $(wordlist 2,2,$(1)),$(call reverse,$(wordlist 2,$(words $(1)),$(1))) $(firstword $(1)),$(1))
+
+uniq = $(if $1,$(firstword $1) $(call uniq,$(filter-out $(firstword $1),$1)))
+
+# Making lists of possible targets is tedious syntax, but just using pattern
+# rules means the targets are not extendible. By dynamically generating names by
+# iterating over all possible combinations of an arbitrary sequence of lists
+# we get a lot more flexibility and keeps the lists easy to write.
+pattern_list = $(call uniq,$(and $(or $(and $5,$4,$3,$2,$1),$(and $(4),$(3),$(2),$(1)),$(and $(3),$(2),$(1)),$(and $(2),$(1))),$(if $(and $(1),$(2)),,$(foreach A,$(1),$(A)))$(if $(and $(2),$(3)),,$(foreach A,$(1),$(foreach B,$(2),$(A)$(B))))$(if $(and $(3),$(4)),,$(foreach A,$(1),$(foreach B,$(2),$(foreach C,$(3),$(A)-$(B)$(C)))))$(if $(and $(4),$(5)),,$(foreach A,$(1),$(foreach B,$(2),$(foreach C,$(3),$(foreach D,$(4),$(A)-$(B)-$(C)$(D))))))))
+
+# String i18n l10n functions
 localize = $(foreach WORD,$1,$(or $(_$(WORD)),$(WORD)))
 unlocalize = $(foreach WORD,$1,$(or $(__$(WORD)),$(WORD)))
 
