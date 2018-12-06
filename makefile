@@ -15,15 +15,15 @@ LANGUAGE ?= en
 # Localization functions (source is a key => val file _and_ its inverse)
 -include $(CASILEDIR)/makefile-$(LANGUAGE) $(CASILEDIR)/makefile-$(LANGUAGE)-reversed
 
+# CaSILE Utility functions
+include $(CASILEDIR)/makefile-functions
+
 # Empty recipies for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;
 
-localize = $(foreach WORD,$1,$(or $(_$(WORD)),$(WORD)))
-unlocalize = $(foreach WORD,$1,$(or $(__$(WORD)),$(WORD)))
-
-MARKDOWNSOURCES = $(call find,*.md)
-LUASOURCES = $(call find,*.lua)
-YAMLSOURCES = $(call find,*.yml)
+MARKDOWNSOURCES ?= $(call find,*.md)
+LUASOURCES ?= $(call find,*.lua)
+YAMLSOURCES ?= $(call find,*.yml)
 
 # Find stuff to build that has both a YML and a MD component
 TARGETS ?= $(filter $(basename $(MARKDOWNSOURCES)),$(basename $(YAMLSOURCES)))
@@ -448,24 +448,11 @@ $(CICONFIG): $(CITEMPLATE)
 $(CASILEDIR)/makefile-%-reversed: $(CASILEDIR)/makefile-%
 	@awk -F' := ' '/^_/ { gsub(/_/, "", $$1); print "__" $$2 " := " $$1 }' < $< > $@
 
-define ci_setup
-	cat -
-endef
-
 # Pass or fail target showing whether the CI config is up to date
 .PHONY: $(CICONFIG)_current
 $(CICONFIG)_current: $(CICONFIG)
 	git update-index --refresh --ignore-submodules ||:
 	git diff-files --quiet -- $<
-
-define addtosync =
-	$(DRAFT) && rm -f $(PUBDIR)/$@ || ln -f $@ $(PUBDIR)/$@
-endef
-
-# If building in draft mode, scale resolutions down for quick builds
-define scale =
-$(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | bc) || echo $1))
-endef
 
 # Reset file timestamps to git history to avoid unnecessary builds
 .PHONY: time_warp time_warp_casile
@@ -474,18 +461,6 @@ time_warp: time_warp_casile
 
 time_warp_casile:
 	$(call time_warp,$(CASILEDIR))
-
-define time_warp
-	cd $1
-	git update-index --refresh --ignore-submodules ||:
-	git diff-index --quiet --cached HEAD
-	git ls-files |
-		while read file; do
-			ts=$$(git log -n1 --pretty=format:%cI -- $$file)
-			git diff-files --quiet -- $$file || continue
-			touch -d "$$ts" -- $$file
-		done
-endef
 
 .PHONY: sync_pre
 sync_pre: | $(require_pubdir) $(require_outputdir)
@@ -654,55 +629,6 @@ INTERMEDIATES += *-$(_processed).md
 %-$(_odd).pdf: %.pdf
 	pdftk $< cat odd output $@
 
-define versioninfo
-$(shell
-	echo -en "$(call parse_bookid,$1)@"
-	if [[ "$(BRANCH)" == master ]]; then
-		git describe --tags >/dev/null 2>/dev/null || echo -en "$(BRANCH)-"
-		git describe --long --tags --always --dirty=* | cut -d/ -f2 | xargs echo -en
-	else
-		$(DIFF) && echo -en "$$(git rev-parse --short $(PARENT))→"
-		echo -en "$(BRANCH)-"
-		git rev-list --boundary $(PARENT)..HEAD | grep -v - | wc -l | xargs -iX echo -en "X-"
-		git describe --always | cut -d/ -f2 | xargs echo -en
-	fi)
-endef
-
-define find
-$(shell
-	find $(PROJECTDIR) \
-			-maxdepth 2 \
-			-name '$1' \
-			$(foreach PATH,$(shell git submodule | awk '{print $$2}'),-not -path '*/$(PATH)/*') |
-			grep -f <(git ls-files | sed -e 's/$$/$$/;s#^#./#') |
-		xargs echo)
-endef
-
-define munge
-	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
-	for f in $1; do
-		grep -q "esyscmd.*cat.* $$(basename $$f)-bolumler/" $$f && continue # skip compilations that are mostly M4
-		git diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
-		$2 < $$f | sponge $$f
-		git add -- $$f
-	done
-	git diff-index --quiet --cached HEAD || git ci -m "[auto] $3"
-endef
-
-define find_and_munge
-	$(warning Using obsolete combined find_and_munge command, please migrate to separate commands)
-	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
-	find $(PROJECTDIR) -maxdepth 2 -name '$1' $(foreach PATH,$(shell git submodule | awk '{print $$2}'),-not -path '*/$(PATH)/*') |
-		grep -f <(git ls-files | sed -e 's/$$/$$/;s#^#./#') |
-		while read f; do
-			grep -q "esyscmd.*cat.* $$(basename $$f)-bolumler/" $$f && continue # skip compilations that are mostly M4
-			git diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
-			$2 < $$f | sponge $$f
-			git add -- $$f
-		done
-	git diff-index --quiet --cached HEAD || git ci -m "[auto] $3"
-endef
-
 .PHONY: normalize_lua
 normalize_lua: $(LUASOURCES)
 	$(call munge,$^,sed -e 's/function */function /g',Normalize Lua coding style)
@@ -718,44 +644,6 @@ normalize_markdown: $(MARKDOWNSOURCES)
 	$(call munge,$^,$(PANDOC) --atx-headers --wrap=preserve --to=markdown-smart,Normalize and tidy Markdown syntax using Pandoc)
 	#(call munge,$^,reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
 	#(call munge,$^,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
-
-define normalize_markdown
-	$(if $(HEAD),head -n$(HEAD),cat) |
-	( $(DIFF) && cat || (
-		msword_escapes.pl |
-		lazy_quotes.pl |
-		smart_quotes.pl |
-		figure_dash.pl |
-		unicode_symbols.pl |
-		italic_reorder.pl |
-		link_verses.js
-	) )
-endef
-
-define criticToSile
-	sed -e 's#{==#\\criticHighlight{#g' -e 's#==}#}#g' \
-		-e 's#{>>#\\criticComment{#g'   -e 's#<<}#}#g' \
-		-e 's#{++#\\criticAdd{#g'       -e 's#++}#}#g' \
-		-e 's#{--#\\criticDel{#g'       -e 's#--}#}#g'
-endef
-
-define strip_lang
-	perl -pne "
-		s/\\\lang.{1,3}\{([^\}]+)}/\1/g
-	"
-endef
-
-define markdown_hook
-	cat -
-endef
-
-define pre_sile_markdown_hook
-	cat -
-endef
-
-define sile_hook
-	cat -
-endef
 
 %.toc: %.pdf ;
 
@@ -795,14 +683,6 @@ $(_issue).info: | $(require_pubdir)
 		echo
 	done > $@
 	$(addtosync)
-
-define skip_if_tracked
-	git ls-files --error-unmatch -- $1 2>/dev/null && exit 0 ||:
-endef
-
-define skip_if_lazy
-	$(LAZY) && $(if $(filter $1,$(MAKECMDGOALS)),false,true) && test -f $1 && { touch $1; exit 0 } ||:
-endef
 
 COVERBACKGROUNDS = $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_cover)-$(_background).png)
 git_background = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
@@ -852,32 +732,6 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		-quality 9 \
 		$@
 	$(addtosync)
-
-define magick_cover
-		-fill none \
-		-fuzz 5% \
-		-draw 'color 1,1 replace' \
-		+write mpr:text \
-		\( mpr:text \
-			-channel RGBA \
-			-morphology Dilate:%[fx:w/500] Octagon \
-			-channel RGB \
-			-negate \
-		\) -composite \
-		\( mpr:text \
-			-channel RGBA \
-			-morphology Dilate:%[fx:w/200] Octagon \
-			-resize 25% \
-			-blur 0x%[fx:w/200] \
-			-resize 400% \
-			-channel A \
-			-level 0%,250% \
-			-channel RGB \
-			-negate \
-		\) -composite \
-		\( mpr:text \
-		\) -composite
-endef
 
 %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf $$(geometryfile)
 	$(COVERS) || exit 0
@@ -1087,93 +941,6 @@ $(GEOMETRIES): %-$(_geometry).zsh: $$(call geometrybase,$$@) $$(call newgeometry
 	imghpm=$$(($$pagehpm+$$bleedpm*2))
 	imghpt=$$(($$pagehpt+$$bleedpt*2))
 
-define magick_background_cover
-	$(call magick_background)
-endef
-
-define magick_background_binding
-	$(call magick_background)
-endef
-
-define magick_background
-	xc:DarkGray
-endef
-
-define magick_background_filter
-	-normalize
-endef
-
-define magick_border
-	-fill none -strokewidth 1 \
-	$(shell $(DRAFT) && echo -n '-stroke gray50' || echo -n '-stroke transparent') \
-	-draw "rectangle $$bleedpx,$$bleedpx %[fx:w-$$bleedpx],%[fx:h-$$bleedpx]" \
-	-draw "rectangle %[fx:$$bleedpx+$$pagewpx],$$bleedpx %[fx:w-$$bleedpx-$$pagewpx],%[fx:h-$$bleedpx]"
-endef
-
-define magick_emblum
-	-gravity South \
-	\( -background none \
-		$1 \
-		-resize "%[fx:min($$spinepx/100*(100-$$spinemm),$(call mmtopx,12))]"x \
-		$(call magick_sembol_filter) \
-		-splice x%[fx:$(call mmtopx,5)+$$bleedpx] \
-	\) -compose Over -composite
-endef
-
-define magick_sembol_filter
-endef
-
-define magick_logo
-	-gravity SouthWest \
-	\( -background none \
-		$1 \
-		-channel RGB -negate \
-		-level 20%,60%! \
-		-resize $(call mmtopx,30)x \
-		-splice %[fx:$$bleedpx+$$pagewpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
-	\) -compose Screen -composite
-endef
-
-define magick_barcode
-	-gravity SouthEast \
-	\( -background white \
-		$1 \
-		-resize $(call mmtopx,30)x \
-		-bordercolor white \
-		-border $(call mmtopx,2) \
-		-background none \
-		-splice %[fx:$$bleedpx+$$pagewpx+$$spinepx+$$pagewpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
-	\) -compose Over -composite
-endef
-
-define magick_crease
-	-stroke gray95 -strokewidth $(call mmtopx,0.5) \
-	\( -size $${pagewpx}x$${pagehpx} -background none xc: -draw "line %[fx:$1$(call mmtopx,8)],0 %[fx:$1$(call mmtopx,8)],$${pagehpx}" -blur 0x$(call scale,$(call mmtopx,0.2)) -level 0x40%! \) \
-	-compose ModulusAdd -composite
-endef
-
-define magick_fray
-	\( +clone \
-		-alpha Extract \
-		-virtual-pixel black \
-		-spread 2 \
-		-blur 0x4 \
-		-threshold 20% \
-		-spread 2 \
-		-blur 0x0.7 \
-	\) -alpha Off -compose Copyopacity -composite
-endef
-
-define magick_emulateprint
-	+level 0%,95%,1.6 \
-	-modulate 100,75
-endef
-
-define magick_printcolor
-	-modulate 100,140 \
-	+level 0%,110%,0.7
-endef
-
 %-$(_binding)-$(_front).png: %-$(_binding).png $$(geometryfile)
 	$(sourcegeometry)
 	$(MAGICK) $< -gravity East -crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! $@
@@ -1185,16 +952,6 @@ endef
 %-$(_binding)-$(_spine).png: %-$(_binding).png $$(geometryfile)
 	$(sourcegeometry)
 	$(MAGICK) $< -gravity Center -crop $${spinepx}x$${pagehpx}+0+0! $@
-
-define pagetopng =
-	$(MAGICK) -density $(HIDPI) \
-		-background white \
-		$<[$$(($1-1))] \
-		-flatten \
-		-colorspace rgb \
-		-crop $${pagewpx}x$${pagehpx}+$${trimpx}+$${trimpx}! \
-		$@
-endef
 
 %-$(_print)-pov-$(_front).png: %-$(_print).pdf $$(geometryfile)
 	$(sourcegeometry)
@@ -1276,16 +1033,6 @@ $(SERIESSCENES): $(PROJECT)-%-$(_3d).pov: $(firstword $(TARGETS))-%-$(_3d).pov $
 	EOF
 endif
 
-define povray
-	headers=$$(mktemp povXXXXXX.inc)
-	cat <<- EOF < $2 < $3 > $$headers
-		#version 3.7;
-		#declare SceneLight = $(SCENELIGHT);
-	EOF
-	$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$(call scale,$5) -H$(call scale,$6) -Q$(call scale,11,4) -O$4
-	rm $$headers
-endef
-
 %-$(_3d)-$(_front).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/front.pov
 	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/front.pov,$^),$@,6000,8000)
 
@@ -1297,20 +1044,6 @@ endef
 
 $(PROJECT)-%-$(_3d)-$(_montage).png: $(CASILEDIR)/book.pov $(PROJECT)-%-$(_3d).pov $(CASILEDIR)/montage.pov
 	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/montage.pov,$^),$@,8000,6000)
-
-define pov_crop
-	\( +clone \
-		-virtual-pixel edge \
-		-colorspace Gray \
-		-edge 3 \
-		-fuzz 40% \
-		-trim -trim \
-		-set option:fuzzy_trim "%[fx:w*1.2]x%[fx:h*1.2]+%[fx:page.x-w*0.1]+%[fx:page.y-h*0.1]" \
-		+delete \
-	\) \
-	-crop %[fuzzy_trim] \
-	-resize $(call scale,4000)x
-endef
 
 %.jpg: %.png | $(require_pubdir)
 	$(MAGICK) $< \
@@ -1428,14 +1161,6 @@ normalize_references: $(MARKDOWNSOURCES)
 
 .PHONY: normalize
 normalize: normalize_lua normalize_markdown normalize_references
-
-define split_chapters
-	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
-	git diff-files --quiet -- $1 || exit 1 # die if this file has uncommitted changes
-	grep -q 'esyscmd.*cat' $1 && exit 1 # skip if the source is aready a compilation
-	split_chapters.zsh $1
-	git diff-index --quiet --cached HEAD || git ci -m "[auto] Split $1 into one file per chapter"
-endef
 
 split_chapters:
 	$(if $(MARKDOWNSOURCES),,exit 0)
