@@ -701,10 +701,10 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		-compress jpeg \
 		-quality 50 \
 		+repage \
-		$$bg
+		$${bg}
 	pdftk $(filter %.pdf,$^) cat 1 output $${text}
-	pdftk $${text} background $$bg output $@
-	rm $${text} $$bg
+	pdftk $${text} background $${bg} output $@
+	rm $${text} $${bg}
 
 BINDINGFRAGMENTS = $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_binding)-$(_text).pdf)
 $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
