@@ -979,7 +979,7 @@ $(BOOKSCENES): %-$(_3d).pov: $$(geometryfile) %.inc
 		#declare toMM = 1 / $$pagehmm;
 	EOF
 
-ifneq ($(TARGETS),$(PROJECT))
+ifneq ($(strip $(TARGETS)),$(strip $(PROJECT)))
 SERIESSCENES = $(sort $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3d).pov))
 $(SERIESSCENES): $(PROJECT)-%-$(_3d).pov: $(firstword $(TARGETS))-%-$(_3d).pov $(call pattern_list,$(TARGETS),-%.inc)
 	cat <<- EOF > $@
