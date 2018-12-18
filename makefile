@@ -657,7 +657,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		-size $${pagewpx}x$${pagehpx}^ $(call magick_background_cover) -composite \
 		$@ ||:
 
-%-$(_poster).png: %-$(_cover).png $$(geometryfile)
+%-$(_poster).png: %-$(_print)-$(_cover).png $$(geometryfile)
 	$(sourcegeometry)
 	$(MAGICK) $< \
 		-resize $${pagewpp}x$${pagehpp}^ \
@@ -833,6 +833,11 @@ sourcegeometry = source $(filter %-$(_geometry).zsh,$^ $|)
 NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(_print) $(DISPLAYS) $(PLACARDS),-$(_geometry).zsh)
 $(NONBOUNDGEOMETRIES): BLEED = $(NOBLEED)
 $(NONBOUNDGEOMETRIES): TRIM = $(NOTRIM)
+
+# Some output formats don't have PDF content, but we still need to calculate geometry for them so use empty templates
+EMPTYGEOMETRIES = $(call pattern_list,$(TARGETS),$(filter $(PLACARDS),$(PAPERSIZES)),-$(_print).pdf)
+$(EMPTYGEOMETRIES): $(_geometry)-$$(call parse_papersize,$$@).pdf
+	cp $< $@
 
 $(IGNORES) += $(_geometry)-*.pdf
 
