@@ -836,7 +836,7 @@ $(NONBOUNDGEOMETRIES): TRIM = $(NOTRIM)
 
 $(IGNORES) += $(_geometry)-*.pdf
 
-$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml .casile.lua
+$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(LUAINCLUDES)
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) $(SILEFLAGS) \
 		-e "papersize = '$(call unlocalize,$*)'" \
