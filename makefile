@@ -874,6 +874,8 @@ $(GEOMETRIES): %-$(_geometry).zsh: $$(call geometrybase,$$@) $$(call newgeometry
 			pagehpp=%[fx:round(h/$(HIDPI)*$(LODPI))]
 			pageaspect=%[fx:w/h]
 		' $(filter $(_geometry)-%.pdf,$^)[0] || echo false)
+	pminpx=$$(($$pagewpx<$$pagehpx?$$pagewpx:$$pagehpx))
+	pmaxpx=$$(($$pagewpx>$$pagehpx?$$pagewpx:$$pagehpx))
 	pagecount=$(call pagecount,$(filter %.pdf,$<))
 	spinemm=$(call spinemm,$(filter %.pdf,$<))
 	spinepx=$(call mmtopx,$(call spinemm,$(filter %.pdf,$<)))
@@ -903,6 +905,7 @@ $(GEOMETRIES): %-$(_geometry).zsh: $$(call geometrybase,$$@) $$(call newgeometry
 	imghpx=$$(($$pagehpx+$$bleedpx*2))
 	imghpm=$$(($$pagehpm+$$bleedpm*2))
 	imghpt=$$(($$pagehpt+$$bleedpt*2))
+	$(call geometry_extras)
 
 %-$(_binding)-$(_front).png: %-$(_binding).png $$(geometryfile)
 	$(sourcegeometry)
