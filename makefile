@@ -672,7 +672,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 			-size $${pagewpx}x$${pagehpx} \
 			xc: \
 			$(call magick_cover) \
-		\) -compose Overlay -composite \
+		\) -compose over -composite \
 		\( \
 			-gravity Center \
 			$*-$(_cover)-$(_fragment).png \
@@ -779,9 +779,9 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
 		$(or $(and $(call git_background,$*-$(_cover)-$(_background).png),$(call git_background,$*-$(_cover)-$(_background).png) -resize $${imgwpx}x$${imghpx}!),$(call magick_background_binding)) \
 		$(call magick_border) \
-		\( -gravity East -size $${pagewpx}x$${pagehpx} -background none xc: $(call magick_front) -splice $${bleedpx}x \) -compose Overlay -composite \
-		\( -gravity West -size $${pagewpx}x$${pagehpx} -background none xc: $(call magick_back) -splice $${bleedpx}x \) -compose Overlay -composite \
-		\( -gravity Center -size $${spinepx}x$${pagehpx} -background none xc: $(call magick_spine) \) -compose Overlay -composite \
+		\( -gravity East -size $${pagewpx}x$${pagehpx} -background none xc: $(call magick_front) -splice $${bleedpx}x \) -compose Over -composite \
+		\( -gravity West -size $${pagewpx}x$${pagehpx} -background none xc: $(call magick_back) -splice $${bleedpx}x \) -compose Over -composite \
+		\( -gravity Center -size $${spinepx}x$${pagehpx} -background none xc: $(call magick_spine) \) -compose over -composite \
 		\( -gravity East $(filter %-$(_front).png,$^) -splice $${bleedpx}x -write mpr:text-front \) -compose Over -composite \
 		\( -gravity West $(filter %-$(_back).png,$^) -splice $${bleedpx}x -write mpr:text-front \) -compose Over -composite \
 		\( -gravity Center $(filter %-$(_spine).png,$^) -write mpr:text-front \) -compose Over -composite \
