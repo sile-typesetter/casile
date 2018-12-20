@@ -654,7 +654,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		$(call magick_background_filter) \
 		$@ ||:
 	$(if $(filter %.png,$(call git_background,$@)),false,true) && $(MAGICK) \
-		-size $${pagewpx}x$${pagehpx}^ $(call magick_background_cover) -composite \
+		-size $${pagewpx}x$${pagehpx}^ $(call magick_background_cover) -compose SrcOver -composite \
 		$@ ||:
 
 %-$(_poster).png: %-$(_print)-$(_cover).png $$(geometryfile)
@@ -679,7 +679,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		\) -compose SrcOver -composite \
 		-gravity Center \
 		-size %[fx:u.w]x%[fx:u.h] \
-		-composite \
+		-compose SrcOver -composite \
 		$@
 
 # Gitlab projects need a sub 200kb icon image
@@ -722,13 +722,13 @@ $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(cal
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace RGB \
 		$(call magick_fragment_front) \
-		-composite $@
+		$@
 
 %-$(_fragment)-$(_back).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[1] \
 		-colorspace RGB \
 		$(call magick_fragment_back) \
-		-composite $@
+		$@
 
 %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfile)
 	$(sourcegeometry)
@@ -736,7 +736,7 @@ $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(cal
 		-colorspace RGB \
 		-crop $${spinepx}x+0+0 \
 		$(call magick_fragment_spine) \
-		-composite $@
+		$@
 
 COVERFRAGMENTS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_cover)-$(_text).pdf)
 $(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
@@ -753,7 +753,7 @@ $(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace RGB \
 		$(call magick_fragment_cover) \
-		-composite $@
+		$@
 
 PUBLISHEREMBLUM ?= $(PUBLISHERDIR)/emblum.svg
 publisher_emblum.svg: $(PUBLISHEREMBLUM)
@@ -789,7 +789,7 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 		$(call magick_barcode,$(filter %-$(_barcode).png,$^)) \
 		$(call magick_logo,publisher_logo.svg) \
 		-gravity Center -size %[fx:u.w]x%[fx:u.h] \
-		-composite \
+		-compose SrcOver -composite \
 		$(call magick_binding) \
 		$@
 

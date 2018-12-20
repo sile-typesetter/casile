@@ -178,7 +178,7 @@ define magick_cover ?=
 			-morphology Dilate:%[fx:w/500] Octagon \
 			-channel RGB \
 			-negate \
-		\) -composite \
+		\) -compose SrcOver -composite \
 		\( mpr:text \
 			-channel RGBA \
 			-morphology Dilate:%[fx:w/200] Octagon \
@@ -189,9 +189,9 @@ define magick_cover ?=
 			-level 0%,250% \
 			-channel RGB \
 			-negate \
-		\) -composite \
+		\) -compose SrcOver -composite \
 		\( mpr:text \
-		\) -composite
+		\) -compose SrcOver -composite
 endef
 
 define magick_background_cover ?=
@@ -268,7 +268,7 @@ define magick_fray ?=
 		-threshold 20% \
 		-spread 2 \
 		-blur 0x0.7 \
-	\) -alpha Off -compose Copyopacity -composite
+	\) -alpha Off -compose CopyAlpha -composite
 endef
 
 define magick_emulateprint ?=
@@ -321,4 +321,16 @@ define split_chapters ?=
 	grep -q 'esyscmd.*cat' $1 && exit 1 # skip if the source is aready a compilation
 	split_chapters.zsh $1
 	git diff-index --quiet --cached HEAD || git ci -m "[auto] Split $1 into one file per chapter"
+endef
+
+define magick_fragment_cover ?=
+endef
+
+define magick_fragment_front ?=
+endef
+
+define magick_fragment_back ?=
+endef
+
+define magick_fragment_spine ?=
 endef
