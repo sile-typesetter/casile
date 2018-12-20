@@ -657,6 +657,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		-size $${pagewpx}x$${pagehpx}^ $(call magick_background_cover) -compose SrcOver -composite \
 		$@ ||:
 
+# Requires fake geometry file with no binding spec because binding not part of pattern
 %-$(_poster).png: %-$(_print)-$(_cover).png $$(geometryfile)
 	$(sourcegeometry)
 	$(MAGICK) $< \
@@ -846,6 +847,11 @@ $(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(LUAINCLUDES)
 	$(SILE) $(SILEFLAGS) \
 		-e "papersize = '$(call unlocalize,$*)'" \
 		$< -o $@
+
+# The assorted promotional materials don't have binding specs because they aren't bound, fake print versions of the layouts
+FAKEGEOMETRIES = $(call pattern_list,$(TARGETS),$(PLACARDS),-$(_geometry).zsh)
+$(FAKEGEOMETRIES): %-$(_geometry).zsh: %-$(_print)-$(_geometry).zsh
+	ln -s $< $@
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES = $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_geometry).zsh)
