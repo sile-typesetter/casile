@@ -224,7 +224,7 @@ define magick_emblum ?=
 		-resize "%[fx:min($$spinepx/100*(100-$$spinemm),$(call mmtopx,12))]"x \
 		$(call magick_sembol_filter) \
 		-splice x%[fx:$(call mmtopx,5)+$$bleedpx] \
-	\) -compose Over -composite
+	\) -compose SrcOver -composite
 endef
 
 define magick_sembol_filter ?=
@@ -250,7 +250,7 @@ define magick_barcode ?=
 		-border $(call mmtopx,2) \
 		-background none \
 		-splice %[fx:$$bleedpx+$$pagewpx+$$spinepx+$$pagewpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
-	\) -compose Over -composite
+	\) -compose SrcOver -composite
 endef
 
 define magick_crease ?=
