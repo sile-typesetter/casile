@@ -720,20 +720,20 @@ $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(cal
 
 %-$(_fragment)-$(_front).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
-		-colorspace RGB \
+		-colorspace sRGB \
 		$(call magick_fragment_front) \
 		$@
 
 %-$(_fragment)-$(_back).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[1] \
-		-colorspace RGB \
+		-colorspace sRGB \
 		$(call magick_fragment_back) \
 		$@
 
 %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfile)
 	$(sourcegeometry)
 	$(MAGICK) -density $(HIDPI) $<[2] \
-		-colorspace RGB \
+		-colorspace sRGB \
 		-crop $${spinepx}x+0+0 \
 		$(call magick_fragment_spine) \
 		$@
@@ -751,7 +751,7 @@ $(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$
 
 %-$(_fragment).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
-		-colorspace RGB \
+		-colorspace sRGB \
 		$(call magick_fragment_cover) \
 		$@
 
