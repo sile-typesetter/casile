@@ -825,11 +825,6 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 		--export-pdf=$@
 	$(addtosync)
 
-newgeometry = $(shell grep -sq hidpi=$(HIDPI) $1 || echo force)
-geometrybase = $(call parse_bookid,$1)-$(call parse_layout,$1).pdf $(_geometry)-$(call parse_papersize,$1).pdf
-geometryfile = $(call parse_bookid,$@)-$(call parse_layout,$@)-$(_geometry).zsh
-sourcegeometry = source $(filter %-$(_geometry).zsh,$^ $|)
-
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
 NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(_print) $(DISPLAYS) $(PLACARDS),-$(_geometry).zsh)
 $(NONBOUNDGEOMETRIES): BLEED = $(NOBLEED)
