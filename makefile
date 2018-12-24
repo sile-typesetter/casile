@@ -21,10 +21,10 @@ include $(CASILEDIR)/makefile-functions
 # Empty recipies for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;
 
-MARKDOWNSOURCES ?= $(call find,*.md)
-LUASOURCES ?= $(call find,*.lua)
-MAKESOURCES ?= $(call find,[Mm]akefile*)
-YAMLSOURCES ?= $(call find,*.yml)
+MARKDOWNSOURCES := $(call find,*.md)
+LUASOURCES := $(call find,*.lua)
+MAKESOURCES := $(call find,[Mm]akefile*)
+YAMLSOURCES := $(call find,*.yml)
 
 # Find stuff to build that has both a YML and a MD component
 TARGETS ?= $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(notdir $(YAMLSOURCES))))
@@ -283,6 +283,10 @@ debug:
 	@echo TAG: $(TAG)
 	@echo TAGNAME: $(TAGNAME)
 	@echo TARGETS: $(TARGETS)
+	@echo MARKDOWNSOURCES: $(MARKDOWNSOURCES)
+	@echo LUASOURCES: $(LUASOURCES)
+	@echo MAKESOURCES: $(MAKESOURCES)
+	@echo YAMLSOURCES: $(YAMLSOURCES)
 	@echo urlinfo: $(call urlinfo,$(PROJECT))
 	@echo versioninfo: $(call versioninfo,$(PROJECT))
 
