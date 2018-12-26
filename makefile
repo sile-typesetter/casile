@@ -910,6 +910,7 @@ $(GEOMETRIES): %-$(_geometry).zsh: $$(call geometrybase,$$@) $$(call newgeometry
 	imghpx=$$(($$pagehpx+$$bleedpx*2))
 	imghpm=$$(($$pagehpm+$$bleedpm*2))
 	imghpt=$$(($$pagehpt+$$bleedpt*2))
+	widelayout=$$(($${pagewpx} > $${pagehpx}))
 	$(call geometry_extras)
 
 %-$(_binding)-$(_front).png: %-$(_binding).png $$(geometryfile)
