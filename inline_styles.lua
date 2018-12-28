@@ -62,6 +62,7 @@ end)
 
 SILE.registerCommand("cabook:font:dedication", function (options, content)
   options.style = options.style or "Italic"
+  options.size = options.size or "14pt"
   SILE.call("cabook:font:serif", options, content)
 end)
 

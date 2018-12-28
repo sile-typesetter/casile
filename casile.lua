@@ -319,13 +319,14 @@ SILE.registerCommand("tableofcontents", function (options, content)
 end)
 
 SILE.registerCommand("tableofcontents:item", function (options, content)
+  options.dotfill = SU.boolean(options.dotfill, true)
   SILE.settings.temporarily(function ()
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
     SILE.call("tableofcontents:level"..options.level.."item", {}, function ()
       SILE.process(addDiscressionaryBreaks({}, content))
       if options.level == 2 then
         SILE.call("hbox", {}, function ()
-          SILE.call("dotfill")
+          if options.dotfill then SILE.call("dotfill") else SILE.call("hfill") end
           SILE.typesetter:typeset(options.pageno)
         end)
       else
@@ -529,7 +530,7 @@ SILE.registerCommand("dedication", function (options, content)
     SILE.settings.set("linespacing.method", "fit-font")
     SILE.settings.set("linespacing.fit-font.extra-space", SILE.length.parse("0.4ex plus 0.1ex minus 0.1ex"))
     SILE.call("topfill")
-    SILE.call("cabook:font:dedication", { style = "Italic", size = "14pt" }, content)
+    SILE.call("cabook:font:dedication", {}, content)
   end)
   if options.eject then SILE.call("eject") end
 end)
