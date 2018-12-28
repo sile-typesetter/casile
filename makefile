@@ -145,7 +145,7 @@ endif
 
 # Set default document class
 DOCUMENTCLASS ?= cabook
-DOCUMENTOPTIONS ?= binding=$(call unlocalize,$(call parse_binding,$@))
+DOCUMENTOPTIONS += binding=$(call unlocalize,$(call parse_binding,$@))
 
 # Default template for setting up Gitlab CI runners
 CITEMPLATE ?= $(CASILEDIR)/travis.yml
@@ -255,6 +255,8 @@ debug:
 	@echo DEBUG: $(DEBUG)
 	@echo DEBUGTAGS: $(DEBUGTAGS)
 	@echo DIFF: $(DIFF)
+	@echo DOCUMENTCLASS: $(DOCUMENTCLASS)
+	@echo DOCUMENTOPTIONS: $(DOCUMENTOPTIONS)
 	@echo DRAFT: $(DRAFT)
 	@echo FIGURES: $(FIGURES)
 	@echo FORMATS: $(FORMATS)
@@ -503,7 +505,7 @@ $(FULLSILS): %.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-$(_processed
 			$(PANDOCARGS) \
 			--wrap=preserve \
 			-V documentclass="$(DOCUMENTCLASS)" \
-			$(if $(DOCUMENTOPTIONS),-V classoptions="$(DOCUMENTOPTIONS)",) \
+			$(if $(DOCUMENTOPTIONS),-V classoptions="$(call join_with,$(,),$(DOCUMENTOPTIONS))",) \
 			-V metadatafile="$(filter %-manifest.yml,$^)" \
 			-V versesfile="$(filter %-$(_verses)-$(_sorted).json,$^)" \
 			-V versioninfo="$(call versioninfo,$@)" \
