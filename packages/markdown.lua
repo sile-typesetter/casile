@@ -11,6 +11,6 @@ SILE.registerCommand("processMarkdown", function (option, content)
   SILE.processMarkdown(SU.contentToString(content))
 end)
 
-SILE.registerCommand("emphasis", function(options, content)
+SILE.registerCommand("emphasis", function (options, content)
   SILE.call("em", options, content)
 end)

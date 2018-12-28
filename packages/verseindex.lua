@@ -32,7 +32,7 @@ local init = function (self)
   local continuepair = function (args)
     if not args then return end
     if inpair and (args.frame.id == "content") then
-      repairbreak = function () SILE.call("break"); repairbreak = function() end end
+      repairbreak = function () SILE.call("break"); repairbreak = function () end end
       SILE.typesetter:pushState()
       SILE.call("tableofverses:book", { }, { inpair })
       SILE.typesetter:popState()
@@ -40,7 +40,7 @@ local init = function (self)
   end
 
   local pushBack = SILE.typesetter.pushBack
-  SILE.typesetter.pushBack = function(self)
+  SILE.typesetter.pushBack = function (self)
     continuepair(self)
     pushBack(self)
     repairbreak()

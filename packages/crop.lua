@@ -6,7 +6,7 @@ local outcounter = 1
 local cropbinding = SILE.documentState.documentClass.options.binding() == "stapled"
 -- cropbinding = false
 
-local outputMarks = function()
+local outputMarks = function ()
   local page = SILE.getFrame("page")
 
   -- Top left
@@ -25,8 +25,8 @@ local outputMarks = function()
   SILE.outputter.rule(page:right() + bleed, page:bottom(), len, 0.5)
   SILE.outputter.rule(page:right(), page:bottom() + bleed, 0.5, len)
 
-  SILE.call("hbox", {}, function()
-    SILE.settings.temporarily(function()
+  SILE.call("hbox", {}, function ()
+    SILE.settings.temporarily(function ()
       SILE.call("noindent")
       SILE.call("font", { family = "Libertinus Serif", size = bleed * 0.8,  weight = 400, style = nil, features = nil })
       SILE.call("crop:header")
@@ -64,7 +64,7 @@ local function reconstrainFrameset(fs)
   end
 end
 
-local setup = function(self, args)
+local setup = function (self, args)
   if args then
     bleed = args.bleed or bleed
     trim = args.trim or trim
@@ -91,7 +91,7 @@ local setup = function(self, args)
   if SILE.typesetter.frame then SILE.typesetter.frame:init() end
 end
 
-local init = function(self)
+local init = function (self)
 
   local outcounter = 1
 

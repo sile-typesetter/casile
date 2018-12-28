@@ -17,7 +17,7 @@ local share = "https://nextcloud.alerque.com/" .. (meta.nextcloudshare and "inde
 local infofile = io.open(arg[4], "w")
 if not infofile  then return false end
 
-local infow = function(str, endpar)
+local infow = function (str, endpar)
   str = str or ""
   endpar = endpar and "\n" or ""
   infofile:write(str .. "\n" .. endpar)

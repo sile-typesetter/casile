@@ -48,16 +48,14 @@ SILE.registerCommand("cabook:chapter:post", function (options, content)
   end)
 end)
 
-SILE.registerCommand("cabook:part:pre", function ()
-end)
+SILE.registerCommand("cabook:part:pre", function () end)
 
 SILE.registerCommand("cabook:part:post", function ()
   SILE.typesetter:typeset(" KISIM")
   SILE.call("par")
 end)
 
-SILE.registerCommand("cabook:subparagraph:post", function ()
-end)
+SILE.registerCommand("cabook:subparagraph:post", function () end)
 
 SILE.registerCommand("tableofcontents:header", function ()
   SILE.call("center", {}, function ()
@@ -425,7 +423,7 @@ SILE.registerCommand("footnote", function (options, content)
   SILE.scratch.counters.footnote.value = SILE.scratch.counters.footnote.value + 1
 end)
 
-SILE.registerCommand("footnote:counter", function(options, content)
+SILE.registerCommand("footnote:counter", function (options, content)
   SILE.call("noindent")
   local width = SILE.length.parse(options.indent)
   SILE.typesetter:pushGlue({ width = width:negate() })
@@ -701,7 +699,7 @@ SILE.registerCommand("dropcap", function (options, content)
   SILE.call("indent")
 end)
 
-SILE.registerCommand("requireSpace", function(options, content)
+SILE.registerCommand("requireSpace", function (options, content)
 	local required = SILE.length.parse(options.height or 1)
 	SILE.typesetter:leaveHmode()
 	local hbox = SILE.Commands["hbox"]({}, content)
@@ -734,10 +732,10 @@ constrainSize = function (ideal, max, min)
   return ideal
 end
 
-isWideLayout = function()
+isWideLayout = function ()
   return CASILE.layout == "banner" or CASILE.layout == "wide" or CASILE.layout == "screen"
 end
 
-isScreenLayout = function()
+isScreenLayout = function ()
   return CASILE.layout == "app" or CASILE.layout == "screen"
 end
