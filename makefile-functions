@@ -29,6 +29,7 @@ parse_binding = $(or $(filter $(BINDINGS),$(subst -, ,$(basename $1))),$(_print)
 strip_binding = $(filter-out $1,$(foreach BINDING,$(BINDINGS),$(subst -$(BINDING),,$1)))
 parse_bookid = $(firstword $(subst -, ,$(basename $1)))
 series_sort = $(shell PROJECT=$(PROJECT) SORTORDER=$(SORTORDER) $(CASILEDIR)/bin/series_sort.lua $1)
+metainfo = $(shell yq -r '$1' < $(PROJECTYAML))
 
 # Utility to modify recursive variables, see http://stackoverflow.com/a/36863261/313192
 prepend = $(eval $(1) = $(2)$(value $(1)))
