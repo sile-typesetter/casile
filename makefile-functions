@@ -241,11 +241,13 @@ define magick_logo ?=
 	-gravity SouthWest \
 	\( -background none \
 		$1 \
-		-channel RGB -negate \
-		-level 20%,60%! \
+		$(call magick_logo_filter)
 		-resize $(call mmtopx,30)x \
 		-splice %[fx:$$bleedpx+$$pagewpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
-	\) -compose Screen -composite
+	\) -compose SrcOver -composite
+endef
+
+define magick_logo_filter ?=
 endef
 
 define magick_barcode ?=
