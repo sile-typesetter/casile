@@ -230,7 +230,7 @@ endif
 .PHONY: series_promotionals
 series_promotionals: $(PROJECT)-epub-$(_poster)-$(_montage).jpg $(PROJECT)-$(_square)-$(_poster)-$(_montage).jpg
 
-ifneq ($(filter ci promotionals series_promotionals %.web,$(MAKECMDGOALS)),)
+ifneq ($(filter ci promotionals series_promotionals %.web %.epub,$(MAKECMDGOALS)),)
 LAYOUTS += $(call pattern_list,$(PLACARDS),-$(_print))
 endif
 
