@@ -241,7 +241,7 @@ $(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(TARGETS),%,-$(_p
 		$@
 
 .PHONY: clean
-clean: $(and $(CI),init) | $(require_pubdir)
+clean: | $(require_pubdir)
 	git clean -xf $(foreach CONFIG,$(PROJECTCONFIGS),-e $(CONFIG))
 	rm -f $(PUBDIR)/*
 
