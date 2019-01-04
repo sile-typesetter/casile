@@ -237,7 +237,7 @@ endif
 .PHONY: series_renderings
 series_renderings: $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3d)-$(_montage).jpg)
 
-$(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(TARGETS),%,-$(_poster).png) $(firstword $(TARGETS))-%-$(_geometry).zsh
+$(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(TARGETS),%,-$(_poster).png) $(firstword $(TARGETS))-%-$(_geometry).sh
 	$(sourcegeometry)
 	$(MAGICK) montage \
 		$(filter %.png,$^) \
@@ -836,7 +836,7 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 	$(addtosync)
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
-NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(_print) $(DISPLAYS) $(PLACARDS),-$(_geometry).zsh)
+NONBOUNDGEOMETRIES = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(_print) $(DISPLAYS) $(PLACARDS),-$(_geometry).sh)
 $(NONBOUNDGEOMETRIES): BLEED = $(NOBLEED)
 $(NONBOUNDGEOMETRIES): TRIM = $(NOTRIM)
 
@@ -854,13 +854,13 @@ $(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(LUAINCLUDES)
 		$< -o $@
 
 # The assorted promotional materials don't have binding specs because they aren't bound, fake print versions of the layouts
-FAKEGEOMETRIES = $(call pattern_list,$(TARGETS),$(PLACARDS),-$(_geometry).zsh)
-$(FAKEGEOMETRIES): %-$(_geometry).zsh: %-$(_print)-$(_geometry).zsh
+FAKEGEOMETRIES = $(call pattern_list,$(TARGETS),$(PLACARDS),-$(_geometry).sh)
+$(FAKEGEOMETRIES): %-$(_geometry).sh: %-$(_print)-$(_geometry).sh
 	ln -s $< $@
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
-GEOMETRIES = $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_geometry).zsh)
-$(GEOMETRIES): %-$(_geometry).zsh: $$(call geometrybase,$$@) $$(call newgeometry,$$@)
+GEOMETRIES = $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_geometry).sh)
+$(GEOMETRIES): %-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,$$@)
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	hidpi=$(HIDPI)
 	lodpi=$(HIDPI)
