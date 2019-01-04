@@ -248,7 +248,6 @@ clean: | $(require_pubdir)
 .PHONY: debug
 debug:
 	@echo ALLTAGS: $(ALLTAGS)
-	@echo BRANCH: $(BRANCH)
 	@echo CASILEDIR: $(CASILEDIR)
 	@echo CICONFIG: $(CICONFIG)
 	@echo CITEMPLATE: $(CITEMPLATE)
