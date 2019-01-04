@@ -840,11 +840,11 @@ $(NONBOUNDGEOMETRIES): BLEED = $(NOBLEED)
 $(NONBOUNDGEOMETRIES): TRIM = $(NOTRIM)
 
 # Some output formats don't have PDF content, but we still need to calculate geometry for them so use empty templates
-EMPTYGEOMETRIES = $(call pattern_list,$(TARGETS),$(filter $(PLACARDS),$(PAPERSIZES)),-$(_print).pdf)
+EMPTYGEOMETRIES = $(call pattern_list,$(TARGETS),$(PLACARDS),-$(_print).pdf)
 $(EMPTYGEOMETRIES): $(_geometry)-$$(call parse_papersize,$$@).pdf
 	cp $< $@
 
-$(IGNORES) += $(_geometry)-*.pdf
+IGNORES += $(_geometry)-*.pdf
 
 $(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(LUAINCLUDES)
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))

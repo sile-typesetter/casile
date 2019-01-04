@@ -52,9 +52,10 @@ unlocalize = $(foreach WORD,$1,$(or $(__$(WORD)),$(WORD)))
 
 # Geometry file dependency functions
 newgeometry = $(shell grep -sq hidpi=$(HIDPI) $1 || echo force)
-geometrybase = $(if $(findstring $(_print),$1),,$(call parse_bookid,$1)-$(call parse_layout,$1).pdf) $(_geometry)-$(call parse_papersize,$1).pdf
+geometrybase = $(and $(filter $(BINDINGS),$(call parse_binding,$1)),$(call parse_bookid,$1)-$(call parse_layout,$1).pdf) $(_geometry)-$(call parse_papersize,$1).pdf
 geometryfile = $(call parse_bookid,$@)-$(call parse_layout,$@)-$(_geometry).zsh
 sourcegeometry = source $(filter %-$(_geometry).zsh,$^ $|)
+dump = $(warning DUMP: $1)
 
 define ci_setup ?=
 	cat -
