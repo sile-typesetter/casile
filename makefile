@@ -94,7 +94,7 @@ RENDERED ?= $(filter $(call pattern_list,$(filter-out $(DISPLAYS) $(PLACARDS),$(
 RENDERED += $(GOALLAYOUTS)
 
 # Default to running multiple jobs
-JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
+JOBS := $(shell nproc 2> /dev/null || sysctl -n hw.ncpu 2> /dev/null || echo 1)
 MAKEFLAGS += "-j $(JOBS)"
 
 # Over-ride entr arguments, defaults to just clear
@@ -305,7 +305,7 @@ force: ;
 
 .PHONY: list
 list:
-	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
+	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2> /dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
 
 .PHONY: $(TARGETS)
 REALTARGETS = $(filter-out $(MOCKUPTARGETS),$(TARGETS))
@@ -680,7 +680,7 @@ $(_issue).info: | $(require_pubdir)
 	$(addtosync)
 
 COVERBACKGROUNDS = $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_cover)-$(_background).png)
-git_background = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
+git_background = $(shell git ls-files -- $(call strip_layout,$1) 2> /dev/null)
 $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@) $$(geometryfile)
 	$(sourcegeometry)
 	$(if $(filter %.png,$(call git_background,$@)),true,false) && $(MAGICK) $(filter %.png,$^) \
