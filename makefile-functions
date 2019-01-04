@@ -30,6 +30,9 @@ strip_binding = $(filter-out $1,$(foreach BINDING,$(BINDINGS),$(subst -$(BINDING
 parse_bookid = $(firstword $(subst -, ,$(basename $1)))
 series_sort = $(shell PROJECT=$(PROJECT) SORTORDER=$(SORTORDER) $(CASILEDIR)/bin/series_sort.lua $1)
 metainfo = $(shell yq -r '$1' < $(PROJECTYAML))
+isbntoname = $(basenome $(shell grep -l '$1' $(YAMLSOURCES)))
+nametoisbne = $(shell yq -r '.identifier[] | select(.key == "ebook"    ).text' $1.yml || echo fail)
+nametoisbnp = $(shell yq -r '.identifier[] | select(.key == "paperback").text' $1.yml || echo fail)
 
 # Utility to modify recursive variables, see http://stackoverflow.com/a/36863261/313192
 prepend = $(eval $(1) = $(2)$(value $(1)))

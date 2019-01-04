@@ -25,6 +25,7 @@ MARKDOWNSOURCES := $(call find,*.md)
 LUASOURCES := $(call find,*.lua)
 MAKESOURCES := $(call find,[Mm]akefile*)
 YAMLSOURCES := $(call find,*.yml)
+ISBNS := $(yq -r '.identifier[].text' $(YAMLSOURCES) 2> /dev/null)
 
 # Find stuff to build that has both a YML and a MD component
 TARGETS ?= $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(notdir $(YAMLSOURCES))))
@@ -266,6 +267,7 @@ debug:
 	@echo FORMATS: $(FORMATS)
 	@echo GOALLAYOUTS: $(GOALLAYOUTS)
 	@echo INPUTDIR: $(INPUTDIR)
+	@echo ISBNS: $(ISBNS)
 	@echo LAYOUTS: $(LAYOUTS)
 	@echo LUAINCLUDES: $(LUAINCLUDES)
 	@echo LUALIBS: $(LUALIBS)
@@ -624,6 +626,31 @@ $(APPTARGETS): %.$(_app): %-$(_app).info promotionals
 WEBTARGETS = $(call pattern_list,$(TARGETS),.web)
 .PHONY: $(WEBTARGETS)
 $(WEBTARGETS): %.web: %-manifest.yml %-epub-$(_poster).jpg promotionals renderings
+
+PLAYTARGETS = $(call pattern_list,$(TARGETS),.play)
+.PHONY: $(PLAYTARGETS)
+$(PLAYTARGETS): %.play: %-manifest.csv $$(call nametoisbne,$$*)_frontcover.jpg $$(call nametoisbne,$$*)_backcover.jpg $$(call nametoisbnp,$$*)_interior.pdf
+
+PLAYMANIFESTS = $(call pattern_list,$(TARGETS),-manifest.csv)
+$(PLAYMANIFESTS): %-manifest.csv: %-manifest.yml
+	$(warning MAN $^)
+	# echo ""	"" > $@
+	# $(addtosync)
+
+ISBNFRONTS = $(call pattern_list,$(ISBNS),_frontcover.jpg)
+$(ISBNFRONTS): %_frontcover.jpg: $$(call isbntoname,$$@)-epub-$(_cover).jpg
+	$(warning FRO $^)
+	# cp $< $@
+
+ISBNBACKS = $(call pattern_list,$(ISBNS),_backcover.jpg)
+$(ISBNBACKS): %_backcover.jpg: %_frontcover.jpg
+	$(warning BAC $^)
+	# ln -s $< $@
+
+ISBNINTS = $(call pattern_list,$(ISBNS),_interior.pdf)
+$(ISBNINTS): %_interior.pdf: $$(call isbntoname,$@@)-$(firstword $(LAYOUTS)).pdf
+	$(warning INT $^)
+	# cp $< $@
 
 %-$(_app).info: %-$(_app).toc %-$(_app).pdf %-manifest.yml | $(require_pubdir)
 	$(CASILEDIR)/bin/toc2breaks.lua $* $(filter %-$(_app).toc,$^) $(filter %-manifest.yml,$^) $@ |
