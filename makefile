@@ -637,29 +637,36 @@ PHONYPLAYS = $(call pattern_list,$(PLAYTARGETS),.play)
 $(PHONYPLAYS): %.play: $$(call pattern_list,$$(call ebookisbn,$$*),_playbooks.csv .epub _frontcover.jpg _backcover.jpg) $$(call printisbn,$$*)_interior.pdf
 
 PLAYMETADATAS = $(call pattern_list,$(PLAYISBNS),_playbooks.csv)
-$(PLAYMETADATAS): %_playbooks.csv: $$(call isbntouid,$$*)-manifest.yml $(MAKEFILE_LIST)
-	@yq -r '.' $(filter %-manifest.yml,$^)
-	@yq -M -e -r '
-		["Identifier",
-		 "Title",
-		 "Subtitle",
-		 "Book Format",
-		 "Related Identifier [Format, Relationship], Semicolon-Separated",
-		 "Contributor [Role], Semicolon-Separated",
-		 "Biographical Note",
-		 "Language"
-		],
-		["ISBN:$*",
-		 .title,
-		 .subtitle,
-		 "Digital",
-		 "ISBN: [Paperback, Alternative format]",
-		 "",
-		 "",
-		 (.lang | sub("tr"; "tur") | sub("en"; "eng"))
-		] | map(. // "") | @csv' \
-			$(filter %-manifest.yml,$^) |
-		tee $@
+$(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call isbntouid,$$*),-manifest.yml -bio.html -description.html)
+	# yq has a bug processing command line arguments after --rawfile
+	yq -M -e '.' -- $(filter %-manifest.yml,$^) |
+		jq -M -e \
+			--rawfile biohtml $(filter %-bio.html,$^) \
+			--rawfile deshtml $(filter %-description.html,$^) \
+			-r '
+				["Identifier",
+				 "Title",
+				 "Subtitle",
+				 "Book Format",
+				 "Related Identifier [Format, Relationship], Semicolon-Separated",
+				 "Contributor [Role], Semicolon-Separated",
+				 "Biographical Note",
+				 "Language",
+				 "Description",
+				 "Publication Date"
+				],
+				["ISBN:$*",
+				 .title,
+				 .subtitle,
+				 "Digital",
+				 "ISBN:$(call ebooktoprint,$*) [Paperback, Alternative format]",
+				 "",
+				 $$biohtml,
+				 (.lang | sub("tr"; "tur") | sub("en"; "eng")),
+				 $$deshtml,
+				 "mydate"
+				] | map(. // "") | @csv' \
+			> $@
 
 PLAYFRONTS = $(call pattern_list,$(PLAYISBNS),_frontcover.jpg)
 $(PLAYFRONTS): %_frontcover.jpg: $$(call isbntouid,$$*)-epub-$(_poster).jpg
@@ -1126,6 +1133,18 @@ $(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML)
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
 			-e '/\(own\|next\)cloudshare: [^"]/s/: \(.*\)$$/: "\1"/' > $@
 	$(addtosync)
+
+INTERMEDIATES += *.html
+
+BIOHTMLS = $(call pattern_list,$(TARGETS),-bio.html)
+$(BIOHTMLS): %-bio.html: %-manifest.yml
+	yq -r '.creator[0].about' $(filter %-manifest.yml,$^) |
+		pandoc -f markdown -t html > $@
+
+DESHTMLS = $(call pattern_list,$(TARGETS),-description.html)
+$(DESHTMLS): %-description.html: %-manifest.yml
+	yq -r '.abstract' $(filter %-manifest.yml,$^) |
+		pandoc -f markdown -t html > $@
 
 INTERMEDIATES += *-url.*
 
