@@ -285,6 +285,7 @@ debug:
 	@echo PANDOCARGS: $(PANDOCARGS)
 	@echo PAPERSIZES: $(PAPERSIZES)
 	@echo PARENT: $(PARENT)
+	@echo PLAYISBNS: $(PLAYISBNS)
 	@echo PLAYTARGETS: $(PLAYTARGETS)
 	@echo PROJECT: $(PROJECT)
 	@echo PROJECTCONFIGS: $(PROJECTCONFIGS)
@@ -628,36 +629,38 @@ WEBTARGETS = $(call pattern_list,$(TARGETS),.web)
 .PHONY: $(WEBTARGETS)
 $(WEBTARGETS): %.web: %-manifest.yml %-epub-$(_poster).jpg promotionals renderings
 
-PLAYTARGETS := $(foreach TARGET,$(TARGETS),$(call ebookisbn,$(TARGET)))
-PHONYPLAYS := $(call pattern_list,$(PLAYTARGETS),.play)
+PLAYISBNS := $(foreach TARGET,$(TARGETS),$(call ebookisbn,$(TARGET)))
+PLAYTARGETS := $(foreach ISBN,$(PLAYISBNS),$(call isbntouid,$(ISBN)))
+
+PHONYPLAYS = $(call pattern_list,$(PLAYTARGETS),.play)
 .PHONY: $(PHONYPLAYS)
-$(PHONYPLAYS): %.play: %-manifest.csv %.epub %_frontcover.jpg %_backcover.jpg $$(call printisbn,$$(call isbntouid,$$*))_interior.pdf
+$(PHONYPLAYS): %.play: $$(call pattern_list,$$(call ebookisbn,$$*),_playbooks.csv .epub _frontcover.jpg _backcover.jpg) $$(call printisbn,$$*)_interior.pdf
+	$(warning PHO $^)
 
-PLAYMANIFESTS = $(call pattern_list,$(PLAYTARGETS),-manifest.csv)
-$(PLAYMANIFESTS): %-manifest.csv: $$(call isbntouid,$$*)-manifest.yml
-	$(warning MAN $^)
+PLAYMETADATAS = $(call pattern_list,$(PLAYISBNS),_playbooks.csv)
+$(PLAYMETADATAS): %_playbooks.csv: $$(call isbntouid,$$*)-manifest.yml
+	$(warning MET $^)
 	# echo ""	"" > $@
-	# $(addtosync)
 
-PLAYFRONTS = $(call pattern_list,$(PLAYTARGETS),_frontcover.jpg)
-$(PLAYFRONTS): %_frontcover.jpg: $$(call isbntouid,$$*)-epub-$(_cover).jpg
-	$(warning FRO $^)
-	# cp $< $@
+PLAYFRONTS = $(call pattern_list,$(PLAYISBNS),_frontcover.jpg)
+$(PLAYFRONTS): %_frontcover.jpg: $$(call isbntouid,$$*)-epub-$(_poster).jpg
+	cp $< $@
+	$(addtosync)
 
-PLAYBACKS = $(call pattern_list,$(PLAYTARGETS),_backcover.jpg)
+PLAYBACKS = $(call pattern_list,$(PLAYISBNS),_backcover.jpg)
 $(PLAYBACKS): %_backcover.jpg: %_frontcover.jpg
-	$(warning BAC $^)
-	# ln -s $< $@
+	cp $< $@
+	$(addtosync)
 
 PLAYINTS = $(call pattern_list,$(ISBNS),_interior.pdf)
 $(PLAYINTS): %_interior.pdf: $$(call isbntouid,$$*)-$(firstword $(LAYOUTS)).pdf
-	$(warning INT $^)
-	# cp $< $@
+	cp $< $@
+	$(addtosync)
 
-PLAYEPUBS = $(call pattern_list,$(PLAYTARGETS),.epub)
+PLAYEPUBS = $(call pattern_list,$(PLAYISBNS),.epub)
 $(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub
-	$(warning EPU $^)
-	# cp $< $@
+	cp $< $@
+	$(addtosync)
 
 %-$(_app).info: %-$(_app).toc %-$(_app).pdf %-manifest.yml | $(require_pubdir)
 	$(CASILEDIR)/bin/toc2breaks.lua $* $(filter %-$(_app).toc,$^) $(filter %-manifest.yml,$^) $@ |
