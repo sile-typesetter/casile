@@ -25,7 +25,7 @@ MARKDOWNSOURCES := $(call find,*.md)
 LUASOURCES := $(call find,*.lua)
 MAKESOURCES := $(call find,[Mm]akefile*)
 YAMLSOURCES := $(call find,*.yml)
-ISBNS := $(yq -r '.identifier[].text' $(YAMLSOURCES) 2> /dev/null)
+ISBNS := $(subst -,,$(shell yq -r '.identifier[] | select(.scheme == "ISBN-13").text' $(YAMLSOURCES) 2> /dev/null))
 
 # Find stuff to build that has both a YML and a MD component
 TARGETS ?= $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(notdir $(YAMLSOURCES))))
@@ -231,7 +231,7 @@ endif
 .PHONY: series_promotionals
 series_promotionals: $(PROJECT)-epub-$(_poster)-$(_montage).jpg $(PROJECT)-$(_square)-$(_poster)-$(_montage).jpg
 
-ifneq ($(filter ci promotionals series_promotionals %.web %.epub,$(MAKECMDGOALS)),)
+ifneq ($(filter ci promotionals series_promotionals %.web %.epub %.play,$(MAKECMDGOALS)),)
 LAYOUTS += $(call pattern_list,$(PLACARDS),-$(_print))
 endif
 
@@ -285,6 +285,7 @@ debug:
 	@echo PANDOCARGS: $(PANDOCARGS)
 	@echo PAPERSIZES: $(PAPERSIZES)
 	@echo PARENT: $(PARENT)
+	@echo PLAYTARGETS: $(PLAYTARGETS)
 	@echo PROJECT: $(PROJECT)
 	@echo PROJECTCONFIGS: $(PROJECTCONFIGS)
 	@echo RENDERED: $(RENDERED)
@@ -627,29 +628,35 @@ WEBTARGETS = $(call pattern_list,$(TARGETS),.web)
 .PHONY: $(WEBTARGETS)
 $(WEBTARGETS): %.web: %-manifest.yml %-epub-$(_poster).jpg promotionals renderings
 
-PLAYTARGETS = $(call pattern_list,$(TARGETS),.play)
-.PHONY: $(PLAYTARGETS)
-$(PLAYTARGETS): %.play: %-manifest.csv $$(call nametoisbne,$$*)_frontcover.jpg $$(call nametoisbne,$$*)_backcover.jpg $$(call nametoisbnp,$$*)_interior.pdf
+PLAYTARGETS := $(foreach TARGET,$(TARGETS),$(call ebookisbn,$(TARGET)))
+PHONYPLAYS := $(call pattern_list,$(PLAYTARGETS),.play)
+.PHONY: $(PHONYPLAYS)
+$(PHONYPLAYS): %.play: %-manifest.csv %.epub %_frontcover.jpg %_backcover.jpg $$(call printisbn,$$(call isbntouid,$$*))_interior.pdf
 
-PLAYMANIFESTS = $(call pattern_list,$(TARGETS),-manifest.csv)
-$(PLAYMANIFESTS): %-manifest.csv: %-manifest.yml
+PLAYMANIFESTS = $(call pattern_list,$(PLAYTARGETS),-manifest.csv)
+$(PLAYMANIFESTS): %-manifest.csv: $$(call isbntouid,$$*)-manifest.yml
 	$(warning MAN $^)
 	# echo ""	"" > $@
 	# $(addtosync)
 
-ISBNFRONTS = $(call pattern_list,$(ISBNS),_frontcover.jpg)
-$(ISBNFRONTS): %_frontcover.jpg: $$(call isbntoname,$$@)-epub-$(_cover).jpg
+PLAYFRONTS = $(call pattern_list,$(PLAYTARGETS),_frontcover.jpg)
+$(PLAYFRONTS): %_frontcover.jpg: $$(call isbntouid,$$*)-epub-$(_cover).jpg
 	$(warning FRO $^)
 	# cp $< $@
 
-ISBNBACKS = $(call pattern_list,$(ISBNS),_backcover.jpg)
-$(ISBNBACKS): %_backcover.jpg: %_frontcover.jpg
+PLAYBACKS = $(call pattern_list,$(PLAYTARGETS),_backcover.jpg)
+$(PLAYBACKS): %_backcover.jpg: %_frontcover.jpg
 	$(warning BAC $^)
 	# ln -s $< $@
 
-ISBNINTS = $(call pattern_list,$(ISBNS),_interior.pdf)
-$(ISBNINTS): %_interior.pdf: $$(call isbntoname,$@@)-$(firstword $(LAYOUTS)).pdf
+PLAYINTS = $(call pattern_list,$(ISBNS),_interior.pdf)
+$(PLAYINTS): %_interior.pdf: $$(call isbntouid,$$*)-$(firstword $(LAYOUTS)).pdf
 	$(warning INT $^)
+	# cp $< $@
+
+PLAYEPUBS = $(call pattern_list,$(PLAYTARGETS),.epub)
+$(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub
+	$(warning EPU $^)
 	# cp $< $@
 
 %-$(_app).info: %-$(_app).toc %-$(_app).pdf %-manifest.yml | $(require_pubdir)
