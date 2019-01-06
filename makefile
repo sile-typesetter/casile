@@ -635,12 +635,31 @@ PLAYTARGETS := $(foreach ISBN,$(PLAYISBNS),$(call isbntouid,$(ISBN)))
 PHONYPLAYS = $(call pattern_list,$(PLAYTARGETS),.play)
 .PHONY: $(PHONYPLAYS)
 $(PHONYPLAYS): %.play: $$(call pattern_list,$$(call ebookisbn,$$*),_playbooks.csv .epub _frontcover.jpg _backcover.jpg) $$(call printisbn,$$*)_interior.pdf
-	$(warning PHO $^)
 
 PLAYMETADATAS = $(call pattern_list,$(PLAYISBNS),_playbooks.csv)
-$(PLAYMETADATAS): %_playbooks.csv: $$(call isbntouid,$$*)-manifest.yml
-	$(warning MET $^)
-	# echo ""	"" > $@
+$(PLAYMETADATAS): %_playbooks.csv: $$(call isbntouid,$$*)-manifest.yml $(MAKEFILE_LIST)
+	@yq -r '.' $(filter %-manifest.yml,$^)
+	@yq -M -e -r '
+		["Identifier",
+		 "Title",
+		 "Subtitle",
+		 "Book Format",
+		 "Related Identifier [Format, Relationship], Semicolon-Separated",
+		 "Contributor [Role], Semicolon-Separated",
+		 "Biographical Note",
+		 "Language"
+		],
+		["ISBN:$*",
+		 .title,
+		 .subtitle,
+		 "Digital",
+		 "ISBN: [Paperback, Alternative format]",
+		 "",
+		 "",
+		 (.lang | sub("tr"; "tur") | sub("en"; "eng"))
+		] | map(. // "") | @csv' \
+			$(filter %-manifest.yml,$^) |
+		tee $@
 
 PLAYFRONTS = $(call pattern_list,$(PLAYISBNS),_frontcover.jpg)
 $(PLAYFRONTS): %_frontcover.jpg: $$(call isbntouid,$$*)-epub-$(_poster).jpg
