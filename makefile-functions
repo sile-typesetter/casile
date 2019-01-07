@@ -32,7 +32,7 @@ series_sort = $(shell PROJECT=$(PROJECT) SORTORDER=$(SORTORDER) $(CASILEDIR)/bin
 metainfo = $(shell yq -r '$1' < $(PROJECTYAML))
 isbntouid = $(basename $(notdir $(shell grep -l '$(call isbnmask,$1)' $(YAMLSOURCES))))
 isbnmask = $(shell python -c "import isbnlib; print(isbnlib.mask('$1'))")
-ebookisbn = $(subst -,,$(shell yq -r '.identifier[] | select(.key == "ebook"    ).text' $1.yml 2> /dev/null))
+ebookisbn = $(or $(subst -,,$(shell yq -r '.identifier[] | select(.key == "ebook"    ).text' $1.yml 2> /dev/null)),$(call printisbn,$1))
 printisbn = $(subst -,,$(shell yq -r '.identifier[] | select(.key == "paperback").text' $1.yml 2> /dev/null))
 ebooktoprint = $(call printisbn,$(call isbntouid,$1))
 
