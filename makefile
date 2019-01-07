@@ -285,7 +285,6 @@ debug:
 	@echo PANDOCARGS: $(PANDOCARGS)
 	@echo PAPERSIZES: $(PAPERSIZES)
 	@echo PARENT: $(PARENT)
-	@echo PLAYISBNS: $(PLAYISBNS)
 	@echo PLAYTARGETS: $(PLAYTARGETS)
 	@echo PROJECT: $(PROJECT)
 	@echo PROJECTCONFIGS: $(PROJECTCONFIGS)
@@ -629,63 +628,66 @@ WEBTARGETS = $(call pattern_list,$(TARGETS),.web)
 .PHONY: $(WEBTARGETS)
 $(WEBTARGETS): %.web: %-manifest.yml %-epub-$(_poster).jpg promotionals renderings
 
-PLAYISBNS := $(foreach TARGET,$(TARGETS),$(call ebookisbn,$(TARGET)))
-PLAYTARGETS := $(foreach ISBN,$(PLAYISBNS),$(call isbntouid,$(ISBN)))
+PLAYTARGETS := $(foreach ISBN,$(ISBNS),$(call isbntouid,$(ISBN)))
 
 PHONYPLAYS = $(call pattern_list,$(PLAYTARGETS),.play)
 .PHONY: $(PHONYPLAYS)
-$(PHONYPLAYS): %.play: $$(call pattern_list,$$(call ebookisbn,$$*),_playbooks.csv .epub _frontcover.jpg _backcover.jpg) $$(call pattern_list,$$(call printisbn,$$*),_interior.pdf _frontcover.jpg _backcover.jpg)
+$(PHONYPLAYS): %.play: %_playbooks.csv
+$(PHONYPLAYS): %.play: $$(call pattern_list,$$(call ebookisbn,$$*),.epub _frontcover.jpg _backcover.jpg)
+$(PHONYPLAYS): %.play: $$(call pattern_list,$$(call printisbn,$$*),_interior.pdf _frontcover.jpg _backcover.jpg)
 
-PLAYMETADATAS = $(call pattern_list,$(PLAYISBNS),_playbooks.csv)
-$(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call isbntouid,$$*)-,manifest.yml bio.html description.html $(firstword $(LAYOUTS)).pdf)
-	# yq has a bug processing command line arguments after --rawfile
-	yq -M -e '.' -- $(filter %-manifest.yml,$^) |
-		jq -M -e \
+PLAYMETADATAS = $(call pattern_list,$(PLAYTARGETS),_playbooks.csv)
+$(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call ebookisbn,$$*) $$(call printisbn,$$*),_playbooks.json) %-bio.html %-description.html
+	jq -M -e -s -r \
 			--rawfile biohtml $(filter %-bio.html,$^) \
 			--rawfile deshtml $(filter %-description.html,$^) \
-			-r '("ISBN:$*") as $$eisbn |
-				("ISBN:$(call ebooktoprint,$*)") as $$pisbn |
-				(.lang | sub("tr"; "tur") | sub("en"; "eng")) as $$lang |
-				(.date[] | select(."file-as" == "1\\. Basım").text | strptime("%Y-%m") | strftime("D:%Y-%m-01")) as $$date |
-				([.creator[], .contributor[] | select (.role == "author").text + " [Author]", select (.role == "editor").text + " [Editor]", select (.role == "trl").text + " [Translator]"] | join("; ")) as  $$authorship |
-				([$$eisbn,
-				 .title,
-				 .subtitle,
-				 "Digital",
-				 $$pisbn + " [Paperback, Alternative format]",
-				 $$authorship,
-				 $$biohtml,
-				 $$lang,
-				 $$deshtml,
-				 $$date,
-				 $(call pagecount,$(filter %.pdf,$^)),
-				 .seriestitle,
-				 (.title as $$title | .seriestitles[] | select(.title == $$title).order),
-				 "$(call urlinfo,$(call isbntouid,$*))",
-				 $$date,
-				 0,
-				 "WORLD"
-				]) as $$meta |
-				["Identifier",
-				 "Title",
-				 "Subtitle",
-				 "Book Format",
-				 "Related Identifier [Format, Relationship], Semicolon-Separated",
-				 "Contributor [Role], Semicolon-Separated",
-				 "Biographical Note",
-				 "Language",
-				 "Description",
-				 "Publication Date",
-				 "Page Count",
-				 "Series Name",
-				 "Volume in Series",
-				 "Buy Link",
-				 "On Sale Date",
-				 "TRY [Recommended Retail Price, Including Tax] Price",
-				 "Countries for TRY [Recommended Retail Price, Including Tax] Price"
-				], $$meta, ($$meta | .[0] |= $$pisbn | .[3] |= "Paperback" | .[4] |= $$eisbn + " [Digital, Alternative format]") | map(. // "") | @csv' \
-			> $@
+			'[	"Identifier",
+				"Title",
+				"Subtitle",
+				"Book Format",
+				"Related Identifier [Format, Relationship], Semicolon-Separated",
+				"Contributor [Role], Semicolon-Separated",
+				"Biographical Note",
+				"Language",
+				"Description",
+				"Publication Date",
+				"Page Count",
+				"Series Name",
+				"Volume in Series",
+				"Buy Link",
+				"On Sale Date",
+				"TRY [Recommended Retail Price, Including Tax] Price",
+				"Countries for TRY [Recommended Retail Price, Including Tax] Price"
+			],
+			(.[] | .[6] |= $$biohtml | .[8] |= $$deshtml | .[15] |= 0 | .[16] |= "WORLD")
+			| map(. // "") | @csv' $(filter %_playbooks.json,$^) | tee $@
 	$(addtosync)
+
+ISBNMETADATAS = $(call pattern_list,$(ISBNS),_playbooks.json)
+$(ISBNMETADATAS): %_playbooks.json: $$(call pattern_list,$$(call isbntouid,$$*)-,manifest.yml $(firstword $(LAYOUTS)).pdf)
+	yq -M -e '
+			([.identifier[] | select(."file-as" == "ISBN").key] | length) as $$isbncount |
+			(.lang | sub("tr"; "tur") | sub("en"; "eng")) as $$lang |
+			(.date[] | select(."file-as" == "1\\. Basım").text | strptime("%Y-%m") | strftime("D:%Y-%m-01")) as $$date |
+			([.creator[], .contributor[] | select (.role == "author").text + " [Author]", select (.role == "editor").text + " [Editor]", select (.role == "trl").text + " [Translator]"] | join("; ")) as $$contributors |
+			(.identifier[] | select(.text == "$(call isbnmask,$*)").key) as $$format |
+			[   "ISBN:$*",
+				.title,
+				.subtitle,
+				(if $$format == "paperback" then "Paperback" else "Digital" end),
+				(if $$isbncount >= 2 then (.identifier[] | select(.key != $$format and ."file-as" == "ISBN") |
+					(if .key == "ebook" then "ISBN:"+.text+" [Digital, Alternative format]" else "ISBN:"+.text+" [Paperback, Alternative format]" end) | gsub("-"; "")) else "" end),
+				$$contributors,
+				"",
+				$$lang,
+				"",
+				$$date,
+				$(call pagecount,$(filter %.pdf,$^)),
+				.seriestitle,
+				(.seriestitle and .title as $$title | .seriestitles[] | select(.title == $$title).order),
+				"$(call urlinfo,$(call isbntouid,$*))",
+				$$date
+			]' $(filter %-manifest.yml,$^) | tee $@
 
 PLAYFRONTS = $(call pattern_list,$(ISBNS),_frontcover.jpg)
 $(PLAYFRONTS): %_frontcover.jpg: $$(call isbntouid,$$*)-epub-$(_poster).jpg
@@ -702,7 +704,7 @@ $(PLAYINTS): %_interior.pdf: $$(call isbntouid,$$*)-$(firstword $(LAYOUTS)).pdf
 	cp $< $@
 	$(addtosync)
 
-PLAYEPUBS = $(call pattern_list,$(PLAYISBNS),.epub)
+PLAYEPUBS = $(call pattern_list,$(ISBNS),.epub)
 $(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub
 	cp $< $@
 	$(addtosync)
