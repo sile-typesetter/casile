@@ -25,6 +25,7 @@ MARKDOWNSOURCES := $(call find,*.md)
 LUASOURCES := $(call find,*.lua)
 MAKESOURCES := $(call find,[Mm]akefile*)
 YAMLSOURCES := $(call find,*.yml)
+ISBNS := $(subst -,,$(shell yq -r '.identifier[] | select(.scheme == "ISBN-13").text' $(YAMLSOURCES) 2> /dev/null))
 
 # Find stuff to build that has both a YML and a MD component
 TARGETS ?= $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(notdir $(YAMLSOURCES))))
@@ -93,7 +94,7 @@ RENDERED ?= $(filter $(call pattern_list,$(filter-out $(DISPLAYS) $(PLACARDS),$(
 RENDERED += $(GOALLAYOUTS)
 
 # Default to running multiple jobs
-JOBS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
+JOBS := $(shell nproc 2> /dev/null || sysctl -n hw.ncpu 2> /dev/null || echo 1)
 MAKEFLAGS += "-j $(JOBS)"
 
 # Over-ride entr arguments, defaults to just clear
@@ -230,7 +231,7 @@ endif
 .PHONY: series_promotionals
 series_promotionals: $(PROJECT)-epub-$(_poster)-$(_montage).jpg $(PROJECT)-$(_square)-$(_poster)-$(_montage).jpg
 
-ifneq ($(filter ci promotionals series_promotionals %.web %.epub,$(MAKECMDGOALS)),)
+ifneq ($(filter ci promotionals series_promotionals %.web %.epub %.play,$(MAKECMDGOALS)),)
 LAYOUTS += $(call pattern_list,$(PLACARDS),-$(_print))
 endif
 
@@ -266,6 +267,7 @@ debug:
 	@echo FORMATS: $(FORMATS)
 	@echo GOALLAYOUTS: $(GOALLAYOUTS)
 	@echo INPUTDIR: $(INPUTDIR)
+	@echo ISBNS: $(ISBNS)
 	@echo LAYOUTS: $(LAYOUTS)
 	@echo LUAINCLUDES: $(LUAINCLUDES)
 	@echo LUALIBS: $(LUALIBS)
@@ -283,6 +285,8 @@ debug:
 	@echo PANDOCARGS: $(PANDOCARGS)
 	@echo PAPERSIZES: $(PAPERSIZES)
 	@echo PARENT: $(PARENT)
+	@echo PLAYISBNS: $(PLAYISBNS)
+	@echo PLAYTARGETS: $(PLAYTARGETS)
 	@echo PROJECT: $(PROJECT)
 	@echo PROJECTCONFIGS: $(PROJECTCONFIGS)
 	@echo RENDERED: $(RENDERED)
@@ -303,7 +307,7 @@ force: ;
 
 .PHONY: list
 list:
-	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
+	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2> /dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
 
 .PHONY: $(TARGETS)
 REALTARGETS = $(filter-out $(MOCKUPTARGETS),$(TARGETS))
@@ -625,6 +629,84 @@ WEBTARGETS = $(call pattern_list,$(TARGETS),.web)
 .PHONY: $(WEBTARGETS)
 $(WEBTARGETS): %.web: %-manifest.yml %-epub-$(_poster).jpg promotionals renderings
 
+PLAYISBNS := $(foreach TARGET,$(TARGETS),$(call ebookisbn,$(TARGET)))
+PLAYTARGETS := $(foreach ISBN,$(PLAYISBNS),$(call isbntouid,$(ISBN)))
+
+PHONYPLAYS = $(call pattern_list,$(PLAYTARGETS),.play)
+.PHONY: $(PHONYPLAYS)
+$(PHONYPLAYS): %.play: $$(call pattern_list,$$(call ebookisbn,$$*),_playbooks.csv .epub _frontcover.jpg _backcover.jpg) $$(call pattern_list,$$(call printisbn,$$*),_interior.pdf _frontcover.jpg _backcover.jpg)
+
+PLAYMETADATAS = $(call pattern_list,$(PLAYISBNS),_playbooks.csv)
+$(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call isbntouid,$$*)-,manifest.yml bio.html description.html $(firstword $(LAYOUTS)).pdf)
+	# yq has a bug processing command line arguments after --rawfile
+	yq -M -e '.' -- $(filter %-manifest.yml,$^) |
+		jq -M -e \
+			--rawfile biohtml $(filter %-bio.html,$^) \
+			--rawfile deshtml $(filter %-description.html,$^) \
+			-r '("ISBN:$*") as $$eisbn |
+				("ISBN:$(call ebooktoprint,$*)") as $$pisbn |
+				(.lang | sub("tr"; "tur") | sub("en"; "eng")) as $$lang |
+				(.date[] | select(."file-as" == "1\\. Basım").text | strptime("%Y-%m") | strftime("D:%Y-%m-01")) as $$date |
+				([.creator[], .contributor[] | select (.role == "author").text + " [Author]", select (.role == "editor").text + " [Editor]", select (.role == "trl").text + " [Translator]"] | join("; ")) as  $$authorship |
+				([$$eisbn,
+				 .title,
+				 .subtitle,
+				 "Digital",
+				 $$pisbn + " [Paperback, Alternative format]",
+				 $$authorship,
+				 $$biohtml,
+				 $$lang,
+				 $$deshtml,
+				 $$date,
+				 $(call pagecount,$(filter %.pdf,$^)),
+				 .seriestitle,
+				 (.title as $$title | .seriestitles[] | select(.title == $$title).order),
+				 "$(call urlinfo,$(call isbntouid,$*))",
+				 $$date,
+				 0,
+				 "WORLD"
+				]) as $$meta |
+				["Identifier",
+				 "Title",
+				 "Subtitle",
+				 "Book Format",
+				 "Related Identifier [Format, Relationship], Semicolon-Separated",
+				 "Contributor [Role], Semicolon-Separated",
+				 "Biographical Note",
+				 "Language",
+				 "Description",
+				 "Publication Date",
+				 "Page Count",
+				 "Series Name",
+				 "Volume in Series",
+				 "Buy Link",
+				 "On Sale Date",
+				 "TRY [Recommended Retail Price, Including Tax] Price",
+				 "Countries for TRY [Recommended Retail Price, Including Tax] Price"
+				], $$meta, ($$meta | .[0] |= $$pisbn | .[3] |= "Paperback" | .[4] |= $$eisbn + " [Digital, Alternative format]") | map(. // "") | @csv' \
+			> $@
+	$(addtosync)
+
+PLAYFRONTS = $(call pattern_list,$(ISBNS),_frontcover.jpg)
+$(PLAYFRONTS): %_frontcover.jpg: $$(call isbntouid,$$*)-epub-$(_poster).jpg
+	cp $< $@
+	$(addtosync)
+
+PLAYBACKS = $(call pattern_list,$(ISBNS),_backcover.jpg)
+$(PLAYBACKS): %_backcover.jpg: %_frontcover.jpg
+	cp $< $@
+	$(addtosync)
+
+PLAYINTS = $(call pattern_list,$(ISBNS),_interior.pdf)
+$(PLAYINTS): %_interior.pdf: $$(call isbntouid,$$*)-$(firstword $(LAYOUTS)).pdf
+	cp $< $@
+	$(addtosync)
+
+PLAYEPUBS = $(call pattern_list,$(PLAYISBNS),.epub)
+$(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub
+	cp $< $@
+	$(addtosync)
+
 %-$(_app).info: %-$(_app).toc %-$(_app).pdf %-manifest.yml | $(require_pubdir)
 	$(CASILEDIR)/bin/toc2breaks.lua $* $(filter %-$(_app).toc,$^) $(filter %-manifest.yml,$^) $@ |
 		while read range out; do
@@ -653,7 +735,7 @@ $(_issue).info: | $(require_pubdir)
 	$(addtosync)
 
 COVERBACKGROUNDS = $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_cover)-$(_background).png)
-git_background = $(shell git ls-files -- $(call strip_layout,$1) 2>/dev/null)
+git_background = $(shell git ls-files -- $(call strip_layout,$1) 2> /dev/null)
 $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@) $$(geometryfile)
 	$(sourcegeometry)
 	$(if $(filter %.png,$(call git_background,$@)),true,false) && $(MAGICK) $(filter %.png,$^) \
@@ -1071,6 +1153,18 @@ $(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML)
 			-e '/\(own\|next\)cloudshare: [^"]/s/: \(.*\)$$/: "\1"/' > $@
 	$(addtosync)
 
+INTERMEDIATES += *.html
+
+BIOHTMLS = $(call pattern_list,$(TARGETS),-bio.html)
+$(BIOHTMLS): %-bio.html: %-manifest.yml
+	yq -r '.creator[0].about' $(filter %-manifest.yml,$^) |
+		pandoc -f markdown -t html > $@
+
+DESHTMLS = $(call pattern_list,$(TARGETS),-description.html)
+$(DESHTMLS): %-description.html: %-manifest.yml
+	yq -r '.abstract' $(filter %-manifest.yml,$^) |
+		pandoc -f markdown -t html > $@
+
 INTERMEDIATES += *-url.*
 
 %-url.png: %-url.svg
@@ -1085,7 +1179,7 @@ INTERMEDIATES += *-url.*
 			--filetype=svg \
 			--scale=10 \
 			--barcode=58 \
-			--data=$(call urlinfo,$@) \
+			--data="$(call urlinfo,$@)" \
 		> $@
 
 INTERMEDIATES += *-$(_barcode).*
