@@ -634,7 +634,7 @@ PLAYTARGETS := $(foreach ISBN,$(PLAYISBNS),$(call isbntouid,$(ISBN)))
 
 PHONYPLAYS = $(call pattern_list,$(PLAYTARGETS),.play)
 .PHONY: $(PHONYPLAYS)
-$(PHONYPLAYS): %.play: $$(call pattern_list,$$(call ebookisbn,$$*),_playbooks.csv .epub _frontcover.jpg _backcover.jpg) $$(call printisbn,$$*)_interior.pdf
+$(PHONYPLAYS): %.play: $$(call pattern_list,$$(call ebookisbn,$$*),_playbooks.csv .epub _frontcover.jpg _backcover.jpg) $$(call pattern_list,$$(call printisbn,$$*),_interior.pdf _frontcover.jpg _backcover.jpg)
 
 PLAYMETADATAS = $(call pattern_list,$(PLAYISBNS),_playbooks.csv)
 $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call isbntouid,$$*)-,manifest.yml bio.html description.html $(firstword $(LAYOUTS)).pdf)
@@ -687,12 +687,12 @@ $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call isbntouid,$$*)-,
 			> $@
 	$(addtosync)
 
-PLAYFRONTS = $(call pattern_list,$(PLAYISBNS),_frontcover.jpg)
+PLAYFRONTS = $(call pattern_list,$(ISBNS),_frontcover.jpg)
 $(PLAYFRONTS): %_frontcover.jpg: $$(call isbntouid,$$*)-epub-$(_poster).jpg
 	cp $< $@
 	$(addtosync)
 
-PLAYBACKS = $(call pattern_list,$(PLAYISBNS),_backcover.jpg)
+PLAYBACKS = $(call pattern_list,$(ISBNS),_backcover.jpg)
 $(PLAYBACKS): %_backcover.jpg: %_frontcover.jpg
 	cp $< $@
 	$(addtosync)
