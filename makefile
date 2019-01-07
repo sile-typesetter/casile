@@ -643,9 +643,29 @@ $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call isbntouid,$$*)-,
 		jq -M -e \
 			--rawfile biohtml $(filter %-bio.html,$^) \
 			--rawfile deshtml $(filter %-description.html,$^) \
-			-r '(.lang | sub("tr"; "tur") | sub("en"; "eng")) as $$lang |
+			-r '("ISBN:$*") as $$eisbn |
+				("ISBN:$(call ebooktoprint,$*)") as $$pisbn |
+				(.lang | sub("tr"; "tur") | sub("en"; "eng")) as $$lang |
 				(.date[] | select(."file-as" == "1\\. Basım").text | strptime("%Y-%m") | strftime("D:%Y-%m-01")) as $$date |
 				([.creator[], .contributor[] | select (.role == "author").text + " [Author]", select (.role == "editor").text + " [Editor]", select (.role == "trl").text + " [Translator]"] | join("; ")) as  $$authorship |
+				([$$eisbn,
+				 .title,
+				 .subtitle,
+				 "Digital",
+				 $$pisbn + " [Paperback, Alternative format]",
+				 $$authorship,
+				 $$biohtml,
+				 $$lang,
+				 $$deshtml,
+				 $$date,
+				 $(call pagecount,$(filter %.pdf,$^)),
+				 .seriestitle,
+				 (.title as $$title | .seriestitles[] | select(.title == $$title).order),
+				 "$(call urlinfo,$(call isbntouid,$*))",
+				 $$date,
+				 0,
+				 "WORLD"
+				]) as $$meta |
 				["Identifier",
 				 "Title",
 				 "Subtitle",
@@ -663,25 +683,7 @@ $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call isbntouid,$$*)-,
 				 "On Sale Date",
 				 "TRY [Recommended Retail Price, Including Tax] Price",
 				 "Countries for TRY [Recommended Retail Price, Including Tax] Price"
-				],
-				["ISBN:$*",
-				 .title,
-				 .subtitle,
-				 "Digital",
-				 "ISBN:$(call ebooktoprint,$*) [Paperback, Alternative format]",
-				 $$authorship,
-				 $$biohtml,
-				 $$lang,
-				 $$deshtml,
-				 $$date,
-				 $(call pagecount,$(filter %.pdf,$^)),
-				 .seriestitle,
-				 (.title as $$title | .seriestitles[] | select(.title == $$title).order),
-				 "$(call urlinfo,$(call isbntouid,$*))",
-				 $$date,
-				 0,
-				 "WORLD"
-				] | map(. // "") | @csv' \
+				], $$meta, ($$meta | .[0] |= $$pisbn | .[3] |= "Paperback" | .[4] |= $$eisbn + " [Digital, Alternative format]") | map(. // "") | @csv' \
 			> $@
 	$(addtosync)
 
