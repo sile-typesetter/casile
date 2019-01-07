@@ -682,6 +682,7 @@ $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call isbntouid,$$*)-,
 				 "WORLD"
 				] | map(. // "") | @csv' \
 			> $@
+	$(addtosync)
 
 PLAYFRONTS = $(call pattern_list,$(PLAYISBNS),_frontcover.jpg)
 $(PLAYFRONTS): %_frontcover.jpg: $$(call isbntouid,$$*)-epub-$(_poster).jpg
