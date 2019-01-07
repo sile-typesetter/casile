@@ -637,13 +637,14 @@ PHONYPLAYS = $(call pattern_list,$(PLAYTARGETS),.play)
 $(PHONYPLAYS): %.play: $$(call pattern_list,$$(call ebookisbn,$$*),_playbooks.csv .epub _frontcover.jpg _backcover.jpg) $$(call printisbn,$$*)_interior.pdf
 
 PLAYMETADATAS = $(call pattern_list,$(PLAYISBNS),_playbooks.csv)
-$(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call isbntouid,$$*),-manifest.yml -bio.html -description.html)
+$(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call isbntouid,$$*)-,manifest.yml bio.html description.html $(firstword $(LAYOUTS)).pdf)
 	# yq has a bug processing command line arguments after --rawfile
 	yq -M -e '.' -- $(filter %-manifest.yml,$^) |
 		jq -M -e \
 			--rawfile biohtml $(filter %-bio.html,$^) \
 			--rawfile deshtml $(filter %-description.html,$^) \
-			-r '
+			-r '(.lang | sub("tr"; "tur") | sub("en"; "eng")) as $$lang |
+				(.date[] | select(."file-as" == "1\\. Basım").text | strptime("%Y-%m") | strftime("D:%Y-%m-01")) as $$date |
 				["Identifier",
 				 "Title",
 				 "Subtitle",
@@ -653,7 +654,14 @@ $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call isbntouid,$$*),-
 				 "Biographical Note",
 				 "Language",
 				 "Description",
-				 "Publication Date"
+				 "Publication Date",
+				 "Page Count",
+				 "Series Name",
+				 "Volume in Series",
+				 "Buy Link",
+				 "On Sale Date",
+				 "TRY [Recommended Retail Price, Including Tax] Price",
+				 "Countries for TRY [Recommended Retail Price, Including Tax] Price"
 				],
 				["ISBN:$*",
 				 .title,
@@ -662,9 +670,16 @@ $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call isbntouid,$$*),-
 				 "ISBN:$(call ebooktoprint,$*) [Paperback, Alternative format]",
 				 "",
 				 $$biohtml,
-				 (.lang | sub("tr"; "tur") | sub("en"; "eng")),
+				 $$lang,
 				 $$deshtml,
-				 "mydate"
+				 $$date,
+				 $(call pagecount,$(filter %.pdf,$^)),
+				 .seriestitle,
+				 (.title as $$title | .seriestitles[] | select(.title == $$title).order),
+				 "$(call urlinfo,$(call isbntouid,$*))",
+				 $$date,
+				 0,
+				 "WORLD"
 				] | map(. // "") | @csv' \
 			> $@
 
@@ -1160,7 +1175,7 @@ INTERMEDIATES += *-url.*
 			--filetype=svg \
 			--scale=10 \
 			--barcode=58 \
-			--data=$(call urlinfo,$@) \
+			--data="$(call urlinfo,$@)" \
 		> $@
 
 INTERMEDIATES += *-$(_barcode).*
