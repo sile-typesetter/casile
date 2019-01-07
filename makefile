@@ -645,6 +645,7 @@ $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call isbntouid,$$*)-,
 			--rawfile deshtml $(filter %-description.html,$^) \
 			-r '(.lang | sub("tr"; "tur") | sub("en"; "eng")) as $$lang |
 				(.date[] | select(."file-as" == "1\\. Basım").text | strptime("%Y-%m") | strftime("D:%Y-%m-01")) as $$date |
+				([.creator[], .contributor[] | select (.role == "author").text + " [Author]", select (.role == "editor").text + " [Editor]", select (.role == "trl").text + " [Translator]"] | join("; ")) as  $$authorship |
 				["Identifier",
 				 "Title",
 				 "Subtitle",
@@ -668,7 +669,7 @@ $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call isbntouid,$$*)-,
 				 .subtitle,
 				 "Digital",
 				 "ISBN:$(call ebooktoprint,$*) [Paperback, Alternative format]",
-				 "",
+				 $$authorship,
 				 $$biohtml,
 				 $$lang,
 				 $$deshtml,
