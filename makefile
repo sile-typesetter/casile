@@ -667,7 +667,7 @@ $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call ebookisbn,$$*) $
 ISBNMETADATAS = $(call pattern_list,$(ISBNS),_playbooks.json)
 $(ISBNMETADATAS): %_playbooks.json: $$(call pattern_list,$$(call isbntouid,$$*)-,manifest.yml $(firstword $(LAYOUTS)).pdf)
 	yq -M -e '
-			([.identifier[] | select(."file-as" == "ISBN").key] | length) as $$isbncount |
+			([.identifier[] | select(.scheme == "ISBN-13").key] | length) as $$isbncount |
 			(.lang | sub("tr"; "tur") | sub("en"; "eng")) as $$lang |
 			(.date[] | select(."file-as" == "1\\. Basım").text | strptime("%Y-%m") | strftime("D:%Y-%m-01")) as $$date |
 			([.creator[], .contributor[] | select (.role == "author").text + " [Author]", select (.role == "editor").text + " [Editor]", select (.role == "trl").text + " [Translator]"] | join("; ")) as $$contributors |
@@ -676,8 +676,8 @@ $(ISBNMETADATAS): %_playbooks.json: $$(call pattern_list,$$(call isbntouid,$$*)-
 				.title,
 				.subtitle,
 				(if $$format == "paperback" then "Paperback" else "Digital" end),
-				(if $$isbncount >= 2 then (.identifier[] | select(.key != $$format and ."file-as" == "ISBN") |
-					(if .key == "ebook" then "ISBN:"+.text+" [Digital, Alternative format]" else "ISBN:"+.text+" [Paperback, Alternative format]" end) | gsub("-"; "")) else "" end),
+				(if $$isbncount >= 2 then (.identifier[] | select(.key != $$format and .scheme == "ISBN-13") |
+					(if .key == "ebook" then "ISBN:"+.text+" [Digital, Electronic version available as]" else "ISBN:"+.text+" [Paperback, Epublication based on]" end) | gsub("-"; "")) else "" end),
 				$$contributors,
 				"",
 				$$lang,
