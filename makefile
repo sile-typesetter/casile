@@ -1116,6 +1116,7 @@ $(PROJECT)-%-$(_3d)-$(_montage).png: $(CASILEDIR)/book.pov $(PROJECT)-%-$(_3d).p
 		$@
 	$(addtosync)
 
+%.epub: PANDOCARGS += --lua-filter=$(CASILEDIR)/epubclean.lua
 %.epub: %-$(_processed).md %-manifest.yml %-epub-$(_poster).jpg | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
