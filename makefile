@@ -356,6 +356,7 @@ check_dependencies:
 	hash bc
 	hash rsync
 	hash zsh
+	hash epubcheck
 	lua -v -l yaml
 	perl -e ';' -MYAML
 	perl -e ';' -MYAML::Merge::Simple
@@ -706,6 +707,7 @@ $(PLAYINTS): %_interior.pdf: $$(call isbntouid,$$*)-$(firstword $(LAYOUTS))-$(_c
 
 PLAYEPUBS = $(call pattern_list,$(ISBNS),.epub)
 $(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub
+	epubcheck $<
 	cp $< $@
 	$(addtosync)
 
