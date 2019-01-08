@@ -700,7 +700,7 @@ $(PLAYBACKS): %_backcover.jpg: %_frontcover.jpg
 	$(addtosync)
 
 PLAYINTS = $(call pattern_list,$(ISBNS),_interior.pdf)
-$(PLAYINTS): %_interior.pdf: $$(call isbntouid,$$*)-$(firstword $(LAYOUTS)).pdf
+$(PLAYINTS): %_interior.pdf: $$(call isbntouid,$$*)-$(firstword $(LAYOUTS))-$(_cropped).pdf
 	cp $< $@
 	$(addtosync)
 
