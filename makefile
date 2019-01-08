@@ -69,8 +69,6 @@ SORTORDER ?= meta # Sort series by: none, alphabetical, date, meta, manual
 # Allow overriding executables used
 SILE ?= sile
 PANDOC ?= pandoc
-CONVERT ?= convert
-IDENTIFY ?= identify
 MAGICK ?= magick
 INKSCAPE ?= inkscape
 POVRAY ?= povray
@@ -334,8 +332,6 @@ check_dependencies:
 	hash $(SILE)
 	hash $(PANDOC)
 	$(PANDOC) --list-output-formats | grep -q sile
-	hash $(CONVERT)
-	hash $(IDENTIFY)
 	hash $(MAGICK)
 	hash $(POVRAY)
 	# hash yaml2json
@@ -958,7 +954,7 @@ $(GEOMETRIES): %-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,
 	trimpx=$(call mmtopx,$(TRIM))
 	trimpm=$(call mmtopm,$(TRIM))
 	trimpt=$(call mmtopt,$(TRIM))
-	$(shell $(IDENTIFY) -density $(HIDPI) -format '
+	$(shell $(MAGICK) identify -density $(HIDPI) -format '
 			pagewmm=%[fx:round(w/$(HIDPI)*25.399986)]
 			pagewpx=%[fx:w]
 			pagewpm=%[fx:round(w/$(HIDPI)*90)]
