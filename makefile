@@ -702,7 +702,7 @@ $(PLAYBACKS): %_backcover.jpg: %_frontcover.jpg
 
 PLAYINTS = $(call pattern_list,$(ISBNS),_interior.pdf)
 $(PLAYINTS): %_interior.pdf: $$(call isbntouid,$$*)-$(firstword $(LAYOUTS))-$(_cropped).pdf
-	cp $< $@
+	pdftk $< cat 2-end output $@
 	$(addtosync)
 
 PLAYEPUBS = $(call pattern_list,$(ISBNS),.epub)
