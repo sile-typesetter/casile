@@ -646,6 +646,7 @@ $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call ebookisbn,$$*) $
 				"Related Identifier [Format, Relationship], Semicolon-Separated",
 				"Contributor [Role], Semicolon-Separated",
 				"Biographical Note",
+				"Subject Code [Schema], Semicolon-Separated",
 				"Language",
 				"Description",
 				"Publication Date",
@@ -657,7 +658,7 @@ $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call ebookisbn,$$*) $
 				"TRY [Recommended Retail Price, Including Tax] Price",
 				"Countries for TRY [Recommended Retail Price, Including Tax] Price"
 			],
-			(.[] | .[7] |= $$biohtml | .[9] |= $$deshtml | .[16] |= 0 | .[17] |= "WORLD")
+			(.[] | .[7] |= $$biohtml | .[10] |= $$deshtml | .[17] |= 0 | .[18] |= "WORLD")
 			| map(. // "") | @csv' $(filter %_playbooks.json,$^) | tee $@
 	$(addtosync)
 
@@ -678,6 +679,7 @@ $(ISBNMETADATAS): %_playbooks.json: $$(call pattern_list,$$(call isbntouid,$$*)-
 					(if .key == "ebook" then "ISBN:"+.text+" [Digital, Electronic version available as]" else "ISBN:"+.text+" [Paperback, Epublication based on]" end) | gsub("-"; "")) else "" end),
 				$$contributors,
 				"",
+				([ .subjectcodes[] | .text + " [" + ."file-as" + "]" ] | join(";")),
 				$$lang,
 				"",
 				$$date,
