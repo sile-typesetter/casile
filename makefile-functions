@@ -302,7 +302,7 @@ define pagetopng ?=
 		-background white \
 		$<[$$(($1-1))] \
 		-flatten \
-		-colorspace rgb \
+		-colorspace RGB \
 		-crop $${pagewpx}x$${pagehpx}+$${trimpx}+$${trimpx}! \
 		$@
 endef

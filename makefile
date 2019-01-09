@@ -764,12 +764,13 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 %-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_fragment).png $$(geometryfile)
 	$(sourcegeometry)
 	@$(MAGICK) $< \
+		-compose SrcOver \
 		\( -background none \
 			-gravity Center \
 			-size $${pagewpx}x$${pagehpx} \
 			xc: \
 			$(call magick_cover) \
-		\) -compose SrcOver -composite \
+		\) -composite \
 		\( \
 			-gravity Center \
 			$*-$(_cover)-$(_fragment).png \
@@ -876,9 +877,9 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
 		$(or $(and $(call git_background,$*-$(_cover)-$(_background).png),$(call git_background,$*-$(_cover)-$(_background).png) -resize $${imgwpx}x$${imghpx}!),$(call magick_background_binding)) \
 		$(call magick_border) \
-		\( -gravity East -size $${pagewpx}x$${pagehpx} -background none xc: $(call magick_front) -splice $${bleedpx}x \) -compose SrcOver -composite \
-		\( -gravity West -size $${pagewpx}x$${pagehpx} -background none xc: $(call magick_back) -splice $${bleedpx}x \) -compose SrcOver -composite \
-		\( -gravity Center -size $${spinepx}x$${pagehpx} -background none xc: $(call magick_spine) \) -compose SrcOver -composite \
+		-compose SrcOver \( -gravity East -size $${pagewpx}x$${pagehpx} -background none xc: $(call magick_front) -splice $${bleedpx}x \) -composite \
+		-compose SrcOver \( -gravity West -size $${pagewpx}x$${pagehpx} -background none xc: $(call magick_back) -splice $${bleedpx}x \) -composite \
+		-compose SrcOver \( -gravity Center -size $${spinepx}x$${pagehpx} -background none xc: $(call magick_spine) \) -composite \
 		\( -gravity East $(filter %-$(_front).png,$^) -splice $${bleedpx}x -write mpr:text-front \) -compose SrcOver -composite \
 		\( -gravity West $(filter %-$(_back).png,$^) -splice $${bleedpx}x -write mpr:text-front \) -compose SrcOver -composite \
 		\( -gravity Center $(filter %-$(_spine).png,$^) -write mpr:text-front \) -compose SrcOver -composite \
