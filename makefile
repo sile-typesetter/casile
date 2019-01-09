@@ -675,7 +675,7 @@ $(ISBNMETADATAS): %_playbooks.json: $$(call pattern_list,$$(call isbntouid,$$*)-
 					(if .key == "ebook" then "ISBN:"+.text+" [Digital, Electronic version available as]" else "ISBN:"+.text+" [Paperback, Epublication based on]" end) | gsub("-"; "")) else "" end),
 				$$contributors,
 				"",
-				([ .subjectcodes[] | .text + " [" + ."file-as" + "]" ] | join(";")),
+				([ .subjectcodes[] | .text + " [" + ."file-as" + "]" ] | join("; ")),
 				$$lang,
 				"",
 				$$date,
