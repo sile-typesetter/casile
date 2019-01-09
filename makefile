@@ -1144,13 +1144,9 @@ $(PROJECT)-%-$(_3d)-$(_montage).png: $(CASILEDIR)/book.pov $(PROJECT)-%-$(_3d).p
 .PHONY: $(call pattern_list,$(TARGETS),.$(_screen))
 %.$(_screen): %-$(_screen).pdf %-manifest.yml
 
-# This is obsoleted by YAML merger, but the code might prove useful someday
-# because the results are more flexible that the perl class
-# %.json: $(CASILEDIR)/casile.yml $(METADATA) $$(wildcard $(PROJECT).yml $$*.yml)
-# 	jq -s 'reduce .[] as $$item({}; . + $$item)' $(foreach YAML,$^,<(yaml2json $(YAML))) > $@
-
 MANIFESTS = $(call pattern_list,$(TARGETS),-manifest.yml)
 $(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML) $$(TARGETYAMLS_$$*) | $(require_pubdir)
+	# yq -M -e -s -y 'reduce .[] as $$item({}; . + $$item)' $(filter %.yml,$^) |
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $(filter %.yml,$^) |
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
 			-e '/\(own\|next\)cloudshare: [^"]/s/: \(.*\)$$/: "\1"/' > $@
