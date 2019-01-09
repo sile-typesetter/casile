@@ -659,7 +659,7 @@ $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call ebookisbn,$$*) $
 				"Countries for TRY [Recommended Retail Price, Including Tax] Price"
 			],
 			(.[] | .[7] |= $$biohtml | .[10] |= $$deshtml | .[17] |= 0 | .[18] |= "WORLD")
-			| map(. // "") | @csv' $(filter %_playbooks.json,$^) | tee $@
+			| map(. // "") | @csv' $(filter %_playbooks.json,$^) > $@
 	$(addtosync)
 
 ISBNMETADATAS = $(call pattern_list,$(ISBNS),_playbooks.json)
@@ -688,7 +688,7 @@ $(ISBNMETADATAS): %_playbooks.json: $$(call pattern_list,$$(call isbntouid,$$*)-
 				(.seriestitle and .title as $$title | .seriestitles[] | select(.title == $$title).order),
 				"$(call urlinfo,$(call isbntouid,$*))",
 				$$date
-			]' $(filter %-manifest.yml,$^) | tee $@
+			]' $(filter %-manifest.yml,$^) > $@
 
 PLAYFRONTS = $(call pattern_list,$(ISBNS),_frontcover.jpg)
 $(PLAYFRONTS): %_frontcover.jpg: $$(call isbntouid,$$*)-epub-$(_poster).jpg
@@ -1159,12 +1159,12 @@ INTERMEDIATES += *.html
 BIOHTMLS = $(call pattern_list,$(TARGETS),-bio.html)
 $(BIOHTMLS): %-bio.html: %-manifest.yml
 	yq -r '.creator[0].about' $(filter %-manifest.yml,$^) |
-		pandoc -f markdown -t html > $@
+		pandoc -f markdown -t html | head -c -1 > $@
 
 DESHTMLS = $(call pattern_list,$(TARGETS),-description.html)
 $(DESHTMLS): %-description.html: %-manifest.yml
 	yq -r '.abstract' $(filter %-manifest.yml,$^) |
-		pandoc -f markdown -t html > $@
+		pandoc -f markdown -t html | head -c -1 > $@
 
 INTERMEDIATES += *-url.*
 
