@@ -639,6 +639,7 @@ $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call ebookisbn,$$*) $
 			--rawfile biohtml $(filter %-bio.html,$^) \
 			--rawfile deshtml $(filter %-description.html,$^) \
 			'[	"Identifier",
+				"Enable for Sale?",
 				"Title",
 				"Subtitle",
 				"Book Format",
@@ -656,7 +657,7 @@ $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call ebookisbn,$$*) $
 				"TRY [Recommended Retail Price, Including Tax] Price",
 				"Countries for TRY [Recommended Retail Price, Including Tax] Price"
 			],
-			(.[] | .[6] |= $$biohtml | .[8] |= $$deshtml | .[15] |= 0 | .[16] |= "WORLD")
+			(.[] | .[7] |= $$biohtml | .[9] |= $$deshtml | .[16] |= 0 | .[17] |= "WORLD")
 			| map(. // "") | @csv' $(filter %_playbooks.json,$^) | tee $@
 	$(addtosync)
 
@@ -669,6 +670,7 @@ $(ISBNMETADATAS): %_playbooks.json: $$(call pattern_list,$$(call isbntouid,$$*)-
 			([.creator[], .contributor[] | select (.role == "author").text + " [Author]", select (.role == "editor").text + " [Editor]", select (.role == "trl").text + " [Translator]"] | join("; ")) as $$contributors |
 			(.identifier[] | select(.text == "$(call isbnmask,$*)").key) as $$format |
 			[   "ISBN:$*",
+				(if $$isbncount >= 2 and $$format == "paperback" then "No" else "Yes" end),
 				.title,
 				.subtitle,
 				(if $$format == "paperback" then "Paperback" else "Digital" end),
