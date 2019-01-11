@@ -248,7 +248,7 @@ define magick_logo ?=
 	-gravity SouthWest \
 	\( -background none \
 		$1 \
-		$(call magick_logo_filter)
+		$(call magick_logo_filter) \
 		-resize $(call mmtopx,30)x \
 		-splice %[fx:$$bleedpx+$$pagewpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
 	\) -compose SrcOver -composite
