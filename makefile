@@ -437,20 +437,17 @@ sync_pre: | $(require_pubdir) $(require_outputdir)
 
 .PHONY: sync_post
 sync_post: | $(require_pubdir) $(require_outputdir)
-	for target in $(TARGETS); do
-ifeq ($(ALLTAGS),)
-		tagpath=
-else
-		tagpath=$$target/$(TAGNAME)/
+	$(foreach TARGET,$(TARGETS),mkdir -p $(OUTPUTDIR)/$(TARGET)/$(TAGNAME);)
+	$(foreach TARGET,$(TARGETS),find $(PUBDIR) -type f \( \
+		-name "$(TARGET)*" \
+		$(and $(call printisbn,$(TARGET)),-or -name "$(call printisbn,$(TARGET))*") \
+		$(and $(call ebookisbn,$(TARGET)),-or -name "$(call ebookisbn,$(TARGET))*") \
+		\) -execdir rsync -ct {} $(OUTPUTDIR)/$(TARGET)/$(TAGNAME)/ \;;)
+ifneq ($(strip $(TARGETS)),$(strip $(PROJECT)))
+	find $(PUBDIR) -type f \
+		-name "$(PROJECT)*" \
+		-execdir rsync -ct {} $(OUTPUTDIR)/ \;
 endif
-		mkdir -p $(OUTPUTDIR)/$$tagpath
-		find $(PUBDIR) \
-			-type f -name "$${target}*" \
-			-execdir rsync -ct {} $(OUTPUTDIR)/$$tagpath \;
-	done
-	find $(PUBDIR) \
-		-type f -name "$(PROJECT)*" \
-		-execdir rsync -ct {} $(OUTPUTDIR)/$$tagpath \;
 	$(call post_sync)
 
 # Just needing a PDF format isn't enough without knowing what layouts to build
