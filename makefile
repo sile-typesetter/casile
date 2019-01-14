@@ -760,7 +760,8 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		$(and $(filter epub,$(call parse_papersize,$@)),-resize 1000x1600^) \
 		$@
 
-%-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_fragment).png $$(geometryfile)
+COVERIMAGES := $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_print)-$(_cover).png)
+$(COVERIMAGES): %-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_fragment).png $$(geometryfile)
 	$(sourcegeometry)
 	@$(MAGICK) $< \
 		-compose SrcOver \
@@ -788,7 +789,8 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		$@
 	$(addtosync)
 
-%-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf $$(geometryfile)
+COVERPDFS := $(call pattern_list,$(TARGETS),-$(_print)-$(_cover).pdf)
+$(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf $$(geometryfile)
 	$(COVERS) || exit 0
 	text=$$(mktemp kapakXXXXXX.pdf)
 	bg=$$(mktemp kapakXXXXXX.pdf)
@@ -815,19 +817,22 @@ $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(cal
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
-%-$(_fragment)-$(_front).png: %-$(_text).pdf
+FRONTFRAGMENTS := $(call pattern_list,$(PAPERSIZES),$(BINDINGS),-$(_fragment)-$(_front).png)
+$(FRONTFRAGMENTS): %-$(_fragment)-$(_front).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace sRGB \
 		$(call magick_fragment_front) \
 		$@
 
-%-$(_fragment)-$(_back).png: %-$(_text).pdf
+BACKFRAGMENTS := $(call pattern_list,$(PAPERSIZES),$(BINDINGS),-$(_fragment)-$(_back).png)
+$(BACKFRAGMENTS): %-$(_fragment)-$(_back).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[1] \
 		-colorspace sRGB \
 		$(call magick_fragment_back) \
 		$@
 
-%-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfile)
+SPINEFRAGMENTS := $(call pattern_list,$(PAPERSIZES),$(BINDINGS),-$(_fragment)-$(_spine).png)
+$(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfile)
 	$(sourcegeometry)
 	$(MAGICK) -density $(HIDPI) $<[2] \
 		-colorspace sRGB \
@@ -846,7 +851,8 @@ $(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
-%-$(_fragment).png: %-$(_text).pdf
+FRONTFRAGMENTIMAGES := $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_print)-$(_fragment).png)
+$(FRONTFRAGMENTIMAGES): %-$(_fragment).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace sRGB \
 		$(call magick_fragment_cover) \
