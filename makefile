@@ -127,6 +127,7 @@ IGNORES += $(FIGURES)
 IGNORES += $(PUBLISHERLOGO) $(PUBLISHEREMBLUM)
 IGNORES += $(call pattern_list,$(sort $(PROJECT) $(TARGETS)),$(PAPERSIZES),*)
 IGNORES += $(call pattern_list,$(TARGETS),$(foreach FORMAT,$(FORMATS),.$(FORMAT)))
+IGNORES += $(call pattern_list,$(ISBNS),_* .epub)
 IGNORES += $(INTERMEDIATES)
 
 # Tell sile to look here for stuff before it’s internal stuff
@@ -629,6 +630,7 @@ $(PHONYPLAYS): %.play: %_playbooks.csv
 $(PHONYPLAYS): %.play: $$(call pattern_list,$$(call ebookisbn,$$*),.epub _frontcover.jpg _backcover.jpg)
 $(PHONYPLAYS): %.play: $$(call pattern_list,$$(call printisbn,$$*),_interior.pdf _frontcover.jpg _backcover.jpg)
 
+IGNORES += $(PLAYMETADATAS)
 PLAYMETADATAS = $(call pattern_list,$(PLAYTARGETS),_playbooks.csv)
 $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call ebookisbn,$$*) $$(call printisbn,$$*),_playbooks.json) %-bio.html %-description.html
 	jq -M -e -s -r \
