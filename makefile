@@ -850,6 +850,8 @@ $(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$
 		$(call magick_fragment_cover) \
 		$@
 
+INTERMEDIATES += publisher_emblum.svg publisher_emblum-gray.svg publisher_logo.svg publisher_logo-grey.svg
+
 PUBLISHEREMBLUM ?= $(PUBLISHERDIR)/emblum.svg
 publisher_emblum.svg: $(PUBLISHEREMBLUM)
 	$(call skip_if_tracked,$@)
