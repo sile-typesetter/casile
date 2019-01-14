@@ -39,7 +39,7 @@ MOCKUPFACTOR ?= 1
 FIGURES ?=
 
 # Default output formats and parameters (often overridden)
-FORMATS ?= pdf epub
+FORMATS ?= pdf epub mobi odt docx web play
 BLEED ?= 3
 TRIM ?= 10
 NOBLEED ?= 0
@@ -125,9 +125,8 @@ IGNORES += $(PROJECTCONFIGS)
 IGNORES += $(LUAINCLUDES)
 IGNORES += $(FIGURES)
 IGNORES += $(PUBLISHERLOGO) $(PUBLISHEREMBLUM)
-IGNORES += $(foreach PAPERSIZE,$(PAPERSIZES),$(PROJECT)-$(PAPERSIZE)*)
-IGNORES += $(foreach TARGET,$(TARGETS),$(foreach FORMAT,$(FORMATS),$(TARGET).$(FORMAT)))
-IGNORES += $(call pattern_list,$(TARGETS),$(PAPERSIZES),*)
+IGNORES += $(call pattern_list,$(sort $(PROJECT) $(TARGETS)),$(PAPERSIZES),*)
+IGNORES += $(call pattern_list,$(TARGETS),$(foreach FORMAT,$(FORMATS),.$(FORMAT)))
 IGNORES += $(INTERMEDIATES)
 
 # Tell sile to look here for stuff before it’s internal stuff
