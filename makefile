@@ -737,7 +737,7 @@ $(_issue).info: | $(require_pubdir)
 	done > $@
 	$(addtosync)
 
-COVERBACKGROUNDS := $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_cover)-$(_background).png)
+COVERBACKGROUNDS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_print)-$(_cover)-$(_background).png)
 git_background = $(shell git ls-files -- $(call strip_layout,$1) 2> /dev/null)
 $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@) $$(geometryfile)
 	$(sourcegeometry)
@@ -805,7 +805,7 @@ $(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf $$(geome
 	pdftk $${text} background $${bg} output $@
 	rm $${text} $${bg}
 
-BINDINGFRAGMENTS := $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_binding)-$(_text).pdf)
+BINDINGFRAGMENTS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_text).pdf)
 $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
@@ -840,7 +840,7 @@ $(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfil
 		$(call magick_fragment_spine) \
 		$@
 
-COVERFRAGMENTS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_cover)-$(_text).pdf)
+COVERFRAGMENTS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_print)-$(_cover)-$(_text).pdf)
 $(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
@@ -851,7 +851,7 @@ $(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
-FRONTFRAGMENTIMAGES := $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_print)-$(_fragment).png)
+FRONTFRAGMENTIMAGES := $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_print)-$(_cover)-$(_fragment).png)
 $(FRONTFRAGMENTIMAGES): %-$(_fragment).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace sRGB \
@@ -930,7 +930,7 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 	$(addtosync)
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
-NONBOUNDGEOMETRIES := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(_print) $(DISPLAYS) $(PLACARDS),-$(_geometry).sh)
+NONBOUNDGEOMETRIES := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(_print),-$(_geometry).sh)
 $(NONBOUNDGEOMETRIES): BLEED = $(NOBLEED)
 $(NONBOUNDGEOMETRIES): TRIM = $(NOTRIM)
 
@@ -947,13 +947,14 @@ $(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(LUAINCLUDES)
 		-e "papersize = '$(call unlocalize,$*)'" \
 		$< -o $@
 
-# The assorted promotional materials don't have binding specs because they aren't bound, fake print versions of the layouts
+# The assorted promotional materials don't have binding specs because they
+# aren't bound, fake print versions of the layouts instead
 FAKEGEOMETRIES := $(call pattern_list,$(TARGETS),$(PLACARDS),-$(_geometry).sh)
 $(FAKEGEOMETRIES): %-$(_geometry).sh: %-$(_print)-$(_geometry).sh
 	ln -s $< $@
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
-GEOMETRIES := $(call pattern_list,$(TARGETS),$(LAYOUTS),-$(_geometry).sh)
+GEOMETRIES := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_geometry).sh)
 $(GEOMETRIES): %-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,$$@)
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	hidpi=$(HIDPI)
