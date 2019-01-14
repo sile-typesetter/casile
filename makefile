@@ -817,21 +817,21 @@ $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(cal
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
-FRONTFRAGMENTS := $(call pattern_list,$(PAPERSIZES),$(BINDINGS),-$(_fragment)-$(_front).png)
+FRONTFRAGMENTS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_fragment)-$(_front).png)
 $(FRONTFRAGMENTS): %-$(_fragment)-$(_front).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace sRGB \
 		$(call magick_fragment_front) \
 		$@
 
-BACKFRAGMENTS := $(call pattern_list,$(PAPERSIZES),$(BINDINGS),-$(_fragment)-$(_back).png)
+BACKFRAGMENTS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_fragment)-$(_back).png)
 $(BACKFRAGMENTS): %-$(_fragment)-$(_back).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[1] \
 		-colorspace sRGB \
 		$(call magick_fragment_back) \
 		$@
 
-SPINEFRAGMENTS := $(call pattern_list,$(PAPERSIZES),$(BINDINGS),-$(_fragment)-$(_spine).png)
+SPINEFRAGMENTS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_fragment)-$(_spine).png)
 $(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfile)
 	$(sourcegeometry)
 	$(MAGICK) -density $(HIDPI) $<[2] \
@@ -878,7 +878,7 @@ publisher_logo-grey.svg: $(PUBLISHERLOGO)
 	$(call skip_if_tracked,$@)
 	cp $< $@
 
-BINDINGIMAGES := $(call pattern_list,$(TARGETS),$(filter-out %-$(_print),$(LAYOUTS)),-$(_binding).png)
+BINDINGIMAGES := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(filter-out $(_print),$(BINDINGS)),-$(_binding).png)
 $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png $$(basename $$@)-$(_fragment)-$(_back).png $$(basename $$@)-$(_fragment)-$(_spine).png $$(call parse_bookid,$$@)-$(_barcode).png publisher_emblum.svg publisher_emblum-grey.svg publisher_logo.svg publisher_logo-grey.svg $$(geometryfile)
 	$(sourcegeometry)
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
