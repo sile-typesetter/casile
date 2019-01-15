@@ -621,7 +621,7 @@ $(APPTARGETS): %.$(_app): %-$(_app).info promotionals
 
 WEBTARGETS := $(call pattern_list,$(TARGETS),.web)
 .PHONY: $(WEBTARGETS)
-$(WEBTARGETS): %.web: %-manifest.yml %-epub-$(_poster).jpg promotionals renderings
+$(WEBTARGETS): %.web: %-manifest.yml %-epub-$(_poster).jpg promotionals
 
 PLAYTARGETS := $(foreach ISBN,$(ISBNS),$(call isbntouid,$(ISBN)))
 
