@@ -1151,7 +1151,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 		-background '$(call povtomagick,$(SCENELIGHT))' \
 		-alpha Remove \
 		-alpha Off \
-		$(if $(findstring $(_3d),$*),$(call pov_crop),) \
+		$(and $(findstring $(_3d),$*),$(call pov_crop,$(if $(findstring $(_pile),$*),$(SCENEY)x$(SCENEX),$(SCENEX)x$(SCENEY)))) \
 		-quality 85 \
 		$@
 	$(addtosync)
