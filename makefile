@@ -1111,23 +1111,6 @@ $(SERIESSCENES): $(PROJECT)-%-$(_3d).pov: $(firstword $(TARGETS))-%-$(_3d).pov $
 	EOF
 endif
 
-# Save time by not doing two pass renderings to get transparent shadows if in draft mode
-ifeq ($(DRAFT),true)
-
-%-$(_3d)-$(_front).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/front.pov
-	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/front.pov,$^),$@,$(SCENEX),$(SCENEY))
-
-%-$(_3d)-$(_back).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/back.pov
-	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/back.pov,$^),$@,$(SCENEX),$(SCENEY))
-
-%-$(_3d)-$(_pile).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/pile.pov
-	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/pile.pov,$^),$@,$(SCENEY),$(SCENEX))
-
-$(PROJECT)-%-$(_3d)-$(_montage).png: $(CASILEDIR)/book.pov $(PROJECT)-%-$(_3d).pov $(CASILEDIR)/montage.pov
-	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/montage.pov,$^),$@,$(SCENEY),$(SCENEX))
-
-else
-
 %-$(_light).png: SCENELIGHT = rgb<1,1,1>
 %-$(_dark).png:  SCENELIGHT = rgb<0,0,0>
 
@@ -1155,8 +1138,6 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_light).png: $(CASILEDIR)/book.pov $(PROJECT)-
 $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%-$(_3d).pov $(CASILEDIR)/montage.pov
 	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/montage.pov,$^),$@,$(SCENEY),$(SCENEX))
 
-endif
-
 # Combine black / white background renderings into transparent one with shadows
 %.png: %-$(_dark).png %-$(_light).png
 	$(MAGICK) $(filter %.png,$^) -alpha Off \
@@ -1167,7 +1148,7 @@ endif
 
 %.jpg: %.png | $(require_pubdir)
 	$(MAGICK) $< \
-		-background $(call povtomagick,$(SCENELIGHT)) \
+		-background '$(call povtomagick,$(SCENELIGHT))' \
 		-alpha Remove \
 		-alpha Off \
 		$(if $(findstring $(_3d),$*),$(call pov_crop),) \
