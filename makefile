@@ -435,6 +435,7 @@ time_warp_casile:
 sync_pre: | $(require_pubdir) $(require_outputdir)
 	$(call pre_sync)
 	$(and $(INPUTDIR),rsync -ctv $(INPUTDIR)/* $(PROJECTDIR)/ ||:)
+	$(and $(INPUTDIR),$(foreach TARGET,$(TARGETS),rsync -ctv $(INPUTDIR)/$(TARGET)/* $(PROJECTDIR)/ ||:;))
 
 .PHONY: sync_post
 sync_post: | $(require_pubdir) $(require_outputdir)
