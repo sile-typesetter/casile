@@ -444,7 +444,8 @@ sync_post: | $(require_pubdir) $(require_outputdir)
 		-name "$(TARGET)*" \
 		$(and $(call printisbn,$(TARGET)),-or -name "$(call printisbn,$(TARGET))*") \
 		$(and $(call ebookisbn,$(TARGET)),-or -name "$(call ebookisbn,$(TARGET))*") \
-		\) -execdir rsync -ct {} $(OUTPUTDIR)/$(TARGET)/$(TAGNAME)/ \;;)
+		\) -execdir rsync -ct {} $(OUTPUTDIR)/$(TARGET)/ \; \
+		   -execdir rsync -ct {} $(OUTPUTDIR)/$(TARGET)/$(TAGNAME)/ \;;)
 ifneq ($(strip $(TARGETS)),$(strip $(PROJECT)))
 	find $(PUBDIR) -type f \
 		-name "$(PROJECT)*" \
