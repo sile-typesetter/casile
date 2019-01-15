@@ -316,7 +316,7 @@ define povray ?=
 		#version 3.7;
 		#declare SceneLight = $(SCENELIGHT);
 	EOF
-	$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$(call scale,$5) -H$(call scale,$6) -Q$(call scale,11,4) -O$4
+	$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$5 -H$6 -Q$(call scale,11,4) -O$4
 	rm $$headers
 endef
 
@@ -331,7 +331,7 @@ define pov_crop ?=
 		+delete \
 	\) \
 	-crop %[fuzzy_trim] \
-	-resize $(call scale,4000)x
+	-resize %[fx:$(call scale,$(if $(findstring $(_pile),$*),$(SCENEY),$(SCENEX)))/2]x
 endef
 
 define split_chapters ?=
