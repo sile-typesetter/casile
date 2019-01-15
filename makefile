@@ -1109,6 +1109,9 @@ $(SERIESSCENES): $(PROJECT)-%-$(_3d).pov: $(firstword $(TARGETS))-%-$(_3d).pov $
 	EOF
 endif
 
+# Save time by not doing two pass renderings to get transparent shadows if in draft mode
+ifeq ($(DRAFT),true)
+
 %-$(_3d)-$(_front).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/front.pov
 	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/front.pov,$^),$@,6000,8000)
 
@@ -1121,8 +1124,50 @@ endif
 $(PROJECT)-%-$(_3d)-$(_montage).png: $(CASILEDIR)/book.pov $(PROJECT)-%-$(_3d).pov $(CASILEDIR)/montage.pov
 	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/montage.pov,$^),$@,8000,6000)
 
+else
+
+%-$(_light).png: SCENELIGHT = rgb<1,1,1>
+%-$(_dark).png:  SCENELIGHT = rgb<0,0,0>
+
+%-$(_3d)-$(_front)-$(_light).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/front.pov
+	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/front.pov,$^),$@,6000,8000)
+
+%-$(_3d)-$(_front)-$(_dark).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/front.pov
+	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/front.pov,$^),$@,6000,8000)
+
+%-$(_3d)-$(_back)-$(_light).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/back.pov
+	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/back.pov,$^),$@,6000,8000)
+
+%-$(_3d)-$(_back)-$(_dark).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/back.pov
+	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/back.pov,$^),$@,6000,8000)
+
+%-$(_3d)-$(_pile)-$(_light).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/pile.pov
+	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/pile.pov,$^),$@,8000,6000)
+
+%-$(_3d)-$(_pile)-$(_dark).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/pile.pov
+	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/pile.pov,$^),$@,8000,6000)
+
+$(PROJECT)-%-$(_3d)-$(_montage)-$(_light).png: $(CASILEDIR)/book.pov $(PROJECT)-%-$(_3d).pov $(CASILEDIR)/montage.pov
+	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/montage.pov,$^),$@,8000,6000)
+
+$(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%-$(_3d).pov $(CASILEDIR)/montage.pov
+	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/montage.pov,$^),$@,8000,6000)
+
+endif
+
+# Combine black / white background renderings into transparent one with shadows
+%.png: %-$(_dark).png %-$(_light).png
+	$(MAGICK) $(filter %.png,$^) -alpha Off \
+		\( -clone 0,1 -compose Difference -composite -negate \) \
+		\( -clone 0,2 +swap -compose Divide -composite \) \
+		-delete 0,1 +swap -compose CopyOpacity -composite \
+		$@
+
 %.jpg: %.png | $(require_pubdir)
 	$(MAGICK) $< \
+		-background $(call povtomagick,$(SCENELIGHT)) \
+		-alpha Remove \
+		-alpha Off \
 		$(if $(findstring $(_3d),$*),$(call pov_crop),) \
 		-quality 85 \
 		$@

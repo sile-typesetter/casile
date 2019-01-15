@@ -4,6 +4,8 @@ space :=
 space +=
 $(space) :=
 $(space) +=
+lparen := (
+rparen := )
 
 # Utility functions for simplifying per-project makefiles
 depend_font = fc-match "$1" family | grep -qx "$1"
@@ -35,6 +37,7 @@ isbnmask = $(shell python -c "import isbnlib; print(isbnlib.mask('$1'))")
 ebookisbn = $(or $(subst -,,$(shell yq -r '.identifier[] | select(.key == "ebook"    ).text' $1.yml 2> /dev/null)),$(call printisbn,$1))
 printisbn = $(subst -,,$(shell yq -r '.identifier[] | select(.key == "paperback").text' $1.yml 2> /dev/null))
 ebooktoprint = $(call printisbn,$(call isbntouid,$1))
+povtomagick = $(subst 1,255,$(subst >,$(rparen),$(subst <,$(lparen),$(1))))
 
 # Utility to modify recursive variables, see http://stackoverflow.com/a/36863261/313192
 prepend = $(eval $(1) = $(2)$(value $(1)))
