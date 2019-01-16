@@ -794,7 +794,7 @@ $(COVERIMAGES): %-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_f
 		$@
 	$(addtosync)
 
-COVERPDFS := $(call pattern_list,$(TARGETS),-$(_print)-$(_cover).pdf)
+COVERPDFS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),-$(_print)-$(_cover).pdf)
 $(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf $$(geometryfile)
 	$(COVERS) || exit 0
 	text=$$(mktemp kapakXXXXXX.pdf)
