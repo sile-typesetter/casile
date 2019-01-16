@@ -1145,6 +1145,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 		\( -clone 0,2 +swap -compose Divide -composite \) \
 		-delete 0,1 +swap -compose CopyOpacity -composite \
 		-compose Copy -alpha On -layers Flatten +repage \
+		-channel Alpha -fx 'a > 0.5 ? 1 : a' -channel All \
 		$(call pov_crop,$(if $(findstring $(_pile),$*),$(SCENEY)x$(SCENEX),$(SCENEX)x$(SCENEY))) \
 		$@
 	$(addtosync)
