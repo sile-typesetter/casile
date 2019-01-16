@@ -831,6 +831,7 @@ $(FRONTFRAGMENTS): %-$(_fragment)-$(_front).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace sRGB \
 		$(call magick_fragment_front) \
+		-compose Copy -layers Flatten +repage \
 		$@
 
 BACKFRAGMENTS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_fragment)-$(_back).png)
@@ -838,6 +839,7 @@ $(BACKFRAGMENTS): %-$(_fragment)-$(_back).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[1] \
 		-colorspace sRGB \
 		$(call magick_fragment_back) \
+		-compose Copy -layers Flatten +repage \
 		$@
 
 SPINEFRAGMENTS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_fragment)-$(_spine).png)
@@ -847,6 +849,7 @@ $(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfil
 		-colorspace sRGB \
 		-crop $${spinepx}x+0+0 \
 		$(call magick_fragment_spine) \
+		-compose Copy -layers Flatten +repage \
 		$@
 
 COVERFRAGMENTS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover)-$(_text).pdf)
@@ -865,6 +868,7 @@ $(FRONTFRAGMENTIMAGES): %-$(_fragment).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace sRGB \
 		$(call magick_fragment_cover) \
+		-compose Copy -layers Flatten +repage \
 		$@
 
 INTERMEDIATES += publisher_emblum.svg publisher_emblum-grey.svg publisher_logo.svg publisher_logo-grey.svg
