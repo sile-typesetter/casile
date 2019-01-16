@@ -50,7 +50,7 @@ global_settings {
 	roughness 0.05
 }
 
-background { color rgb<1,1,1> }
+background { color SceneLight }
 
 camera {
 	location <(BX+BY/2)*-1,(BX/2+BY)*1.25,(BX+BY)*ViewZ>

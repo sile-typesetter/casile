@@ -39,3 +39,6 @@ _spineless := spineless
 _imprint := imprint
 _page := page
 _end := end
+_light := light
+_dark := dark
+_transparent := transparent

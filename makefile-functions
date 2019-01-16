@@ -4,6 +4,8 @@ space :=
 space +=
 $(space) :=
 $(space) +=
+lparen := (
+rparen := )
 
 # Utility functions for simplifying per-project makefiles
 depend_font = fc-match "$1" family | grep -qx "$1"
@@ -35,6 +37,7 @@ isbnmask = $(shell python -c "import isbnlib; print(isbnlib.mask('$1'))")
 ebookisbn = $(or $(subst -,,$(shell yq -r '.identifier[] | select(.key == "ebook"    ).text' $1.yml 2> /dev/null)),$(call printisbn,$1))
 printisbn = $(subst -,,$(shell yq -r '.identifier[] | select(.key == "paperback").text' $1.yml 2> /dev/null))
 ebooktoprint = $(call printisbn,$(call isbntouid,$1))
+povtomagick = $(subst 1,255,$(subst >,$(rparen),$(subst <,$(lparen),$(1))))
 
 # Utility to modify recursive variables, see http://stackoverflow.com/a/36863261/313192
 prepend = $(eval $(1) = $(2)$(value $(1)))
@@ -313,22 +316,24 @@ define povray ?=
 		#version 3.7;
 		#declare SceneLight = $(SCENELIGHT);
 	EOF
-	$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$(call scale,$5) -H$(call scale,$6) -Q$(call scale,11,4) -O$4
+	$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$5 -H$6 -Q$(call scale,11,4) -O$4
 	rm $$headers
 endef
 
 define pov_crop ?=
 	\( +clone \
-		-virtual-pixel edge \
-		-colorspace Gray \
-		-edge 3 \
-		-fuzz 40% \
-		-trim -trim \
-		-set option:fuzzy_trim "%[fx:w*1.2]x%[fx:h*1.2]+%[fx:page.x-w*0.1]+%[fx:page.y-h*0.1]" \
+		-virtual-pixel Edge \
+		-fuzz 1% \
+		-trim \
+		-set option:fuzzy_trim "%[fx:w]x%[fx:h]+%[fx:page.x]+%[fx:page.y]" \
 		+delete \
 	\) \
-	-crop %[fuzzy_trim] \
-	-resize $(call scale,4000)x
+	-crop %[fuzzy_trim] +repage \
+	-background transparent \
+	-gravity Center \
+	-extent  "%[fx:asp = (w/h <= 3/4 ? 3/4 : 4/3); w/h <= asp ? h*asp : w]x" \
+	-extent "x%[fx:asp = (w/h <= 3/4 ? 3/4 : 4/3); w/h >= asp ? w/asp : h]" \
+	-resize $1 -resize 50%
 endef
 
 define split_chapters ?=

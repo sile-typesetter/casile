@@ -39,3 +39,6 @@ _spineless := sirtsiz
 _imprint := kunye
 _page := sayfa
 _end := son
+_light := acik
+_dark := koyu
+_transparent := saydam

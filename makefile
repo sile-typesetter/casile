@@ -51,6 +51,8 @@ COILWIDTH ?= 8
 COILCOLOR ?= rgb<.7,.7,.7>
 COVERGRAVITY ?= Center
 SCENELIGHT ?= rgb<1,1,1>
+SCENEX ?= $(call scale,2400)
+SCENEY ?= $(call scale,3200)
 
 # Build mode flags
 DRAFT ?= false # Take shortcuts, scale things down, be quick about it
@@ -1109,21 +1111,49 @@ $(SERIESSCENES): $(PROJECT)-%-$(_3d).pov: $(firstword $(TARGETS))-%-$(_3d).pov $
 	EOF
 endif
 
-%-$(_3d)-$(_front).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/front.pov
-	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/front.pov,$^),$@,6000,8000)
+%-$(_light).png: SCENELIGHT = rgb<1,1,1>
+%-$(_dark).png:  SCENELIGHT = rgb<0,0,0>
 
-%-$(_3d)-$(_back).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/back.pov
-	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/back.pov,$^),$@,6000,8000)
+%-$(_3d)-$(_front)-$(_light).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/front.pov
+	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/front.pov,$^),$@,$(SCENEX),$(SCENEY))
 
-%-$(_3d)-$(_pile).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/pile.pov
-	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/pile.pov,$^),$@,8000,6000)
+%-$(_3d)-$(_front)-$(_dark).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/front.pov
+	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/front.pov,$^),$@,$(SCENEX),$(SCENEY))
 
-$(PROJECT)-%-$(_3d)-$(_montage).png: $(CASILEDIR)/book.pov $(PROJECT)-%-$(_3d).pov $(CASILEDIR)/montage.pov
-	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/montage.pov,$^),$@,8000,6000)
+%-$(_3d)-$(_back)-$(_light).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/back.pov
+	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/back.pov,$^),$@,$(SCENEX),$(SCENEY))
+
+%-$(_3d)-$(_back)-$(_dark).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/back.pov
+	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/back.pov,$^),$@,$(SCENEX),$(SCENEY))
+
+%-$(_3d)-$(_pile)-$(_light).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/pile.pov
+	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/pile.pov,$^),$@,$(SCENEY),$(SCENEX))
+
+%-$(_3d)-$(_pile)-$(_dark).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/pile.pov
+	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/pile.pov,$^),$@,$(SCENEY),$(SCENEX))
+
+$(PROJECT)-%-$(_3d)-$(_montage)-$(_light).png: $(CASILEDIR)/book.pov $(PROJECT)-%-$(_3d).pov $(CASILEDIR)/montage.pov
+	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/montage.pov,$^),$@,$(SCENEY),$(SCENEX))
+
+$(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%-$(_3d).pov $(CASILEDIR)/montage.pov
+	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/montage.pov,$^),$@,$(SCENEY),$(SCENEX))
+
+# Combine black / white background renderings into transparent one with shadows
+%.png: %-$(_dark).png %-$(_light).png
+	$(MAGICK) $(filter %.png,$^) -alpha Off \
+		\( -clone 0,1 -compose Difference -composite -negate \) \
+		\( -clone 0,2 +swap -compose Divide -composite \) \
+		-delete 0,1 +swap -compose CopyOpacity -composite \
+		-compose Copy -alpha On -layers Flatten +repage \
+		$(call pov_crop,$(if $(findstring $(_pile),$*),$(SCENEY)x$(SCENEX),$(SCENEX)x$(SCENEY))) \
+		$@
+	$(addtosync)
 
 %.jpg: %.png | $(require_pubdir)
 	$(MAGICK) $< \
-		$(if $(findstring $(_3d),$*),$(call pov_crop),) \
+		-background '$(call povtomagick,$(SCENELIGHT))' \
+		-alpha Remove \
+		-alpha Off \
 		-quality 85 \
 		$@
 	$(addtosync)
