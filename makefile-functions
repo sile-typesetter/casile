@@ -322,19 +322,17 @@ endef
 
 define pov_crop ?=
 	\( +clone \
-		-virtual-pixel edge \
-		-colorspace Gray \
-		-edge 3 \
-		-fuzz 20% \
-		-trim -trim \
+		-virtual-pixel Edge \
+		-fuzz 1% \
+		-trim \
 		-set option:fuzzy_trim "%[fx:w]x%[fx:h]+%[fx:page.x]+%[fx:page.y]" \
 		+delete \
 	\) \
-	-crop %[fuzzy_trim] \
-	+repage \
+	-crop %[fuzzy_trim] +repage \
+	-background transparent \
 	-gravity Center \
-	-extent  "%[fx:asp = (w/h <= 3/4 ? 3/4 : 4/3); w/h >= asp ? h*asp : w]x" \
-	-extent "x%[fx:asp = (w/h <= 3/4 ? 3/4 : 4/3); w/h <= asp ? w/asp : h]" \
+	-extent  "%[fx:asp = (w/h <= 3/4 ? 3/4 : 4/3); w/h <= asp ? h*asp : w]x" \
+	-extent "x%[fx:asp = (w/h <= 3/4 ? 3/4 : 4/3); w/h >= asp ? w/asp : h]" \
 	-resize $1 -resize 50%
 endef
 

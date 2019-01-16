@@ -1144,6 +1144,8 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 		\( -clone 0,1 -compose Difference -composite -negate \) \
 		\( -clone 0,2 +swap -compose Divide -composite \) \
 		-delete 0,1 +swap -compose CopyOpacity -composite \
+		-compose Copy -alpha On -layers Flatten +repage \
+		$(call pov_crop,$(if $(findstring $(_pile),$*),$(SCENEY)x$(SCENEX),$(SCENEX)x$(SCENEY))) \
 		$@
 	$(addtosync)
 
@@ -1152,7 +1154,6 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 		-background '$(call povtomagick,$(SCENELIGHT))' \
 		-alpha Remove \
 		-alpha Off \
-		$(and $(findstring $(_3d),$*),$(call pov_crop,$(if $(findstring $(_pile),$*),$(SCENEY)x$(SCENEX),$(SCENEX)x$(SCENEY)))) \
 		-quality 85 \
 		$@
 	$(addtosync)
