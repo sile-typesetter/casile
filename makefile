@@ -398,7 +398,7 @@ upgrade_casile: update_casile $(CASILEDIR)/upgrade-lua.sed $(CASILEDIR)/upgrade-
 
 .PHONY: update_repository
 update_repository:
-	git fetch --all --prune --tags
+	git fetch --all --prune --tags --force
 
 PROJECTCONFIGS += .editorconfig
 .editorconfig: $(CASILEDIR)/editorconfig
