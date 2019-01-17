@@ -830,7 +830,7 @@ FRONTFRAGMENTS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_b
 $(FRONTFRAGMENTS): %-$(_fragment)-$(_front).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace sRGB \
-		$(call magick_fragment_front) \
+		$(call magick_fragment_front) +repage \
 		-compose Copy -layers Flatten +repage \
 		$@
 
@@ -838,7 +838,7 @@ BACKFRAGMENTS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_bi
 $(BACKFRAGMENTS): %-$(_fragment)-$(_back).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[1] \
 		-colorspace sRGB \
-		$(call magick_fragment_back) \
+		$(call magick_fragment_back) +repage \
 		-compose Copy -layers Flatten +repage \
 		$@
 
@@ -847,7 +847,7 @@ $(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfil
 	$(sourcegeometry)
 	$(MAGICK) -density $(HIDPI) $<[2] \
 		-colorspace sRGB \
-		-crop $${spinepx}x+0+0 \
+		-crop $${spinepx}x+0+0 +repage \
 		$(call magick_fragment_spine) \
 		-compose Copy -layers Flatten +repage \
 		$@
