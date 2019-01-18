@@ -2,8 +2,8 @@ SHELL := zsh
 .SHELLFLAGS := +o nomatch -e -c
 
 # Initial setup, environment dependent
-PROJECTDIR := $(shell cd "$(shell dirname $(firstword $(MAKEFILE_LIST)))/" && pwd)
-CASILEDIR := $(shell cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/" && pwd)
+PROJECTDIR != cd "$(shell dirname $(firstword $(MAKEFILE_LIST)))/" && pwd
+CASILEDIR != cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/" && pwd
 GITNAME := $(notdir $(shell git worktree list | head -n1 | awk '{print $$1}'))
 PROJECT ?= $(GITNAME)
 PUBDIR ?= $(PROJECTDIR)/pub
@@ -28,7 +28,8 @@ YAMLSOURCES := $(call find,*.yml)
 ISBNS := $(subst -,,$(shell yq -r '.identifier[] | select(.scheme == "ISBN-13").text' $(YAMLSOURCES) 2> /dev/null))
 
 # Find stuff to build that has both a YML and a MD component
-TARGETS ?= $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(notdir $(YAMLSOURCES))))
+TARGETS_DEF := $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(notdir $(YAMLSOURCES))))
+TARGETS ?= $(TARGETS_DEF)
 
 # List of targets that don't have content but should be rendered anyway
 MOCKUPTARGETS ?=
@@ -51,8 +52,10 @@ COILWIDTH ?= 8
 COILCOLOR ?= rgb<.7,.7,.7>
 COVERGRAVITY ?= Center
 SCENELIGHT ?= rgb<1,1,1>
-SCENEX ?= $(call scale,2400)
-SCENEY ?= $(call scale,3200)
+SCENEX_DEF := $(call scale,2400)
+SCENEX ?= $(SCENEX_DEF)
+SCENEY_DEF := $(call scale,3200)
+SCENEY ?= $(SCENEY_DEF)
 
 # Build mode flags
 DRAFT ?= false # Take shortcuts, scale things down, be quick about it
@@ -64,8 +67,10 @@ DEBUGTAGS ?= casile # Specific debug flags to set
 COVERS ?= true # Build covers?
 MOCKUPS ?= true # Render mockup books in project
 SCALE ?= 17 # Reduction factor for draft builds
-HIDPI ?= $(call scale,1200) # Default DPI for generated press resources
-LODPI ?= $(call scale,300) # Default DPI for generated consumer resources
+HIDPI_DEF := $(call scale,1200) # Default DPI for generated press resources
+HIDPI ?= $(HIDPI_DEF)
+LODPI_DEF := $(call scale,300) # Default DPI for generated consumer resources
+LODPI ?= $(LODPI_DEF)
 SORTORDER ?= meta # Sort series by: none, alphabetical, date, meta, manual
 
 # Allow overriding executables used
@@ -79,7 +84,7 @@ POVRAY ?= povray
 LAYOUTS ?= a4-$(_print)
 
 # Add any specifically targeted outputs to input layouts
-GOALLAYOUTS = $(sort $(filter $(foreach BINDING,$(BINDINGS),%-$(BINDING)),$(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL)))))
+GOALLAYOUTS := $(sort $(filter $(foreach BINDING,$(BINDINGS),%-$(BINDING)),$(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL)))))
 LAYOUTS += $(GOALLAYOUTS)
 
 # Categorize supported outputs
@@ -92,7 +97,8 @@ DISPLAYS := $(_app) $(_screen)
 PLACARDS := $(_square) $(_wide) $(_banner) epub
 RENDERINGS := $(_3d)-$(_front) $(_3d)-$(_back) $(_3d)-$(_pile)
 
-RENDERED ?= $(filter $(call pattern_list,$(filter-out $(DISPLAYS) $(PLACARDS),$(PAPERSIZES)),-%),$(LAYOUTS))
+RENDERED_DEF := $(filter $(call pattern_list,$(filter-out $(DISPLAYS) $(PLACARDS),$(PAPERSIZES)),-%),$(LAYOUTS))
+RENDERED ?= $(RENDERED_DEF)
 RENDERED += $(GOALLAYOUTS)
 
 # Default to running multiple jobs
@@ -115,7 +121,8 @@ PROJECTMACRO := $(wildcard $(PROJECT).m4)
 
 # List of extra YAML meta data files to splice into each book
 METADATA ?=
-PROJECTYAML = $(wildcard $(PROJECT).yml)
+PROJECTYAML_DEF := $(wildcard $(PROJECT).yml)
+PROJECTYAML ?= $(PROJECTYAML_DEF)
 
 # Extra lua files to include before processing documents
 LUAINCLUDES += .casile.lua
@@ -141,14 +148,15 @@ SILEPATH += $(CASILEDIR)
 PANDOCARGS ?=
 
 # Figure out if we're being run from
-ATOM ?= $(shell env | grep -q ATOM_ && echo true || echo false)
-ifeq ($(ATOM),true)
+ATOM != env | grep -l ATOM_
+ifneq ($(ATOM),)
 DRAFT = true
 endif
 
 # Set default document class
 DOCUMENTCLASS ?= cabook
-DOCUMENTOPTIONS += binding=$(call unlocalize,$(call parse_binding,$@))
+DOCUMENTOPTIONS_DEF := binding=$(call unlocalize,$(call parse_binding,$@))
+DOCUMENTOPTIONS += $(DOCUMENTOPTIONS_DEF)
 
 # Default template for setting up Gitlab CI runners
 CITEMPLATE ?= $(CASILEDIR)/travis.yml
