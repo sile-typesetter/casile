@@ -52,10 +52,8 @@ COILWIDTH ?= 8
 COILCOLOR ?= rgb<.7,.7,.7>
 COVERGRAVITY ?= Center
 SCENELIGHT ?= rgb<1,1,1>
-SCENEX_DEF := $(call scale,2400)
-SCENEX ?= $(SCENEX_DEF)
-SCENEY_DEF := $(call scale,3200)
-SCENEY ?= $(SCENEY_DEF)
+SCENEX ?= $(call scale,2400)
+SCENEY ?= $(call scale,3200)
 
 # Build mode flags
 DRAFT ?= false # Take shortcuts, scale things down, be quick about it
