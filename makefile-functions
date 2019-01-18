@@ -32,11 +32,11 @@ strip_binding = $(filter-out $1,$(foreach BINDING,$(BINDINGS),$(subst -$(BINDING
 parse_bookid = $(firstword $(subst -, ,$(basename $1)))
 series_sort = $(shell PROJECT=$(PROJECT) SORTORDER=$(SORTORDER) $(CASILEDIR)/bin/series_sort.lua $1)
 metainfo = $(shell yq -r '$1' < $(PROJECTYAML))
-isbntouid = $(basename $(notdir $(shell grep -l $1 $(YAMLSOURCES))))
-isbnmask = $(shell python -c "import isbnlib; print(isbnlib.mask('$1'))")
-ebookisbn = $(or $(shell yq -r '.identifier[]? | select(.key == "ebook"    ).text' $1.yml),$(call printisbn,$1))
-printisbn = $(shell yq -r '.identifier[]? | select(.key == "paperback").text' $1.yml)
-ebooktoprint = $(call printisbn,$(call isbntouid,$1))
+isbntouid = $(call cachevar,$1,uuid,$(basename $(notdir $(shell grep -l $1 $(YAMLSOURCES)))))
+isbnmask = $(call cachevar,$1,mask,$(shell python -c "import isbnlib; print(isbnlib.mask('$1'))"))
+ebookisbn = $(call cachevar,$1,ebook,$(or $(shell yq -r '.identifier[]? | select(.key == "ebook"    ).text' $1.yml),$(call printisbn,$1)))
+printisbn = $(call cachevar,$1,print,$(shell yq -r '.identifier[]? | select(.key == "paperback").text' $1.yml))
+ebooktoprint = $(call cachevar,$1,ep,$(call printisbn,$(call isbntouid,$1)))
 povtomagick = $(subst 1,255,$(subst >,$(rparen),$(subst <,$(lparen),$(1))))
 
 # Utility to modify recursive variables, see http://stackoverflow.com/a/36863261/313192
@@ -46,6 +46,8 @@ append = $(eval $(1) = $(value $(1))$(2))
 reverse = $(if $(wordlist 2,2,$(1)),$(call reverse,$(wordlist 2,$(words $(1)),$(1))) $(firstword $(1)),$(1))
 
 uniq = $(if $1,$(firstword $1) $(call uniq,$(filter-out $(firstword $1),$1)))
+
+cachevar = $(or $($(1)_$(2)_cache),$(eval $(1)_$(2)_cache := $3),$($(1)_$(2)_cache))
 
 # Making lists of possible targets is tedious syntax, but just using pattern
 # rules means the targets are not extendible. By dynamically generating names by
