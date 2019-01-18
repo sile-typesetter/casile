@@ -59,7 +59,7 @@ $endif$
 $if(identifier)$
 \define[command=meta:identifiers]{
 $for(identifier)$
-\font[weight=600,style=Bold]{$identifier.file-as$}: \font[family=Hack,size=0.8em]{$identifier.text$}\break
+\font[weight=600,style=Bold]{$identifier.file-as$}: \font[family=Hack,size=0.8em]{$identifier.mask$}\break
 $endfor$
 }
 $endif$

@@ -25,7 +25,7 @@ MARKDOWNSOURCES := $(call find,*.md)
 LUASOURCES := $(call find,*.lua)
 MAKESOURCES := $(call find,[Mm]akefile*)
 YAMLSOURCES := $(call find,*.yml)
-ISBNS != yq -M -e -s -r '.identifier[]? | select(.scheme == "ISBN-13").text | gsub("-"; "")' $(YAMLSOURCES)
+ISBNS != yq -M -e -r '.identifier[]? | select(.scheme == "ISBN-13").text' $(YAMLSOURCES)
 
 # Find stuff to build that has both a YML and a MD component
 TARGETS_DEF := $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(notdir $(YAMLSOURCES))))
@@ -406,7 +406,7 @@ upgrade_repository: upgrade_toolkits $(CICONFIG)_current
 upgrade_casile: update_casile $(CASILEDIR)/upgrade-lua.sed $(CASILEDIR)/upgrade-make.sed $(CASILEDIR)/upgrade-yaml.sed
 	$(call munge,$(LUASOURCES),sed -f $(filter %-lua.sed,$^),Replace old Lua variables and functions with new namespaces)
 	$(call munge,$(MAKESOURCES),sed -f $(filter %-make.sed,$^),Replace old Makefile variables and functions with new namespaces)
-	$(call munge,$(YAMLSOURCES),sed -f $(filter %-yaml.sed,$^),Replace old YAML key names)
+	$(call munge,$(YAMLSOURCES),sed -f $(filter %-yaml.sed,$^),Replace old YAML key names and data formats)
 
 .PHONY: update_repository
 update_repository:
@@ -685,14 +685,14 @@ $(ISBNMETADATAS): %_playbooks.json: $$(call pattern_list,$$(call isbntouid,$$*)-
 			(.lang | sub("tr"; "tur") | sub("en"; "eng")) as $$lang |
 			(.date[] | select(."file-as" == "1\\. Basım").text | strptime("%Y-%m") | strftime("D:%Y-%m-01")) as $$date |
 			([.creator[], .contributor[] | select (.role == "author").text + " [Author]", select (.role == "editor").text + " [Editor]", select (.role == "trl").text + " [Translator]"] | join("; ")) as $$contributors |
-			(.identifier[] | select(.text == "$(call isbnmask,$*)").key) as $$format |
+			(.identifier[] | select(.text == "$*").key) as $$format |
 			[   "ISBN:$*",
 				(if $$isbncount >= 2 and $$format == "paperback" then "No" else "Yes" end),
 				.title,
 				.subtitle,
 				(if $$format == "paperback" then "Paperback" else "Digital" end),
 				(if $$isbncount >= 2 then (.identifier[] | select(.key != $$format and .scheme == "ISBN-13") |
-					(if .key == "ebook" then "ISBN:"+.text+" [Digital, Electronic version available as]" else "ISBN:"+.text+" [Paperback, Epublication based on]" end) | gsub("-"; "")) else "" end),
+					(if .key == "ebook" then "ISBN:"+.text+" [Digital, Electronic version available as]" else "ISBN:"+.text+" [Paperback, Epublication based on]" end)) else "" end),
 				$$contributors,
 				"",
 				([ .subjectcodes[] | .text + " [" + ."file-as" + "]" ] | join("; ")),
@@ -1211,7 +1211,8 @@ $(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML)
 	# yq -M -e -s -y 'reduce .[] as $$item({}; . + $$item)' $(filter %.yml,$^) |
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $(filter %.yml,$^) |
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
-			-e '/\(own\|next\)cloudshare: [^"]/s/: \(.*\)$$/: "\1"/' > $@
+			-e '/text: 978605/{p;s/^\(.*\)text: \([[:digit:]]\+\)$$/python -c "import isbnlib; print(\\"mask: \\" + isbnlib.mask(\\"\2\\"))"/e}' \
+			-e '/\(own\|next\)cloudshare: [^"]/s/: \(.*\)$$/: "\1"/' | tee $@
 	$(addtosync)
 
 INTERMEDIATES += *.html
