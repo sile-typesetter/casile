@@ -25,7 +25,7 @@ MARKDOWNSOURCES := $(call find,*.md)
 LUASOURCES := $(call find,*.lua)
 MAKESOURCES := $(call find,[Mm]akefile*)
 YAMLSOURCES := $(call find,*.yml)
-ISBNS := $(subst -,,$(shell yq -r '.identifier[] | select(.scheme == "ISBN-13").text' $(YAMLSOURCES) 2> /dev/null))
+ISBNS != yq -M -e -s -r '.identifier[]? | select(.scheme == "ISBN-13").text | gsub("-"; "")' $(YAMLSOURCES)
 
 # Find stuff to build that has both a YML and a MD component
 TARGETS_DEF := $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(notdir $(YAMLSOURCES))))
@@ -860,7 +860,7 @@ $(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfil
 		-compose Copy -layers Flatten +repage \
 		$@
 
-COVERFRAGMENTS = $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover)-$(_text).pdf)
+COVERFRAGMENTS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover)-$(_text).pdf)
 $(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
