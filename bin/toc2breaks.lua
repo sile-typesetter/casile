@@ -1,7 +1,8 @@
 #!/usr/bin/env lua
 
 local project = os.getenv("PROJECT")
-local basename = arg[1] .. "/app/" .. arg[1]
+local basename = arg[1]
+local path = arg[1] .. "/app/" .. arg[1]
 
 local tocfile = io.open(arg[2], "r")
 if not tocfile then return false end
@@ -40,15 +41,15 @@ infow("ABSTRACT:")
 infow(meta.abstract, true)
 
 infow("SINGLE PDF:")
-local out = basename .. "-uygulama-cikti.pdf"
+local out = path .. "-uygulama.pdf"
 infow(share .. out, true)
 
 infow("MEDIA:")
-local out = basename .. "-kare-pankart.jpg"
+local out = path .. "-kare-pankart.jpg"
 infow(share .. out, true)
-local out = basename .. "-genis-pankart.jpg"
+local out = path .. "-genis-pankart.jpg"
 infow(share .. out, true)
-local out = basename .. "-bant-pankart.jpg"
+local out = path .. "-bant-pankart.jpg"
 infow(share .. out, true)
 
 local labels = {}
@@ -88,7 +89,8 @@ end
 -- Output a list suitable for shell script parsing
 for i, v in pairs(breaks) do
   local n = string.format("%03d", i - 1)
-  local out = basename .. "-uygulama-cikti-" .. n .. ".pdf"
+  local out = basename .. "-uygulama-" .. n .. ".pdf"
+  local out = path .. "-uygulama-" .. n .. ".pdf"
 
   -- Fieds expected by makefile to pass to pdftk
   print(v, out)
