@@ -724,10 +724,10 @@ $(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub
 	cp $< $@
 	$(addtosync)
 
-%-$(_app).info: %-$(_app).toc %-$(_app).pdf %-manifest.yml | $(require_pubdir)
-	$(CASILEDIR)/bin/toc2breaks.lua $* $(filter %-$(_app).toc,$^) $(filter %-manifest.yml,$^) $@ |
+%-$(_app).info: %-$(_app)-$(_print).toc %-$(_app)-$(_print).pdf %-manifest.yml | $(require_pubdir)
+	$(CASILEDIR)/bin/toc2breaks.lua $* $(filter %-$(_app)-$(_print).toc,$^) $(filter %-manifest.yml,$^) $@ |
 		while read range out; do
-			pdftk $(filter %-$(_app).pdf,$^) cat $$range output $$out
+			pdftk $(filter %-$(_app)-$(_print).pdf,$^) cat $$range output $$out
 			ln -f $$out $(PUBDIR)/$$out
 		done
 	$(addtosync)

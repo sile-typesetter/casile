@@ -40,15 +40,15 @@ infow("ABSTRACT:")
 infow(meta.abstract, true)
 
 infow("SINGLE PDF:")
-local out = basename .. "-app.pdf"
+local out = basename .. "-uygulama-cikti.pdf"
 infow(share .. out, true)
 
 infow("MEDIA:")
-local out = basename .. "-square-poster.jpg"
+local out = basename .. "-kare-pankart.jpg"
 infow(share .. out, true)
-local out = basename .. "-wide-poster.jpg"
+local out = basename .. "-genis-pankart.jpg"
 infow(share .. out, true)
-local out = basename .. "-banner-poster.jpg"
+local out = basename .. "-bant-pankart.jpg"
 infow(share .. out, true)
 
 local labels = {}
@@ -88,7 +88,7 @@ end
 -- Output a list suitable for shell script parsing
 for i, v in pairs(breaks) do
   local n = string.format("%03d", i - 1)
-  local out = basename .. "-app-" .. n .. ".pdf"
+  local out = basename .. "-uygulama-cikti-" .. n .. ".pdf"
 
   -- Fieds expected by makefile to pass to pdftk
   print(v, out)
