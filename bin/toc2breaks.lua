@@ -1,7 +1,7 @@
 #!/usr/bin/env lua
 
 local project = os.getenv("PROJECT")
-local basename = arg[1]
+local basename = arg[1] .. "/app/" .. arg[1]
 
 local tocfile = io.open(arg[2], "r")
 if not tocfile then return false end
@@ -12,7 +12,7 @@ local toc = assert(loadstring(doc))()
 local yaml = require("yaml")
 local meta = yaml.loadpath(arg[3])
 
-local share = "https://nextcloud.alerque.com/" .. (meta.nextcloudshare and "index.php/s/" .. meta.nextcloudshare .. "/download?path=%2F&files=" or "remote.php/webdav/viachristus/" .. project .. "/")
+local share = "https://yayinlar.viachristus.com/"
 
 local infofile = io.open(arg[4], "w")
 if not infofile  then return false end
