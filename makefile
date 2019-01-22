@@ -84,7 +84,7 @@ POVRAY ?= povray
 LAYOUTS ?= a4-$(_print)
 
 # Add any specifically targeted outputs to input layouts
-GOALLAYOUTS := $(sort $(filter $(foreach BINDING,$(BINDINGS),%-$(BINDING)),$(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL)))))
+GOALLAYOUTS := $(sort $(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL))))
 LAYOUTS += $(GOALLAYOUTS)
 
 # Categorize supported outputs
