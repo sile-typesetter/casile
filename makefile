@@ -21,10 +21,10 @@ include $(CASILEDIR)/makefile-functions
 # Empty recipies for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;
 
-MARKDOWNSOURCES := $(call find,*.md)
-LUASOURCES := $(call find,*.lua)
-MAKESOURCES := $(call find,[Mm]akefile*)
-YAMLSOURCES := $(call find,*.yml)
+MARKDOWNSOURCES := $(wildcard *.md)
+LUASOURCES := $(wildcard *.lua)
+MAKESOURCES := $(wildcard [Mm]akefile)
+YAMLSOURCES := $(wildcard *.yml)
 ISBNS != yq -M -e -r '.identifier[]? | select(.scheme == "ISBN-13").text' $(YAMLSOURCES)
 
 # Find stuff to build that has both a YML and a MD component
