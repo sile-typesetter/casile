@@ -84,7 +84,7 @@ POVRAY ?= povray
 LAYOUTS ?= a4-$(_print)
 
 # Add any specifically targeted output layouts
-GOALLAYOUTS := $(sort $(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL))))
+GOALLAYOUTS := $(sort $(filter-out -,$(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL)))))
 LAYOUTS += $(GOALLAYOUTS)
 
 ifneq ($(filter ci promotionals series_promotionals %.web %.epub %.play,$(MAKECMDGOALS)),)
@@ -106,7 +106,7 @@ UNBOUNDLAYOUTS := $(call pattern_list,$(PAPERSIZES),-$(_print))
 BOUNDLAYOUTS := $(filter-out $(UNBOUNDLAYOUTS),$(ALLLAYOUTS))
 
 RENDERINGS := $(_3d)-$(_front) $(_3d)-$(_back) $(_3d)-$(_pile)
-RENDERED_DEF := $(filter $(call pattern_list,$(filter-out $(DISPLAYS) $(PLACARDS),$(PAPERSIZES)),-%),$(LAYOUTS))
+RENDERED_DEF := $(filter $(call pattern_list,$(REALPAPERSIZES),-%),$(LAYOUTS))
 RENDERED ?= $(RENDERED_DEF)
 RENDERED += $(GOALLAYOUTS)
 
