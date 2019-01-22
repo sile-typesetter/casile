@@ -25,15 +25,17 @@ MARKDOWNSOURCES := $(wildcard *.md)
 LUASOURCES := $(wildcard *.lua)
 MAKESOURCES := $(wildcard [Mm]akefile)
 YAMLSOURCES := $(wildcard *.yml)
+
+# # Find stuff that could be built based on what has matching YML and a MD components
+SOURCES_DEF := $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(notdir $(YAMLSOURCES))))
+SOURCES ?= $(SOURCES_DEF)
+TARGETS ?= $(SOURCES)
+
 ISBNS != yq -M -e -r '.identifier[]? | select(.scheme == "ISBN-13").text' $(YAMLSOURCES)
 
-# Find stuff to build that has both a YML and a MD component
-TARGETS_DEF := $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(notdir $(YAMLSOURCES))))
-TARGETS ?= $(TARGETS_DEF)
-
 # List of targets that don't have content but should be rendered anyway
-MOCKUPTARGETS ?=
-MOCKUPBASE ?= $(firstword $(TARGETS))
+MOCKUPSOURCES ?=
+MOCKUPBASE ?= $(firstword $(SOURCES))
 MOCKUPFACTOR ?= 1
 
 # List of figures that need building prior to content
@@ -134,8 +136,8 @@ IGNORES += $(PROJECTCONFIGS)
 IGNORES += $(LUAINCLUDES)
 IGNORES += $(FIGURES)
 IGNORES += $(PUBLISHERLOGO) $(PUBLISHEREMBLUM)
-IGNORES += $(call pattern_list,$(PROJECT) $(TARGETS),$(PAPERSIZES),*)
-IGNORES += $(call pattern_list,$(TARGETS),$(foreach FORMAT,$(FORMATS),.$(FORMAT)))
+IGNORES += $(call pattern_list,$(PROJECT) $(SOURCES),$(PAPERSIZES),*)
+IGNORES += $(call pattern_list,$(SOURCES),$(foreach FORMAT,$(FORMATS),.$(FORMAT)))
 IGNORES += $(call pattern_list,$(ISBNS),_* .epub)
 IGNORES += $(INTERMEDIATES)
 
@@ -187,15 +189,15 @@ ifdef DEBUGTAGS
 SILEFLAGS += -d $(subst $( ),$(,),$(DEBUGTAGS))
 endif
 
-# Add mock-ups to targets
+# Add mock-ups to sources
 ifeq ($(strip $(MOCKUPS)),true)
-TARGETS += $(MOCKUPTARGETS)
+SOURCES += $(MOCKUPSOURCES)
 endif
 
 # Probe for available sources relevant to each target once
-$(foreach TARGET,$(TARGETS),$(eval TARGETMACROS_$(TARGET) := $(wildcard $(TARGET).lua)))
-$(foreach TARGET,$(TARGETS),$(eval TARGETYAMLS_$(TARGET) := $(wildcard $(TARGET).yml)))
-$(foreach TARGET,$(TARGETS),$(eval TARGETLUAS_$(TARGET) := $(wildcard $(TARGET).lua)))
+$(foreach SOURCE,$(SOURCES),$(eval TARGETMACROS_$(SOURCE) := $(wildcard $(SOURCE).lua)))
+$(foreach SOURCE,$(SOURCES),$(eval TARGETYAMLS_$(SOURCE) := $(wildcard $(SOURCE).yml)))
+$(foreach SOURCE,$(SOURCES),$(eval TARGETLUAS_$(SOURCE) := $(wildcard $(SOURCE).lua)))
 
 .ONESHELL:
 .SECONDEXPANSION:
@@ -224,10 +226,10 @@ endif
 ci: init debug sync_pre books renderings promotionals sync_post
 
 .PHONY: renderings
-renderings: $(call pattern_list,$(TARGETS),$(RENDERED),$(RENDERINGS),.jpg)
+renderings: $(call pattern_list,$(SOURCES),$(RENDERED),$(RENDERINGS),.jpg)
 
 .PHONY: promotionals
-promotionals: $(call pattern_list,$(TARGETS),$(PLACARDS),-$(_poster).jpg) $(call pattern_list,$(TARGETS),-icon.png)
+promotionals: $(call pattern_list,$(SOURCES),$(PLACARDS),-$(_poster).jpg) $(call pattern_list,$(SOURCES),-icon.png)
 
 # If a series, add some extra dependencies to convenience builds
 ifneq ($(words $(TARGETS)),1)
@@ -245,7 +247,7 @@ endif
 .PHONY: series_renderings
 series_renderings: $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3d)-$(_montage).jpg)
 
-$(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(TARGETS),%,-$(_poster).png) $(firstword $(TARGETS))-%-$(_geometry).sh
+$(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(SOURCES),%,-$(_poster).png) $(firstword $(SOURCES))-%-$(_geometry).sh
 	$(sourcegeometry)
 	$(MAGICK) montage \
 		$(filter %.png,$^) \
@@ -287,19 +289,20 @@ debug:
 	@echo METADATA: $(METADATA)
 	@echo MOCKUPBASE: $(MOCKUPBASE)
 	@echo MOCKUPFACTOR: $(MOCKUPFACTOR)
-	@echo MOCKUPTARGETS: $(MOCKUPTARGETS)
+	@echo MOCKUPSOURCES: $(MOCKUPSOURCES)
 	@echo NOSPINEBINDINGS: $(NOSPINEBINDINGS)
 	@echo OUTPUTDIR: $(OUTPUTDIR)
 	@echo PANDOCARGS: $(PANDOCARGS)
 	@echo PAPERSIZES: $(PAPERSIZES)
 	@echo PARENT: $(PARENT)
-	@echo PLAYTARGETS: $(PLAYTARGETS)
+	@echo PLAYSOURCES: $(PLAYSOURCES)
 	@echo PROJECT: $(PROJECT)
 	@echo PROJECTCONFIGS: $(PROJECTCONFIGS)
 	@echo RENDERED: $(RENDERED)
 	@echo SILE: $(SILE)
 	@echo SILEFLAGS: $(SILEFLAGS)
 	@echo SILEPATH: $(SILEPATH)
+	@echo SOURCES: $(SOURCES)
 	@echo SPINEBINDINGS: $(SPINEBINDINGS)
 	@echo TAG: $(TAG)
 	@echo TAGNAME: $(TAGNAME)
@@ -317,11 +320,11 @@ force: ;
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2> /dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
 
-.PHONY: $(TARGETS)
+.PHONY: $(SOURCES)
 
-REALTARGETS := $(filter-out $(MOCKUPTARGETS),$(TARGETS))
-$(REALTARGETS): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
-$(MOCKUPTARGETS): $(foreach FORMAT,$(filter pdf,$(FORMATS)),$$@.$(FORMAT))
+REALSOURCES := $(filter-out $(MOCKUPTARGETS),$(SOURCES))
+$(REALSOURCES): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
+$(MOCKUPSOURCES): $(foreach FORMAT,$(filter pdf,$(FORMATS)),$$@.$(FORMAT))
 
 .PHONY: figures
 figures: $(FIGURES)
@@ -466,7 +469,7 @@ endif
 	$(call post_sync)
 
 # Just needing a PDF format isn't enough without knowing what layouts to build
-VIRTUALPDFS := $(call pattern_list,$(TARGETS),.pdf)
+VIRTUALPDFS := $(call pattern_list,$(SOURCES),.pdf)
 .PHONY: $(VIRTUALPDFS)
 $(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) ;
 
@@ -482,11 +485,11 @@ coverpreq = $(and $(filter true,$(COVERS)),$(filter $(_print),$(call parse_bindi
 # Order is important here, these are included in reverse order so early supersedes late
 onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(CASILEDIR)/layout-$(call unlocalize,$(call parse_papersize,$1)).lua $(LUALIBS)
 
-MOCKUPPDFS := $(call pattern_list,$(MOCKUPTARGETS),$(filter-out $(PLACARDS),$(PAPERSIZES)),$(BINDINGS),.pdf)
+MOCKUPPDFS := $(call pattern_list,$(MOCKUPSOURCES),$(filter-out $(PLACARDS),$(PAPERSIZES)),$(BINDINGS),.pdf)
 $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
 	pdftk A=$(filter %.pdf,$^) cat $(foreach P,$(shell seq 1 $(call pagecount,$@)),A2-2) output $@
 
-FULLPDFS := $(call pattern_list,$(REALTARGETS),$(filter-out $(PLACARDS),$(PAPERSIZES)),$(BINDINGS),.pdf)
+FULLPDFS := $(call pattern_list,$(REALSOURCES),$(filter-out $(PLACARDS),$(PAPERSIZES)),$(BINDINGS),.pdf)
 $(FULLPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
 $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES) | $(require_pubdir)
 	$(call skip_if_lazy,$@)
@@ -515,7 +518,7 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 	fi
 	$(addtosync)
 
-FULLSILS := $(call pattern_list,$(TARGETS),$(LAYOUTS),.sil)
+FULLSILS := $(call pattern_list,$(SOURCES),$(LAYOUTS),.sil)
 $(FULLSILS): %.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-$(_processed).md -manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
@@ -629,24 +632,24 @@ normalize_markdown: $(MARKDOWNSOURCES)
 
 %.sil.tov: %.pdf ;
 
-APPTARGETS := $(call pattern_list,$(TARGETS),.$(_app))
-.PHONY: $(APPTARGETS)
-$(APPTARGETS): %.$(_app): %-$(_app).info promotionals
+APPSOURCES := $(call pattern_list,$(SOURCES),.$(_app))
+.PHONY: $(APPSOURCES)
+$(APPSOURCES): %.$(_app): %-$(_app).info promotionals
 
-WEBTARGETS := $(call pattern_list,$(TARGETS),.web)
-.PHONY: $(WEBTARGETS)
-$(WEBTARGETS): %.web: %-manifest.yml %-epub-$(_poster).jpg promotionals
+WEBSOURCES := $(call pattern_list,$(SOURCES),.web)
+.PHONY: $(WEBSOURCES)
+$(WEBSOURCES): %.web: %-manifest.yml %-epub-$(_poster).jpg promotionals
 
-PLAYTARGETS := $(foreach ISBN,$(ISBNS),$(call isbntouid,$(ISBN)))
+PLAYSOURCES := $(foreach ISBN,$(ISBNS),$(call isbntouid,$(ISBN)))
 
-PHONYPLAYS := $(call pattern_list,$(PLAYTARGETS),.play)
+PHONYPLAYS := $(call pattern_list,$(PLAYSOURCES),.play)
 .PHONY: $(PHONYPLAYS)
 $(PHONYPLAYS): %.play: %_playbooks.csv
 $(PHONYPLAYS): %.play: $$(call pattern_list,$$(call ebookisbn,$$*),.epub _frontcover.jpg _backcover.jpg)
 $(PHONYPLAYS): %.play: $$(call pattern_list,$$(call printisbn,$$*),_interior.pdf _frontcover.jpg _backcover.jpg)
 
 IGNORES += $(PLAYMETADATAS)
-PLAYMETADATAS := $(call pattern_list,$(PLAYTARGETS),_playbooks.csv)
+PLAYMETADATAS := $(call pattern_list,$(PLAYSOURCES),_playbooks.csv)
 $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call ebookisbn,$$*) $$(call printisbn,$$*),_playbooks.json) %-bio.html %-description.html
 	jq -M -e -s -r \
 			--rawfile biohtml $(filter %-bio.html,$^) \
@@ -736,7 +739,7 @@ $(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub
 	$(addtosync)
 
 $(_issue).info: | $(require_pubdir)
-	for source in $(TARGETS); do
+	for source in $(SOURCES); do
 		echo -e "# $$source\n"
 		if test -d $${source}-bolumler; then
 			find $${source}-bolumler -name '*.md' -print |
@@ -754,7 +757,7 @@ $(_issue).info: | $(require_pubdir)
 	done > $@
 	$(addtosync)
 
-COVERBACKGROUNDS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover)-$(_background).png)
+COVERBACKGROUNDS := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover)-$(_background).png)
 git_background = $(shell git ls-files -- $(call strip_layout,$1) 2> /dev/null)
 $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@) $$(geometryfile)
 	$(sourcegeometry)
@@ -777,7 +780,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		$(and $(filter epub,$(call parse_papersize,$@)),-resize 1000x1600^) \
 		$@
 
-COVERIMAGES := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover).png)
+COVERIMAGES := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover).png)
 $(COVERIMAGES): %-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_fragment).png $$(geometryfile)
 	$(sourcegeometry)
 	@$(MAGICK) $< \
@@ -806,7 +809,7 @@ $(COVERIMAGES): %-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_f
 		$@
 	$(addtosync)
 
-COVERPDFS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover).pdf)
+COVERPDFS := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover).pdf)
 $(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf $$(geometryfile)
 	$(COVERS) || exit 0
 	text=$$(mktemp kapakXXXXXX.pdf)
@@ -822,7 +825,7 @@ $(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf $$(geome
 	pdftk $${text} background $${bg} output $@
 	rm $${text} $${bg}
 
-BINDINGFRAGMENTS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_text).pdf)
+BINDINGFRAGMENTS := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_text).pdf)
 $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
@@ -834,7 +837,7 @@ $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(cal
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
-FRONTFRAGMENTS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_fragment)-$(_front).png)
+FRONTFRAGMENTS := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_fragment)-$(_front).png)
 $(FRONTFRAGMENTS): %-$(_fragment)-$(_front).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace sRGB \
@@ -842,7 +845,7 @@ $(FRONTFRAGMENTS): %-$(_fragment)-$(_front).png: %-$(_text).pdf
 		-compose Copy -layers Flatten +repage \
 		$@
 
-BACKFRAGMENTS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_fragment)-$(_back).png)
+BACKFRAGMENTS := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_fragment)-$(_back).png)
 $(BACKFRAGMENTS): %-$(_fragment)-$(_back).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[1] \
 		-colorspace sRGB \
@@ -850,7 +853,7 @@ $(BACKFRAGMENTS): %-$(_fragment)-$(_back).png: %-$(_text).pdf
 		-compose Copy -layers Flatten +repage \
 		$@
 
-SPINEFRAGMENTS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_fragment)-$(_spine).png)
+SPINEFRAGMENTS := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_fragment)-$(_spine).png)
 $(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfile)
 	$(sourcegeometry)
 	$(MAGICK) -density $(HIDPI) $<[2] \
@@ -860,7 +863,7 @@ $(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfil
 		-compose Copy -layers Flatten +repage \
 		$@
 
-COVERFRAGMENTS := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover)-$(_text).pdf)
+COVERFRAGMENTS := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover)-$(_text).pdf)
 $(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
@@ -871,7 +874,7 @@ $(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
-FRONTFRAGMENTIMAGES := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover)-$(_fragment).png)
+FRONTFRAGMENTIMAGES := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover)-$(_fragment).png)
 $(FRONTFRAGMENTIMAGES): %-$(_fragment).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace sRGB \
@@ -899,7 +902,7 @@ publisher_logo-grey.svg: $(PUBLISHERLOGO)
 	$(call skip_if_tracked,$@)
 	cp $< $@
 
-BINDINGIMAGES := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(SPINEBINDINGS),-$(_binding).png)
+BINDINGIMAGES := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(SPINEBINDINGS),-$(_binding).png)
 $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png $$(basename $$@)-$(_fragment)-$(_back).png $$(basename $$@)-$(_fragment)-$(_spine).png $$(call parse_bookid,$$@)-$(_barcode).png publisher_emblum.svg publisher_emblum-grey.svg publisher_logo.svg publisher_logo-grey.svg $$(geometryfile)
 	$(sourcegeometry)
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
@@ -951,12 +954,12 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 	$(addtosync)
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
-NONBOUNDGEOMETRIES := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(NONBOUNDGEOMETRIES),-$(_geometry).sh)
+NONBOUNDGEOMETRIES := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(NONBOUNDGEOMETRIES),-$(_geometry).sh)
 $(NONBOUNDGEOMETRIES): BLEED = $(NOBLEED)
 $(NONBOUNDGEOMETRIES): TRIM = $(NOTRIM)
 
 # Some output formats don't have PDF content, but we still need to calculate geometry for them so use empty templates
-EMPTYGEOMETRIES := $(call pattern_list,$(TARGETS),$(PLACARDS),-$(_print).pdf)
+EMPTYGEOMETRIES := $(call pattern_list,$(SOURCES),$(PLACARDS),-$(_print).pdf)
 $(EMPTYGEOMETRIES): $(_geometry)-$$(call parse_papersize,$$@).pdf
 	cp $< $@
 
@@ -970,12 +973,12 @@ $(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(LUAINCLUDES)
 
 # The assorted promotional materials don't have binding specs because they
 # aren't bound, fake print versions of the layouts instead
-FAKEGEOMETRIES := $(call pattern_list,$(TARGETS),$(PLACARDS),-$(_geometry).sh)
+FAKEGEOMETRIES := $(call pattern_list,$(SOURCES),$(PLACARDS),-$(_geometry).sh)
 $(FAKEGEOMETRIES): %-$(_geometry).sh: %-$(_print)-$(_geometry).sh
 	ln -s $< $@
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
-GEOMETRIES := $(call pattern_list,$(TARGETS),$(PAPERSIZES),$(BINDINGS),-$(_geometry).sh)
+GEOMETRIES := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(BINDINGS),-$(_geometry).sh)
 $(GEOMETRIES): %-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,$$@)
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	hidpi=$(HIDPI)
@@ -1086,7 +1089,7 @@ $(GEOMETRIES): %-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,
 		$(call magick_emulateprint) \
 		$@
 
-BOOKSCENESINC := $(call pattern_list,$(TARGETS),$(RENDERED),.inc)
+BOOKSCENESINC := $(call pattern_list,$(SOURCES),$(RENDERED),.inc)
 $(BOOKSCENESINC): %.inc: $$(geometryfile) %-pov-$(_front).png %-pov-$(_back).png %-pov-$(_spine).png
 	$(sourcegeometry)
 	cat <<- EOF > $@
@@ -1103,7 +1106,7 @@ $(BOOKSCENESINC): %.inc: $$(geometryfile) %-pov-$(_front).png %-pov-$(_back).png
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
-BOOKSCENES := $(call pattern_list,$(TARGETS),$(RENDERED),-$(_3d).pov)
+BOOKSCENES := $(call pattern_list,$(SOURCES),$(RENDERED),-$(_3d).pov)
 $(BOOKSCENES): %-$(_3d).pov: $$(geometryfile) %.inc
 	$(sourcegeometry)
 	cat <<- EOF > $@
@@ -1115,9 +1118,9 @@ $(BOOKSCENES): %-$(_3d).pov: $$(geometryfile) %.inc
 		#declare toMM = 1 / $$pagehmm;
 	EOF
 
-ifneq ($(strip $(TARGETS)),$(strip $(PROJECT)))
+ifneq ($(strip $(SOURCES)),$(strip $(PROJECT)))
 SERIESSCENES := $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3d).pov)
-$(SERIESSCENES): $(PROJECT)-%-$(_3d).pov: $(firstword $(TARGETS))-%-$(_3d).pov $(call pattern_list,$(TARGETS),-%.inc)
+$(SERIESSCENES): $(PROJECT)-%-$(_3d).pov: $(firstword $(SOURCES))-%-$(_3d).pov $(call pattern_list,$(SOURCES),-%.inc)
 	cat <<- EOF > $@
 		#include "$<"
 		#declare BookCount = $(words $(TARGETS));
@@ -1202,11 +1205,11 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 	kindlegen $< ||:
 	$(addtosync)
 
-PHONYSCREENS := $(call pattern_list,$(TARGETS),.$(_screen))
+PHONYSCREENS := $(call pattern_list,$(SOURCES),.$(_screen))
 .PHONY: $(PHONYSCREENS)
 $(PHONYSCREENS): %.$(_screen): %-$(_screen).pdf %-manifest.yml
 
-MANIFESTS := $(call pattern_list,$(TARGETS),-manifest.yml)
+MANIFESTS := $(call pattern_list,$(SOURCES),-manifest.yml)
 $(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML) $$(TARGETYAMLS_$$*) | $(require_pubdir)
 	# yq -M -e -s -y 'reduce .[] as $$item({}; . + $$item)' $(filter %.yml,$^) |
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $(filter %.yml,$^) |
@@ -1217,12 +1220,12 @@ $(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML)
 
 INTERMEDIATES += *.html
 
-BIOHTMLS := $(call pattern_list,$(TARGETS),-bio.html)
+BIOHTMLS := $(call pattern_list,$(SOURCES),-bio.html)
 $(BIOHTMLS): %-bio.html: %-manifest.yml
 	yq -r '.creator[0].about' $(filter %-manifest.yml,$^) |
 		pandoc -f markdown -t html | head -c -1 > $@
 
-DESHTMLS := $(call pattern_list,$(TARGETS),-description.html)
+DESHTMLS := $(call pattern_list,$(SOURCES),-description.html)
 $(DESHTMLS): %-description.html: %-manifest.yml
 	yq -r '.abstract' $(filter %-manifest.yml,$^) |
 		pandoc -f markdown -t html | head -c -1 > $@
@@ -1272,13 +1275,13 @@ INTERMEDIATES += *-$(_barcode).*
 			$@
 	fi
 
-STATSTARGETS := $(call pattern_list,$(TARGETS),-stats)
+STATSSOURCES := $(call pattern_list,$(SOURCES),-stats)
 
 .PHONY: stats
-stats: $(STATSTARGETS) $(and $(CI),init)
+stats: $(STATSSOURCES) $(and $(CI),init)
 
-.PHONY: $(STATSTARGETS)
-$(STATSTARGETS): %-stats:
+.PHONY: $(STATSSOURCES)
+$(STATSSOURCES): %-stats:
 	stats.zsh $* $(STATSMONTHS)
 
 %-$(_verses).json: %-$(_processed).md
