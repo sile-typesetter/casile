@@ -94,15 +94,18 @@ endif
 # Categorize supported outputs
 PAPERSIZES := $(call localize,$(subst layout-,,$(notdir $(basename $(wildcard $(CASILEDIR)/layout-*.lua)))))
 BINDINGS = $(call localize,print paperback hardcover coil stapled)
+DISPLAYS := $(_app) $(_screen)
+PLACARDS := $(_square) $(_wide) $(_banner) epub
 
-ALLLAYOUTS := $(call pattern_list,$(PAPERSIZES),$(foreach BINDING,$(BINDINGS),-$(BINDING)))
+FAKEPAPERSIZES := $(DISPLAYS) $(PLACARDS)
+REALPAPERSIZES := $(filter-out $(FAKEPAPERSIZES),$(PAPERSIZES))
+FAKELAYOUTS := $(call pattern_list,$(PLACARDS),-$(_print))
+REALLAYOUTS := $(call pattern_list,$(REALPAPERSIZES),$(foreach BINDING,$(BINDINGS),-$(BINDING))) $(call pattern_list,$(DISPLAYS),-$(_print))
+ALLLAYOUTS := $(REALLAYOUTS) $(FAKELAYOUTS)
 UNBOUNDLAYOUTS := $(call pattern_list,$(PAPERSIZES),-$(_print))
 BOUNDLAYOUTS := $(filter-out $(UNBOUNDLAYOUTS),$(ALLLAYOUTS))
 
-DISPLAYS := $(_app) $(_screen)
-PLACARDS := $(_square) $(_wide) $(_banner) epub
 RENDERINGS := $(_3d)-$(_front) $(_3d)-$(_back) $(_3d)-$(_pile)
-
 RENDERED_DEF := $(filter $(call pattern_list,$(filter-out $(DISPLAYS) $(PLACARDS),$(PAPERSIZES)),-%),$(LAYOUTS))
 RENDERED ?= $(RENDERED_DEF)
 RENDERED += $(GOALLAYOUTS)
@@ -276,6 +279,8 @@ debug:
 	@echo DOCUMENTCLASS: $(DOCUMENTCLASS)
 	@echo DOCUMENTOPTIONS: $(DOCUMENTOPTIONS)
 	@echo DRAFT: $(DRAFT)
+	@echo FAKELAYOUTS: $(FAKELAYOUTS)
+	@echo FAKEPAPERSIZES: $(FAKEPAPERSIZES)
 	@echo FIGURES: $(FIGURES)
 	@echo FORMATS: $(FORMATS)
 	@echo GOALLAYOUTS: $(GOALLAYOUTS)
@@ -301,6 +306,8 @@ debug:
 	@echo PLAYSOURCES: $(PLAYSOURCES)
 	@echo PROJECT: $(PROJECT)
 	@echo PROJECTCONFIGS: $(PROJECTCONFIGS)
+	@echo REALLAYOUTS: $(REALLAYOUTS)
+	@echo REALPAPERSIZES: $(REALPAPERSIZES)
 	@echo RENDERED: $(RENDERED)
 	@echo SILE: $(SILE)
 	@echo SILEFLAGS: $(SILEFLAGS)
@@ -488,11 +495,11 @@ coverpreq = $(and $(filter true,$(COVERS)),$(filter $(_print),$(call parse_bindi
 # Order is important here, these are included in reverse order so early supersedes late
 onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(CASILEDIR)/layout-$(call unlocalize,$(call parse_papersize,$1)).lua $(LUALIBS)
 
-MOCKUPPDFS := $(call pattern_list,$(MOCKUPSOURCES),$(filter-out $(PLACARDS),$(PAPERSIZES)),$(BINDINGS),.pdf)
+MOCKUPPDFS := $(call pattern_list,$(MOCKUPSOURCES),$(REALLAYOUTS),.pdf)
 $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
 	pdftk A=$(filter %.pdf,$^) cat $(foreach P,$(shell seq 1 $(call pagecount,$@)),A2-2) output $@
 
-FULLPDFS := $(call pattern_list,$(REALSOURCES),$(filter-out $(PLACARDS),$(PAPERSIZES)),$(BINDINGS),.pdf)
+FULLPDFS := $(call pattern_list,$(REALSOURCES),$(REALLAYOUTS),.pdf)
 $(FULLPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
 $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES) | $(require_pubdir)
 	$(call skip_if_lazy,$@)
@@ -521,7 +528,7 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 	fi
 	$(addtosync)
 
-FULLSILS := $(call pattern_list,$(SOURCES),$(LAYOUTS),.sil)
+FULLSILS := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil)
 $(FULLSILS): %.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-$(_processed).md -manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
@@ -828,7 +835,7 @@ $(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf $$(geome
 	pdftk $${text} background $${bg} output $@
 	rm $${text} $${bg}
 
-BINDINGFRAGMENTS := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_text).pdf)
+BINDINGFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_text).pdf)
 $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
@@ -840,7 +847,7 @@ $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(cal
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
-FRONTFRAGMENTS := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_fragment)-$(_front).png)
+FRONTFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_front).png)
 $(FRONTFRAGMENTS): %-$(_fragment)-$(_front).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace sRGB \
@@ -848,7 +855,7 @@ $(FRONTFRAGMENTS): %-$(_fragment)-$(_front).png: %-$(_text).pdf
 		-compose Copy -layers Flatten +repage \
 		$@
 
-BACKFRAGMENTS := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_fragment)-$(_back).png)
+BACKFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_back).png)
 $(BACKFRAGMENTS): %-$(_fragment)-$(_back).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[1] \
 		-colorspace sRGB \
@@ -856,7 +863,7 @@ $(BACKFRAGMENTS): %-$(_fragment)-$(_back).png: %-$(_text).pdf
 		-compose Copy -layers Flatten +repage \
 		$@
 
-SPINEFRAGMENTS := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(BINDINGS),-$(_binding)-$(_fragment)-$(_spine).png)
+SPINEFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_spine).png)
 $(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfile)
 	$(sourcegeometry)
 	$(MAGICK) -density $(HIDPI) $<[2] \
@@ -957,22 +964,19 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 	$(addtosync)
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
-NONBOUNDGEOMETRIES := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(NONBOUNDGEOMETRIES),-$(_geometry).sh)
-$(NONBOUNDGEOMETRIES): BLEED = $(NOBLEED)
-$(NONBOUNDGEOMETRIES): TRIM = $(NOTRIM)
+UNBOUNDGEOMETRIES := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_geometry).sh)
+$(UNBOUNDGEOMETRIES): BLEED = $(NOBLEED)
+$(UNBOUNDGEOMETRIES): TRIM = $(NOTRIM)
 
 # Some output formats don't have PDF content, but we still need to calculate geometry for them so use empty templates
-EMPTYGEOMETRIES := $(call pattern_list,$(SOURCES),$(PLACARDS),-$(_print).pdf)
-$(EMPTYGEOMETRIES): $(_geometry)-$$(call parse_papersize,$$@).pdf
-	cp $< $@
-
-IGNORES += $(_geometry)-*.pdf
-
-$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(LUAINCLUDES)
+EMPTYGEOMETRIES := $(call pattern_list,$(_geometry),$(FAKELAYOUTS),.pdf)
+$(EMPTYGEOMETRIES): $(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(LUAINCLUDES)
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) $(SILEFLAGS) \
 		-e "papersize = '$(call unlocalize,$*)'" \
 		$< -o $@
+
+IGNORES += $(EMPTYGEOMETRIES)
 
 # The assorted promotional materials don't have binding specs because they
 # aren't bound, fake print versions of the layouts instead
@@ -981,7 +985,7 @@ $(FAKEGEOMETRIES): %-$(_geometry).sh: %-$(_print)-$(_geometry).sh
 	ln -s $< $@
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
-GEOMETRIES := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(BINDINGS),-$(_geometry).sh)
+GEOMETRIES := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),-$(_geometry).sh)
 $(GEOMETRIES): %-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,$$@)
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	hidpi=$(HIDPI)
