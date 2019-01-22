@@ -89,8 +89,8 @@ LAYOUTS += $(GOALLAYOUTS)
 
 # Categorize supported outputs
 PAPERSIZES := $(call localize,$(subst layout-,,$(notdir $(basename $(wildcard $(CASILEDIR)/layout-*.lua)))))
-NOSPINEBINDINGS := $(call localize,print coil stapled)
-SPINEBINDINGS := $(call localize,paperback hardcover)
+NOSPINEBINDINGS := $(call localize,print)
+SPINEBINDINGS := $(call localize,paperback hardcover coil stapled)
 BINDINGS := $(NOSPINEBINDINGS) $(SPINEBINDINGS)
 
 DISPLAYS := $(_app) $(_screen)
