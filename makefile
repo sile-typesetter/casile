@@ -83,15 +83,21 @@ POVRAY ?= povray
 # Set default output format(s)
 LAYOUTS ?= a4-$(_print)
 
-# Add any specifically targeted outputs to input layouts
+# Add any specifically targeted output layouts
 GOALLAYOUTS := $(sort $(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL))))
 LAYOUTS += $(GOALLAYOUTS)
 
+ifneq ($(filter ci promotionals series_promotionals %.web %.epub %.play,$(MAKECMDGOALS)),)
+LAYOUTS += $(call pattern_list,$(PLACARDS),-$(_print))
+endif
+
 # Categorize supported outputs
 PAPERSIZES := $(call localize,$(subst layout-,,$(notdir $(basename $(wildcard $(CASILEDIR)/layout-*.lua)))))
-NOSPINEBINDINGS := $(call localize,print)
-SPINEBINDINGS := $(call localize,paperback hardcover coil stapled)
-BINDINGS := $(NOSPINEBINDINGS) $(SPINEBINDINGS)
+BINDINGS = $(call localize,print paperback hardcover coil stapled)
+
+ALLLAYOUTS := $(call pattern_list,$(PAPERSIZES),$(foreach BINDING,$(BINDINGS),-$(BINDING)))
+UNBOUNDLAYOUTS := $(call pattern_list,$(PAPERSIZES),-$(_print))
+BOUNDLAYOUTS := $(filter-out $(UNBOUNDLAYOUTS),$(ALLLAYOUTS))
 
 DISPLAYS := $(_app) $(_screen)
 PLACARDS := $(_square) $(_wide) $(_banner) epub
@@ -240,10 +246,6 @@ endif
 .PHONY: series_promotionals
 series_promotionals: $(PROJECT)-epub-$(_poster)-$(_montage).jpg $(PROJECT)-$(_square)-$(_poster)-$(_montage).jpg
 
-ifneq ($(filter ci promotionals series_promotionals %.web %.epub %.play,$(MAKECMDGOALS)),)
-LAYOUTS += $(call pattern_list,$(PLACARDS),-$(_print))
-endif
-
 .PHONY: series_renderings
 series_renderings: $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3d)-$(_montage).jpg)
 
@@ -261,8 +263,10 @@ clean: | $(require_pubdir)
 
 .PHONY: debug
 debug:
+	@echo ALLLAYOUTS: $(ALLLAYOUTS)
 	@echo ALLTAGS: $(ALLTAGS)
 	@echo BINDINGS: $(BINDINGS)
+	@echo BOUNDLAYOUTS: $(BOUNDLAYOUTS)
 	@echo CASILEDIR: $(CASILEDIR)
 	@echo CICONFIG: $(CICONFIG)
 	@echo CITEMPLATE: $(CITEMPLATE)
@@ -290,7 +294,6 @@ debug:
 	@echo MOCKUPBASE: $(MOCKUPBASE)
 	@echo MOCKUPFACTOR: $(MOCKUPFACTOR)
 	@echo MOCKUPSOURCES: $(MOCKUPSOURCES)
-	@echo NOSPINEBINDINGS: $(NOSPINEBINDINGS)
 	@echo OUTPUTDIR: $(OUTPUTDIR)
 	@echo PANDOCARGS: $(PANDOCARGS)
 	@echo PAPERSIZES: $(PAPERSIZES)
@@ -303,10 +306,10 @@ debug:
 	@echo SILEFLAGS: $(SILEFLAGS)
 	@echo SILEPATH: $(SILEPATH)
 	@echo SOURCES: $(SOURCES)
-	@echo SPINEBINDINGS: $(SPINEBINDINGS)
 	@echo TAG: $(TAG)
 	@echo TAGNAME: $(TAGNAME)
 	@echo TARGETS: $(TARGETS)
+	@echo UNBOUNDLAYOUTS: $(UNBOUNDLAYOUTS)
 	@echo YAMLSOURCES: $(YAMLSOURCES)
 	@echo urlinfo: $(call urlinfo,$(PROJECT))
 	@echo versioninfo: $(call versioninfo,$(PROJECT))
@@ -757,7 +760,7 @@ $(_issue).info: | $(require_pubdir)
 	done > $@
 	$(addtosync)
 
-COVERBACKGROUNDS := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover)-$(_background).png)
+COVERBACKGROUNDS := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_background).png)
 git_background = $(shell git ls-files -- $(call strip_layout,$1) 2> /dev/null)
 $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@) $$(geometryfile)
 	$(sourcegeometry)
@@ -780,7 +783,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		$(and $(filter epub,$(call parse_papersize,$@)),-resize 1000x1600^) \
 		$@
 
-COVERIMAGES := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover).png)
+COVERIMAGES := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover).png)
 $(COVERIMAGES): %-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_fragment).png $$(geometryfile)
 	$(sourcegeometry)
 	@$(MAGICK) $< \
@@ -809,7 +812,7 @@ $(COVERIMAGES): %-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_f
 		$@
 	$(addtosync)
 
-COVERPDFS := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover).pdf)
+COVERPDFS := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover).pdf)
 $(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf $$(geometryfile)
 	$(COVERS) || exit 0
 	text=$$(mktemp kapakXXXXXX.pdf)
@@ -863,7 +866,7 @@ $(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfil
 		-compose Copy -layers Flatten +repage \
 		$@
 
-COVERFRAGMENTS := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover)-$(_text).pdf)
+COVERFRAGMENTS := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_text).pdf)
 $(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
@@ -874,7 +877,7 @@ $(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
-FRONTFRAGMENTIMAGES := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(NOSPINEBINDINGS),-$(_cover)-$(_fragment).png)
+FRONTFRAGMENTIMAGES := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_fragment).png)
 $(FRONTFRAGMENTIMAGES): %-$(_fragment).png: %-$(_text).pdf
 	$(MAGICK) -density $(HIDPI) $<[0] \
 		-colorspace sRGB \
@@ -902,7 +905,7 @@ publisher_logo-grey.svg: $(PUBLISHERLOGO)
 	$(call skip_if_tracked,$@)
 	cp $< $@
 
-BINDINGIMAGES := $(call pattern_list,$(SOURCES),$(PAPERSIZES),$(SPINEBINDINGS),-$(_binding).png)
+BINDINGIMAGES := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding).png)
 $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png $$(basename $$@)-$(_fragment)-$(_back).png $$(basename $$@)-$(_fragment)-$(_spine).png $$(call parse_bookid,$$@)-$(_barcode).png publisher_emblum.svg publisher_emblum-grey.svg publisher_logo.svg publisher_logo-grey.svg $$(geometryfile)
 	$(sourcegeometry)
 	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
