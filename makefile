@@ -21,10 +21,10 @@ include $(CASILEDIR)/makefile-functions
 # Empty recipies for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;
 
-MARKDOWNSOURCES := $(wildcard *.md)
-LUASOURCES := $(wildcard *.lua)
-MAKESOURCES := $(wildcard [Mm]akefile)
-YAMLSOURCES := $(wildcard *.yml)
+MARKDOWNSOURCES := $(call find,*.md)
+LUASOURCES := $(call find,*.lua)
+MAKESOURCES := $(call find,[Mm]akefile*)
+YAMLSOURCES := $(call find,*.yml)
 
 # # Find stuff that could be built based on what has matching YML and a MD components
 SOURCES_DEF := $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(notdir $(YAMLSOURCES))))
