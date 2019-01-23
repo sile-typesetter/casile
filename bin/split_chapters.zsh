@@ -3,7 +3,7 @@ set -e
 
 src=$1
 base=${src/.md}
-dir=${base}-bolumler
+dir=${base}-chapters
 
 mkdir -p $dir
 
