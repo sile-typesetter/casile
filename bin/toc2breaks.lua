@@ -90,7 +90,7 @@ end
 for i, v in pairs(breaks) do
   local n = string.format("%03d", i - 1)
   local out = basename .. "-uygulama-" .. n .. ".pdf"
-  local out = path .. "-uygulama-" .. n .. ".pdf"
+  local out2 = path .. "-uygulama-" .. n .. ".pdf"
 
   -- Fieds expected by makefile to pass to pdftk
   print(v, out)
@@ -98,7 +98,7 @@ for i, v in pairs(breaks) do
   -- Human readable info for copy/paste to the church app
   infow("CHUNK " .. i - 1  .. ":")
   infow(labels[i])
-  infow(share .. out, true)
+  infow(share .. out2, true)
 end
 
 infofile:close()
