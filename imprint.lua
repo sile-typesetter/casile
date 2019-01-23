@@ -24,7 +24,8 @@ SILE.registerCommand("imprint", function (options, content)
         SILE.settings.set("linespacing.fixed.baselinedistance", SILE.length.parse("2.8ex plus 1pt minus 0.5pt"))
 
         if CASILE.metadata.publisher and not (CASILE.layout == "app") then
-          SILE.processMarkdown(SU.contentToString(CASILE.metadata.publisher))
+          SILE.processMarkdown({SU.contentToString(CASILE.metadata.publisher)})
+          SILE.call("par")
         end
 
         if SILE.Commands["meta:title"] then
@@ -52,7 +53,7 @@ SILE.registerCommand("imprint", function (options, content)
             SILE.call("skip", { height = "-6.3em" })
             SILE.settings.set("document.lskip", SILE.nodefactory.newGlue({ width = imgUnit * 6.5 }))
             if SILE.Commands["meta:identifiers"] then SILE.call("meta:identifiers") end
-            SILE.call("font", { weight = 600, style = "Bold" }, { "Sürüm: " })
+            SILE.call("font", { weight = 600, style = "Bold" }, { "Version: " })
             SILE.call("font", { family = "Hack", size = "0.8em" }, SILE.Commands["meta:surum"])
             SILE.call("break")
             SILE.call("font", { weight = 600, style = "Bold" }, { "URL: " })
@@ -70,7 +71,7 @@ SILE.registerCommand("imprint", function (options, content)
             SILE.call("par")
           end)
         else
-          SILE.call("font", { weight = 600, style = "Bold" }, { "Sürüm: " })
+          SILE.call("font", { weight = 600, style = "Bold" }, { "Version: " })
           SILE.call("font", { family = "Hack", size = "0.8em" }, SILE.Commands["meta:surum"])
           SILE.call("par")
         end
