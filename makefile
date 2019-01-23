@@ -1211,7 +1211,7 @@ $(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML)
 	# yq -M -e -s -y 'reduce .[] as $$item({}; . + $$item)' $(filter %.yml,$^) |
 	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $(filter %.yml,$^) |
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
-			-e '/text: 978605/{p;s/^\(.*\)text: \([[:digit:]]\+\)$$/python -c "import isbnlib; print(\\"mask: \\" + isbnlib.mask(\\"\2\\"))"/e}' \
+			-e '/text: \([[:digit:]]\{10,13\}\)/{p;s/^\(.*\)text: \([[:digit:]]\+\)$$/python -c "import isbnlib; print(\\"mask: \\" + isbnlib.mask(\\"\2\\"))"/e}' \
 			-e '/\(own\|next\)cloudshare: [^"]/s/: \(.*\)$$/: "\1"/' | tee $@
 	$(addtosync)
 
