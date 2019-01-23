@@ -8,7 +8,7 @@ dir=${base}-bolumler
 mkdir -p $dir
 
 i=0
-of=
+of=$dir/000-frontmater.md
 chapters=()
 
 while read line; do
