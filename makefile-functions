@@ -13,7 +13,7 @@ require_outputdir := $(or $(OUTPUTDIR),fail)
 require_pubdir := $(and $(filter-out true,$(DRAFT)),$(or $(PUBDIR),fail))
 
 # Assorted utility functions for juggling information about books
-mockupbase = $(if $(filter $(MOCKUPTARGETS),$(call parse_bookid,$1)),$(subst $(call parse_bookid,$1),$(MOCKUPBASE),$1),$1)
+mockupbase = $(if $(filter $(MOCKUPSOURCES),$(call parse_bookid,$1)),$(subst $(call parse_bookid,$1),$(MOCKUPBASE),$1),$1)
 pagecount = $(shell pdfinfo $(call mockupbase,$1) | awk '$$1 == "Pages:" {printf "%.0f", $$2 * $(MOCKUPFACTOR)}' || echo 0)
 pagew = $(shell pdfinfo $(call mockupbase,$1) | awk '$$1$$2 == "Pagesize:" {print $$3}' || echo 0)
 pageh = $(shell pdfinfo $(call mockupbase,$1) | awk '$$1$$2 == "Pagesize:" {print $$5}' || echo 0)
@@ -62,8 +62,8 @@ unlocalize = $(foreach WORD,$1,$(or $(__$(WORD)),$(WORD)))
 
 # Geometry file dependency functions
 newgeometry = $(shell grep -sq hidpi=$(HIDPI) $1 || echo force)
-geometrybase = $(and $(filter-out $(DISPLAYS) $(PLACARDS),$(call parse_papersize,$1)),$(call parse_bookid,$1)-$(call parse_layout,$1).pdf) $(_geometry)-$(call parse_papersize,$1).pdf
-geometryfile = $(call parse_bookid,$@)-$(call parse_papersize,$@)-$(or $(call parse_binding,$@),$(_print))-$(_geometry).sh
+geometrybase = $(and $(filter-out $(FAKEPAPERSIZES),$(call parse_papersize,$1)),$$*.pdf) $(_geometry)-$(call parse_layout,$1).pdf
+geometryfile = $(call parse_bookid,$@)-$(call parse_layout,$@)-$(_geometry).sh
 sourcegeometry = source $(filter %-$(_geometry).sh,$^ $|)
 dump = $(warning DUMP: $1)
 
