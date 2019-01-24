@@ -73,7 +73,7 @@ if #toc > 0 then
       labels[#breaks] = tocentry.label[1]
       lastpage = pageno
     else
-      labels[#breaks] =  labels[#breaks] .. ", " .. tocentry.label[1]
+      labels[#breaks] =  tostring(labels[#breaks]) .. ", " .. tostring(tocentry.label[1])
     end
   end
 
