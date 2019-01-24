@@ -87,7 +87,7 @@ LAYOUTS ?= a4-$(_print)
 GOALLAYOUTS := $(sort $(filter-out -,$(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL)))))
 LAYOUTS += $(GOALLAYOUTS)
 
-ifneq ($(filter ci promotionals series_promotionals %.web %.epub %.play,$(MAKECMDGOALS)),)
+ifneq ($(filter ci %promotionals %.web %.epub %.play %.$(_app),$(MAKECMDGOALS)),)
 LAYOUTS += $(call pattern_list,$(PLACARDS),-$(_print))
 endif
 
@@ -218,27 +218,39 @@ $(foreach SOURCE,$(SOURCES),$(eval TARGETLUAS_$(SOURCE) := $(wildcard $(SOURCE).
 .SUFFIXES:
 MAKEFLAGS += --no-builtin-rules
 
-.PHONY: books
-books: $(TARGETS)
+.PHONY: pdfs
+pdfs: $(call pattern_list,$(TARGETS),.pdfs)
+
+PERSOURCEPDFS := $(call pattern_list,$(SOURCES),.pdfs)
+.PHONY: $(PERSOURCEPDFS)
+$(PERSOURCEPDFS): %.pdfs: $(call pattern_list,$$*,$(LAYOUTS),.pdf)
 
 # Setup target dependencies to mimic stages of a CI pipeline
 ifeq ($(MAKECMDGOALS),ci)
 CI ?= 1
 sync_pre: init debug
-sync_post: books renderings promotionals
-books: sync_pre
+sync_post: pdfs renderings promotionals
+pdfs: sync_pre
 renderings: sync_pre
 promotionals: sync_pre
 endif
 
 .PHONY: ci
-ci: init debug sync_pre books renderings promotionals sync_post
+ci: init debug sync_pre pdfs renderings promotionals sync_post
 
 .PHONY: renderings
-renderings: $(call pattern_list,$(SOURCES),$(RENDERED),$(RENDERINGS),.jpg)
+renderings: $(call pattern_list,$(TARGETS),.renderings)
+
+PERSOURCERENDERINGS := $(call pattern_list,$(SOURCES),.renderings)
+.PHONY: $(PERSOURCERENDERINGS)
+$(PERSOURCERENDERINGS): %.renderings: $(call pattern_list,$$*,$(RENDERED),$(RENDERINGS),.jpg)
 
 .PHONY: promotionals
-promotionals: $(call pattern_list,$(SOURCES),$(PLACARDS),-$(_poster).jpg) $(call pattern_list,$(SOURCES),-icon.png)
+promotionals: $(call pattern_list,$(TARGETS),.promotionals)
+
+PERSOURCEPROMOTIONALS := $(call pattern_list,$(SOURCES),.promotionals)
+.PHONY: $(PERSOURCEPROMOTIONALS)
+$(PERSOURCEPROMOTIONALS): %.promotionals: $(call pattern_list,$$*,$(PLACARDS),-$(_poster).jpg) $$*-icon.png
 
 # If a series, add some extra dependencies to convenience builds
 ifneq ($(words $(TARGETS)),1)
@@ -478,16 +490,11 @@ ifneq ($(strip $(TARGETS)),$(strip $(PROJECT)))
 endif
 	$(call post_sync)
 
-# Just needing a PDF format isn't enough without knowing what layouts to build
-VIRTUALPDFS := $(call pattern_list,$(SOURCES),.pdf)
-.PHONY: $(VIRTUALPDFS)
-$(VIRTUALPDFS): %.pdf: $(call pattern_list,$$*,$(LAYOUTS),.pdf) ;
-
 # Some layouts have matching extra resources to build such as covers
-$(VIRTUALPDFS): $$(call pattern_list,$$(basename $$@),$(filter %-$(_paperback),$(LAYOUTS)),$(_binding),.pdf)
-$(VIRTUALPDFS): $$(call pattern_list,$$(basename $$@),$(filter %-$(_hardcover),$(LAYOUTS)),$(_case) $(jacket),.pdf)
-$(VIRTUALPDFS): $$(call pattern_list,$$(basename $$@),$(filter %-$(_coil),$(LAYOUTS)),$(_cover),.pdf)
-$(VIRTUALPDFS): $$(call pattern_list,$$(basename $$@),$(filter %-$(_stapled),$(LAYOUTS)),$(_binding),.pdf)
+$(PERSOURCEPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_paperback),$(LAYOUTS)),$(_binding),.pdf)
+$(PERSOURCEPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_hardcover),$(LAYOUTS)),$(_case) $(jacket),.pdf)
+$(PERSOURCEPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_coil),$(LAYOUTS)),$(_cover),.pdf)
+$(PERSOURCEPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_stapled),$(LAYOUTS)),$(_binding),.pdf)
 
 # Some layouts have matching resources that need to be built first and included
 coverpreq = $(and $(filter true,$(COVERS)),$(filter $(_print),$(call parse_binding,$1)),$(filter-out $(DISPLAYS) $(PLACARDS),$(call parse_papersize,$1)),$(basename $1)-$(_cover).pdf)
@@ -644,11 +651,11 @@ normalize_markdown: $(MARKDOWNSOURCES)
 
 APPSOURCES := $(call pattern_list,$(SOURCES),.$(_app))
 .PHONY: $(APPSOURCES)
-$(APPSOURCES): %.$(_app): %-$(_app).info promotionals
+$(APPSOURCES): %.$(_app): %-$(_app).info %.promotionals
 
 WEBSOURCES := $(call pattern_list,$(SOURCES),.web)
 .PHONY: $(WEBSOURCES)
-$(WEBSOURCES): %.web: %-manifest.yml %-epub-$(_poster).jpg promotionals
+$(WEBSOURCES): %.web: %-manifest.yml %-epub-$(_poster).jpg %.promotionals
 
 PLAYSOURCES := $(foreach ISBN,$(ISBNS),$(call isbntouid,$(ISBN)))
 
