@@ -746,6 +746,8 @@ $(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub
 
 %-$(_app).pdf: %-$(_app)-$(_print).pdf
 	cp $< $@
+	$(addtosync)
+	rm -f $(PUBDIR)/$<
 
 %-$(_app).info: %-$(_app)-$(_print).toc %-$(_app)-$(_print).pdf %-manifest.yml | $(require_pubdir)
 	$(CASILEDIR)/bin/toc2breaks.lua $* $(filter %-$(_app)-$(_print).toc,$^) $(filter %-manifest.yml,$^) $@ |
