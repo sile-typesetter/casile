@@ -344,7 +344,7 @@ list:
 
 .PHONY: $(SOURCES)
 
-REALSOURCES := $(filter-out $(MOCKUPTARGETS),$(SOURCES))
+REALSOURCES := $(filter-out $(MOCKUPSOURCES),$(SOURCES))
 $(REALSOURCES): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
 $(MOCKUPSOURCES): $(foreach FORMAT,$(filter pdf,$(FORMATS)),$$@.$(FORMAT))
 
