@@ -42,7 +42,7 @@ MOCKUPFACTOR ?= 1
 FIGURES ?=
 
 # Default output formats and parameters (often overridden)
-FORMATS ?= pdf epub mobi odt docx web play
+FORMATS ?= pdf epub mobi odt docx web play app
 BLEED ?= 3
 TRIM ?= 10
 NOBLEED ?= 0
@@ -87,7 +87,7 @@ LAYOUTS ?= a4-$(_print)
 GOALLAYOUTS := $(sort $(filter-out -,$(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL)))))
 LAYOUTS += $(GOALLAYOUTS)
 
-ifneq ($(filter ci %promotionals %.web %.epub %.play %.$(_app),$(MAKECMDGOALS)),)
+ifneq ($(filter ci %.promotionals %.web %.epub %.play %.app,$(MAKECMDGOALS)),)
 LAYOUTS += $(call pattern_list,$(PLACARDS),-$(_print))
 endif
 
@@ -649,13 +649,13 @@ normalize_markdown: $(MARKDOWNSOURCES)
 
 %.sil.tov: %.pdf ;
 
-APPSOURCES := $(call pattern_list,$(SOURCES),.$(_app))
+APPSOURCES := $(call pattern_list,$(SOURCES),.app)
 .PHONY: $(APPSOURCES)
-$(APPSOURCES): %.$(_app): %-$(_app).info %.promotionals
+$(APPSOURCES): %.app: %-$(_app).info %.promotionals
 
 WEBSOURCES := $(call pattern_list,$(SOURCES),.web)
 .PHONY: $(WEBSOURCES)
-$(WEBSOURCES): %.web: %-manifest.yml %-epub-$(_poster).jpg %.promotionals
+$(WEBSOURCES): %.web: %-manifest.yml %.promotionals %.renderings
 
 PLAYSOURCES := $(foreach ISBN,$(ISBNS),$(call isbntouid,$(ISBN)))
 
