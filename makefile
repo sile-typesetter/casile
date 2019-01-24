@@ -975,8 +975,9 @@ UNBOUNDGEOMETRIES := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_geomet
 $(UNBOUNDGEOMETRIES): BLEED = $(NOBLEED)
 $(UNBOUNDGEOMETRIES): TRIM = $(NOTRIM)
 
-# Some output formats don't have PDF content, but we still need to calculate geometry for them so use empty templates
-EMPTYGEOMETRIES := $(call pattern_list,$(_geometry),$(FAKELAYOUTS),.pdf)
+# Some output formats don't have PDF content, but we still need to calculate the
+# page geometry, so generate a single page PDF to measure with no binding scenario
+EMPTYGEOMETRIES := $(call pattern_list,$(_geometry),$(PAPERSIZES),.pdf)
 $(EMPTYGEOMETRIES): $(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(LUAINCLUDES)
 	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	$(SILE) $(SILEFLAGS) \
@@ -985,14 +986,8 @@ $(EMPTYGEOMETRIES): $(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(LUAINCLUDES)
 
 IGNORES += $(EMPTYGEOMETRIES)
 
-# The assorted promotional materials don't have binding specs because they
-# aren't bound, fake print versions of the layouts instead
-FAKEGEOMETRIES := $(call pattern_list,$(SOURCES),$(PLACARDS),-$(_geometry).sh)
-$(FAKEGEOMETRIES): %-$(_geometry).sh: %-$(_print)-$(_geometry).sh
-	ln -s $< $@
-
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
-GEOMETRIES := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),-$(_geometry).sh)
+GEOMETRIES := $(call pattern_list,$(SOURCES),$(ALLLAYOUTS),-$(_geometry).sh)
 $(GEOMETRIES): %-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,$$@)
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	hidpi=$(HIDPI)
