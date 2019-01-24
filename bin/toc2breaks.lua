@@ -67,13 +67,15 @@ if #toc > 0 then
 
   -- Get a table of major (more that 2 pages apart) TOC entries
   for i, tocentry in pairs(toc) do
-    local pageno = tonumber(tocentry.pageno)
-    if pageno > lastpage + 2 then
-      table.insert(breaks, pageno)
-      labels[#breaks] = tocentry.label[1]
-      lastpage = pageno
-    else
-      labels[#breaks] =  tostring(labels[#breaks]) .. ", " .. tostring(tocentry.label[1])
+    if tocentry.level <= 2 then
+      local pageno = tonumber(tocentry.pageno)
+      if pageno > lastpage + 2 then
+        table.insert(breaks, pageno)
+        labels[#breaks] = tocentry.label[1]
+        lastpage = pageno
+      else
+        labels[#breaks] =  tostring(labels[#breaks]) .. ", " .. tostring(tocentry.label[1])
+      end
     end
   end
 
