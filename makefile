@@ -326,7 +326,6 @@ debug:
 	@echo SILEPATH: $(SILEPATH)
 	@echo SOURCES: $(SOURCES)
 	@echo TAG: $(TAG)
-	@echo TAGNAME: $(TAGNAME)
 	@echo TARGETS: $(TARGETS)
 	@echo UNBOUNDLAYOUTS: $(UNBOUNDLAYOUTS)
 	@echo YAMLSOURCES: $(YAMLSOURCES)
@@ -476,13 +475,12 @@ sync_pre: | $(require_pubdir) $(require_outputdir)
 
 .PHONY: sync_post
 sync_post: | $(require_pubdir) $(require_outputdir)
-	$(foreach TARGET,$(TARGETS),mkdir -p $(OUTPUTDIR)/$(TARGET)/$(TAGNAME);)
-	$(foreach TARGET,$(TARGETS),find $(PUBDIR) -type f \( \
+	$(foreach TARGET,$(TARGETS),$(foreach OUTPATH,$(OUTPATHS),mkdir -p $(OUTPUTDIR)/$(OUTPATH);)
+		find $(PUBDIR) -type f \( \
 		-name "$(TARGET)*" \
 		$(and $(call printisbn,$(TARGET)),-or -name "$(call printisbn,$(TARGET))*") \
 		$(and $(call ebookisbn,$(TARGET)),-or -name "$(call ebookisbn,$(TARGET))*") \
-		\) -execdir rsync -ct {} $(OUTPUTDIR)/$(TARGET)/ \; \
-		   -execdir rsync -ct {} $(OUTPUTDIR)/$(TARGET)/$(TAGNAME)/ \;;)
+		\)$(foreach OUTPATH,$(OUTPATHS), -execdir rsync -ct {} $(OUTPUTDIR)/$(OUTPATH)/ \;);)
 ifneq ($(strip $(TARGETS)),$(strip $(PROJECT)))
 	find $(PUBDIR) -type f \
 		-name "$(PROJECT)*" \
