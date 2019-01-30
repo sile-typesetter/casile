@@ -33,59 +33,59 @@ SILE.registerCommand("cabook:font:alt", function (options, content)
 end)
 
 SILE.registerCommand("cabook:font:subparagraph", function (options, content)
-  options.size = options.size or "11pt"
+  options.size = options.size or "0.96em"
   options.features = options.features or "+smcp"
   SILE.call("cabook:font:alt", options, content)
 end)
 
 SILE.registerCommand("cabook:font:footnote", function (options, content)
-  options.size = options.size or "8.5pt"
+  options.size = options.size or "0.74em"
   SILE.call("cabook:font:alt", options, content)
 end)
 
 SILE.registerCommand("cabook:font:chaptertitle", function (options, content)
   options.weight = options.weight or 600
-  options.size = options.size or "16pt"
+  options.size = options.size or "1.4em"
   SILE.call("cabook:font:serif", options, content)
 end)
 
 SILE.registerCommand("cabook:font:chapterno", function (options, content)
   options.family = options.family or "Libertinus Serif Display"
-  options.size = options.size or "11pt"
+  options.size = options.size or "0.96em"
   SILE.call("font", options, content)
 end)
 
 SILE.registerCommand("cabook:font:sectiontitle", function (options, content)
-  options.size = options.size or "8.5pt"
+  options.size = options.size or "0.74em"
   SILE.call("cabook:font:chaptertitle", options, content)
 end)
 
 SILE.registerCommand("cabook:font:dedication", function (options, content)
   options.style = options.style or "Italic"
-  options.size = options.size or "14pt"
+  options.size = options.size or "1.2em"
   SILE.call("cabook:font:serif", options, content)
 end)
 
 SILE.registerCommand("verbatim:font", function (options, content)
-  options.size = options.size or "10pt"
+  options.size = options.size or "0.86em"
   SILE.call("cabook:font:mono", options, content)
 end)
 
 SILE.registerCommand("cabook:font:folio", function (options, content)
   options.style = options.style or "Roman"
-  options.size = options.size or "13pt"
+  options.size = options.size or "1.1em"
   options.weight = options.weight or 400
   SILE.call("cabook:font:alt", options, content)
 end)
 
 SILE.registerCommand("cabook:font:left-header", function (options, content)
-  options.size = options.size or "12pt"
+  options.size = options.size or "1.05em"
   SILE.call("cabook:font:alt", options, content)
 end)
 
 SILE.registerCommand("cabook:font:right-header", function (options, content)
   options.style = options.style or "Italic"
-  options.size = options.size or "12pt"
+  options.size = options.size or "1.05em"
   SILE.call("cabook:font:alt", options, content)
 end)
 
