@@ -211,6 +211,11 @@ $(foreach SOURCE,$(SOURCES),$(eval TARGETMACROS_$(SOURCE) := $(wildcard $(SOURCE
 $(foreach SOURCE,$(SOURCES),$(eval TARGETYAMLS_$(SOURCE) := $(wildcard $(SOURCE).yml)))
 $(foreach SOURCE,$(SOURCES),$(eval TARGETLUAS_$(SOURCE) := $(wildcard $(SOURCE).lua)))
 
+# Optionally also build versions of everything with verse references in footnotes expanded
+VERSIFIEDSOURCES := $(call pattern_list,$(TARGETS),_$(_verses))
+TARGETS += $(VERSIFIEDSOURCES)
+SOURCES += $(VERSIFIEDSOURCES)
+
 .ONESHELL:
 .SECONDEXPANSION:
 .SECONDARY:
@@ -330,6 +335,7 @@ debug:
 	@echo SOURCES: $(SOURCES)
 	@echo TAG: $(TAG)
 	@echo TARGETS: $(TARGETS)
+	@echo VERSIFIEDSOURCES: $(VERSIFIEDSOURCES)
 	@echo UNBOUNDLAYOUTS: $(UNBOUNDLAYOUTS)
 	@echo YAMLSOURCES: $(YAMLSOURCES)
 	@echo urlinfo: $(call urlinfo,$(PROJECT))
@@ -561,6 +567,27 @@ $(FULLSILS): %.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-$(_processed
 		CASILE.casiledir = "$(CASILEDIR)"
 		CASILE.publisher = "casile"
 	EOF
+
+INTERMEDIATES += *_$(_verses).md
+
+VERSIFIEDMDS := $(call pattern_list,$(VERSIFIEDSOURCES),.md)
+$(VERSIFIEDMDS): PANDOCARGS += --lua-filter=$(CASILEDIR)/versesinfootnotes.lua
+$(VERSIFIEDMDS): %_$(_verses).md: %-$(_processed).md %-$(_verses)-$(_text).yml $(CASILEDIR)/versesinfootnotes.lua
+	/usr/bin/pandoc --standalone \
+		$(PANDOCARGS) \
+		-M versedatafile="$(filter %-$(_verses)-$(_text).yml,$^)" \
+		--from markdown+raw_tex+smart \
+		--to markdown+raw_tex-smart \
+		$(filter $*-$(_processed).md,$^) -o $@
+
+%_$(_verses).yml: %.yml
+	ln -s $< $@
+
+%_$(_verses).json: %.json
+	ln -s $< $@
+
+%_$(_verses).png: %.png
+	ln -s $< $@
 
 # Configure SILE arguments to include common Lua library
 SILEFLAGS += $(foreach LUAINCLUDE,$(call reverse,$(LUAINCLUDES)),-I $(LUAINCLUDE))
