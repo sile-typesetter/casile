@@ -18,6 +18,9 @@ LANGUAGE ?= en
 # CaSILE Utility functions
 include $(CASILEDIR)/makefile-functions
 
+# Location to cache fetched verse content, can be shared across projects
+VERSECACHEDIR ?= $(PROJECTDIR)/$(_verses)-$(_text)
+
 # Empty recipies for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;
 
@@ -353,7 +356,7 @@ figures: $(FIGURES)
 .PHONY: init
 init: check_dependencies init_toolkits update_repository $(PUBDIR) $(OUTPUTDIR)
 
-$(PUBDIR) $(OUTPUTDIR):
+$(PUBDIR) $(OUTPUTDIR) $(VERSECACHEDIR):
 	mkdir -p $@
 
 .PHONY: init_casile
@@ -1299,7 +1302,23 @@ $(STATSSOURCES): %-stats:
 		extract_references.js > $@
 
 %-$(_verses)-$(_sorted).json: %-$(_verses).json
-	jq 'sort_by(.seq)' $< > $@
+	jq -M -e 'sort_by(.seq)' $< > $@
+
+versetexts = $(foreach VT,$(shell jq -M -e -r '.[].reformat' < $*-$(_verses)-$(_sorted).json | uniq | while read -r ref; do base32 <<< "$${ref}"; done),$(VERSECACHEDIR)/$(VT))
+
+$(VERSECACHEDIR)/%: $(VERSECACHEDIR)
+	basename $@ | base32 -d | read -r ref
+	echo $${ref} > $@
+	date >> $@
+
+%-$(_verses)-$(_text).yml: %-$(_verses)-$(_sorted).json | $$(versetexts)
+	for versedatafile in $|; do
+		basename $${versedatafile} | base32 -d | read -r ref
+		cat <<- EOF
+			"$${ref}": >
+				$$(sed -e 's/^/  /' $${versedatafile})
+		EOF
+	done > $@
 
 .PHONY: normalize_references
 normalize_references: $(MARKDOWNSOURCES)
