@@ -157,7 +157,7 @@ IGNORES += $(INTERMEDIATES)
 SILEPATH += $(CASILEDIR)
 
 # Extra arguments to pass to Pandoc
-PANDOCARGS ?=
+PANDOCARGS ?= --wrap=preserve --atx-headers
 
 # Figure out if we're being run from
 ATOM != env | grep -l ATOM_
@@ -545,7 +545,6 @@ FULLSILS := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil)
 $(FULLSILS): %.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-$(_processed).md -manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
-			--wrap=preserve \
 			-V documentclass="$(DOCUMENTCLASS)" \
 			$(if $(DOCUMENTOPTIONS),-V classoptions="$(call join_with,$(,),$(DOCUMENTOPTIONS))",) \
 			-V metadatafile="$(filter %-manifest.yml,$^)" \
@@ -668,7 +667,7 @@ normalize_markdown: $(MARKDOWNSOURCES)
 	$(call munge,$^,figure_dash.pl,Convert hyphens between numbers to figure dashes)
 	$(call munge,$^,unicode_symbols.pl,Replace lazy ASCI shortcuts with Unicode symbols)
 	$(call munge,$^,italic_reorder.pl,Fixup italics around names and parethesised translations)
-	$(call munge,$^,$(PANDOC) --atx-headers --wrap=preserve --to=markdown-smart,Normalize and tidy Markdown syntax using Pandoc)
+	$(call munge,$^,$(PANDOC) $(PANDOCARGS) --to=markdown-smart,Normalize and tidy Markdown syntax using Pandoc)
 	#(call munge,$^,reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
 	#(call munge,$^,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
 
