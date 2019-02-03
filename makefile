@@ -87,7 +87,8 @@ INKSCAPE ?= inkscape
 POVRAY ?= povray
 
 # Set default output format(s)
-LAYOUTS ?= a4-$(_print)
+LAYOUTS ?= $(if $(EDITIONS),$(call parse_layout,$(EDITIONS)),a4-$(_print))
+EDITIONS ?= $(LAYOUTS)
 
 # Add any specifically targeted output layouts
 GOALLAYOUTS := $(sort $(filter-out -,$(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL)))))
@@ -298,6 +299,7 @@ debug:
 	@echo DOCUMENTCLASS: $(DOCUMENTCLASS)
 	@echo DOCUMENTOPTIONS: $(DOCUMENTOPTIONS)
 	@echo DRAFT: $(DRAFT)
+	@echo EDITIONS: $(EDITIONS)
 	@echo EDITS: $(EDITS)
 	@echo FAKELAYOUTS: $(FAKELAYOUTS)
 	@echo FAKEPAPERSIZES: $(FAKEPAPERSIZES)
@@ -502,7 +504,7 @@ $(PERSOURCEPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_coil),$(LAYOUTS
 $(PERSOURCEPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_stapled),$(LAYOUTS)),$(_binding),.pdf)
 
 # Some layouts have matching resources that need to be built first and included
-coverpreq = $(and $(filter true,$(COVERS)),$(filter $(_print),$(call parse_binding,$1)),$(filter-out $(DISPLAYS) $(PLACARDS),$(call parse_papersize,$1)),$(basename $1)-$(_cover).pdf)
+coverpreq = $(and $(filter true,$(COVERS)),$(filter $(_print),$(call parse_binding,$1)),$(filter-out $(DISPLAYS) $(PLACARDS),$(call parse_papersize,$1)),$(call parse_bookid,$1)-$(_cover).pdf)
 
 # Order is important here, these are included in reverse order so early supersedes late
 onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(CASILEDIR)/layout-$(call unlocalize,$(call parse_papersize,$1)).lua $(LUALIBS)
@@ -512,6 +514,7 @@ $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
 	pdftk A=$(filter %.pdf,$^) cat $(foreach P,$(shell seq 1 $(call pagecount,$@)),A2-2) output $@
 
 FULLPDFS := $(call pattern_list,$(REALSOURCES),$(REALLAYOUTS),.pdf)
+FULLPDFS += $(call pattern_list,$(REALSOURCES),$(EDITS),$(REALLAYOUTS),.pdf)
 $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES) | $(require_pubdir)
 	$(call skip_if_lazy,$@)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
@@ -540,8 +543,11 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 	$(addtosync)
 
 FULLSILS := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil)
+FULLSILS += $(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil)
 $(FULLSILS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
-$(FULLSILS): %.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-$(_processed).md -manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
+$(FULLSILS): THISEDITS = $(call parse_edits,$@)
+$(FULLSILS): PROCESSEDSOURCE = $(call pattern_list,$(call parse_bookid,$@),$(_processed),$(THISEDITS),.md)
+$(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_bookid,$$@),-manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
 			-V documentclass="$(DOCUMENTCLASS)" \
@@ -569,19 +575,19 @@ $(FULLSILS): %.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-$(_processed
 
 INTERMEDIATES += $(pattern_list *,$(EDITS),.md)
 
-SOURCESWITHVERSES := $(call pattern_list,$(SOURCES),-$(_withverses).md)
+SOURCESWITHVERSES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withverses).md)
 $(SOURCESWITHVERSES): PANDOCARGS += --lua-filter=$(CASILEDIR)/filter-withverses.lua
 $(SOURCESWITHVERSES): PANDOCARGS += -M versedatafile="$(filter %-$(_verses)-$(_text).yml,$^)"
 $(SOURCESWITHVERSES): $$(call parse_bookid,$$@)-$(_verses)-$(_text).yml $(CASILEDIR)/filter-withverses.lua
 
-SOURCESWITHOUTFOOTNOTES := $(call pattern_list,$(SOURCES),-$(_withoutfootnotes).md)
+SOURCESWITHOUTFOOTNOTES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutfootnotes).md)
 $(SOURCESWITHOUTFOOTNOTES): PANDOCARGS += --lua-filter=$(CASILEDIR)/filter-withoutfootnotes.lua
 
 SOURCESWITHEDITS := $(SOURCESWITHVERSES) $(SOURCESWITHOUTFOOTNOTES)
-$(SOURCESWITHEDITS): $$(call parse_bookid,$$@)-$(_processed).md
+$(SOURCESWITHEDITS): $$(call strip_edits,$$@)
 	/usr/bin/pandoc --standalone \
 		$(PANDOCARGS) $(PANDOCFILTERARGS) \
-		$(filter %-$(_processed).md,$^) -o $@
+		$(filter %.md,$^) -o $@
 
 # Configure SILE arguments to include common Lua library
 SILEFLAGS += $(foreach LUAINCLUDE,$(call reverse,$(LUAINCLUDES)),-I $(LUAINCLUDE))
