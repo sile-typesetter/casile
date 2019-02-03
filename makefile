@@ -60,6 +60,9 @@ SCENELIGHT ?= rgb<1,1,1>
 SCENEX ?= $(call scale,2400)
 SCENEY ?= $(call scale,3200)
 
+# Because sometimes the same base content con be postprocessed multiple ways
+EDITS ?= $(_withverses) $(_withoutfootnotes)
+
 # Build mode flags
 DRAFT ?= false # Take shortcuts, scale things down, be quick about it
 LAZY ?= false # Pretend to do things we didn't
@@ -158,6 +161,7 @@ SILEPATH += $(CASILEDIR)
 
 # Extra arguments to pass to Pandoc
 PANDOCARGS ?= --wrap=preserve --atx-headers
+PANDOCFILTERARGS ?= --from markdown+raw_tex+smart --to markdown+raw_tex-smart
 
 # Figure out if we're being run from
 ATOM != env | grep -l ATOM_
@@ -210,11 +214,6 @@ endif
 $(foreach SOURCE,$(SOURCES),$(eval TARGETMACROS_$(SOURCE) := $(wildcard $(SOURCE).lua)))
 $(foreach SOURCE,$(SOURCES),$(eval TARGETYAMLS_$(SOURCE) := $(wildcard $(SOURCE).yml)))
 $(foreach SOURCE,$(SOURCES),$(eval TARGETLUAS_$(SOURCE) := $(wildcard $(SOURCE).lua)))
-
-# Optionally also build versions of everything with verse references in footnotes expanded
-VERSIFIEDSOURCES := $(call pattern_list,$(TARGETS),_$(_verses))
-TARGETS += $(VERSIFIEDSOURCES)
-SOURCES += $(VERSIFIEDSOURCES)
 
 .ONESHELL:
 .SECONDEXPANSION:
@@ -299,6 +298,7 @@ debug:
 	@echo DOCUMENTCLASS: $(DOCUMENTCLASS)
 	@echo DOCUMENTOPTIONS: $(DOCUMENTOPTIONS)
 	@echo DRAFT: $(DRAFT)
+	@echo EDITS: $(EDITS)
 	@echo FAKELAYOUTS: $(FAKELAYOUTS)
 	@echo FAKEPAPERSIZES: $(FAKEPAPERSIZES)
 	@echo FIGURES: $(FIGURES)
@@ -335,7 +335,6 @@ debug:
 	@echo SOURCES: $(SOURCES)
 	@echo TAG: $(TAG)
 	@echo TARGETS: $(TARGETS)
-	@echo VERSIFIEDSOURCES: $(VERSIFIEDSOURCES)
 	@echo UNBOUNDLAYOUTS: $(UNBOUNDLAYOUTS)
 	@echo YAMLSOURCES: $(YAMLSOURCES)
 	@echo urlinfo: $(call urlinfo,$(PROJECT))
@@ -513,7 +512,6 @@ $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
 	pdftk A=$(filter %.pdf,$^) cat $(foreach P,$(shell seq 1 $(call pagecount,$@)),A2-2) output $@
 
 FULLPDFS := $(call pattern_list,$(REALSOURCES),$(REALLAYOUTS),.pdf)
-$(FULLPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
 $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES) | $(require_pubdir)
 	$(call skip_if_lazy,$@)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
@@ -542,6 +540,7 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 	$(addtosync)
 
 FULLSILS := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil)
+$(FULLSILS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
 $(FULLSILS): %.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-$(_processed).md -manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
@@ -567,26 +566,22 @@ $(FULLSILS): %.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-$(_processed
 		CASILE.publisher = "casile"
 	EOF
 
-INTERMEDIATES += *_$(_verses).md
 
-VERSIFIEDMDS := $(call pattern_list,$(VERSIFIEDSOURCES),.md)
-$(VERSIFIEDMDS): PANDOCARGS += --lua-filter=$(CASILEDIR)/versesinfootnotes.lua
-$(VERSIFIEDMDS): %_$(_verses).md: %-$(_processed).md %-$(_verses)-$(_text).yml $(CASILEDIR)/versesinfootnotes.lua
+INTERMEDIATES += $(pattern_list *,$(EDITS),.md)
+
+SOURCESWITHVERSES := $(call pattern_list,$(SOURCES),-$(_withverses).md)
+$(SOURCESWITHVERSES): PANDOCARGS += --lua-filter=$(CASILEDIR)/filter-withverses.lua
+$(SOURCESWITHVERSES): PANDOCARGS += -M versedatafile="$(filter %-$(_verses)-$(_text).yml,$^)"
+$(SOURCESWITHVERSES): $$(call parse_bookid,$$@)-$(_verses)-$(_text).yml $(CASILEDIR)/filter-withverses.lua
+
+SOURCESWITHOUTFOOTNOTES := $(call pattern_list,$(SOURCES),-$(_withoutfootnotes).md)
+$(SOURCESWITHOUTFOOTNOTES): PANDOCARGS += --lua-filter=$(CASILEDIR)/filter-withoutfootnotes.lua
+
+SOURCESWITHEDITS := $(SOURCESWITHVERSES) $(SOURCESWITHOUTFOOTNOTES)
+$(SOURCESWITHEDITS): $$(call parse_bookid,$$@)-$(_processed).md
 	/usr/bin/pandoc --standalone \
-		$(PANDOCARGS) \
-		-M versedatafile="$(filter %-$(_verses)-$(_text).yml,$^)" \
-		--from markdown+raw_tex+smart \
-		--to markdown+raw_tex-smart \
-		$(filter $*-$(_processed).md,$^) -o $@
-
-%_$(_verses).yml: %.yml
-	ln -s $< $@
-
-%_$(_verses).json: %.json
-	ln -s $< $@
-
-%_$(_verses).png: %.png
-	ln -s $< $@
+		$(PANDOCARGS) $(PANDOCFILTERARGS) \
+		$(filter %-$(_processed).md,$^) -o $@
 
 # Configure SILE arguments to include common Lua library
 SILEFLAGS += $(foreach LUAINCLUDE,$(call reverse,$(LUAINCLUDES)),-I $(LUAINCLUDE))
@@ -603,7 +598,8 @@ INTERMEDIATES += *-$(_processed).md
 		renumber_footnotes.pl |
 		$(call criticToSile) |
 		$(call normalize_markdown) |
-		$(call markdown_hook) > $@
+		$(call markdown_hook) |
+		$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERARGS) > $@
 
 %-$(_booklet).pdf: %-$(_spineless).pdf | $(require_pubdir)
 	pdfbook --short-edge --noautoscale true --papersize "{$(call pageh,$<)pt,$$(($(call pagew,$<)*2))pt}" --outfile $@ -- $<
@@ -667,7 +663,7 @@ normalize_markdown: $(MARKDOWNSOURCES)
 	$(call munge,$^,figure_dash.pl,Convert hyphens between numbers to figure dashes)
 	$(call munge,$^,unicode_symbols.pl,Replace lazy ASCI shortcuts with Unicode symbols)
 	$(call munge,$^,italic_reorder.pl,Fixup italics around names and parethesised translations)
-	$(call munge,$^,$(PANDOC) $(PANDOCARGS) --to=markdown-smart,Normalize and tidy Markdown syntax using Pandoc)
+	$(call munge,$^,$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERARGS),Normalize and tidy Markdown syntax using Pandoc)
 	#(call munge,$^,reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
 	#(call munge,$^,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
 
