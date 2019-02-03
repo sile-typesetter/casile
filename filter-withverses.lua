@@ -8,6 +8,11 @@ Pandoc = function (document)
   document.blocks = pandoc.walk_block(pandoc.Div(document.blocks), {
       Note = function (element)
         return pandoc.walk_inline(element, {
+            Str = function (element)
+              if element.text:match("^[;,]$") then
+                return pandoc.Space()
+              end
+            end,
             Link = function (element)
               local verse = pandoc.pipe("./casile/bin/normalize_references.js", {}, element.title):gsub("^%s*(.-)%s*$", "%1")
               local versecontent = tostring(versedata[verse]):gsub("\n", "")
