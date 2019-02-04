@@ -14,8 +14,8 @@ Pandoc = function (document)
               end
             end,
             Link = function (element)
-              local verse = pandoc.pipe("./casile/bin/normalize_references.js", {}, element.title):gsub("^%s*(.-)%s*$", "%1")
-              local versecontent = tostring(versedata[verse]):gsub("\n", "")
+              local osis = element.attr.attributes.osis
+              local versecontent = tostring(versedata[osis]):gsub("\n", "")
               return versecontent and { pandoc.Strong(element), pandoc.Space(), pandoc.Str(versecontent)} or element
             end
           })

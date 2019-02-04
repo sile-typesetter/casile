@@ -1324,31 +1324,20 @@ $(STATSSOURCES): %-stats:
 	stats.zsh $* $(STATSMONTHS)
 
 %-$(_verses).json: %-$(_processed).md
-	# cd $(CASILEDIR)
-	# yarn add bible-passage-reference-parser
 	$(if $(HEAD),head -n$(HEAD),cat) $< |
 		extract_references.js > $@
 
 %-$(_verses)-$(_sorted).json: %-$(_verses).json
 	jq -M -e 'sort_by(.seq)' $< > $@
 
-versetexts = $(foreach VT,$(shell jq -M -e -r '.[].reformat' < $*-$(_verses)-$(_sorted).json | uniq $(and $(HEAD),| head -n$(HEAD)) | while read -r ref; do base32 <<< "$${ref}"; done),$(VERSECACHEDIR)/$(VT))
+versetexts = $(foreach VT,$(shell jq -M -e -r '.[].osis' < $*-$(_verses)-$(_sorted).json | uniq $(and $(HEAD),| head -n$(HEAD)) | while read -r ref; do base32 <<< "$${ref}"; done),$(VERSECACHEDIR)/$(VT))
 
 $(VERSECACHEDIR)/%: $(VERSECACHEDIR)
 	basename $@ |
 		base32 -d |
-		sed -e 's/İ/i/g' \
-			-e "s/ı/i/g" \
-			-e "s/ş/s/g" \
-			-e "s/'//g" \
-			-e 's/[[:space:]  ]\+/ /g' \
-			-e 's/[—–]/-/g' \
-			-e 's/[^-,:;\.[:alnum:]]*$$//g' \
-			-e 's/^[^[:alnum:]]*//g' \
-			-e 's/[^[:alnum:]]*$$//g' |
 		read ref
-	curl -s -L https://incil.info/api -G --data callback=verse --data-urlencode "query=$${ref}" |
-		sed -e 's/^verse(//;s/);$$//;$$s/,$$//' |
+	curl -s -L https://sahneleme.incil.info/api -G --data-urlencode "osis=$${ref}" |
+		sed -e 's/,$$//' |
 		jq -M -e -r '.scripture' |
 		sed -e 's/<\/\?span[^>]*>//g' \
 			-e 's/<\/\?title[^>]*>[^<]*<\/\?title[^>]*>/\n\n/g' \
