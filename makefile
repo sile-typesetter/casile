@@ -546,7 +546,7 @@ FULLSILS := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil)
 FULLSILS += $(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil)
 $(FULLSILS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
 $(FULLSILS): THISEDITS = $(call parse_edits,$@)
-$(FULLSILS): PROCESSEDSOURCE = $(call pattern_list,$(call parse_bookid,$@),$(_processed),$(THISEDITS),.md)
+$(FULLSILS): PROCESSEDSOURCE = $(call pattern_list,$(call parse_bookid,$@),$(_processed),$(and $(THISEDITS),-$(THISEDITS)).md)
 $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_bookid,$$@),-manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
