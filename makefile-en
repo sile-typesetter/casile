@@ -42,3 +42,5 @@ _end := end
 _light := light
 _dark := dark
 _transparent := transparent
+_withoutfootnotes := withoutfootnotes
+_withverses := withverses

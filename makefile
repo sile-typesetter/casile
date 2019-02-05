@@ -18,6 +18,9 @@ LANGUAGE ?= en
 # CaSILE Utility functions
 include $(CASILEDIR)/makefile-functions
 
+# Location to cache fetched verse content, can be shared across projects
+VERSECACHEDIR ?= $(PROJECTDIR)/$(_verses)-$(_text)
+
 # Empty recipies for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;
 
@@ -57,6 +60,9 @@ SCENELIGHT ?= rgb<1,1,1>
 SCENEX ?= $(call scale,2400)
 SCENEY ?= $(call scale,3200)
 
+# Because sometimes the same base content con be postprocessed multiple ways
+EDITS ?= $(_withverses) $(_withoutfootnotes)
+
 # Build mode flags
 DRAFT ?= false # Take shortcuts, scale things down, be quick about it
 LAZY ?= false # Pretend to do things we didn't
@@ -81,7 +87,8 @@ INKSCAPE ?= inkscape
 POVRAY ?= povray
 
 # Set default output format(s)
-LAYOUTS ?= a4-$(_print)
+LAYOUTS ?= $(if $(EDITIONS),$(call parse_layout,$(EDITIONS)),a4-$(_print))
+EDITIONS ?= $(LAYOUTS)
 
 # Add any specifically targeted output layouts
 GOALLAYOUTS := $(sort $(filter-out -,$(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL)))))
@@ -154,7 +161,8 @@ IGNORES += $(INTERMEDIATES)
 SILEPATH += $(CASILEDIR)
 
 # Extra arguments to pass to Pandoc
-PANDOCARGS ?=
+PANDOCARGS ?= --wrap=preserve --atx-headers
+PANDOCFILTERARGS ?= --from markdown+raw_tex+smart --to markdown+raw_tex-smart
 
 # Figure out if we're being run from
 ATOM != env | grep -l ATOM_
@@ -291,6 +299,8 @@ debug:
 	@echo DOCUMENTCLASS: $(DOCUMENTCLASS)
 	@echo DOCUMENTOPTIONS: $(DOCUMENTOPTIONS)
 	@echo DRAFT: $(DRAFT)
+	@echo EDITIONS: $(EDITIONS)
+	@echo EDITS: $(EDITS)
 	@echo FAKELAYOUTS: $(FAKELAYOUTS)
 	@echo FAKEPAPERSIZES: $(FAKEPAPERSIZES)
 	@echo FIGURES: $(FIGURES)
@@ -353,7 +363,7 @@ figures: $(FIGURES)
 .PHONY: init
 init: check_dependencies init_toolkits update_repository $(PUBDIR) $(OUTPUTDIR)
 
-$(PUBDIR) $(OUTPUTDIR):
+$(PUBDIR) $(OUTPUTDIR) $(VERSECACHEDIR):
 	mkdir -p $@
 
 .PHONY: init_casile
@@ -494,7 +504,7 @@ $(PERSOURCEPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_coil),$(LAYOUTS
 $(PERSOURCEPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_stapled),$(LAYOUTS)),$(_binding),.pdf)
 
 # Some layouts have matching resources that need to be built first and included
-coverpreq = $(and $(filter true,$(COVERS)),$(filter $(_print),$(call parse_binding,$1)),$(filter-out $(DISPLAYS) $(PLACARDS),$(call parse_papersize,$1)),$(basename $1)-$(_cover).pdf)
+coverpreq = $(and $(filter true,$(COVERS)),$(filter $(_print),$(call parse_binding,$1)),$(filter-out $(DISPLAYS) $(PLACARDS),$(call parse_papersize,$1)),$(call parse_bookid,$1)-$(_cover).pdf)
 
 # Order is important here, these are included in reverse order so early supersedes late
 onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(CASILEDIR)/layout-$(call unlocalize,$(call parse_papersize,$1)).lua $(LUALIBS)
@@ -504,7 +514,7 @@ $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
 	pdftk A=$(filter %.pdf,$^) cat $(foreach P,$(shell seq 1 $(call pagecount,$@)),A2-2) output $@
 
 FULLPDFS := $(call pattern_list,$(REALSOURCES),$(REALLAYOUTS),.pdf)
-$(FULLPDFS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
+FULLPDFS += $(call pattern_list,$(REALSOURCES),$(EDITS),$(REALLAYOUTS),.pdf)
 $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES) | $(require_pubdir)
 	$(call skip_if_lazy,$@)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
@@ -533,10 +543,13 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 	$(addtosync)
 
 FULLSILS := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil)
-$(FULLSILS): %.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-$(_processed).md -manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
+FULLSILS += $(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil)
+$(FULLSILS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
+$(FULLSILS): THISEDITS = $(call parse_edits,$@)
+$(FULLSILS): PROCESSEDSOURCE = $(call pattern_list,$(call parse_bookid,$@),$(_processed),$(and $(THISEDITS),-$(THISEDITS)).md)
+$(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_bookid,$$@),-manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
-			--wrap=preserve \
 			-V documentclass="$(DOCUMENTCLASS)" \
 			$(if $(DOCUMENTOPTIONS),-V classoptions="$(call join_with,$(,),$(DOCUMENTOPTIONS))",) \
 			-V metadatafile="$(filter %-manifest.yml,$^)" \
@@ -559,6 +572,23 @@ $(FULLSILS): %.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-$(_processed
 		CASILE.publisher = "casile"
 	EOF
 
+
+INTERMEDIATES += $(pattern_list *,$(EDITS),.md)
+
+SOURCESWITHVERSES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withverses).md)
+$(SOURCESWITHVERSES): PANDOCARGS += --lua-filter=$(CASILEDIR)/filter-withverses.lua
+$(SOURCESWITHVERSES): PANDOCARGS += -M versedatafile="$(filter %-$(_verses)-$(_text).yml,$^)"
+$(SOURCESWITHVERSES): $$(call parse_bookid,$$@)-$(_verses)-$(_text).yml $(CASILEDIR)/filter-withverses.lua
+
+SOURCESWITHOUTFOOTNOTES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutfootnotes).md)
+$(SOURCESWITHOUTFOOTNOTES): PANDOCARGS += --lua-filter=$(CASILEDIR)/filter-withoutfootnotes.lua
+
+SOURCESWITHEDITS := $(SOURCESWITHVERSES) $(SOURCESWITHOUTFOOTNOTES)
+$(SOURCESWITHEDITS): $$(call strip_edits,$$@)
+	/usr/bin/pandoc --standalone \
+		$(PANDOCARGS) $(PANDOCFILTERARGS) \
+		$(filter %.md,$^) -o $@
+
 # Configure SILE arguments to include common Lua library
 SILEFLAGS += $(foreach LUAINCLUDE,$(call reverse,$(LUAINCLUDES)),-I $(LUAINCLUDE))
 
@@ -574,7 +604,8 @@ INTERMEDIATES += *-$(_processed).md
 		renumber_footnotes.pl |
 		$(call criticToSile) |
 		$(call normalize_markdown) |
-		$(call markdown_hook) > $@
+		$(call markdown_hook) |
+		$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERARGS) > $@
 
 %-$(_booklet).pdf: %-$(_spineless).pdf | $(require_pubdir)
 	pdfbook --short-edge --noautoscale true --papersize "{$(call pageh,$<)pt,$$(($(call pagew,$<)*2))pt}" --outfile $@ -- $<
@@ -638,7 +669,7 @@ normalize_markdown: $(MARKDOWNSOURCES)
 	$(call munge,$^,figure_dash.pl,Convert hyphens between numbers to figure dashes)
 	$(call munge,$^,unicode_symbols.pl,Replace lazy ASCI shortcuts with Unicode symbols)
 	$(call munge,$^,italic_reorder.pl,Fixup italics around names and parethesised translations)
-	$(call munge,$^,$(PANDOC) --atx-headers --wrap=preserve --to=markdown-smart,Normalize and tidy Markdown syntax using Pandoc)
+	$(call munge,$^,$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERARGS),Normalize and tidy Markdown syntax using Pandoc)
 	#(call munge,$^,reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
 	#(call munge,$^,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
 
@@ -1293,13 +1324,28 @@ $(STATSSOURCES): %-stats:
 	stats.zsh $* $(STATSMONTHS)
 
 %-$(_verses).json: %-$(_processed).md
-	# cd $(CASILEDIR)
-	# yarn add bible-passage-reference-parser
 	$(if $(HEAD),head -n$(HEAD),cat) $< |
 		extract_references.js > $@
 
 %-$(_verses)-$(_sorted).json: %-$(_verses).json
-	jq 'sort_by(.seq)' $< > $@
+	jq -M -e 'sort_by(.seq)' $< > $@
+
+$(VERSECACHEDIR)/%: | $(VERSECACHEDIR)
+	basename $@ | base32 -d | read ref
+	curl -s -L "https://sahneleme.incil.info/api/$${ref}" |
+		jq -M -e -r ".[\"$${ref}\"].scripture" > $@
+
+versetexts = $(foreach VT,$(shell jq -M -e -r '.[].osis' < $*-$(_verses)-$(_sorted).json | uniq $(and $(HEAD),| head -n$(HEAD)) | while read -r ref; do base32 <<< "$${ref}"; done),$(VERSECACHEDIR)/$(VT) )
+
+%-$(_verses)-$(_text).yml: %-$(_verses)-$(_sorted).json | $$(versetexts)
+	for versedatafile in $|; do
+		basename $${versedatafile} |
+			base32 -d |
+			sed -e 's/^/"/;s/$$/": >-/'
+		sed -e 's/^/  /' $${versedatafile}
+	done > $@
+	# Test to make sure there are no references with blank content
+	! yq -M -e -r 'to_entries[] | select(.value == "") | .key' < $@
 
 .PHONY: normalize_references
 normalize_references: $(MARKDOWNSOURCES)

@@ -42,3 +42,5 @@ _end := son
 _light := acik
 _dark := koyu
 _transparent := saydam
+_withoutfootnotes := dipnotsuz
+_withverses := ayetli
