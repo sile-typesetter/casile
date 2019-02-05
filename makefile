@@ -544,12 +544,13 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 
 FULLSILS := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil)
 FULLSILS += $(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil)
-$(FULLSILS): PANDOCARGS += --filter=$(CASILEDIR)/svg2pdf.py
+$(FULLSILS): PANDOCFILTERS += --filter=$(CASILEDIR)/svg2pdf.py
 $(FULLSILS): THISEDITS = $(call parse_edits,$@)
 $(FULLSILS): PROCESSEDSOURCE = $(call pattern_list,$(call parse_bookid,$@),$(_processed),$(and $(THISEDITS),-$(THISEDITS)).md)
 $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_bookid,$$@),-manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
+			$(PANDOCFILTERS) \
 			-V documentclass="$(DOCUMENTCLASS)" \
 			$(if $(DOCUMENTOPTIONS),-V classoptions="$(call join_with,$(,),$(DOCUMENTOPTIONS))",) \
 			-V metadatafile="$(filter %-manifest.yml,$^)" \
@@ -576,17 +577,17 @@ $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_booki
 INTERMEDIATES += $(pattern_list *,$(EDITS),.md)
 
 SOURCESWITHVERSES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withverses).md)
-$(SOURCESWITHVERSES): PANDOCARGS += --lua-filter=$(CASILEDIR)/filter-withverses.lua
-$(SOURCESWITHVERSES): PANDOCARGS += -M versedatafile="$(filter %-$(_verses)-$(_text).yml,$^)"
+$(SOURCESWITHVERSES): PANDOCFILTERS += --lua-filter=$(CASILEDIR)/filter-withverses.lua
+$(SOURCESWITHVERSES): PANDOCFILTERS += -M versedatafile="$(filter %-$(_verses)-$(_text).yml,$^)"
 $(SOURCESWITHVERSES): $$(call parse_bookid,$$@)-$(_verses)-$(_text).yml $(CASILEDIR)/filter-withverses.lua
 
 SOURCESWITHOUTFOOTNOTES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutfootnotes).md)
-$(SOURCESWITHOUTFOOTNOTES): PANDOCARGS += --lua-filter=$(CASILEDIR)/filter-withoutfootnotes.lua
+$(SOURCESWITHOUTFOOTNOTES): PANDOCFILTERS += --lua-filter=$(CASILEDIR)/filter-withoutfootnotes.lua
 
 SOURCESWITHEDITS := $(SOURCESWITHVERSES) $(SOURCESWITHOUTFOOTNOTES)
 $(SOURCESWITHEDITS): $$(call strip_edits,$$@)
 	/usr/bin/pandoc --standalone \
-		$(PANDOCARGS) $(PANDOCFILTERARGS) \
+		$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) \
 		$(filter %.md,$^) -o $@
 
 # Configure SILE arguments to include common Lua library
@@ -605,7 +606,7 @@ INTERMEDIATES += *-$(_processed).md
 		$(call criticToSile) |
 		$(call normalize_markdown) |
 		$(call markdown_hook) |
-		$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERARGS) > $@
+		$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) > $@
 
 %-$(_booklet).pdf: %-$(_spineless).pdf | $(require_pubdir)
 	pdfbook --short-edge --noautoscale true --papersize "{$(call pageh,$<)pt,$$(($(call pagew,$<)*2))pt}" --outfile $@ -- $<
@@ -669,7 +670,7 @@ normalize_markdown: $(MARKDOWNSOURCES)
 	$(call munge,$^,figure_dash.pl,Convert hyphens between numbers to figure dashes)
 	$(call munge,$^,unicode_symbols.pl,Replace lazy ASCI shortcuts with Unicode symbols)
 	$(call munge,$^,italic_reorder.pl,Fixup italics around names and parethesised translations)
-	$(call munge,$^,$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERARGS),Normalize and tidy Markdown syntax using Pandoc)
+	$(call munge,$^,$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS),Normalize and tidy Markdown syntax using Pandoc)
 	#(call munge,$^,reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
 	#(call munge,$^,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
 
@@ -1217,10 +1218,11 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 		$@
 	$(addtosync)
 
-%.epub: PANDOCARGS += --lua-filter=$(CASILEDIR)/epubclean.lua
+%.epub: PANDOCFILTERS += --lua-filter=$(CASILEDIR)/epubclean.lua
 %.epub: %-$(_processed).md %-manifest.yml %-epub-$(_poster).jpg | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
+		$(PANDOCFILTERS) \
 		--epub-cover-image=$*-epub-$(_poster).jpg \
 		$*-manifest.yml \
 		=($(call strip_lang) < $*-$(_processed).md) -o $@
@@ -1229,6 +1231,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 %.odt: %-$(_processed).md %-manifest.yml | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
+		$(PANDOCFILTERS) \
 		$*-manifest.yml \
 		=($(call strip_lang) < $*-$(_processed).md) -o $@
 	$(addtosync)
@@ -1236,6 +1239,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 %.docx: %-$(_processed).md %-manifest.yml | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
+		$(PANDOCFILTERS) \
 		$*-manifest.yml \
 		=($(call strip_lang) < $*-$(_processed).md) -o $@
 	$(addtosync)
