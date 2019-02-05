@@ -1330,26 +1330,12 @@ $(STATSSOURCES): %-stats:
 %-$(_verses)-$(_sorted).json: %-$(_verses).json
 	jq -M -e 'sort_by(.seq)' $< > $@
 
-versetexts = $(foreach VT,$(shell jq -M -e -r '.[].osis' < $*-$(_verses)-$(_sorted).json | uniq $(and $(HEAD),| head -n$(HEAD)) | while read -r ref; do base32 <<< "$${ref}"; done),$(VERSECACHEDIR)/$(VT))
+$(VERSECACHEDIR)/%: | $(VERSECACHEDIR)
+	basename $@ | base32 -d | read ref
+	curl -s -L "https://sahneleme.incil.info/api/$${ref}" |
+		jq -M -e -r ".[\"$${ref}\"].scripture" > $@
 
-$(VERSECACHEDIR)/%: $(VERSECACHEDIR)
-	basename $@ |
-		base32 -d |
-		read ref
-	curl -s -L https://sahneleme.incil.info/api -G --data-urlencode "osis=$${ref}" |
-		sed -e 's/,$$//' |
-		jq -M -e -r '.scripture' |
-		sed -e 's/<\/\?span[^>]*>//g' \
-			-e 's/<\/\?title[^>]*>[^<]*<\/\?title[^>]*>/\n\n/g' \
-			-e 's/  *<\/\?br[^>]*> */\n/g' \
-			-e 's/<\/\?br[^>]*> */\n\n/g' \
-			-e 's/<\/\?chapter[^>]*> */\n/g' \
-			-e 's/ *<\/\?l[^>]*> */ /g' \
-			-e 's/^[[:space:]]\+//g' \
-			-e 's/[[:space:]]\+$$//g' |
-		cat -s |
-		tac | sed -e '/./,$$!d' | tac | sed -e '/./,$$!d' \
-		> $@
+versetexts = $(foreach VT,$(shell jq -M -e -r '.[].osis' < $*-$(_verses)-$(_sorted).json | uniq $(and $(HEAD),| head -n$(HEAD)) | while read -r ref; do base32 <<< "$${ref}"; done),$(VERSECACHEDIR)/$(VT) )
 
 %-$(_verses)-$(_text).yml: %-$(_verses)-$(_sorted).json | $$(versetexts)
 	for versedatafile in $|; do
@@ -1358,6 +1344,8 @@ $(VERSECACHEDIR)/%: $(VERSECACHEDIR)
 			sed -e 's/^/"/;s/$$/": >-/'
 		sed -e 's/^/  /' $${versedatafile}
 	done > $@
+	# Test to make sure there are no references with blank content
+	! yq -M -e -r 'to_entries[] | select(.value == "") | .key' < $@
 
 .PHONY: normalize_references
 normalize_references: $(MARKDOWNSOURCES)
