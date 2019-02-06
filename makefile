@@ -84,8 +84,8 @@ INKSCAPE ?= inkscape
 POVRAY ?= povray
 
 # Set default output format(s)
-LAYOUTS ?= $(if $(EDITIONS),$(call parse_layout,$(EDITIONS)),a4-$(_print))
-EDITIONS ?= $(LAYOUTS)
+LAYOUTS ?= a4-$(_print)
+EDITIONS ?=
 
 # Add any specifically targeted output layouts
 GOALLAYOUTS := $(sort $(filter-out -,$(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL)))))
@@ -228,7 +228,7 @@ pdfs: $(call pattern_list,$(TARGETS),.pdfs)
 
 PERSOURCEPDFS := $(call pattern_list,$(SOURCES),.pdfs)
 .PHONY: $(PERSOURCEPDFS)
-$(PERSOURCEPDFS): %.pdfs: $(call pattern_list,$$*,$(LAYOUTS),.pdf)
+$(PERSOURCEPDFS): %.pdfs: $(call pattern_list,$$*,$(LAYOUTS),.pdf) $(and $(EDITIONS),$(call pattern_list,$$*,$(EDITIONS),$(LAYOUTS),.pdf))
 
 # Setup target dependencies to mimic stages of a CI pipeline
 ifeq ($(MAKECMDGOALS),ci)
