@@ -16,6 +16,9 @@ Pandoc = function (document)
             Link = function (element)
               local osis = element.attr.attributes.osis
               local versecontent = tostring(versedata[osis]):gsub("\n", "")
+              if #versecontent < 1 or versecontent == "nil" then
+                error("Verse content for "..osis.." not found")
+              end
               return versecontent and { pandoc.Strong(element), pandoc.Space(), pandoc.Str(versecontent)} or element
             end
           })

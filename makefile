@@ -1334,7 +1334,10 @@ $(STATSSOURCES): %-stats:
 %-$(_verses)-$(_text).yml: %-$(_verses)-$(_sorted).json
 	jq -M -e -r 'map_values(.osis) | join(";")' < $(filter %.json,$^) |
 		xargs -iX curl -s -L "https://sahneleme.incil.info/api/X" |
-		yq -M -e -y 'map_values(.scripture)' > $@
+		yq -M -e -y 'map_values(.scripture)' |
+		# Because lua-yaml has a bug parsing non quoted keys...
+		sed -e '/^[^ ]/s/^\([^:]\+\):/"\1":/' \
+			> $@
 
 .PHONY: normalize_references
 normalize_references: $(MARKDOWNSOURCES)
