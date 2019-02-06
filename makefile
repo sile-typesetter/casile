@@ -18,9 +18,6 @@ LANGUAGE ?= en
 # CaSILE Utility functions
 include $(CASILEDIR)/makefile-functions
 
-# Location to cache fetched verse content, can be shared across projects
-VERSECACHEDIR ?= $(PROJECTDIR)/$(_verses)-$(_text)
-
 # Empty recipies for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;
 
@@ -363,7 +360,7 @@ figures: $(FIGURES)
 .PHONY: init
 init: check_dependencies init_toolkits update_repository $(PUBDIR) $(OUTPUTDIR)
 
-$(PUBDIR) $(OUTPUTDIR) $(VERSECACHEDIR):
+$(PUBDIR) $(OUTPUTDIR):
 	mkdir -p $@
 
 .PHONY: init_casile
@@ -1332,24 +1329,12 @@ $(STATSSOURCES): %-stats:
 		extract_references.js > $@
 
 %-$(_verses)-$(_sorted).json: %-$(_verses).json
-	jq -M -e 'sort_by(.seq)' $< > $@
+	jq -M -e 'unique_by(.osis) | sort_by(.seq)' $< > $@
 
-$(VERSECACHEDIR)/%: | $(VERSECACHEDIR)
-	basename $@ | base32 -d | read ref
-	curl -s -L "https://sahneleme.incil.info/api/$${ref}" |
-		jq -M -e -r ".[\"$${ref}\"].scripture" > $@
-
-versetexts = $(foreach VT,$(shell jq -M -e -r '.[].osis' < $*-$(_verses)-$(_sorted).json | uniq $(and $(HEAD),| head -n$(HEAD)) | while read -r ref; do base32 <<< "$${ref}"; done),$(VERSECACHEDIR)/$(VT) )
-
-%-$(_verses)-$(_text).yml: %-$(_verses)-$(_sorted).json | $$(versetexts)
-	for versedatafile in $|; do
-		basename $${versedatafile} |
-			base32 -d |
-			sed -e 's/^/"/;s/$$/": >-/'
-		sed -e 's/^/  /' $${versedatafile}
-	done > $@
-	# Test to make sure there are no references with blank content
-	! yq -M -e -r 'to_entries[] | select(.value == "") | .key' < $@
+%-$(_verses)-$(_text).yml: %-$(_verses)-$(_sorted).json
+	jq -M -e -r 'map_values(.osis) | join(";")' < $(filter %.json,$^) |
+		xargs -iX curl -s -L "https://sahneleme.incil.info/api/X" |
+		yq -M -e -y 'map_values(.scripture)' > $@
 
 .PHONY: normalize_references
 normalize_references: $(MARKDOWNSOURCES)
