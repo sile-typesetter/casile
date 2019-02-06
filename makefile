@@ -248,7 +248,7 @@ renderings: $(call pattern_list,$(TARGETS),.renderings)
 
 PERSOURCERENDERINGS := $(call pattern_list,$(SOURCES),.renderings)
 .PHONY: $(PERSOURCERENDERINGS)
-$(PERSOURCERENDERINGS): %.renderings: $(call pattern_list,$$*,$(RENDERED),$(RENDERINGS),.jpg)
+$(PERSOURCERENDERINGS): %.renderings: $(call pattern_list,$$*,$(RENDERED),$(RENDERINGS),.jpg) $(and $(EDITIONS),$(call pattern_list,$$*,$(EDITIONS),$(RENDERED),$(RENDERINGS),.jpg))
 
 .PHONY: promotionals
 promotionals: $(call pattern_list,$(TARGETS),.promotionals)
