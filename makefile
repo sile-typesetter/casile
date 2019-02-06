@@ -541,7 +541,7 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 
 FULLSILS := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil)
 FULLSILS += $(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil)
-$(FULLSILS): PANDOCFILTERS += --filter=$(CASILEDIR)/svg2pdf.py
+$(FULLSILS): PANDOCFILTERS = --filter=$(CASILEDIR)/svg2pdf.py
 $(FULLSILS): THISEDITS = $(call parse_edits,$@)
 $(FULLSILS): PROCESSEDSOURCE = $(call pattern_list,$(call parse_bookid,$@),$(_processed),$(and $(THISEDITS),-$(THISEDITS)).md)
 $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_bookid,$$@),-manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
@@ -574,12 +574,12 @@ $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_booki
 INTERMEDIATES += $(pattern_list *,$(EDITS),.md)
 
 SOURCESWITHVERSES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withverses).md)
-$(SOURCESWITHVERSES): PANDOCFILTERS += --lua-filter=$(CASILEDIR)/filter-withverses.lua
+$(SOURCESWITHVERSES): PANDOCFILTERS = --lua-filter=$(CASILEDIR)/filter-withverses.lua
 $(SOURCESWITHVERSES): PANDOCFILTERS += -M versedatafile="$(filter %-$(_verses)-$(_text).yml,$^)"
 $(SOURCESWITHVERSES): $$(call parse_bookid,$$@)-$(_verses)-$(_text).yml $(CASILEDIR)/filter-withverses.lua
 
 SOURCESWITHOUTFOOTNOTES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutfootnotes).md)
-$(SOURCESWITHOUTFOOTNOTES): PANDOCFILTERS += --lua-filter=$(CASILEDIR)/filter-withoutfootnotes.lua
+$(SOURCESWITHOUTFOOTNOTES): PANDOCFILTERS = --lua-filter=$(CASILEDIR)/filter-withoutfootnotes.lua
 
 SOURCESWITHEDITS := $(SOURCESWITHVERSES) $(SOURCESWITHOUTFOOTNOTES)
 $(SOURCESWITHEDITS): $$(call strip_edits,$$@)
@@ -1215,7 +1215,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 		$@
 	$(addtosync)
 
-%.epub: PANDOCFILTERS += --lua-filter=$(CASILEDIR)/epubclean.lua
+%.epub: PANDOCFILTERS = --lua-filter=$(CASILEDIR)/epubclean.lua
 %.epub: %-$(_processed).md %-manifest.yml %-epub-$(_poster).jpg | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
