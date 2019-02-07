@@ -135,7 +135,7 @@ define find_and_munge ?=
 	find $(PROJECTDIR) -maxdepth 2 -name '$1' $(foreach PATH,$(shell git submodule | awk '{print $$2}'),-not -path '*/$(PATH)/*') |
 		grep -f <(git ls-files | sed -e 's/$$/$$/;s#^#./#') |
 		while read f; do
-			grep -q "esyscmd.*zsh.* $$(basename $$f)-bolumler/" $$f && continue # skip compilations that are mostly M4
+			grep -q "esyscmd.*loadchapters.zsh" $$f && continue # skip compilations that are mostly M4
 			git diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
 			$2 < $$f | sponge $$f
 			git add -- $$f
