@@ -21,8 +21,6 @@ textcase = SILE.require("packages/textcase").exports
 SILE.settings.set("typesetter.underfulltolerance", SILE.length.parse("6ex"))
 SILE.settings.set("typesetter.overfulltolerance", SILE.length.parse("0.2ex"))
 
-SILE.call("language", { main = "tr" })
-
 SILE.call("footnote:separator", {}, function ()
   SILE.call("rebox", { width = "6em", height = "2ex" }, function ()
     SILE.call("hrule", { width = "5em", height = "0.2pt" })
@@ -50,7 +48,7 @@ end)
 
 SILE.registerCommand("cabook:part:pre", function () end)
 
-SILE.registerCommand("cabook:part:post", function ()
+SILE.registerCommand("cabook:part:post:tr", function ()
   SILE.typesetter:typeset(" KISIM")
   SILE.call("par")
 end)
@@ -218,6 +216,44 @@ SILE.registerCommand("open-page", function (options)
   SILE.typesetter:leaveHmode()
 end)
 
+local function en_num2text (num, ordinal)
+  local ord = ordinal or false
+  local ones = { "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine" }
+  local tens = { "Ten", "Twenty", "Thirty", "Fourty", "Fifty", "Sizty", "Seventy", "Eighty", "Ninety" }
+  local places = { "Hundred", "Thousand", "Million", "Billion" }
+  local ordinals = { "First", "Second", "Third", "Fourth", "Fith", "Sixth", "Seventh", "Eighth", "Ninte", "Tenth" }
+  local num = string.reverse(num)
+  local parts = {}
+  for i = 1, #num do
+    local val = tonumber(string.sub(num, i, i))
+    if val >= 1 then
+      if i == 1 then
+        if ord then
+          parts[#parts+1] = ordinals[val]
+        else
+          parts[#parts+1] = ones[val]
+        end
+      elseif i == 2 then
+        parts[#parts+1] = tens[val]
+      elseif i >= 3 then
+        parts[#parts+1] = places[i-2]
+        if val >= 2 then
+          if ord then
+            parts[#parts+1] = ordinals[val]
+          else
+            parts[#parts+1] = ones[val]
+          end
+        end
+      end
+    end
+  end
+  local words = {}
+  for i = 1, #parts do
+    words[#parts+1-i] = parts[i]
+  end
+  return table.concat( words, " " )
+end
+
 local function tr_num2text (num, ordinal)
   local ord = ordinal or false
   local ones = { "Bir", "İki", "Üç", "Dört", "Beş", "Altı", "Yedi", "Sekiz", "Dokuz" }
@@ -258,11 +294,12 @@ end
 
 local originalFormatter = SILE.formatCounter
 SILE.formatCounter = function (options)
-  if (options.display == "string") then return tr_num2text(options.value):lower() end
-  if (options.display == "String") then return tr_num2text(options.value) end
-  if (options.display == "STRING") then return textcase.uppercase(tr_num2text(options.value)) end
-  if (options.display == "Ordinal") then return tr_num2text(options.value, true) end
-  if (options.display == "ORDINAL") then return textcase.uppercase(tr_num2text(options.value, true)) end
+  local numfunc = SILE.settings.get("document.language") == "tr" and tr_num2text or en_num2text
+  if (options.display == "string") then return numfunc(options.value):lower() end
+  if (options.display == "String") then return numfunc(options.value) end
+  if (options.display == "STRING") then return textcase.uppercase(numfunc(options.value)) end
+  if (options.display == "Ordinal") then return numfunc(options.value, true) end
+  if (options.display == "ORDINAL") then return textcase.uppercase(numfunc(options.value, true)) end
   return originalFormatter(options)
 end
 
