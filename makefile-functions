@@ -119,9 +119,10 @@ $(shell
 endef
 
 define munge ?=
+	: $${SKIPM4:=true}
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
 	for f in $1; do
-		grep -q "esyscmd" $$f && continue # skip compilations that are mostly M4
+		$${SKIPM4} && grep -q "esyscmd" $$f && continue # skip anything with m4 macros
 		git diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
 		$2 < $$f | sponge $$f
 		git add -- $$f
