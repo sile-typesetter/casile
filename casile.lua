@@ -692,14 +692,19 @@ local discressionaryBreaksFilter = function (content, args, options)
   insertText()
   return result
 end
+
 addDiscressionaryBreaks = function (options, content)
-  if not options.breakat then options.breakat = "[:]" end
-  if not options.breakwith then options.breakwith = "aki" end
-  if not options.breakopts then options.breakopts = {} end
-  if not options.breakall then options.breakall = false end
-  if not options.breakbefore then options.breakbefore = false end
-  if not options.replace then options.replace = false end
-  return inputfilter.transformContent(content, discressionaryBreaksFilter, options)
+  if type(options[1]) ~= "table" then options = { options } end
+  for _, options in pairs(options) do
+    if not options.breakat then options.breakat = "[:]" end
+    if not options.breakwith then options.breakwith = "aki" end
+    if not options.breakopts then options.breakopts = {} end
+    if not options.breakall then options.breakall = false end
+    if not options.breakbefore then options.breakbefore = false end
+    if not options.replace then options.replace = false end
+    content = inputfilter.transformContent(content, discressionaryBreaksFilter, options)
+  end
+  return content
 end
 
 SILE.registerCommand("addDiscressionaryBreaks", function (options, content)
