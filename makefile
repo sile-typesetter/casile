@@ -454,9 +454,13 @@ PROJECTCONFIGS += .gitignore
 	$(foreach IGNORE,$(IGNORES),echo '$(IGNORE)' >> $@;)
 
 $(CICONFIG): $(CITEMPLATE)
+	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
+	git diff-files --quiet -- $@ || exit 1 # die if this file has uncommitted changes
 	cat $< | \
 		$(call ci_setup) | \
 		sponge $@
+	git add -- $@
+	git diff-index --quiet --cached HEAD || git commit -m "[auto] Rebuild CI config file"
 
 $(CASILEDIR)/makefile-%-reversed: $(CASILEDIR)/makefile-%
 	@awk -F' := ' '/^_/ { gsub(/_/, "", $$1); print "__" $$2 " := " $$1 }' < $< > $@
