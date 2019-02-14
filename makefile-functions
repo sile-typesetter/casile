@@ -127,7 +127,7 @@ define munge ?=
 		$2 < $$f | sponge $$f
 		git add -- $$f
 	done
-	git diff-index --quiet --cached HEAD || git ci -m "[auto] $3"
+	git diff-index --quiet --cached HEAD || git commit -m "[auto] $3"
 endef
 
 define find_and_munge ?=
@@ -141,7 +141,7 @@ define find_and_munge ?=
 			$2 < $$f | sponge $$f
 			git add -- $$f
 		done
-	git diff-index --quiet --cached HEAD || git ci -m "[auto] $3"
+	git diff-index --quiet --cached HEAD || git commit -m "[auto] $3"
 endef
 
 define normalize_markdown ?=
@@ -346,7 +346,7 @@ define split_chapters ?=
 	git diff-files --quiet -- $1 || exit 1 # die if this file has uncommitted changes
 	grep -q 'esyscmd.*cat' $1 && exit 1 # skip if the source is aready a compilation
 	split_chapters.zsh $1
-	git diff-index --quiet --cached HEAD || git ci -m "[auto] Split $1 into one file per chapter"
+	git diff-index --quiet --cached HEAD || git commit -m "[auto] Split $1 into one file per chapter"
 endef
 
 define magick_fragment_cover ?=
