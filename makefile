@@ -493,11 +493,6 @@ sync_post: | $(require_pubdir) $(require_outputdir)
 		$(and $(call printisbn,$(TARGET)),-or -name "$(call printisbn,$(TARGET))*") \
 		$(and $(call ebookisbn,$(TARGET)),-or -name "$(call ebookisbn,$(TARGET))*") \
 		\)$(foreach OUTPATH,$(OUTPATHS), -execdir rsync -ct {} $(OUTPUTDIR)/$(OUTPATH)/ \;);)
-ifneq ($(strip $(TARGETS)),$(strip $(PROJECT)))
-	find $(PUBDIR) -type f \
-		-name "$(PROJECT)*" \
-		-execdir rsync -ct {} $(OUTPUTDIR)/ \;
-endif
 	$(call post_sync)
 
 # Some layouts have matching extra resources to build such as covers
