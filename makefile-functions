@@ -73,7 +73,7 @@ define ci_setup ?=
 	cat -
 endef
 
-define addtosync ?=
+define addtopub ?=
 	$(DRAFT) && rm -f $(PUBDIR)/$@ || ln -f $@ $(PUBDIR)/$@
 endef
 

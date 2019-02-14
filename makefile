@@ -233,15 +233,13 @@ $(PERSOURCEPDFS): %.pdfs: $(call pattern_list,$$*,$(LAYOUTS),.pdf) $(and $(EDITI
 # Setup target dependencies to mimic stages of a CI pipeline
 ifeq ($(MAKECMDGOALS),ci)
 CI ?= 1
-sync_pre: init debug
-sync_post: pdfs renderings promotionals
-pdfs: sync_pre
-renderings: sync_pre
-promotionals: sync_pre
+debug: init
+pdfs: init debug
+renderings promotionals: pdfs
 endif
 
 .PHONY: ci
-ci: init debug sync_pre pdfs renderings promotionals sync_post
+ci: init debug pdfs renderings promotionals
 
 .PHONY: renderings
 renderings: $(call pattern_list,$(TARGETS),.renderings)
@@ -393,7 +391,6 @@ check_dependencies:
 	hash python
 	hash lua
 	hash bc
-	hash rsync
 	hash zsh
 	hash epubcheck
 	lua -v -l yaml
@@ -431,7 +428,7 @@ update_casile: init_casile
 upgrade_repository: upgrade_toolkits $(CICONFIG)_current
 
 .PHONY: upgrade_casile
-upgrade_casile: update_casile $(CASILEDIR)/upgrade-lua.sed $(CASILEDIR)/upgrade-make.sed $(CASILEDIR)/upgrade-yaml.sed $(CASILEDIR)/upgrade-markdown.sed
+upgrade_casile: $(CASILEDIR)/upgrade-lua.sed $(CASILEDIR)/upgrade-make.sed $(CASILEDIR)/upgrade-yaml.sed $(CASILEDIR)/upgrade-markdown.sed
 	$(call munge,$(LUASOURCES),sed -f $(filter %-lua.sed,$^),Replace old Lua variables and functions with new namespaces)
 	$(call munge,$(MAKESOURCES),sed -f $(filter %-make.sed,$^),Replace old Makefile variables and functions with new namespaces)
 	$(call munge,$(YAMLSOURCES),sed -f $(filter %-yaml.sed,$^),Replace old YAML key names and data formats)
@@ -479,22 +476,6 @@ time_warp: time_warp_casile
 time_warp_casile:
 	$(call time_warp,$(CASILEDIR))
 
-.PHONY: sync_pre
-sync_pre: | $(require_pubdir) $(require_outputdir)
-	$(call pre_sync)
-	$(and $(INPUTDIR),rsync -utv $(INPUTDIR)/* $(PROJECTDIR)/ ||:)
-	$(and $(INPUTDIR),$(foreach TARGET,$(TARGETS),rsync -utv $(INPUTDIR)/$(TARGET)/* $(PROJECTDIR)/ ||:;))
-
-.PHONY: sync_post
-sync_post: | $(require_pubdir) $(require_outputdir)
-	$(foreach TARGET,$(TARGETS),$(foreach OUTPATH,$(OUTPATHS),mkdir -p $(OUTPUTDIR)/$(OUTPATH);)
-		find $(PUBDIR) -type f \( \
-		-name "$(TARGET)*" \
-		$(and $(call printisbn,$(TARGET)),-or -name "$(call printisbn,$(TARGET))*") \
-		$(and $(call ebookisbn,$(TARGET)),-or -name "$(call ebookisbn,$(TARGET))*") \
-		\)$(foreach OUTPATH,$(OUTPATHS), -execdir rsync -ct {} $(OUTPUTDIR)/$(OUTPATH)/ \;);)
-	$(call post_sync)
-
 # Some layouts have matching extra resources to build such as covers
 $(PERSOURCEPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_paperback),$(LAYOUTS)),$(_binding),.pdf)
 $(PERSOURCEPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_hardcover),$(LAYOUTS)),$(_case) $(jacket),.pdf)
@@ -538,7 +519,7 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 		pdftk $*.tmp.pdf update_info_utf8 $*.dat output $@
 		rm $*.tmp.pdf
 	fi
-	$(addtosync)
+	$(addtopub)
 
 FULLSILS := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil)
 FULLSILS += $(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil)
@@ -608,14 +589,14 @@ INTERMEDIATES += *-$(_processed).md
 
 %-$(_booklet).pdf: %-$(_spineless).pdf | $(require_pubdir)
 	pdfbook --short-edge --noautoscale true --papersize "{$(call pageh,$<)pt,$$(($(call pagew,$<)*2))pt}" --outfile $@ -- $<
-	$(addtosync)
+	$(addtopub)
 
 %-topbottom.pdf: %-set1.pdf %-set2.pdf
 	pdftk A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
 
 %-a4proof.pdf: %-topbottom.pdf | $(require_pubdir)
 	pdfjam --nup 1x2 --noautoscale true --paper a4paper --outfile $@ -- $<
-	$(addtosync)
+	$(addtopub)
 
 %-cropleft.pdf: %.pdf | $$(geometryfile)
 	$(sourcegeometry)
@@ -642,7 +623,7 @@ INTERMEDIATES += *-$(_processed).md
 	w=$$(echo "$(call pagew,$<) * 100 - $$t * 2" | bc)
 	h=$$(echo "$(call pageh,$<) * 100 - $$t * 2" | bc)
 	podofobox $< $@ media $$t $$t $$w $$h
-	$(addtosync)
+	$(addtopub)
 
 %-set1.pdf: %.pdf
 	pdftk $< cat 1-$$(($(call pagecount,$<)/2)) output $@
@@ -720,7 +701,7 @@ $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call ebookisbn,$$*) $
 			],
 			(.[] | .[7] |= $$biohtml | .[10] |= $$deshtml | .[17] |= 0 | .[18] |= "WORLD")
 			| map(. // "") | @csv' $(filter %_playbooks.json,$^) > $@
-	$(addtosync)
+	$(addtopub)
 
 ISBNMETADATAS := $(call pattern_list,$(ISBNS),_playbooks.json)
 $(ISBNMETADATAS): %_playbooks.json: $$(call pattern_list,$$(call isbntouid,$$*)-,manifest.yml $(firstword $(LAYOUTS)).pdf)
@@ -753,27 +734,27 @@ $(ISBNMETADATAS): %_playbooks.json: $$(call pattern_list,$$(call isbntouid,$$*)-
 PLAYFRONTS := $(call pattern_list,$(ISBNS),_frontcover.jpg)
 $(PLAYFRONTS): %_frontcover.jpg: $$(call isbntouid,$$*)-epub-$(_poster).jpg
 	cp $< $@
-	$(addtosync)
+	$(addtopub)
 
 PLAYBACKS := $(call pattern_list,$(ISBNS),_backcover.jpg)
 $(PLAYBACKS): %_backcover.jpg: %_frontcover.jpg
 	cp $< $@
-	$(addtosync)
+	$(addtopub)
 
 PLAYINTS := $(call pattern_list,$(ISBNS),_interior.pdf)
 $(PLAYINTS): %_interior.pdf: $$(call isbntouid,$$*)-$(firstword $(LAYOUTS))-$(_cropped).pdf
 	pdftk $< cat 2-end output $@
-	$(addtosync)
+	$(addtopub)
 
 PLAYEPUBS := $(call pattern_list,$(ISBNS),.epub)
 $(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub
 	epubcheck $<
 	cp $< $@
-	$(addtosync)
+	$(addtopub)
 
 %-$(_app).pdf: %-$(_app)-$(_print).pdf
 	cp $< $@
-	$(addtosync)
+	$(addtopub)
 	rm -f $(PUBDIR)/$<
 
 %-$(_app).info: %-$(_app)-$(_print).toc %-$(_app)-$(_print).pdf %-manifest.yml | $(require_pubdir)
@@ -782,7 +763,7 @@ $(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub
 			pdftk $(filter %-$(_app)-$(_print).pdf,$^) cat $$range output $$out
 			ln -f $$out $(PUBDIR)/$$out
 		done
-	$(addtosync)
+	$(addtopub)
 
 $(_issue).info: | $(require_pubdir)
 	for source in $(SOURCES); do
@@ -801,7 +782,7 @@ $(_issue).info: | $(require_pubdir)
 		fi
 		echo
 	done > $@
-	$(addtosync)
+	$(addtopub)
 
 COVERBACKGROUNDS := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_background).png)
 git_background = $(shell git ls-files -- $(call strip_layout,$1) 2> /dev/null)
@@ -853,7 +834,7 @@ $(COVERIMAGES): %-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_f
 		-resize 196x196 \
 		-quality 9 \
 		$@
-	$(addtosync)
+	$(addtopub)
 
 COVERPDFS := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover).pdf)
 $(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf $$(geometryfile)
@@ -997,7 +978,7 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 		--export-margin=$$trimmm \
 		--file=$< \
 		--export-pdf=$@
-	$(addtosync)
+	$(addtopub)
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
 UNBOUNDGEOMETRIES := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_geometry).sh)
@@ -1205,7 +1186,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 		-channel Alpha -fx 'a > 0.5 ? 1 : a' -channel All \
 		$(call pov_crop,$(if $(findstring $(_pile),$*),$(SCENEY)x$(SCENEX),$(SCENEX)x$(SCENEY))) \
 		$@
-	$(addtosync)
+	$(addtopub)
 
 %.jpg: %.png | $(require_pubdir)
 	$(MAGICK) $< \
@@ -1214,7 +1195,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 		-alpha Off \
 		-quality 85 \
 		$@
-	$(addtosync)
+	$(addtopub)
 
 %.epub: PANDOCFILTERS = --lua-filter=$(CASILEDIR)/epubclean.lua
 %.epub: %-$(_processed).md %-manifest.yml %-epub-$(_poster).jpg | $(require_pubdir)
@@ -1224,7 +1205,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 		--epub-cover-image=$*-epub-$(_poster).jpg \
 		$*-manifest.yml \
 		=($(call strip_lang) < $*-$(_processed).md) -o $@
-	$(addtosync)
+	$(addtopub)
 
 %.odt: %-$(_processed).md %-manifest.yml | $(require_pubdir)
 	$(PANDOC) \
@@ -1232,7 +1213,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 		$(PANDOCFILTERS) \
 		$*-manifest.yml \
 		=($(call strip_lang) < $*-$(_processed).md) -o $@
-	$(addtosync)
+	$(addtopub)
 
 %.docx: %-$(_processed).md %-manifest.yml | $(require_pubdir)
 	$(PANDOC) \
@@ -1240,11 +1221,11 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 		$(PANDOCFILTERS) \
 		$*-manifest.yml \
 		=($(call strip_lang) < $*-$(_processed).md) -o $@
-	$(addtosync)
+	$(addtopub)
 
 %.mobi: %.epub | $(require_pubdir)
 	kindlegen $< ||:
-	$(addtosync)
+	$(addtopub)
 
 PHONYSCREENS := $(call pattern_list,$(SOURCES),.$(_screen))
 .PHONY: $(PHONYSCREENS)
@@ -1257,7 +1238,7 @@ $(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML)
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
 			-e '/text: [[:digit:]]\{10,13\}/{p;s/^\([[:space:]]*\)text: \([[:digit:]]\+\)$$/python -c "import isbnlib; print(\\"\1mask: \\" + isbnlib.mask(\\"\2\\"))"/e}' \
 			-e '/\(own\|next\)cloudshare: [^"]/s/: \(.*\)$$/: "\1"/' > $@
-	$(addtosync)
+	$(addtopub)
 
 INTERMEDIATES += *.html
 
