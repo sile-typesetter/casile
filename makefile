@@ -356,7 +356,7 @@ $(MOCKUPSOURCES): $(foreach FORMAT,$(filter pdf,$(FORMATS)),$$@.$(FORMAT))
 figures: $(FIGURES)
 
 .PHONY: init
-init: check_dependencies init_toolkits update_repository $(PUBDIR) $(OUTPUTDIR)
+init: check_dependencies update_toolkits update_repository $(PUBDIR) $(OUTPUTDIR)
 
 $(PUBDIR) $(OUTPUTDIR):
 	mkdir -p $@
