@@ -301,7 +301,6 @@ debug:
 	@echo FIGURES: $(FIGURES)
 	@echo FORMATS: $(FORMATS)
 	@echo GOALLAYOUTS: $(GOALLAYOUTS)
-	@echo INPUTDIR: $(INPUTDIR)
 	@echo ISBNS: $(ISBNS)
 	@echo LAYOUTS: $(LAYOUTS)
 	@echo LUAINCLUDES: $(LUAINCLUDES)
@@ -316,7 +315,6 @@ debug:
 	@echo MOCKUPBASE: $(MOCKUPBASE)
 	@echo MOCKUPFACTOR: $(MOCKUPFACTOR)
 	@echo MOCKUPSOURCES: $(MOCKUPSOURCES)
-	@echo OUTPUTDIR: $(OUTPUTDIR)
 	@echo PANDOCARGS: $(PANDOCARGS)
 	@echo PAPERSIZES: $(PAPERSIZES)
 	@echo PARENT: $(PARENT)
@@ -356,9 +354,9 @@ $(MOCKUPSOURCES): $(foreach FORMAT,$(filter pdf,$(FORMATS)),$$@.$(FORMAT))
 figures: $(FIGURES)
 
 .PHONY: init
-init: check_dependencies update_toolkits update_repository $(PUBDIR) $(OUTPUTDIR)
+init: check_dependencies update_toolkits update_repository $(PUBDIR)
 
-$(PUBDIR) $(OUTPUTDIR):
+$(PUBDIR):
 	mkdir -p $@
 
 .PHONY: init_casile
