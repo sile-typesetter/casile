@@ -589,6 +589,12 @@ INTERMEDIATES += *-$(_processed).md
 	pdfbook --short-edge --noautoscale true --papersize "{$(call pageh,$<)pt,$$(($(call pagew,$<)*2))pt}" --outfile $@ -- $<
 	$(addtopub)
 
+%-2end.pdf: %.pdf
+	pdftk $< cat 2-end output $@
+
+%-2up.pdf: %-$(_cropped)-2end.pdf
+	pdfjam --nup 2x1 --noautoscale true --paper a4paper --landscape --outfile $@ -- $<
+
 %-topbottom.pdf: %-set1.pdf %-set2.pdf
 	pdftk A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
 
