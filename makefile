@@ -563,7 +563,7 @@ $(SOURCESWITHOUTFOOTNOTES): PANDOCFILTERS = --lua-filter=$(CASILEDIR)/filter-wit
 
 SOURCESWITHEDITS := $(SOURCESWITHVERSES) $(SOURCESWITHOUTFOOTNOTES)
 $(SOURCESWITHEDITS): $$(call strip_edits,$$@)
-	/usr/bin/pandoc --standalone \
+	$(PANDOC) --standalone \
 		$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) \
 		$(filter %.md,$^) -o $@
 
