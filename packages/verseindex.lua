@@ -99,7 +99,8 @@ local init = function (self)
     SILE.call("info", {
         category = "tov",
         value = {
-          label = options.title and { options.title } or content
+          label = options.title and { options.title } or content,
+          osis = options.osis
         }
       })
   end)
@@ -131,9 +132,9 @@ local init = function (self)
         local label = ref.reformat:gsub(" ", " "):gsub(" ", " ")
         if ref.b == "Mezmurlar" then label = label:gsub("Mezmurlar", "Mezmur") end
         for _, link in pairs(SILE.scratch.tableofverses) do
-          if link.label[1] == label then
+          if link.osis == ref.osis then
             local pageno = link.pageno
-            if not pageshash[pageno] then 
+            if not pageshash[pageno] then
               pages[#pages+1] = pageno
               pageshash[pageno] = true
             end

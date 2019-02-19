@@ -653,7 +653,7 @@ normalize_markdown: $(MARKDOWNSOURCES)
 
 %.toc: %.pdf ;
 
-%.sil.tov: %.pdf ;
+%.tov: %.pdf ;
 
 APPSOURCES := $(call pattern_list,$(SOURCES),.app)
 .PHONY: $(APPSOURCES)
