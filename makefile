@@ -539,7 +539,7 @@ $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_booki
 			--template=$(filter %.sil,$^) \
 			--from=markdown-raw_tex \
 			--to=sile \
-			$(filter %-manifest.yml,$^) =( $(call pre_sile_markdown_hook) < $< ) |
+			$(filter %-manifest.yml,$^) =(< $< $(call pre_sile_markdown_hook)) |
 		$(call sile_hook) > $@
 
 # Send some environment data to a common Lua file to be pulled into all SILE runs
