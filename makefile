@@ -158,7 +158,7 @@ IGNORES += $(INTERMEDIATES)
 SILEPATH += $(CASILEDIR)
 
 # Extra arguments to pass to Pandoc
-PANDOCARGS ?= --wrap=preserve --atx-headers
+PANDOCARGS ?= --wrap=preserve --atx-headers --top-level-division=chapter
 PANDOCFILTERARGS ?= --from markdown+raw_tex+smart --to markdown+raw_tex-smart
 
 # Figure out if we're being run from
