@@ -781,3 +781,8 @@ end
 isScreenLayout = function ()
   return CASILE.layout == "app" or CASILE.layout == "screen"
 end
+
+-- Apostrophe Hack, see https://github.com/simoncozens/sile/issues/355
+SILE.registerCommand("ah", function ()
+  SILE.call("discretionary", { prebreak = "-", replacement = "’" })
+end)

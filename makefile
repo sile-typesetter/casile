@@ -519,6 +519,9 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 	fi
 	$(addtopub)
 
+# Apostrophe Hack, see https://github.com/simoncozens/sile/issues/355
+ah := perl -Mutf8 -CS -pne '/^\#/ or s/(?<=\p{L})’(?=\p{L})/\\ah{}/g' |
+
 FULLSILS := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil)
 FULLSILS += $(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil)
 $(FULLSILS): PANDOCFILTERS = --filter=$(CASILEDIR)/svg2pdf.py
@@ -539,7 +542,7 @@ $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_booki
 			--template=$(filter %.sil,$^) \
 			--from=markdown-raw_tex \
 			--to=sile \
-			$(filter %-manifest.yml,$^) =(< $< $(call pre_sile_markdown_hook)) |
+			$(filter %-manifest.yml,$^) =(< $< $(call ah) $(call pre_sile_markdown_hook)) |
 		$(call sile_hook) > $@
 
 # Send some environment data to a common Lua file to be pulled into all SILE runs
