@@ -69,10 +69,10 @@ $endif$
 $if(versioninfo)$
 \define[command=meta:surum]{$versioninfo$}
 $endif$
-$if(info)$
-\define[command=meta:info]{
-$for(info)$
-\font[weight=600,style=Bold]{$info.file-as$}: $info.text$\break
+$if(source)$
+\define[command=meta:source]{
+$for(source)$
+\font[weight=600,style=Bold]{$source.file-as$}: $source.text$\break
 $endfor$
 }
 $endif$

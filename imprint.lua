@@ -33,8 +33,8 @@ SILE.registerCommand("imprint", function (options, content)
           SILE.call("break")
         end
         if SILE.Commands["meta:creators"] then SILE.call("meta:creators") end
-        if SILE.Commands["meta:info"] then
-          SILE.call("meta:info")
+        if SILE.Commands["meta:source"] then
+          SILE.call("meta:source")
           SILE.call("par")
         end
         if SILE.Commands["meta:source"] then
