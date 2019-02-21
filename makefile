@@ -556,10 +556,11 @@ $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_booki
 
 INTERMEDIATES += $(pattern_list *,$(EDITS),.md)
 
+WITHVERSEFILTER := $(CASILEDIR)/pandoc-filters/withverses.lua
 SOURCESWITHVERSES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withverses).md)
-$(SOURCESWITHVERSES): PANDOCFILTERS = --lua-filter=$(CASILEDIR)/filter-withverses.lua
+$(SOURCESWITHVERSES): PANDOCFILTERS = --lua-filter=$(WITHVERSEFILTER)
 $(SOURCESWITHVERSES): PANDOCFILTERS += -M versedatafile="$(filter %-$(_verses)-$(_text).yml,$^)"
-$(SOURCESWITHVERSES): $$(call parse_bookid,$$@)-$(_verses)-$(_text).yml $(CASILEDIR)/filter-withverses.lua
+$(SOURCESWITHVERSES): $$(call parse_bookid,$$@)-$(_verses)-$(_text).yml $(WITHVERSEFILTER)
 
 SOURCESWITHOUTFOOTNOTES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutfootnotes).md)
 $(SOURCESWITHOUTFOOTNOTES): PANDOCFILTERS = --lua-filter=$(CASILEDIR)/filter-withoutfootnotes.lua
@@ -1204,7 +1205,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 		$@
 	$(addtopub)
 
-%.epub: PANDOCFILTERS = --lua-filter=$(CASILEDIR)/epubclean.lua
+%.epub: PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/epubclean.lua
 %.epub: %-$(_processed).md %-manifest.yml %-epub-$(_poster).jpg | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
