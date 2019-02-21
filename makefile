@@ -1205,14 +1205,17 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 		$@
 	$(addtopub)
 
+%-epub-metadata.yml: %-manifest.yml %-epub-$(_poster).jpg
+	echo '---' > $@
+	yq -M -e -y '{title: [ { type: "main", text: .title  }, { type: "subtitle", text: .subtitle } ], creator: .creator, contributor: .contributor, identifier: .identifier, date: .date | last | .text, published: .date | first | .text, lang: .lang, description: .abstract, rights: .rights, publisher: .publisher, source: (.source[]? | select(.type == "title").text), "cover-image": "$(filter %.jpg,$^)" }' < $< >> $@
+	echo '...' >> $@
+
 %.epub: PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/epubclean.lua
-%.epub: %-$(_processed).md %-manifest.yml %-epub-$(_poster).jpg | $(require_pubdir)
+%.epub: %-$(_processed).md %-epub-metadata.yml | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$(PANDOCFILTERS) \
-		--epub-cover-image=$*-epub-$(_poster).jpg \
-		$*-manifest.yml \
-		=($(call strip_lang) < $*-$(_processed).md) -o $@
+		$*-epub-metadata.yml =($(call strip_lang) < $*-$(_processed).md) -o $@
 	$(addtopub)
 
 %.odt: %-$(_processed).md %-manifest.yml | $(require_pubdir)
