@@ -101,7 +101,7 @@ $(shell
 		git describe --long --tags --always --dirty=* | cut -d/ -f2 | xargs echo -en
 	else
 		$(DIFF) && echo -en "$$(git rev-parse --short $(PARENT))→"
-		echo -en "$(BRANCH)-"
+		echo -en "$(subst $(call parse_bookid,$1)/,,$(BRANCH))-"
 		git rev-list --boundary $(PARENT)..HEAD | grep -v - | wc -l | xargs -iX echo -en "X-"
 		git describe --always | cut -d/ -f2 | xargs echo -en
 	fi)
