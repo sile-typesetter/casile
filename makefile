@@ -195,6 +195,7 @@ export PROJECT := $(PROJECT)
 LOCALSILE ?= $(HOME)/projects/sile
 ifeq ($(DEBUG),true)
 SILE = $(LOCALSILE)/sile
+$(call prepend,SILEPATH,$(LOCALSILE) $(LOCALSILE)/core )
 .SHELLFLAGS += -x
 endif
 
