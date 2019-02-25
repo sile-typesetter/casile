@@ -109,9 +109,7 @@ $endif$
 $if(versecredits)$
 \define[command=meta:versecredits]{$versecredits$}
 $endif$
-\script[src=packages/url]
-\script[src=packages/pdf]
-\script[src=packages/footnotes]
+\script[src=packages/pandoc]
 \script[src=lists]
 \begin{script}
 qrimg = "$qrimg$"
