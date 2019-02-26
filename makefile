@@ -457,7 +457,7 @@ $(CICONFIG): $(CITEMPLATE)
 	git add -- $@
 	git diff-index --quiet --cached HEAD || git commit -m "[auto] Rebuild CI config file"
 
-$(CASILEDIR)/makefile-%-reversed: $(CASILEDIR)/makefile-%
+%-reversed: %
 	@awk -F' := ' '/^_/ { gsub(/_/, "", $$1); print "__" $$2 " := " $$1 }' < $< > $@
 
 # Pass or fail target showing whether the CI config is up to date
@@ -1350,3 +1350,5 @@ watch:
 diff:
 	git diff --color=always --ignore-submodules --no-ext-diff
 	git submodule foreach git diff --color=always --no-ext-diff
+
+-include $(POSTCASILEINCLUDE)
