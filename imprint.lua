@@ -91,8 +91,10 @@ SILE.registerCommand("imprint", function (options, content)
         if CASILE.metadata.publisher then
           if SILE.Commands["meta:distribution"]() then
           elseif SILE.Commands["meta:date"] then
-            SILE.call("meta:manufacturer")
-            SILE.call("par")
+            if CASILE.metadata.manufacturer then
+              SILE.call("meta:manufacturer")
+              SILE.call("par")
+            end
             SILE.call("meta:date")
             SILE.call("par")
           end
