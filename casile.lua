@@ -562,6 +562,12 @@ SILE.registerCommand("poetry", function ()
 end)
 
 SILE.registerCommand("dedication", function (options, content)
+  SILE.settings.temporarily(function ()
+    SILE.call("class:dedication", options, content)
+  end)
+end)
+
+SILE.registerCommand("class:dedication", function (options, content)
   options.eject = SU.boolean(options.eject, true)
   SILE.scratch.headers.skipthispage = true
   SILE.call("center", {}, function ()

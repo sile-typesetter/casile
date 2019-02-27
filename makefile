@@ -195,6 +195,7 @@ export PROJECT := $(PROJECT)
 LOCALSILE ?= $(HOME)/projects/sile
 ifeq ($(DEBUG),true)
 SILE = $(LOCALSILE)/sile
+$(call prepend,SILEPATH,$(LOCALSILE) $(LOCALSILE)/core )
 .SHELLFLAGS += -x
 endif
 
@@ -1215,7 +1216,8 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$(PANDOCFILTERS) \
-		$*-epub-metadata.yml =($(call strip_lang) < $*-$(_processed).md) -o $@
+		$*-epub-metadata.yml \
+		$*-$(_processed).md -o $@
 	$(addtopub)
 
 %.odt: %-$(_processed).md %-manifest.yml | $(require_pubdir)
@@ -1223,7 +1225,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 		$(PANDOCARGS) \
 		$(PANDOCFILTERS) \
 		$*-manifest.yml \
-		=($(call strip_lang) < $*-$(_processed).md) -o $@
+		$*-$(_processed).md -o $@
 	$(addtopub)
 
 %.docx: %-$(_processed).md %-manifest.yml | $(require_pubdir)
@@ -1231,7 +1233,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 		$(PANDOCARGS) \
 		$(PANDOCFILTERS) \
 		$*-manifest.yml \
-		=($(call strip_lang) < $*-$(_processed).md) -o $@
+		$*-$(_processed).md -o $@
 	$(addtopub)
 
 %.mobi: %.epub | $(require_pubdir)
