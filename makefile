@@ -276,8 +276,10 @@ $(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(SOURCES),%,-$(_p
 		$@
 
 .PHONY: clean
-clean: | $(require_pubdir)
+clean: emptypub
 	git clean -xf $(foreach CONFIG,$(PROJECTCONFIGS),-e $(CONFIG))
+
+emptypub: | $(require_pubdir)
 	rm -f $(PUBDIR)/*
 
 .PHONY: debug
