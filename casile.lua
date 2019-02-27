@@ -715,10 +715,10 @@ SILE.registerCommand("addDiscressionaryBreaks", function (options, content)
 end, "Try to find good breakpoints based on punctuation")
 
 SILE.registerCommand("pubDateFormat", function (options, content)
-	local input = SU.contentToString(content)
-	local pattern = "(%d+)-(%d+)"
-	local year, month = input:match(pattern)
-	local ts = os.time({ year = year, month = month, day = 1 })
+  local input = SU.contentToString(content)
+  local date = {}
+  for m in input:gmatch("(%d+)") do table.insert(date, tonumber(m)) end
+  local ts = os.time({ year = date[1] or 1970, month = date[2] or 1, day = date[3] or 1 })
   SILE.call("date", { format = "%B %Y", time = ts, locale = "tr_TR.utf-8" })
 end, "Output publication dates in proper format for imprint page")
 
