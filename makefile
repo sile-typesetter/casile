@@ -1321,6 +1321,15 @@ stats: $(STATSSOURCES) $(and $(CI),init)
 $(STATSSOURCES): %-stats:
 	stats.zsh $* $(STATSMONTHS)
 
+repository-lastcommit.ts: force
+	touch -d $$(git log -n1 --format=%cI) $@
+
+repository-worklog.yml: $(CASILEDIR)/bin/worklog.zsh repository-lastcommit.ts force
+	@$< | yq -M -e -y . > $@
+
+repository-worklog.csv: repository-worklog.yml
+	yq -M -e '.commits[] | [ .sha, .date ] | @csv' $< > $@
+
 %-$(_verses).json: %-$(_processed).md
 	$(if $(HEAD),head -n$(HEAD),cat) $< |
 		extract_references.js > $@
