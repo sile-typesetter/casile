@@ -1324,11 +1324,36 @@ $(STATSSOURCES): %-stats:
 repository-lastcommit.ts: force
 	touch -d $$(git log -n1 --format=%cI) $@
 
-repository-worklog.yml: $(CASILEDIR)/bin/worklog.zsh repository-lastcommit.ts force
+repository-worklog.yml: $(CASILEDIR)/bin/worklog.zsh repository-lastcommit.ts
 	@$< | yq -M -e -y . > $@
 
 repository-worklog.csv: repository-worklog.yml
-	yq -M -e '.commits[] | [ .sha, .date ] | @csv' $< > $@
+	yq -M -e -r '["Commit", "Author", "Date", "File", "Added", "Removed"],
+			(.commits[] as $$c | $$c.files[]? | select(.added != 0) |
+			[ $$c.sha, $$c.author, $$c.date, .name, .added, .removed]) | map(. // "") | @csv' $< > $@
+
+repository-worklog.md: repository-worklog.csv
+	tics='```'
+	dashes='---'
+	cat <<- EOF | $(PANDOC) $(PANDOCARGS) -F pantable --to markdown  > $@
+	     Worklog
+	     =======
+	     
+		 $${tics} table
+	     $${dashes}
+	     header: true
+	     include: $<
+	     $${dashes}
+		 $${tics}
+	EOF
+
+repository-worklog.pdf: repository-worklog.md
+	$(PANDOC) $(PANDOCARGS) \
+		-t latex \
+		--pdf-engine=xelatex \
+		-V "mainfont:Libertinus Serif" \
+		-V "geometry:landscape" \
+		$< -o $@
 
 %-$(_verses).json: %-$(_processed).md
 	$(if $(HEAD),head -n$(HEAD),cat) $< |

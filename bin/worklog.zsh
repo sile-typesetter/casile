@@ -39,11 +39,12 @@ gitcommits |
 	while read sha; do
 		echo "- sha:" $(gitattr %h $sha)
 		echo "  date:" $(gitattr %cI $sha)
+		echo "  author:" $(gitattr %aN $sha)
 		echo "  files:"
 		gitmodified $sha |
 			while read file; do
-				echo "  -  $file:"
-				echo "      added:" $(gitadded $sha -- $file)
-				echo "      removed:" $(gitremoved $sha -- $file)
+				echo "  - name: $file"
+				echo "    added:" $(gitadded $sha -- $file)
+				echo "    removed:" $(gitremoved $sha -- $file)
 			done
 	done
