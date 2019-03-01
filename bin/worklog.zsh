@@ -32,14 +32,16 @@ function gitattr () {
 	git log --no-walk --format=$@
 }
 
+parent=4b825dc642cb6eb9a060e54bf8d69288fbee4904
 gitcommits |
 	while read sha; do
 		gitattr "%h %cI %aN" $sha | read short date author
 		gitmodified $sha |
 			while read file; do
-				gitadded $sha -- $file | read added
-				gitremoved $sha -- $file | read removed
+				gitadded ${parent}..$sha -- $file | read added
+				gitremoved ${parent}..$sha -- $file | read removed
 				test $(($added-$removed)) -eq 0 && continue
 				echo "INSERT INTO commits VALUES ('$short', '$date', '$author', '$file', '$added', '$removed');"
 			done
+		parent=$sha
 	done
