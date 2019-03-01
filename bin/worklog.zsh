@@ -41,7 +41,7 @@ gitcommits |
 				gitadded ${parent}..$sha -- $file | read added
 				gitremoved ${parent}..$sha -- $file | read removed
 				test $(($added-$removed)) -eq 0 && continue
-				echo "INSERT INTO commits VALUES ('$short', '$date', '$author', '$file', '$added', '$removed');"
+				echo "INSERT INTO commits VALUES ('$short', '$author', '$date', '$file', '$added', '$removed');"
 			done
 		parent=$sha
 	done
