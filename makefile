@@ -1321,7 +1321,7 @@ stats: $(STATSSOURCES) $(and $(CI),init)
 $(STATSSOURCES): %-stats:
 	stats.zsh $* $(STATSMONTHS)
 
-repository-lastcommit.ts: force
+repository-lastcommit.ts: $$(newcommits)
 	touch -d $$(git log -n1 --format=%cI) $@
 
 repository-worklog.yml: $(CASILEDIR)/bin/worklog.zsh repository-lastcommit.ts

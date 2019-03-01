@@ -63,6 +63,7 @@ unlocalize = $(foreach WORD,$1,$(or $(__$(WORD)),$(WORD)))
 
 # Geometry file dependency functions
 newgeometry = $(shell grep -sq hidpi=$(HIDPI) $1 || echo force)
+newcommits = $(shell test $$(git log -n1 --format=%ct) -gt $$(stat -c %Y $@) && echo force)
 geometrybase = $(and $(filter-out $(FAKEPAPERSIZES),$(call parse_papersize,$1)),$*.pdf) $(_geometry)-$(call parse_papersize,$1).pdf
 geometryfile = $(call parse_bookid,$@)-$(call parse_papersize,$@)-$(or $(call parse_binding,$@),$(_print))-$(_geometry).sh
 sourcegeometry = source $(filter %-$(_geometry).sh,$^ $|)
