@@ -394,6 +394,7 @@ check_dependencies:
 	hash bc
 	hash zsh
 	hash epubcheck
+	hash sqlite3
 	lua -v -l yaml
 	perl -e ';' -MYAML
 	perl -e ';' -MYAML::Merge::Simple
@@ -1324,26 +1325,23 @@ $(STATSSOURCES): %-stats:
 repository-lastcommit.ts: $$(newcommits)
 	touch -d $$(git log -n1 --format=%cI) $@
 
-repository-worklog.yml: $(CASILEDIR)/bin/worklog.zsh repository-lastcommit.ts
-	@$< | yq -M -e -y . > $@
+repository-worklog.sqlite: $(CASILEDIR)/bin/worklog.zsh repository-lastcommit.ts
+	sqlite3 $@ 'DROP TABLE IF EXISTS commits; CREATE TABLE commits (sha TEXT, author TEXT, date DATE, file TEXT, added INT, removed INT)'
+	@$< | sqlite3 -batch $@
 
-repository-worklog.csv: repository-worklog.yml
-	yq -M -e -r '["Commit", "Author", "Date", "File", "Added", "Removed"],
-			(.commits[] as $$c | $$c.files[]? | select(.added != 0) |
-			[ $$c.sha, $$c.author, $$c.date, .name, .added, .removed]) | map(. // "") | @csv' $< > $@
+WORKLOGFIELDS := sha AS 'Commit', author AS 'Author', date AS 'Date', file AS 'File', added AS 'Added', removed AS 'Removed'
 
-repository-worklog.md: repository-worklog.csv
+repository-worklog.md: repository-worklog.sqlite
 	tics='```'
 	dashes='---'
 	cat <<- EOF | $(PANDOC) $(PANDOCARGS) -F pantable --to markdown  > $@
 	     Worklog
 	     =======
-	     
 		 $${tics} table
 	     $${dashes}
 	     header: true
-	     include: $<
 	     $${dashes}
+	     $$(sqlite3 -header -csv $< "SELECT $(WORKLOGFIELDS) FROM commits")
 		 $${tics}
 	EOF
 

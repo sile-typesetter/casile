@@ -9,9 +9,7 @@ function gitcommits () {
 }
 
 function gitmodified () {
-	git diff-tree --root --no-commit-id --name-only -r $@ |
-		grep -v '^\.' |
-		grep '\.'
+	git diff-tree --root --no-commit-id --name-only -r $@
 }
 
 function gitadded () {
@@ -34,17 +32,14 @@ function gitattr () {
 	git log --no-walk --format=$@
 }
 
-echo "commits:"
 gitcommits |
 	while read sha; do
-		echo "- sha:" $(gitattr %h $sha)
-		echo "  date:" $(gitattr %cI $sha)
-		echo "  author:" $(gitattr %aN $sha)
-		echo "  files:"
+		gitattr "%h %cI %aN" $sha | read short date author
 		gitmodified $sha |
 			while read file; do
-				echo "  - name: $file"
-				echo "    added:" $(gitadded $sha -- $file)
-				echo "    removed:" $(gitremoved $sha -- $file)
+				gitadded $sha -- $file | read added
+				gitremoved $sha -- $file | read removed
+				test $(($added-$removed)) -eq 0 && continue
+				echo "INSERT INTO commits VALUES ('$short', '$date', '$author', '$file', '$added', '$removed');"
 			done
 	done
