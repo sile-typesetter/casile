@@ -1329,21 +1329,35 @@ repository-worklog.sqlite: $(CASILEDIR)/bin/worklog.zsh repository-lastcommit.ts
 	sqlite3 $@ 'DROP TABLE IF EXISTS commits; CREATE TABLE commits (sha TEXT, author TEXT, date DATE, file TEXT, added INT, removed INT)'
 	@$< | sqlite3 -batch $@
 
-WORKLOGFIELDS := sha AS 'Commit', author AS 'Author', date AS 'Date', file AS 'File', added AS 'Added', removed AS 'Removed'
+WORKLOGFIELDS := sha AS 'Commit', date AS 'Date', file AS 'Filename', added AS 'Added', removed AS 'Removed'
 
-repository-worklog.md: repository-worklog.sqlite
-	tics='```'
-	dashes='---'
-	cat <<- EOF | $(PANDOC) $(PANDOCARGS) -F pantable --to markdown  > $@
-	     Worklog
-	     =======
-		 $${tics} table
-	     $${dashes}
-	     header: true
-	     $${dashes}
-	     $$(sqlite3 -header -csv $< "SELECT $(WORKLOGFIELDS) FROM commits")
-		 $${tics}
-	EOF
+repository-worklog.md: repository-worklog.sqlite force
+	now=$$(LANG=en_US date +%c)
+	ver=$(call versioninfo,$(PROJECT))
+	export IFS='|'
+	sqlite3 $< "SELECT DISTINCT(author) FROM commits" |
+		while read author; do
+			sqlite3 $< "SELECT DISTINCT strftime('%Y-%m', date) FROM commits WHERE author='$${author}'" |
+				while read month; do
+					sqlite3 repository-worklog.sqlite "SELECT SUM(added+ -removed) FROM commits WHERE author='$${author}' and strftime('%Y-%m', date)='$${month}'" | read netadded
+					[[ $${netadded} -ge 1 ]] || continue
+					echo "# Worklog for $${author}"
+					echo "## $$(LANG=en_US date +'%B %Y' -d $${month}-01)"
+					echo
+					echo "Report Generated on $${now} from repository $${ver}."
+					echo
+					echo "### File Edits"
+					echo
+					echo "Net characters added: $${netadded}"
+					echo
+					echo '``` table'
+					echo '---\nheader: True\n---'
+					sqlite3 --header -csv repository-worklog.sqlite "SELECT $(WORKLOGFIELDS) FROM commits WHERE author='$${author}' AND strftime('%Y-%m', date)='$${month}'"
+					echo '```'
+					echo
+				done
+		done |
+			$(PANDOC) $(PANDOCARGS) -F pantable -o $@
 
 repository-worklog.pdf: repository-worklog.md
 	$(PANDOC) $(PANDOCARGS) \
