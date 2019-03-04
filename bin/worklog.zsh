@@ -9,7 +9,10 @@ function gitcommits () {
 }
 
 function gitmodified () {
-	git diff-tree --root --no-commit-id --name-only -r $@
+	git diff-tree --root --no-commit-id -r $@ |
+		grep -E '100755|100644|100664' |
+		awk '{print $6}' |
+		grep -vE '^\.|makefile'
 }
 
 function gitadded () {
