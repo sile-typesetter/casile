@@ -188,7 +188,7 @@ WATCHARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 $(eval $(WATCHARGS):;@:)
 endif
 
-export PATH := $(CASILEDIR)/bin:$(PATH)
+export PATH := $(CASILEDIR)/bin:$(PATH):$(shell python -c "import site; print(site.getsitepackages()[0]+'/bin')")
 export HOSTNAME := $(shell hostname)
 export PROJECT := $(PROJECT)
 
