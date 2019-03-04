@@ -5,7 +5,7 @@ CASILEDIR=$(cd "$(dirname $0)/../" && pwd)
 . ${CASILEDIR}/bin/functions.zsh
 
 function gitcommits () {
-	git rev-list --reverse HEAD
+	git rev-list --no-merges --reverse HEAD
 }
 
 function gitmodified () {
@@ -32,10 +32,15 @@ function gitattr () {
 	git log --no-walk --format=$@
 }
 
-parent=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+function gitparent () {
+	git rev-parse --revs-only $1^ | read newparent
+	test -z $newparent && echo 4b825dc642cb6eb9a060e54bf8d69288fbee4904 || echo $newparent
+}
+
 gitcommits |
 	while read sha; do
 		gitattr "%h %cI %aN" $sha | read short date author
+		gitparent $sha | read parent
 		gitmodified $sha |
 			while read file; do
 				gitadded ${parent}..$sha -- $file | read added
@@ -43,5 +48,4 @@ gitcommits |
 				test $(($added-$removed)) -eq 0 && continue
 				echo "INSERT INTO commits VALUES ('$short', '$author', '$date', '$file', '$added', '$removed');"
 			done
-		parent=$sha
 	done
