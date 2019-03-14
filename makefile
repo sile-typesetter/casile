@@ -159,7 +159,7 @@ SILEPATH += $(CASILEDIR)
 
 # Extra arguments to pass to Pandoc
 PANDOCARGS ?= --wrap=preserve --atx-headers --top-level-division=chapter
-PANDOCFILTERARGS ?= --from markdown+raw_tex+smart --to markdown+raw_tex-smart
+PANDOCFILTERARGS ?= --from markdown+raw_sile+smart --to markdown+raw_sile+smart
 
 # Figure out if we're being run from
 ATOM != env | grep -l ATOM_
@@ -545,8 +545,8 @@ $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_booki
 			-V qrimg="./$(filter %-url.png,$^)" \
 			$(foreach LUA,$(filter %.lua,$|), -V script=$(basename $(LUA))) \
 			--template=$(filter %.sil,$^) \
-			--from=markdown+raw_sile+smart \
-			--to=sile+smart \
+			--from=markdown+raw_tex+raw_sile-smart \
+			--to=sile+raw_sile+smart \
 			$(filter %-manifest.yml,$^) =(< $< $(call ah) $(call pre_sile_markdown_hook)) |
 		$(call sile_hook) > $@
 
@@ -657,13 +657,11 @@ normalize_lua: $(LUASOURCES)
 normalize_markdown: $(MARKDOWNSOURCES)
 	$(call munge,$^,msword_escapes.pl,Fixup bad MS word typing habits that Pandoc tries to preserve)
 	$(call munge,$^,lazy_quotes.pl,Replace lazy double single quotes with real doubles)
-	$(call munge,$^,smart_quotes.pl,Replace straight quotation marks with typographic variants)
 	$(call munge,$^,figure_dash.pl,Convert hyphens between numbers to figure dashes)
-	$(call munge,$^,unicode_symbols.pl,Replace lazy ASCI shortcuts with Unicode symbols)
 	$(call munge,$^,italic_reorder.pl,Fixup italics around names and parethesised translations)
-	$(call munge,$^,$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS),Normalize and tidy Markdown syntax using Pandoc)
 	#(call munge,$^,reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
 	#(call munge,$^,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
+	$(call munge,$^,$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS),Normalize and tidy Markdown syntax using Pandoc)
 
 %.toc: %.pdf ;
 
