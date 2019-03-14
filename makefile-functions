@@ -144,17 +144,8 @@ define find_and_munge ?=
 	git diff-index --quiet --cached HEAD || git commit -m "[auto] $3"
 endef
 
-define normalize_markdown ?=
-	$(if $(HEAD),head -n$(HEAD),cat) |
-	( $(DIFF) && cat || (
-		msword_escapes.pl |
-		lazy_quotes.pl |
-		smart_quotes.pl |
-		figure_dash.pl |
-		unicode_symbols.pl |
-		italic_reorder.pl |
+define link_verses ?=
 		link_verses.js
-	) )
 endef
 
 define criticToSile ?=

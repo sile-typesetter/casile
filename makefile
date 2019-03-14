@@ -588,8 +588,9 @@ INTERMEDIATES += *-$(_processed).md
 		m4 $(filter %.m4,$^) $<
 	fi |
 		renumber_footnotes.pl |
+		$(and $(HEAD),head -n$(HEAD) |) \
+		$(call link_verses) |
 		$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) |
-		$(call normalize_markdown) |
 		$(call criticToSile) |
 		$(call markdown_hook) > $@
 
