@@ -659,7 +659,7 @@ normalize_markdown: $(MARKDOWNSOURCES)
 	$(call munge,$^,lazy_quotes.pl,Replace lazy double single quotes with real doubles)
 	$(call munge,$^,figure_dash.pl,Convert hyphens between numbers to figure dashes)
 	$(call munge,$^,italic_reorder.pl,Fixup italics around names and parethesised translations)
-	#(call munge,$^,reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
+	$(call munge,$^,reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
 	#(call munge,$^,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
 	$(call munge,$^,$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS),Normalize and tidy Markdown syntax using Pandoc)
 
