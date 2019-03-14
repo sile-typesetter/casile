@@ -546,7 +546,7 @@ $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_booki
 			$(foreach LUA,$(filter %.lua,$|), -V script=$(basename $(LUA))) \
 			--template=$(filter %.sil,$^) \
 			--from=markdown-raw_tex \
-			--to=sile \
+			--to=sile-smart \
 			$(filter %-manifest.yml,$^) =(< $< $(call ah) $(call pre_sile_markdown_hook)) |
 		$(call sile_hook) > $@
 
