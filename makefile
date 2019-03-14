@@ -159,7 +159,7 @@ SILEPATH += $(CASILEDIR)
 
 # Extra arguments to pass to Pandoc
 PANDOCARGS ?= --wrap=preserve --atx-headers --top-level-division=chapter
-PANDOCFILTERARGS ?= --from markdown+raw_sile+smart --to markdown+raw_sile+smart
+PANDOCFILTERARGS ?= --from markdown+raw_tex+raw_sile --to markdown+raw_tex+raw_sile-smart
 
 # Figure out if we're being run from
 ATOM != env | grep -l ATOM_
@@ -588,10 +588,10 @@ INTERMEDIATES += *-$(_processed).md
 		m4 $(filter %.m4,$^) $<
 	fi |
 		renumber_footnotes.pl |
-		$(call criticToSile) |
+		$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) |
 		$(call normalize_markdown) |
-		$(call markdown_hook) |
-		$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) > $@
+		$(call criticToSile) |
+		$(call markdown_hook) > $@
 
 %-$(_booklet).pdf: %-$(_spineless).pdf | $(require_pubdir)
 	pdfbook --short-edge --noautoscale true --papersize "{$(call pageh,$<)pt,$$(($(call pagew,$<)*2))pt}" --outfile $@ -- $<
@@ -661,7 +661,7 @@ normalize_markdown: $(MARKDOWNSOURCES)
 	$(call munge,$^,italic_reorder.pl,Fixup italics around names and parethesised translations)
 	$(call munge,$^,reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
 	#(call munge,$^,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
-	$(call munge,$^,$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS),Normalize and tidy Markdown syntax using Pandoc)
+	$(call munge,$^,$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) --from markdown+raw_tex+raw_sile --to markdown+raw_tex+raw_sile+smart,Normalize and tidy Markdown syntax using Pandoc)
 
 %.toc: %.pdf ;
 
