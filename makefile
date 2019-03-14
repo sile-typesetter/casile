@@ -545,8 +545,8 @@ $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_booki
 			-V qrimg="./$(filter %-url.png,$^)" \
 			$(foreach LUA,$(filter %.lua,$|), -V script=$(basename $(LUA))) \
 			--template=$(filter %.sil,$^) \
-			--from=markdown-raw_tex \
-			--to=sile-smart \
+			--from=markdown+raw_sile+smart \
+			--to=sile+smart \
 			$(filter %-manifest.yml,$^) =(< $< $(call ah) $(call pre_sile_markdown_hook)) |
 		$(call sile_hook) > $@
 
@@ -557,7 +557,6 @@ $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_booki
 		CASILE.casiledir = "$(CASILEDIR)"
 		CASILE.publisher = "casile"
 	EOF
-
 
 INTERMEDIATES += $(pattern_list *,$(EDITS),.md)
 
