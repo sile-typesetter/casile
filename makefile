@@ -546,7 +546,7 @@ $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_booki
 			$(foreach LUA,$(filter %.lua,$|), -V script=$(basename $(LUA))) \
 			--template=$(filter %.sil,$^) \
 			--from=markdown+raw_sile \
-			--to=sile+smart \
+			--to=sile \
 			$(filter %-manifest.yml,$^) =(< $< $(call ah) $(call pre_sile_markdown_hook)) |
 		$(call sile_hook) > $@
 
@@ -662,7 +662,7 @@ normalize_markdown: $(MARKDOWNSOURCES)
 	$(call munge,$^,italic_reorder.pl,Fixup italics around names and parethesised translations)
 	$(call munge,$^,reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
 	#(call munge,$^,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
-	$(call munge,$^,$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) --from markdown+raw_sile --to markdown+raw_sile+smart,Normalize and tidy Markdown syntax using Pandoc)
+	$(call munge,$^,$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(subst -smart,+smart,$(PANDOCFILTERARGS)),Normalize and tidy Markdown syntax using Pandoc)
 
 %.toc: %.pdf ;
 
