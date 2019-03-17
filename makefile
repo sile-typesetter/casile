@@ -79,6 +79,7 @@ SORTORDER ?= meta # Sort series by: none, alphabetical, date, meta, manual
 # Allow overriding executables used
 SILE ?= sile
 PANDOC ?= pandoc
+PERL ?= perl -Mutf8 -CS
 MAGICK ?= magick
 INKSCAPE ?= inkscape
 POVRAY ?= povray
@@ -397,8 +398,8 @@ check_dependencies:
 	hash epubcheck
 	hash sqlite3
 	lua -v -l yaml
-	perl -e ';' -MYAML
-	perl -e ';' -MYAML::Merge::Simple
+	$(PERL) -e ';' -MYAML
+	$(PERL) -e ';' -MYAML::Merge::Simple
 	python -c "import yaml"
 	python -c "import isbnlib"
 	python -c "import pandocfilters"
@@ -525,7 +526,7 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 	$(addtopub)
 
 # Apostrophe Hack, see https://github.com/simoncozens/sile/issues/355
-ah := perl -Mutf8 -CS -pne '/^\#/ or s/(?<=\p{L})’(?=\p{L})/\\ah{}/g' |
+ah := $(PERL) -pne '/^\#/ or s/(?<=\p{L})’(?=\p{L})/\\ah{}/g' |
 
 FULLSILS := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil)
 FULLSILS += $(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil)
@@ -966,7 +967,7 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 %-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printcolor.png $$(geometryfile)
 	$(sourcegeometry)
 	ver=$(subst @,\\@,$(call versioninfo,$@))
-	perl -pne "
+	$(PERL) -pne "
 			s#IMG#$(filter %.png,$^)#g;
 			s#VER#$${ver}#g;
 			s#CANVASX#$${bindingwmm}mm#g;
@@ -1249,7 +1250,7 @@ $(PHONYSCREENS): %.$(_screen): %-$(_screen).pdf %-manifest.yml
 MANIFESTS := $(call pattern_list,$(SOURCES),-manifest.yml)
 $(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML) $$(TARGETYAMLS_$$*) | $(require_pubdir)
 	# yq -M -e -s -y 'reduce .[] as $$item({}; . + $$item)' $(filter %.yml,$^) |
-	perl -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $(filter %.yml,$^) |
+	$(PERL) -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $(filter %.yml,$^) |
 		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
 			-e '/text: [[:digit:]]\{10,13\}/{p;s/^\([[:space:]]*\)text: \([[:digit:]]\+\)$$/python -c "import isbnlib; print(\\"\1mask: \\" + isbnlib.mask(\\"\2\\"))"/e}' \
 			-e '/\(own\|next\)cloudshare: [^"]/s/: \(.*\)$$/: "\1"/' > $@
