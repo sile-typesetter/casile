@@ -568,7 +568,7 @@ $(SOURCESWITHVERSES): PANDOCFILTERS += -M versedatafile="$(filter %-$(_verses)-$
 $(SOURCESWITHVERSES): $$(call parse_bookid,$$@)-$(_verses)-$(_text).yml $(WITHVERSEFILTER)
 
 SOURCESWITHOUTFOOTNOTES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutfootnotes).md)
-$(SOURCESWITHOUTFOOTNOTES): PANDOCFILTERS = --lua-filter=$(CASILEDIR)/filter-withoutfootnotes.lua
+$(SOURCESWITHOUTFOOTNOTES): PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/withoutfootnotes.lua
 
 SOURCESWITHEDITS := $(SOURCESWITHVERSES) $(SOURCESWITHOUTFOOTNOTES)
 $(SOURCESWITHEDITS): $$(call strip_edits,$$@)

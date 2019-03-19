@@ -1,0 +1,3 @@
+Note = function ()
+	return {}
+end
