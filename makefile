@@ -57,8 +57,8 @@ SCENELIGHT ?= rgb<1,1,1>
 SCENEX ?= $(call scale,2400)
 SCENEY ?= $(call scale,3200)
 
-# Because sometimes the same base content con be postprocessed multiple ways
-EDITS ?= $(_withverses) $(_withoutfootnotes)
+# Because sometimes the same base content can be postprocessed multiple ways
+EDITS ?= $(_withverses) $(_withoutfootnotes) $(_withoutlinks)
 
 # Build mode flags
 DRAFT ?= false # Take shortcuts, scale things down, be quick about it
@@ -570,7 +570,10 @@ $(SOURCESWITHVERSES): $$(call parse_bookid,$$@)-$(_verses)-$(_text).yml $(WITHVE
 SOURCESWITHOUTFOOTNOTES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutfootnotes).md)
 $(SOURCESWITHOUTFOOTNOTES): PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/withoutfootnotes.lua
 
-SOURCESWITHEDITS := $(SOURCESWITHVERSES) $(SOURCESWITHOUTFOOTNOTES)
+SOURCESWITHOUTLINKS := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutlinks).md)
+$(SOURCESWITHOUTLINKS): PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/withoutlinks.lua
+
+SOURCESWITHEDITS := $(SOURCESWITHVERSES) $(SOURCESWITHOUTFOOTNOTES) $(SOURCESWITHOUTLINKS)
 $(SOURCESWITHEDITS): $$(call strip_edits,$$@)
 	$(PANDOC) --standalone \
 		$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) \

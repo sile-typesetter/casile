@@ -44,3 +44,4 @@ _dark := koyu
 _transparent := saydam
 _withoutfootnotes := dipnotsuz
 _withverses := ayetli
+_withoutlinks := linksiz
