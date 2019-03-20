@@ -569,6 +569,7 @@ $(SOURCESWITHVERSES): $$(call parse_bookid,$$@)-$(_verses)-$(_text).yml $(WITHVE
 
 SOURCESWITHOUTFOOTNOTES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutfootnotes).md)
 $(SOURCESWITHOUTFOOTNOTES): PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/withoutfootnotes.lua
+$(SOURCESWITHOUTFOOTNOTES): PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/withoutlinks.lua
 
 SOURCESWITHOUTLINKS := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutlinks).md)
 $(SOURCESWITHOUTLINKS): PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/withoutlinks.lua
