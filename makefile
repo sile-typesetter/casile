@@ -533,9 +533,9 @@ ah := $(PERL) $(PERLARGS) -pne '/^\#/ or s/(?<=\p{L})’(?=\p{L})/\\ah{}/g' |
 
 FULLSILS := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil)
 FULLSILS += $(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil)
-$(FULLSILS): PANDOCFILTERS = --filter=$(CASILEDIR)/svg2pdf.py
-$(FULLSILS): THISEDITS = $(call parse_edits,$@)
-$(FULLSILS): PROCESSEDSOURCE = $(call pattern_list,$(call parse_bookid,$@),$(_processed),$(and $(THISEDITS),-$(THISEDITS)).md)
+$(FULLSILS): private PANDOCFILTERS += --filter=$(CASILEDIR)/svg2pdf.py
+$(FULLSILS): private THISEDITS = $(call parse_edits,$@)
+$(FULLSILS): private PROCESSEDSOURCE = $(call pattern_list,$(call parse_bookid,$@),$(_processed),$(and $(THISEDITS),-$(THISEDITS)).md)
 $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_bookid,$$@),-manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
@@ -566,16 +566,16 @@ INTERMEDIATES += $(pattern_list *,$(EDITS),.md)
 
 WITHVERSEFILTER := $(CASILEDIR)/pandoc-filters/withverses.lua
 SOURCESWITHVERSES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withverses).md)
-$(SOURCESWITHVERSES): PANDOCFILTERS = --lua-filter=$(WITHVERSEFILTER)
-$(SOURCESWITHVERSES): PANDOCFILTERS += -M versedatafile="$(filter %-$(_verses)-$(_text).yml,$^)"
+$(SOURCESWITHVERSES): private PANDOCFILTERS += --lua-filter=$(WITHVERSEFILTER)
+$(SOURCESWITHVERSES): private PANDOCFILTERS += -M versedatafile="$(filter %-$(_verses)-$(_text).yml,$^)"
 $(SOURCESWITHVERSES): $$(call parse_bookid,$$@)-$(_verses)-$(_text).yml $(WITHVERSEFILTER)
 
 SOURCESWITHOUTFOOTNOTES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutfootnotes).md)
-$(SOURCESWITHOUTFOOTNOTES): PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/withoutfootnotes.lua
-$(SOURCESWITHOUTFOOTNOTES): PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/withoutlinks.lua
+$(SOURCESWITHOUTFOOTNOTES): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/withoutfootnotes.lua
+$(SOURCESWITHOUTFOOTNOTES): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/withoutlinks.lua
 
 SOURCESWITHOUTLINKS := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutlinks).md)
-$(SOURCESWITHOUTLINKS): PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/withoutlinks.lua
+$(SOURCESWITHOUTLINKS): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/withoutlinks.lua
 
 SOURCESWITHEDITS := $(SOURCESWITHVERSES) $(SOURCESWITHOUTFOOTNOTES) $(SOURCESWITHOUTLINKS)
 $(SOURCESWITHEDITS): $$(call strip_edits,$$@)
@@ -1002,8 +1002,8 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
 UNBOUNDGEOMETRIES := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_geometry).sh)
-$(UNBOUNDGEOMETRIES): BLEED = $(NOBLEED)
-$(UNBOUNDGEOMETRIES): TRIM = $(NOTRIM)
+$(UNBOUNDGEOMETRIES): private BLEED = $(NOBLEED)
+$(UNBOUNDGEOMETRIES): private TRIM = $(NOTRIM)
 
 # Some output formats don't have PDF content, but we still need to calculate the
 # page geometry, so generate a single page PDF to measure with no binding scenario
@@ -1169,8 +1169,8 @@ $(SERIESSCENES): $(PROJECT)-%-$(_3d).pov: $(firstword $(SOURCES))-%-$(_3d).pov $
 	EOF
 endif
 
-%-$(_light).png: SCENELIGHT = rgb<1,1,1>
-%-$(_dark).png:  SCENELIGHT = rgb<0,0,0>
+%-$(_light).png: private SCENELIGHT = rgb<1,1,1>
+%-$(_dark).png:  private SCENELIGHT = rgb<0,0,0>
 
 %-$(_3d)-$(_front)-$(_light).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/front.pov
 	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/front.pov,$^),$@,$(SCENEX),$(SCENEY))
@@ -1222,7 +1222,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 	yq -M -e -y '{title: [ { type: "main", text: .title  }, { type: "subtitle", text: .subtitle } ], creator: .creator, contributor: .contributor, identifier: .identifier, date: .date | last | .text, published: .date | first | .text, lang: .lang, description: .abstract, rights: .rights, publisher: .publisher, source: (.source[]? | select(.type == "title").text), "cover-image": "$(filter %.jpg,$^)" }' < $< >> $@
 	echo '...' >> $@
 
-%.epub: PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/epubclean.lua
+%.epub: private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/epubclean.lua
 %.epub: %-$(_processed).md %-epub-metadata.yml | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
