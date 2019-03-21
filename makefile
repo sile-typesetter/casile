@@ -598,6 +598,7 @@ INTERMEDIATES += *-$(_processed).md
 		renumber_footnotes.pl |
 		$(and $(HEAD),head -n$(HEAD) |) \
 		$(call link_verses) |
+		$(PERL) $(PERLARGS) -pne "s/(?<=[\)\}])'/’/g" | # Work around Pandoc bug, see https://github.com/jgm/pandoc/issues/5385
 		$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) |
 		$(call criticToSile) |
 		$(call markdown_hook) > $@
