@@ -79,7 +79,7 @@ SORTORDER ?= meta # Sort series by: none, alphabetical, date, meta, manual
 # Allow overriding executables used
 SILE ?= sile
 PANDOC ?= pandoc
-PERL ?= perl -Mutf8 -CS
+PERL ?= perl
 MAGICK ?= magick
 INKSCAPE ?= inkscape
 POVRAY ?= povray
@@ -161,6 +161,9 @@ SILEPATH += $(CASILEDIR)
 # Extra arguments to pass to Pandoc
 PANDOCARGS ?= --wrap=preserve --atx-headers --top-level-division=chapter
 PANDOCFILTERARGS ?= --from markdown+raw_sile --to markdown+raw_sile-smart
+
+# For when perl one-liners need Unicode compatibility
+PERLARGS ?= -Mutf8 -CS
 
 # Figure out if we're being run from
 ATOM != env | grep -l ATOM_
@@ -526,7 +529,7 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 	$(addtopub)
 
 # Apostrophe Hack, see https://github.com/simoncozens/sile/issues/355
-ah := $(PERL) -pne '/^\#/ or s/(?<=\p{L})’(?=\p{L})/\\ah{}/g' |
+ah := $(PERL) $(PERLARGS) -pne '/^\#/ or s/(?<=\p{L})’(?=\p{L})/\\ah{}/g' |
 
 FULLSILS := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil)
 FULLSILS += $(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil)
@@ -971,7 +974,7 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 %-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printcolor.png $$(geometryfile)
 	$(sourcegeometry)
 	ver=$(subst @,\\@,$(call versioninfo,$@))
-	$(PERL) -pne "
+	$(PERL) $(PERLARGS) -pne "
 			s#IMG#$(filter %.png,$^)#g;
 			s#VER#$${ver}#g;
 			s#CANVASX#$${bindingwmm}mm#g;
