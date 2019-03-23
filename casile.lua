@@ -165,7 +165,7 @@ SILE.registerCommand("book:sectioning", function (options, content)
     local counters = SILE.scratch.counters["sectioning"]
     if level == 1 then
       local val = SILE.formatCounter({ display = "ORDINAL", value = counters.value[level] })
-      toc_content[1] = val .. " KISIM: " .. textcase.uppercase(content[1])
+      toc_content[1] = val .. " KISIM: " .. textcase.uppercase(content[1] or "")
     elseif level == 2 then
       local val = SILE.formatCounter({ display = "arabic", value = counters.value[level] })
       toc_content[1] = val .. ". " .. content[1]
