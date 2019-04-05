@@ -14,7 +14,7 @@ identifier = {}
 if "identifier" in yamldata:
     for id in yamldata["identifier"]:
         if "key" in id:
-            isbnlike = isbnlib.get_isbnlike(id["text"])[0]
+            isbnlike = isbnlib.get_isbnlike(str(id["text"]))[0]
             if isbnlib.is_isbn13(isbnlike):
                 identifier[id["key"]] = isbnlib.EAN13(isbnlike)
 
