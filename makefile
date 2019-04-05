@@ -599,8 +599,8 @@ INTERMEDIATES += *-$(_processed).md
 		$(and $(HEAD),head -n$(HEAD) |) \
 		$(call link_verses) |
 		$(PERL) $(PERLARGS) -pne "s/(?<=[\)\}])'/’/g" | # Work around Pandoc bug, see https://github.com/jgm/pandoc/issues/5385
-		$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) |
 		$(call criticToSile) |
+		$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) |
 		$(call markdown_hook) > $@
 
 %-$(_booklet).pdf: %-$(_spineless).pdf | $(require_pubdir)
