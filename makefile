@@ -403,7 +403,7 @@ check_dependencies:
 	lua -v -l yaml
 	$(PERL) -e ';' -MYAML
 	$(PERL) -e ';' -MYAML::Merge::Simple
-	python -c "import yaml"
+	python -c "import ruamel"
 	python -c "import isbnlib"
 	python -c "import pandocfilters"
 	$(call depend_font,Hack)

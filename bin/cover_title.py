@@ -2,14 +2,14 @@
 
 import sys
 import os
-import yaml
+import ruamel.yaml as yaml
 import re
 
 file = sys.argv[1]
 metafile = re.sub("-.*$", ".yml", file)
 project = os.environ["PROJECT"]
 metadata = open(metafile, 'r').read()
-yamldata = yaml.load(metadata)
+yamldata = yaml.safe_load(metadata)
 
 if "title" in yamldata:
     title = yamldata["title"]
