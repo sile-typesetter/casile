@@ -160,7 +160,7 @@ SILEPATH += $(CASILEDIR)
 
 # Extra arguments to pass to Pandoc
 PANDOCARGS ?= --wrap=preserve --atx-headers --top-level-division=chapter
-PANDOCFILTERARGS ?= --from markdown+raw_sile-space_in_atx_header --to markdown+raw_sile-smart
+PANDOCFILTERARGS ?= --from markdown+raw_sile-space_in_atx_header+ascii_identifiers --to markdown+raw_sile-smart
 
 # For when perl one-liners need Unicode compatibility
 PERLARGS ?= -Mutf8 -CS
@@ -1400,6 +1400,24 @@ normalize: normalize_lua normalize_markdown normalize_references
 split_chapters:
 	$(if $(MARKDOWNSOURCES),,exit 0)
 	$(foreach SOURCE,$(MARKDOWNSOURCES),$(call split_chapters,$(SOURCE)))
+
+normalize_files: private PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/chapterid.lua
+normalize_files: $(CASILEDIR)/pandoc-filters/chapterid.lua
+	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
+	$(if $(MARKDOWNSOURCES),,exit 0)
+	echo $(MARKDOWNSOURCES) |
+		perl -pne 's/ /\n/g' |
+		pcregrep "$(PROJECTDIR)/($(subst $(space),|,$(strip $(SOURCES))))-.*/" |
+		while read src; do
+			git diff-files --quiet -- $${src} || exit 1 # die if this file has uncommitted changes
+			basename $${src} | perl -pne 's/-.*$$//' | read chapno
+			dirname $${src} | read dir
+			sed -n '/^#/{s/ı/i/g;p}' $${src} |
+				pandoc $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) | read identifier
+				target="$${dir}/$${chapno}-$${identifier}.md"
+				[[ $${src} == $${target} ]] || git mv "$${src}" "$${target}"
+		done
+	git diff-index --quiet --cached HEAD || git commit -m "[auto] Normalize filenames based on chapter ids"
 
 watch:
 	git ls-files --recurse-submodules |

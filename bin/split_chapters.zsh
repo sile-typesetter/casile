@@ -8,7 +8,7 @@ dir=${base}-chapters
 mkdir -p $dir
 
 i=0
-of=$dir/000-frontmater.md
+of=$dir/000.md
 chapters=()
 
 while read line; do
@@ -18,11 +18,7 @@ while read line; do
 	# Check for chapter header
 	if [[ $line =~ "^# .*" ]]; then
 		[[ $line =~ ".*unnumbered.*" ]] || let i=$i+1
-		echo $line |
-			tr '[:upper:]' '[:lower:]' |
-			sed -e 's/ {.*}$//;s/[#’\.,;:\?!]//g;s/^ *//;s/ *$//;s/ /_/g;y/İÖÜÂÇŞĞıöüâçşğ/iouacsgiouacsg/' |
-			read sanitized
-		of=$dir/$(printf %02d $i)-$sanitized.md
+		of=$dir/$(printf %02d $i).md
 		chapters+=($of)
 		echo $of
 		cp /dev/null $of
