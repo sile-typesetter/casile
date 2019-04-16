@@ -677,8 +677,11 @@ normalize_markdown: $(MARKDOWNSOURCES)
 
 normalize_markdown: normalize_markdown_$(LANGUAGE)
 
+.PHONY: normalize_markdown_en
+normalize_markdown_en: $(filter en/%,$(MARKDOWNSOURCES)) ;
+
 .PHONY: normalize_markdown_tr
-normalize_markdown_tr:
+normalize_markdown_tr: $(filter tr/%,$(MARKDOWNSOURCES))
 	$(call munge,$^,ordinal_spaces.pl,Use narrow non-breaking spaces after ordinal numbers)
 
 %.toc: %.pdf ;
