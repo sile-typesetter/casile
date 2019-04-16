@@ -50,7 +50,7 @@ function process_line (line) {
       } else {
         previousOffset = 0;
       }
-      var pretty = formatter('yc-long', ref.osis);
+      var pretty = formatter('yc-long', ref.osis).replace(/—/g, '---').replace(/–/g, '--').replace(/’/g, "'");
       line = line.replaceSplice(ref.indices[0] + offset, ref.indices[1] + offset + previousOffset, pretty);
       previousOffset = ref.indices[0] - ref.indices[1] + pretty.length;
       offset += previousOffset;
