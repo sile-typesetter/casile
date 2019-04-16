@@ -675,6 +675,12 @@ normalize_markdown: $(MARKDOWNSOURCES)
 	$(call munge,$^,$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(subst -smart,+smart,$(PANDOCFILTERARGS)),Normalize and tidy Markdown syntax using Pandoc)
 	$(call munge,$^,reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
 
+normalize_markdown: normalize_markdown_$(LANGUAGE)
+
+.PHONY: normalize_markdown_tr
+normalize_markdown_tr:
+	$(call munge,$^,ordinal_spaces.pl,Use narrow non-breaking spaces after ordinal numbers)
+
 %.toc: %.pdf ;
 
 %.tov: %.pdf ;
