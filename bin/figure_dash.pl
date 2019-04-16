@@ -2,6 +2,6 @@
 
 # Convert hyphens between numbers to figure dashes
 while (<>) {
-  s#(?<=\d)-\s*(?=\d)#–#g;
+  s#(?<=\d)-\s*(?=\d)#--#g;
   print;
 }
