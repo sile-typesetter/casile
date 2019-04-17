@@ -28,7 +28,11 @@ SILE.call("footnote:separator", {}, function ()
   SILE.call("medskip")
 end)
 
-SILE.registerCommand("cabook:chapter:pre:tr", function ()
+SILE.registerCommand("book:chapter:pre:en", function ()
+  SILE.typesetter:typeset("CHAPTER ")
+end)
+
+SILE.registerCommand("book:chapter:pre:tr", function ()
   SILE.typesetter:typeset("BÖLÜM ")
 end)
 
