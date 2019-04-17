@@ -2,6 +2,8 @@
 
 The CaSILE toolkit is a collection of tools designed to automate book publishing from start to finish. The concept is to take very simple input and turn it into a finished product with as little manual intervention as possible. It transforms plain text document formats and meta data into press ready PDFs, E-Books, and rendered promotional materials.
 
+The assumed usage is your book source code in a **Git** repository and this toolkit as a submodule. Execution can be manually from a command line or autotatally using a **Continuous Integration** system on the repository. Other arrangements can be accomodated.
+
 CaSILE (pronounced like 'castle') started out life as a submodule called `avadanlik` included inside my book project repositories (avadanlık being a Turkish word for toolkit). AS most of the parts revolve around SILE, in my head at least CaSILE became **Caleb’in Avadanlığı ile Simon’s Improved Layout Engine**, roughly translating to “Caleb's SILE Toolkit”. Come to think of it that would have been a simpler way to arrive at the name, but the project has deep Turkish roots so I'm keeping the "a" in the name name as a nod to its origin.
 
 ## Dependencies
@@ -14,13 +16,16 @@ All of the following are utilized in one way or another. Currently the toolkit a
 * [Pandoc][pandoc] (specifically with [my branch with SILE support][pandocsile]) converts between document types.
 * [ImageMagick][im] handles raster image processing (v7 required).
 * [POVRay][pov] is used to render 3 dimensional visualizations.
-* [Zint][zint] generates ISBN barcodes, QR codes, etc.
 * [Inkscape][inkscape] is used to convert SVG resources into other formats.
 * [PDFTk][pdftk] is used for manipulating PDFs.
 * [Podofo][podofo] is used to do more stuff with PDFs.
 * [Kindlegen][kindlegen] is needed to generate Amazon's E-Book formats.
 * [Poppler][poppler] is used to do even more stuff with PDFs.
+* [Zint][zint] generates ISBN barcodes, QR codes, etc.
 * Perl, Python, Lua, Node, Zsh, and a few other language interpreters!
+* Variious modules for those languags like `lua-yaml`, `python-ruamel`, `python-isblib`, and `python-pandocfilters`.
+* Up to date versions of assorted shell tools like `jq`, `yq`, `entr`, `bc`, and `sqlite`.
+* The default book templates assume system installed versions of **Hack**, **Libertinus**, and **TeX Gyre** font sets.
 * Some other stuff (run `make dependencies` to check on them)
 
 You'll probably want some other things like a PDF viewer that auto updates on file changes (I recommend [zathura][zathura]), and E-Book reader like [Calibre][calibre] but these would be run yourself and are not directly executed by the toolkit.
@@ -280,7 +285,7 @@ These are functions that can be defined in your project's `Makefile` to add addi
 [viachristus]: http://yayinlar.viachristus.com/
 [sile]: http://sile-typesetter.org/
 [pandoc]: http://pandoc.org/
-[pandocsile]: https://github.com/alerque/pandoc/tree/sile4
+[pandocsile]: https://github.com/alerque/pandoc/tree/sile-2.7.2
 [im]: http://imagemagick.org/
 [pov]: http://www.povray.org/
 [zint]: https://zint.github.io/
