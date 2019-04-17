@@ -667,13 +667,13 @@ normalize_lua: $(LUASOURCES)
 
 .PHONY: normalize_markdown
 normalize_markdown: $(MARKDOWNSOURCES)
-	$(call munge,$^,msword_escapes.pl,Fixup bad MS word typing habits that Pandoc tries to preserve)
-	$(call munge,$^,lazy_quotes.pl,Replace lazy double single quotes with real doubles)
-	$(call munge,$^,figure_dash.pl,Convert hyphens between numbers to figure dashes)
-	$(call munge,$^,italic_reorder.pl,Fixup italics around names and parethesised translations)
-	#(call munge,$^,apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
-	$(call munge,$^,$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(subst -smart,+smart,$(PANDOCFILTERARGS)),Normalize and tidy Markdown syntax using Pandoc)
-	$(call munge,$^,reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
+	$(call munge,$(filter %.md,$^),msword_escapes.pl,Fixup bad MS word typing habits that Pandoc tries to preserve)
+	$(call munge,$(filter %.md,$^),lazy_quotes.pl,Replace lazy double single quotes with real doubles)
+	$(call munge,$(filter %.md,$^),figure_dash.pl,Convert hyphens between numbers to figure dashes)
+	$(call munge,$(filter %.md,$^),italic_reorder.pl,Fixup italics around names and parethesised translations)
+	#(call munge,$(filter %.md,$^),apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
+	$(call munge,$(filter %.md,$^),$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(subst -smart,+smart,$(PANDOCFILTERARGS)),Normalize and tidy Markdown syntax using Pandoc)
+	$(call munge,$(filter %.md,$^),reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
 
 normalize_markdown: normalize_markdown_$(LANGUAGE)
 
@@ -682,7 +682,7 @@ normalize_markdown_en: $(filter en/%,$(MARKDOWNSOURCES)) ;
 
 .PHONY: normalize_markdown_tr
 normalize_markdown_tr: $(filter tr/%,$(MARKDOWNSOURCES))
-	$(call munge,$^,ordinal_spaces.pl,Use narrow non-breaking spaces after ordinal numbers)
+	$(call munge,$(filter %.md,$^),ordinal_spaces.pl,Use narrow non-breaking spaces after ordinal numbers)
 
 %.toc: %.pdf ;
 
