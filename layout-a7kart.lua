@@ -32,8 +32,3 @@ SILE.registerCommand("open-double-page", function ()
 end)
 
 SILE.setCommandDefaults("imprint:font", { size = "7pt" })
-
-SILE.registerCommand("href", function (options, content)
-  SILE.call("markverse", options, content)
-  SILE.process(content)
-end)

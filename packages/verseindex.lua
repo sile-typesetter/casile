@@ -1,3 +1,5 @@
+SILE.require("packages/url")
+
 SILE.scratch.tableofverses = {}
 
 local orig_href = SILE.Commands["href"]
