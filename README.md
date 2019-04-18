@@ -2,8 +2,6 @@
 
 The CaSILE toolkit is a collection of tools designed to automate book publishing from start to finish. The concept is to take very simple input and turn it into a finished product with as little manual intervention as possible. It transforms plain text document formats and meta data into press ready PDFs, E-Books, and rendered promotional materials.
 
-The assumed usage is your book source code in a **Git** repository and this toolkit as a submodule. Execution can be manually from a command line or autotatally using a **Continuous Integration** system on the repository. Other arrangements can be accomodated.
-
 CaSILE (pronounced like 'castle') started out life as a submodule called `avadanlik` included inside my book project repositories (avadanlık being a Turkish word for toolkit). AS most of the parts revolve around SILE, in my head at least CaSILE became **Caleb’in Avadanlığı ile Simon’s Improved Layout Engine**, roughly translating to “Caleb's SILE Toolkit”. Come to think of it that would have been a simpler way to arrive at the name, but the project has deep Turkish roots so I'm keeping the "a" in the name name as a nod to its origin.
 
 ## Dependencies
@@ -23,12 +21,20 @@ All of the following are utilized in one way or another. Currently the toolkit a
 * [Poppler][poppler] is used to do even more stuff with PDFs.
 * [Zint][zint] generates ISBN barcodes, QR codes, etc.
 * Perl, Python, Lua, Node, Zsh, and a few other language interpreters!
-* Variious modules for those languags like `lua-yaml`, `python-ruamel`, `python-isblib`, and `python-pandocfilters`.
+* Various modules for those languages like `lua-yaml`, `python-ruamel`, `python-isblib`, and `python-pandocfilters`.
 * Up to date versions of assorted shell tools like `jq`, `yq`, `entr`, `bc`, and `sqlite`.
 * The default book templates assume system installed versions of **Hack**, **Libertinus**, and **TeX Gyre** font sets.
 * Some other stuff (run `make dependencies` to check on them)
 
 You'll probably want some other things like a PDF viewer that auto updates on file changes (I recommend [zathura][zathura]), and E-Book reader like [Calibre][calibre] but these would be run yourself and are not directly executed by the toolkit.
+
+### Installation
+
+The assumed [usage](#usage) is to have your book source code in a **Git** repository and this toolkit as a submodule. Execution can be manually from a command line or automatically using a **Continuous Integration** system on the repository. Installing a copy of CaSILE on your system is not necessary, but has one benefit: all the dependencies will be sorted out for you! For example on Arch Linux you can install using:
+
+```bash
+$ yay -S casile-git
+```
 
 ## Status
 
@@ -40,18 +46,31 @@ Major TODO items include:
 - [ ] Contribute the changes from my fork of Pandoc upstream.
 - [x] Make it usable in English (or any language?) instead of having all the options hard coded in Turkish.
 - [ ] Integrate code from my _other_ toolkit that has Bible specific publishing tools.
+- [ ] Add installation packages to resolve package dependencies major distros
+- [ ] Setup a demo book repository
+- [ ] Add CI tests to make sure each make target functions as expected
 
 ## Usage
 
-1. Include as a submodule to your book project's git repository.
+1. (Optionally, see [installation](#installation) notes) Add CaSILE as a submodule to your book project's git repository.
 
-        git submodule add -b master https://github.com/alerque/casile.git
+    ```bash
+    $ git submodule add -b master https://github.com/alerque/casile.git
+    $ git submodule update --init --remote
+    ```
 
     Note the `-b master` here tells git you want to track the master branch and update to that whenever it changes. This is what I use for my books while I'm working on them. When I publish (and want to be able to regenerate the same output again even if the toolkit changes) I commit the current version sha to the book repo and stop tracking the master branch.
 
 2. Include the Makefile from your project's Makefile.
 
-        include casile/makefile
+   ```makefile
+   include casile/makefile
+   ```
+   Note if you installed a copy of CaSILE on your system and would like to use that instead of a submodule, include it using the system path:
+
+   ```makefile
+   include /usr/share/casile/makefile
+   ```
 
 3. Build whatever resources you need. Assuming you have a book source file `my_book.md` and accompanying meta data at `my_book.yml`, the general syntax for generating resources would be:
 
