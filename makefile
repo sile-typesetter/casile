@@ -491,7 +491,7 @@ time_warp: time_warp_casile
 	$(call time_warp,$(PROJECTDIR))
 
 .PHONY:	time_warp_casile
-time_warp_casile: init_casile
+time_warp_casile:
 	$(call time_warp,$(CASILEDIR))
 
 # Some layouts have matching extra resources to build such as covers
