@@ -432,7 +432,7 @@ update_casile: init_casile
 	cd $(CASILEDIR) && yarn upgrade
 
 .PHONY: upgrade_repository
-upgrade_repository: upgrade_toolkits $(CICONFIG)_current
+upgrade_repository: upgrade_toolkits $(CICONFIG)_current .gitattributes
 
 .PHONY: upgrade_casile
 upgrade_casile: $(CASILEDIR)/upgrade-lua.sed $(CASILEDIR)/upgrade-make.sed $(CASILEDIR)/upgrade-yaml.sed $(CASILEDIR)/upgrade-markdown.sed
@@ -456,6 +456,16 @@ PROJECTCONFIGS += .gitignore
 	$(call skip_if_tracked,$@)
 	cp $< $@
 	$(foreach IGNORE,$(IGNORES),echo '$(IGNORE)' >> $@;)
+
+.gitattributes: $(MAKEFILE_LIST)
+	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
+	git diff-files --quiet -- $@ || exit 1 # die if this file has uncommitted changes
+	for ft in md yml; do
+		line="*.$${ft} linguist-detectabale=true"
+		grep -qxF "$${line}" $@ || echo $${line} >> $@
+		git add -- $@
+	done
+	git diff-index --quiet --cached HEAD || git commit -m "[auto] Configure linguist file types for statistics"
 
 $(CICONFIG): $(CITEMPLATE)
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
