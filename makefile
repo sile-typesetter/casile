@@ -63,7 +63,7 @@ EDITS ?= $(_withverses) $(_withoutfootnotes) $(_withoutlinks)
 # Build mode flags
 DRAFT ?= false # Take shortcuts, scale things down, be quick about it
 LAZY ?= false # Pretend to do things we didn't
-DIFF ?= false # Show differences to parent brancd in build
+DIFF ?= false # Show differences to parent branch in build
 STATSMONTHS ?= 1 # How far back to look for commits when building stats
 DEBUG ?= false # Use SILE debug flags, set -x, and the like
 DEBUGTAGS ?= casile # Specific debug flags to set
@@ -207,6 +207,11 @@ endif
 ifdef DEBUGTAGS
 SILEFLAGS += -d $(subst $( ),$(,),$(DEBUGTAGS))
 endif
+
+# Most CI runners need help getting the branch name because of sparse checkouts
+BRANCH := $(or $(CI_COMMIT_REF_NAME),$(shell git rev-parse --abbrev-ref HEAD))
+TAG := $(or $(CI_COMMIT_TAG),$(shell git describe --tags --exact-match 2>/dev/null))
+ALLTAGS := $(strip $(CI_COMMIT_TAG) $(shell git tag --points-at HEAD | xargs echo))
 
 # Add mock-ups to sources
 ifeq ($(strip $(MOCKUPS)),true)
@@ -362,16 +367,17 @@ $(MOCKUPSOURCES): $(foreach FORMAT,$(filter pdf,$(FORMATS)),$$@.$(FORMAT))
 figures: $(FIGURES)
 
 .PHONY: init
-init: check_dependencies update_toolkits update_repository $(PUBDIR)
+init: check_dependencies init_toolkits time_warp $(PUBDIR) $(and $(wildcard package.json),yarn.lock)
 
 $(PUBDIR):
 	mkdir -p $@
 
-.PHONY: init_casile
-init_casile: time_warp_casile $(CASILEDIR)/yarn.lock
-
-$(CASILEDIR)/yarn.lock: $(CASILEDIR)/package.json
+# See https://stackoverflow.com/a/44226605/313192
+$(CASILEDIR)/yarn.lock: time_warp_casile $(CASILEDIR)/package.json
 	cd $(CASILEDIR) && yarn install
+
+yarn.lock: time_warp package.json
+	yarn install
 
 .PHONY: check_dependencies
 check_dependencies:
@@ -381,7 +387,6 @@ check_dependencies:
 	$(PANDOC) --list-output-formats | grep -q sile
 	hash $(MAGICK)
 	hash $(POVRAY)
-	# hash yaml2json
 	hash jq
 	hash zint
 	hash pdfinfo
@@ -413,7 +418,7 @@ check_dependencies:
 	$(call depend_font,Libertinus Sans)
 
 .PHONY: init_toolkits
-init_toolkits: init_casile time_warp .gitignore .editorconfig
+init_toolkits: init_casile .gitignore .editorconfig
 
 .PHONY: update_toolkits
 update_toolkits: update_casile
@@ -422,14 +427,13 @@ update_toolkits: update_casile
 upgrade_toolkits: upgrade_casile
 
 .PHONY: init_casile
-init_casile: time_warp_casile
-	cd $(CASILEDIR) && yarn install
+init_casile: time_warp_casile $(CASILEDIR)/yarn.lock
 
 .PHONY: update_casile
-update_casile: init_casile
+update_casile:
 	git submodule update --init --remote -- $(CASILEDIR)
 	$(call time_warp,$(CASILEDIR))
-	cd $(CASILEDIR) && yarn upgrade
+	cd $(CASILEDIR) && yarn install
 
 .PHONY: upgrade_repository
 upgrade_repository: upgrade_toolkits $(CICONFIG)_current .gitattributes
@@ -441,10 +445,6 @@ upgrade_casile: $(CASILEDIR)/upgrade-lua.sed $(CASILEDIR)/upgrade-make.sed $(CAS
 	$(call munge,$(YAMLSOURCES),sed -f $(filter %-yaml.sed,$^),Replace old YAML key names and data formats)
 	export SKIPM4=false
 	$(call munge,$(MARKDOWNSOURCES),sed -f $(filter %-markdown.sed,$^),Replace obsolete Markdown syntax)
-
-.PHONY: update_repository
-update_repository:
-	git fetch --all --prune --tags --force
 
 PROJECTCONFIGS += .editorconfig
 .editorconfig: $(CASILEDIR)/editorconfig
@@ -486,11 +486,12 @@ $(CICONFIG)_current: $(CICONFIG)
 	git diff-files --quiet -- $<
 
 # Reset file timestamps to git history to avoid unnecessary builds
-.PHONY: time_warp time_warp_casile
+.PHONY: time_warp
 time_warp: time_warp_casile
 	$(call time_warp,$(PROJECTDIR))
 
-time_warp_casile:
+.PHONY:	time_warp_casile
+time_warp_casile: init_casile
 	$(call time_warp,$(CASILEDIR))
 
 # Some layouts have matching extra resources to build such as covers

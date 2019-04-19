@@ -98,15 +98,15 @@ endef
 
 define versioninfo ?=
 $(shell
-	echo -en "$(call parse_bookid,$1)@"
-	if [[ "$(BRANCH)" == master ]]; then
-		git describe --tags >/dev/null 2>/dev/null || echo -en "$(BRANCH)-"
-		git describe --long --tags --always --dirty=* | cut -d/ -f2 | xargs echo -en
+	echo -en "$(call parse_bookid,$1)@$(subst $(call parse_bookid,$1)/,,$(or $(TAG),$(BRANCH)))-"
+	if [[ -n "$(TAG)" ]]; then
+		git describe --always --dirty=* | cut -d/ -f2 | xargs echo -en
+	elif [[ "$(BRANCH)" == master ]]; then
+		git describe --always --tags --dirty=* | cut -d/ -f2 | xargs echo -en
 	else
-		$(DIFF) && echo -en "$$(git rev-parse --short $(PARENT))→"
-		echo -en "$(subst $(call parse_bookid,$1)/,,$(BRANCH))-"
 		git rev-list --boundary $(PARENT)..HEAD | grep -v - | wc -l | xargs -iX echo -en "X-"
-		git describe --always | cut -d/ -f2 | xargs echo -en
+		$(DIFF) && echo -en "$$(git rev-parse --short $(PARENT))→"
+		git describe --always --dirty=* | cut -d/ -f2 | xargs echo -en
 	fi)
 endef
 
