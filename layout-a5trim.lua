@@ -45,5 +45,6 @@ SILE.setCommandDefaults("imprint:font", { size = "8.5pt" })
 -- Hack to avoid SILE bug in print editions
 -- See https://github.com/simoncozens/sile/issues/355
 SILE.registerCommand("href", function (options, content)
+  SILE.call("markverse", options, content)
   SILE.process(content)
 end)
