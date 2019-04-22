@@ -79,9 +79,6 @@ $endif$
 $if(abstract)$
 \define[command=meta:abstract]{$abstract$}
 $endif$
-$if(source)$
-\define[command=meta:source]{$source$}
-$endif$
 $if(publisher)$
 \define[command=meta:publisher]{
 $for(publisher)$

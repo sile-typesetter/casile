@@ -37,10 +37,6 @@ SILE.registerCommand("imprint", function (options, content)
           SILE.call("meta:source")
           SILE.call("par")
         end
-        if SILE.Commands["meta:source"] then
-          SILE.call("meta:source")
-          SILE.call("par")
-        end
         if SILE.Commands["meta:rights"] then
           SILE.call("meta:rights")
           SILE.call("par")
