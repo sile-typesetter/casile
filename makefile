@@ -1406,9 +1406,10 @@ repository-worklog.pdf: repository-worklog.md
 	jq -M -e 'unique_by(.osis) | sort_by(.seq)' $< > $@
 
 %-$(_verses)-$(_text).yml: %-$(_verses)-$(_sorted).json
-	jq -M -e -r 'map_values(.osis) | join(";")' < $(filter %.json,$^) |
-		xargs -iX curl -s -L "https://sahneleme.incil.info/api/X" |
-		yq -M -e -y 'map_values(.scripture)' |
+	jq -M -e -r 'map_values(.osis) | _nwise(100) | join(";")' $< |
+		xargs -n1 -iX curl -s -L "https://sahneleme.incil.info/api/X" |
+		# Because yq doesn't --slurp JSON, see https://github.com/kislyuk/yq/issues/56
+		jq -s '[.]' | yq -M -e -y ".[0][] | map_values(.scripture)" |
 		# Because lua-yaml has a bug parsing non quoted keys...
 		sed -e '/^[^ ]/s/^\([^:]\+\):/"\1":/' \
 			> $@
