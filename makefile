@@ -160,6 +160,7 @@ SILEPATH += $(CASILEDIR)
 
 # Extra arguments to pass to Pandoc
 PANDOCARGS ?= --wrap=preserve --atx-headers --top-level-division=chapter
+PANDOCARGS += --reference-location=section
 PANDOCFILTERARGS ?= --from markdown+raw_sile-space_in_atx_header+ascii_identifiers --to markdown+raw_sile-smart
 
 # For when perl one-liners need Unicode compatibility
