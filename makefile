@@ -1410,6 +1410,7 @@ repository-worklog.pdf: repository-worklog.md
 		xargs -n1 -iX curl -s -L "https://sahneleme.incil.info/api/X" |
 		# Because yq doesn't --slurp JSON, see https://github.com/kislyuk/yq/issues/56
 		jq -s '[.]' | yq -M -e -y ".[0][] | map_values(.scripture)" |
+		grep -v '^---$$' |
 		# Because lua-yaml has a bug parsing non quoted keys...
 		sed -e '/^[^ ]/s/^\([^:]\+\):/"\1":/' \
 			> $@
