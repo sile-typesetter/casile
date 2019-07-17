@@ -156,7 +156,8 @@ IGNORES += $(call pattern_list,$(ISBNS),_* .epub)
 IGNORES += $(INTERMEDIATES)
 
 # Tell sile to look here for stuff before it’s internal stuff
-SILEPATH += $(CASILEDIR)
+# SILEPATH += $(CASILEDIR)
+SILEPATH = casile
 
 # Extra arguments to pass to Pandoc
 PANDOCARGS ?= --wrap=preserve --atx-headers --top-level-division=chapter
