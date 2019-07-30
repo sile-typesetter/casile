@@ -155,9 +155,8 @@ IGNORES += $(call pattern_list,$(SOURCES),$(foreach FORMAT,$(FORMATS),.$(FORMAT)
 IGNORES += $(call pattern_list,$(ISBNS),_* .epub)
 IGNORES += $(INTERMEDIATES)
 
-# Tell sile to look here for stuff before it’s internal stuff
-# SILEPATH += $(CASILEDIR)
-SILEPATH = casile
+# Tell sile to look here for stuff before its internal stuff
+SILEPATH += $(CASILEDIR)
 
 # Extra arguments to pass to Pandoc
 PANDOCARGS ?= --wrap=preserve --atx-headers --top-level-division=chapter
@@ -207,7 +206,7 @@ endif
 
 # Pass debug tags on to SILE
 ifdef DEBUGTAGS
-SILEFLAGS += -d $(subst $( ),$(,),$(DEBUGTAGS))
+SILEFLAGS += -d $(subst $( ),$(,),$(strip $(DEBUGTAGS)))
 endif
 
 # Most CI runners need help getting the branch name because of sparse checkouts
