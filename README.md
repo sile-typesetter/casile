@@ -55,7 +55,7 @@ Major TODO items include:
 1. (Optionally, see [installation](#installation) notes) Add CaSILE as a submodule to your book project's git repository.
 
     ```bash
-    $ git submodule add -b master https://github.com/alerque/casile.git
+    $ git submodule add -b master https://github.com/sile-typesetter/casile.git
     $ git submodule update --init --remote
     ```
 
@@ -304,7 +304,7 @@ These are functions that can be defined in your project's `Makefile` to add addi
 [viachristus]: http://yayinlar.viachristus.com/
 [sile]: http://sile-typesetter.org/
 [pandoc]: http://pandoc.org/
-[pandocsile]: https://github.com/alerque/pandoc/tree/sile-2.7.2
+[pandocsile]: https://github.com/alerque/pandoc/tree/sile-2.7.3
 [im]: http://imagemagick.org/
 [pov]: http://www.povray.org/
 [zint]: https://zint.github.io/
@@ -316,4 +316,4 @@ These are functions that can be defined in your project's `Makefile` to add addi
 [nmcnmm]: https://duckduckgo.com/?q=%22Not+My+Circus%2C+Not+My+Monkeys%22&ia=images
 [zathura]: https://pwmt.org/projects/zathura/
 [calibre]: http://calibre-ebook.com/
-[demos]: https://github.com/alerque/casile-demos
+[demos]: https://github.com/sile-typesetter/casile-demos
