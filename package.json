@@ -6,9 +6,71 @@
   "repository": "https://github.com/sile-typesetter/casile.git",
   "author": "Caleb Maclennan <caleb@alerque.com>",
   "license": "LGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/sile-typesetter/casile/issues"
+  },
   "dependencies": {
     "bible-passage-reference-parser": "https://github.com/alerque/Bible-Passage-Reference-Parser",
     "bible-reference-formatter": "https://github.com/alerque/Bible-Reference-Formatter",
     "svg-modify": "^0.0.12"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
+    "@commitlint/prompt": "^8.3.5",
+    "commitizen": "^4.0.3",
+    "conventional-changelog-cli": "^2.0.31",
+    "husky": "^4.0.10",
+    "standard-version": "^7.0.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/prompt"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "standard-version": {
+    "infile": "CHANGELOG.md",
+    "types": [
+      {
+        "type": "feat",
+        "section": "New Features"
+      },
+      {
+        "type": "fix",
+        "section": "Bug Fixes"
+      },
+      {
+        "type": "chore",
+        "section": "Behind the Scenes",
+        "hidden": true
+      },
+      {
+        "type": "docs",
+        "hidden": true
+      },
+      {
+        "type": "style",
+        "hidden": true
+      },
+      {
+        "type": "refactor",
+        "section": "Changes",
+        "hidden": true
+      },
+      {
+        "type": "perf",
+        "section": "Optimizations"
+      },
+      {
+        "type": "test",
+        "hidden": true
+      }
+    ],
+    "preset": "conventionalcommits"
   }
 }
