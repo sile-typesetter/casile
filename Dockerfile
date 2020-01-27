@@ -4,7 +4,7 @@ FROM archlinux AS casile-base
 RUN pacman --needed --noconfirm -Syyuq && yes | pacman -Sccq
 
 COPY build-aux/docker-yay-runner.sh /usr/local/bin
-RUN docker-yay-runner.sh "--noconfirm --asexplicit -S git base-devel yay"
+RUN docker-yay-runner.sh "--noconfirm --asexplicit -Sq casile-git sile-git"
 
 FROM casile-base AS pandoc-builder
 
