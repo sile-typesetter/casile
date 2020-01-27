@@ -14,7 +14,7 @@ CaSILE glues together *a lot* of different tools to build a complete publishing 
 
 All of the following are utilized in one way or another. Currently the toolkit assumes all the following are present, but as not all of them are used to build all resources it could be possible to make this more selective. For example not having the ray tracing engine would just mean no fancy 3D previews of book covers, but you could still build PDFs and other digital formats. Not having Node would mean no Bible verse format normalization, but you should still be able to build books. Not having ImageMagick would mean no covers, but you could still process the interior of books. On the other hand not having Pandoc would be fatal.
 
-* The [SILE][sile] Typesetter (currently I'm assuming the git HEAD version) is the workhorse behind most of the text layout.
+* The [SILE][sile] Typesetter (v0.10.0 or newer, assumes latest) is the workhorse behind most of the text layout.
 * [Pandoc][pandoc] (specifically with [my branch with SILE support][pandocsile]) converts between document types.
 * [ImageMagick][im] handles raster image processing (v7 required).
 * [POVRay][pov] is used to render 3 dimensional visualizations.
@@ -306,9 +306,9 @@ These are functions that can be defined in your project's `Makefile` to add addi
 
 
 [viachristus]: http://yayinlar.viachristus.com/
-[sile]: http://sile-typesetter.org/
+[sile]: https://sile-typesetter.org
 [pandoc]: http://pandoc.org/
-[pandocsile]: https://github.com/alerque/pandoc/tree/sile-2.7.3
+[pandocsile]: https://github.com/alerque/pandoc/tree/sile-head
 [im]: http://imagemagick.org/
 [pov]: http://www.povray.org/
 [zint]: https://zint.github.io/
