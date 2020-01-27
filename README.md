@@ -1,5 +1,9 @@
 # CaSILE toolkit
 
+[![Chat on Gitter](https://img.shields.io/gitter/room/sile-typesetter/casile?color=blue&label=Chat&logo=Gitter)](https://gitter.im/sile-typesetter/casile?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-blue.svg)](https://conventionalcommits.org)
+[![Commitizen Friendly](https://img.shields.io/badge/Commitizen-friendly-blue.svg)](http://commitizen.github.io/cz-cli/)
+
 The CaSILE toolkit is a collection of tools designed to automate book publishing from start to finish. The concept is to take very simple input and turn it into a finished product with as little manual intervention as possible. It transforms plain text document formats and meta data into press ready PDFs, E-Books, and rendered promotional materials.
 
 CaSILE (pronounced like 'castle') started out life as a submodule called `avadanlik` included inside my book project repositories (avadanlık being a Turkish word for toolkit). AS most of the parts revolve around SILE, in my head at least CaSILE became **Caleb’in Avadanlığı ile Simon’s Improved Layout Engine**, roughly translating to “Caleb's SILE Toolkit”. Come to think of it that would have been a simpler way to arrive at the name, but the project has deep Turkish roots so I'm keeping the "a" in the name name as a nod to its origin.
