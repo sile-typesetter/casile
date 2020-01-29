@@ -518,9 +518,9 @@ FULLPDFS += $(call pattern_list,$(REALSOURCES),$(EDITS),$(REALLAYOUTS),.pdf)
 $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES) | $(require_pubdir)
 	$(call skip_if_lazy,$@)
 	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
+	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
 	# account for TOC $(_issue): https://github.com/simoncozens/sile/issues/230
-	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
 	if $(DRAFT); then
 		$(SILE) $(SILEFLAGS) $< -o $@
 	else
@@ -906,7 +906,7 @@ $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(cal
 		$(foreach LUA,$(call reverse,$|),
 		SILE.require("$(basename $(LUA))"))
 	EOF
-	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
+	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
 FRONTFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_front).png)
@@ -943,7 +943,7 @@ $(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$
 		$(foreach LUA,$(call reverse,$|),
 		SILE.require("$(basename $(LUA))"))
 	EOF
-	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
+	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
 FRONTFRAGMENTIMAGES := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_fragment).png)
@@ -1034,7 +1034,7 @@ $(UNBOUNDGEOMETRIES): private TRIM = $(NOTRIM)
 # page geometry, so generate a single page PDF to measure with no binding scenario
 EMPTYGEOMETRIES := $(call pattern_list,$(_geometry),$(PAPERSIZES),.pdf)
 $(EMPTYGEOMETRIES): $(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(LUAINCLUDES)
-	$(eval export SILE_PATH = $(subst $( ),;,$(SILEPATH)))
+	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
 	$(SILE) $(SILEFLAGS) \
 		-e "papersize = '$(call unlocalize,$*)'" \
 		$< -o $@
