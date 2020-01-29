@@ -563,7 +563,7 @@ $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_booki
 			-V versioninfo="$(call versioninfo,$@)" \
 			-V urlinfo="$(call urlinfo,$@)" \
 			-V qrimg="./$(filter %-url.png,$^)" \
-			$(foreach LUA,$(filter %.lua,$|), -V script=$(basename $(LUA))) \
+			$(foreach LUA,$(call reverse,$(filter %.lua,$|)), -V script=$(basename $(LUA))) \
 			--template=$(filter %.sil,$^) \
 			--from=markdown+raw_sile \
 			--to=sile \
