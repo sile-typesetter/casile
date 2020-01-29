@@ -21,11 +21,11 @@ end)
 SILE.registerCommand("endnotes", function (options, content)
   local indent = "1.5em"
   SILE.settings.temporarily(function ()
-    SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(indent))
+    SILE.settings.set("document.lskip", SILE.nodefactory.glue(indent))
     for i = 1, #SILE.scratch.endnotes do
       local counter, material = SILE.scratch.endnotes[i]()
       SILE.Commands["footnote:font"]({}, function ()
-        SILE.typesetter:pushGlue({ width = 0 - SILE.length.parse(indent) })
+        SILE.typesetter:pushGlue({ width = 0 - SILE.length(indent) })
         SILE.Commands["rebox"]({ width = indent }, function ()
           SILE.call("endnote:counter", { value = counter })
         end)

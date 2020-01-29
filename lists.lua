@@ -11,10 +11,10 @@ SILE.registerCommand("listarea", function (options, content)
   liststyles[nestedlist] = { options.numberstyle }
   SILE.call("set-counter", { id = "listarea" .. nestedlist, value = 1, display = options.numberstyle or "arabic" })
   SILE.settings.temporarily(function ()
-    SILE.settings.set("document.parindent", SILE.nodefactory.zeroGlue)
+    SILE.settings.set("document.parindent", SILE.nodefactory.glue())
     local factor = nestedlist == 1 and 0 or nestedlist / 2
-    SILE.settings.set("document.lskip", SILE.nodefactory.newGlue(options.lskip or tostring(listarealskip + listarealskip * factor)))
-	SILE.settings.set("document.rskip", SILE.nodefactory.newGlue(options.rskip or "0pt"))
+    SILE.settings.set("document.lskip", SILE.nodefactory.glue(options.lskip or tostring(listarealskip + listarealskip * factor)))
+	SILE.settings.set("document.rskip", SILE.nodefactory.glue(options.rskip or "0pt"))
     SILE.process(content)
   end)
   SILE.call("noindent")
@@ -22,7 +22,7 @@ SILE.registerCommand("listarea", function (options, content)
 end)
 
 SILE.registerCommand("listitem", function (options, content)
-  local markerwidth = SILE.length.parse("1.5em")
+  local markerwidth = SILE.length("1.5em")
   SILE.call("kern", { width = tostring(markerwidth:negate()) })
   SILE.call("rebox", { width = tostring(markerwidth) }, function ()
     if liststyles[nestedlist][1] then

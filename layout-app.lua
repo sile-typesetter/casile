@@ -35,10 +35,10 @@ SILE.call("switch-master-one-page", { id = "right" })
 SILE.registerCommand("output-right-running-head", function (options, content)
   if not SILE.scratch.headers.right then return end
   SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
-    SILE.settings.set("current.parindent", SILE.nodefactory.zeroGlue)
-    SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
-    SILE.settings.set("document.lskip", SILE.nodefactory.zeroGlue)
-    SILE.settings.set("document.rskip", SILE.nodefactory.zeroGlue)
+    SILE.settings.set("current.parindent", SILE.nodefactory.glue())
+    SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.glue())
+    SILE.settings.set("document.lskip", SILE.nodefactory.glue())
+    SILE.settings.set("document.rskip", SILE.nodefactory.glue())
     SILE.call("cabook:font:right-header", {}, function ()
       SILE.call("center", {}, function ()
         SILE.call("meta:title")
@@ -90,4 +90,4 @@ if SILE.documentState.documentClass.options.background() == "true" then
   SILE.outputter:pushColor(inkColor)
 end
 
-SILE.settings.set("linebreak.emergencyStretch", SILE.length.parse("3em"))
+SILE.settings.set("linebreak.emergencyStretch", SILE.length("3em"))
