@@ -23,3 +23,9 @@ s#\bbant\b#banner#g
 s#\bkartvizit\b#businesscard#g
 s#\bpankart\b#poster#g
 s#\bekran\b#screen#g
+s#nodefactory\.newGlue#nodefactory.glue#g
+s#nodefactory\.newVglue#nodefactory.vglue#g
+s#nodefactory\.zeroGlue#nodefactory.glue()#g
+s#nodefactory\.zeroVglue#nodefactory.zerovglue()#g
+s#nodefactory\.hfillGlue#nodefactory.hfillglue()#g
+s#SILE\.length\.\(make\|new\|parse\)#SILE.length#g
