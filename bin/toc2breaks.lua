@@ -45,11 +45,11 @@ local out = path .. "-uygulama.pdf"
 infow(share .. out, true)
 
 infow("MEDIA:")
-local out = path .. "-kare-pankart.jpg"
+local out = path .. "-square-poster.jpg"
 infow(share .. out, true)
-local out = path .. "-genis-pankart.jpg"
+local out = path .. "-wide-poster.jpg"
 infow(share .. out, true)
-local out = path .. "-bant-pankart.jpg"
+local out = path .. "-banner-poster.jpg"
 infow(share .. out, true)
 
 local labels = {}

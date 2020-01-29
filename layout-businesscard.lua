@@ -21,8 +21,8 @@ class:mirrorMaster("right", "left")
 SILE.call("switch-master-one-page", { id = "right" })
 
 if class.options.crop() == "true" then class:setupCrop({
-  bleed = SILE.length.parse("2.5mm").length,
-  trim = SILE.length.parse("5mm").length
+  bleed = SILE.length("2.5mm").length,
+  trim = SILE.length("5mm").length
 }) end
 
 SILE.registerCommand("output-right-running-head", function () end)

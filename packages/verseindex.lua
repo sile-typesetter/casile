@@ -50,7 +50,7 @@ local init = function (self)
 
   local startpair = function (pair)
     SILE.call("makecolumns", { gutter = "4%pw" })
-    SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.zeroGlue)
+    SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.glue())
     inpair = pair
   end
 
@@ -114,8 +114,8 @@ local init = function (self)
     local origleader = SILE.settings.get("linespacing.fixed.baselinedistance")
     local origparskip = SILE.settings.get("document.parskip")
     SILE.settings.set("linespacing.method", "fixed")
-    SILE.settings.set("linespacing.fixed.baselinedistance", SILE.length.parse("1.1em"))
-    SILE.settings.set("document.parskip", SILE.nodefactory.newVglue({}))
+    SILE.settings.set("linespacing.fixed.baselinedistance", SILE.length("1.1em"))
+    SILE.settings.set("document.parskip", SILE.nodefactory.vglue({}))
     local refshash = {}
     local lastbook = nil
     local seq = 1
