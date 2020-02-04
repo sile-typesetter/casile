@@ -574,6 +574,7 @@ $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_booki
 # Send some environment data to a common Lua file to be pulled into all SILE runs
 .casile.lua:
 	cat <<- EOF > $@
+		package.path = package.path .. ";/?.lua;/?/init.lua"
 		CASILE = {}
 		CASILE.casiledir = "$(CASILEDIR)"
 		CASILE.publisher = "casile"
