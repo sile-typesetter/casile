@@ -10,12 +10,14 @@ FROM casile-base AS pandoc-builder
 
 RUN pacman --needed --noconfirm -Sq ghc stack
 
-COPY build-aux/compile-pandoc-sile.sh
-RUN compile-pandoc-sile.sh
+WORKDIR /pandoc-sile
+RUN git clone --depth 1 https://github.com/alerque/pandoc.git -b sile-writer-pr .
+RUN sed -i -e '10s!--test !!' Makefile
+RUN make quick
 
 FROM casile-base AS casile
 
-COPY --from=pandoc-builder /tmp/pandoc/dist/build/pandoc/pandoc /usr/local/bin
+COPY --from=pandoc-builder /root/.local/bin/pandoc /usr/local/bin
 
 LABEL maintainer="Caleb Maclennan <caleb@alerque.com>"
 LABEL version="$casile_tag"
