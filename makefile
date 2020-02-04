@@ -82,6 +82,7 @@ MAGICK ?= magick
 PANDOC ?= pandoc
 PERL ?= perl
 POVRAY ?= povray
+PYTHON ?= python
 SED ?= sed
 SILE ?= sile
 
@@ -194,7 +195,7 @@ WATCHARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 $(eval $(WATCHARGS):;@:)
 endif
 
-export PATH := $(CASILEDIR)/bin:$(PATH):$(shell python -c "import site; print(site.getsitepackages()[0]+'/bin')")
+export PATH := $(CASILEDIR)/bin:$(PATH):$(shell $(PYTHON) -c "import site; print(site.getsitepackages()[0]+'/bin')")
 export HOSTNAME := $(shell hostname)
 export PROJECT := $(PROJECT)
 
@@ -401,7 +402,7 @@ check_dependencies:
 	hash pcregrep
 	hash node
 	hash perl
-	hash python
+	hash $(PYTHON)
 	hash lua
 	hash bc
 	hash zsh
@@ -410,9 +411,9 @@ check_dependencies:
 	lua -v -l yaml
 	$(PERL) -e ';' -MYAML
 	$(PERL) -e ';' -MYAML::Merge::Simple
-	python -c "import ruamel"
-	python -c "import isbnlib"
-	python -c "import pandocfilters"
+	$(PYTHON) -c "import ruamel"
+	$(PYTHON) -c "import isbnlib"
+	$(PYTHON) -c "import pandocfilters"
 	$(call depend_font,Hack)
 	$(call depend_font,TeX Gyre Heros)
 	$(call depend_font,Libertinus Serif)
@@ -1287,7 +1288,7 @@ $(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML)
 	# yq -M -e -s -y 'reduce .[] as $$item({}; . + $$item)' $(filter %.yml,$^) |
 	$(PERL) -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $(filter %.yml,$^) |
 		$(SED) -e 's/~$$/nil/g;/^--- |/d;$$a...' \
-			-e '/text: [[:digit:]]\{10,13\}/{p;s/^\([[:space:]]*\)text: \([[:digit:]]\+\)$$/python -c "import isbnlib; print(\\"\1mask: \\" + isbnlib.mask(\\"\2\\"))"/e}' \
+			-e '/text: [[:digit:]]\{10,13\}/{p;s/^\([[:space:]]*\)text: \([[:digit:]]\+\)$$/$(PYTHON) -c "import isbnlib; print(\\"\1mask: \\" + isbnlib.mask(\\"\2\\"))"/e}' \
 			-e '/\(own\|next\)cloudshare: [^"]/s/: \(.*\)$$/: "\1"/' > $@
 	$(addtopub)
 
