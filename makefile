@@ -42,7 +42,7 @@ MOCKUPFACTOR ?= 1
 FIGURES ?=
 
 # Default output formats and parameters (often overridden)
-FORMATS ?= pdf epub mobi odt docx web play app
+FORMATS ?= pdfs epub mobi odt docx web play app
 BLEED ?= 3
 TRIM ?= 10
 NOBLEED ?= 0
@@ -363,7 +363,7 @@ list:
 
 REALSOURCES := $(filter-out $(MOCKUPSOURCES),$(SOURCES))
 $(REALSOURCES): $(foreach FORMAT,$(FORMATS),$$@.$(FORMAT))
-$(MOCKUPSOURCES): $(foreach FORMAT,$(filter pdf,$(FORMATS)),$$@.$(FORMAT))
+$(MOCKUPSOURCES): $(foreach FORMAT,$(filter pdfs,$(FORMATS)),$$@.$(FORMAT))
 
 .PHONY: figures
 figures: $(FIGURES)
