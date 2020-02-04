@@ -643,9 +643,9 @@ INTERMEDIATES += *-$(_processed).md
 	$(sourcegeometry)
 	t=$$(echo "$${trimpt} * 100" | bc)
 	s=$$(echo "$${spinept} * 100 / 4" | bc)
-	w=$$(echo "$(call pagew,$<) * 100 - $$t + $$s" | bc)
+	w=$$(echo "$(call pagew,$<) * 100 - $${t} + $${s}" | bc)
 	h=$$(echo "$(call pageh,$<) * 100" | bc)
-	podofobox $< $@ media 0 0 $$w $$h
+	podofobox $< $@ media 0 0 $${w} $${h}
 
 %-cropright.pdf: %.pdf | $$(geometryfile)
 	$(sourcegeometry)
@@ -661,9 +661,9 @@ INTERMEDIATES += *-$(_processed).md
 %-$(_cropped).pdf: %.pdf | $$(geometryfile) $(require_pubdir)
 	$(sourcegeometry)
 	t=$$(echo "$${trimpt} * 100" | bc)
-	w=$$(echo "$(call pagew,$<) * 100 - $$t * 2" | bc)
-	h=$$(echo "$(call pageh,$<) * 100 - $$t * 2" | bc)
-	podofobox $< $@ media $$t $$t $$w $$h
+	w=$$(echo "$(call pagew,$<) * 100 - $${t} * 2" | bc)
+	h=$$(echo "$(call pageh,$<) * 100 - $${t} * 2" | bc)
+	podofobox $< $@ media $${t} $${t} $${w} $${h}
 	$(addtopub)
 
 %-set1.pdf: %.pdf
@@ -1020,9 +1020,9 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 %-$(_binding).pdf: %-$(_binding).svg $$(geometryfile) | $(require_pubdir)
 	$(sourcegeometry)
 	$(INKSCAPE) --without-gui \
-		--export-dpi=$$hidpi \
+		--export-dpi=$${hidpi} \
 		--export-area-page \
-		--export-margin=$$trimmm \
+		--export-margin=$${trimmm} \
 		--file=$< \
 		--export-pdf=$@
 	$(addtopub)
@@ -1168,7 +1168,7 @@ $(BOOKSCENESINC): %.inc: $$(geometryfile) %-pov-$(_front).png %-pov-$(_back).png
 		#declare CoilWidth = $(COILWIDTH);
 		#declare CoilColor = $(COILCOLOR);
 		#declare PaperWeight = $(PAPERWEIGHT);
-		#declare BookThickness = $$spinemm / $$pagewmm / 2;
+		#declare BookThickness = $${spinemm} / $${pagewmm} / 2;
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
@@ -1178,10 +1178,10 @@ $(BOOKSCENES): %-$(_3d).pov: $$(geometryfile) %.inc
 	cat <<- EOF > $@
 		#declare DefaultBook = "$(filter %.inc,$^)";
 		#declare Lights = $(call scale,8,2);
-		#declare BookAspect = $$pagewmm / $$pagehmm;
-		#declare BookThickness = $$spinemm / $$pagewmm / 2;
+		#declare BookAspect = $${pagewmm} / $${pagehmm};
+		#declare BookThickness = $${spinemm} / $${pagewmm} / 2;
 		#declare HalfThick = BookThickness / 2;
-		#declare toMM = 1 / $$pagehmm;
+		#declare toMM = 1 / $${pagehmm};
 	EOF
 
 ifneq ($(strip $(SOURCES)),$(strip $(PROJECT)))
