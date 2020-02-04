@@ -1245,7 +1245,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 
 %-epub-metadata.yml: %-manifest.yml %-epub-$(_poster).jpg
 	echo '---' > $@
-	yq -M -e -y '{title: [ { type: "main", text: .title  }, { type: "subtitle", text: .subtitle } ], creator: .creator, contributor: .contributor, identifier: .identifier, date: .date | last | .text, published: .date | first | .text, lang: .lang, description: .abstract, rights: .rights, publisher: .publisher, source: (.source[]? | select(.type == "title").text), "cover-image": "$(filter %.jpg,$^)" }' < $< >> $@
+	yq -M -e -y '{title: [ { type: "main", text: .title  }, { type: "subtitle", text: .subtitle } ], creator: .creator, contributor: .contributor, identifier: .identifier, date: .date | last | .text, published: .date | first | .text, lang: .lang, description: .abstract, rights: .rights, publisher: .publisher, source: (if .source then (.source[]? | select(.type == "title").text) else null end), "cover-image": "$(filter %.jpg,$^)" }' < $< >> $@
 	echo '...' >> $@
 
 %.epub: private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/epubclean.lua
