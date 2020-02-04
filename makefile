@@ -77,12 +77,13 @@ LODPI ?= $(LODPI_DEF)
 SORTORDER ?= meta # Sort series by: none, alphabetical, date, meta, manual
 
 # Allow overriding executables used
-SILE ?= sile
+INKSCAPE ?= inkscape
+MAGICK ?= magick
 PANDOC ?= pandoc
 PERL ?= perl
-MAGICK ?= magick
-INKSCAPE ?= inkscape
 POVRAY ?= povray
+SED ?= sed
+SILE ?= sile
 
 # Set default output format(s)
 LAYOUTS ?= a4-$(_print)
@@ -441,11 +442,11 @@ upgrade_repository: upgrade_toolkits $(CICONFIG)_current .gitattributes
 
 .PHONY: upgrade_casile
 upgrade_casile: $(CASILEDIR)/upgrade-lua.sed $(CASILEDIR)/upgrade-make.sed $(CASILEDIR)/upgrade-yaml.sed $(CASILEDIR)/upgrade-markdown.sed
-	$(call munge,$(LUASOURCES),sed -f $(filter %-lua.sed,$^),Replace old Lua variables and functions with new namespaces)
-	$(call munge,$(MAKESOURCES),sed -f $(filter %-make.sed,$^),Replace old Makefile variables and functions with new namespaces)
-	$(call munge,$(YAMLSOURCES),sed -f $(filter %-yaml.sed,$^),Replace old YAML key names and data formats)
+	$(call munge,$(LUASOURCES),$(SED) -f $(filter %-lua.sed,$^),Replace old Lua variables and functions with new namespaces)
+	$(call munge,$(MAKESOURCES),$(SED) -f $(filter %-make.sed,$^),Replace old Makefile variables and functions with new namespaces)
+	$(call munge,$(YAMLSOURCES),$(SED) -f $(filter %-yaml.sed,$^),Replace old YAML key names and data formats)
 	export SKIPM4=false
-	$(call munge,$(MARKDOWNSOURCES),sed -f $(filter %-markdown.sed,$^),Replace obsolete Markdown syntax)
+	$(call munge,$(MARKDOWNSOURCES),$(SED) -f $(filter %-markdown.sed,$^),Replace obsolete Markdown syntax)
 
 PROJECTCONFIGS += .editorconfig
 .editorconfig: $(CASILEDIR)/editorconfig
@@ -517,7 +518,7 @@ FULLPDFS := $(call pattern_list,$(REALSOURCES),$(REALLAYOUTS),.pdf)
 FULLPDFS += $(call pattern_list,$(REALSOURCES),$(EDITS),$(REALLAYOUTS),.pdf)
 $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs,$$@) $(LUAINCLUDES) | $(require_pubdir)
 	$(call skip_if_lazy,$@)
-	$(DIFF) && sed -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
+	$(DIFF) && $(SED) -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
 	# account for TOC $(_issue): https://github.com/simoncozens/sile/issues/230
@@ -677,7 +678,7 @@ INTERMEDIATES += *-$(_processed).md
 
 .PHONY: normalize_lua
 normalize_lua: $(LUASOURCES)
-	$(call munge,$^,sed -e 's/function */function /g',Normalize Lua coding style)
+	$(call munge,$^,$(SED) -e 's/function */function /g',Normalize Lua coding style)
 
 .PHONY: normalize_markdown
 normalize_markdown: $(MARKDOWNSOURCES)
@@ -818,10 +819,10 @@ $(_issue).info: | $(require_pubdir)
 				sort -n |
 				while read chapter; do
 					number=$${chapter%-*}; number=$${number#*/}
-					sed -ne "/^# /{s/ {.*}$$//;s!^# *\(.*\)! - [ ] $$number — [\1]($$chapter)!g;p}" $$chapter
+					$(SED) -ne "/^# /{s/ {.*}$$//;s!^# *\(.*\)! - [ ] $$number — [\1]($$chapter)!g;p}" $$chapter
 				done
 		elif grep -q '^# ' $$source.md; then
-			sed -ne "/^# /{s/^# *\(.*\)/ - [ ] [\1]($${source}.md)/g;p}" $$source.md
+			$(SED) -ne "/^# /{s/^# *\(.*\)/ - [ ] [\1]($${source}.md)/g;p}" $$source.md
 		else
 			echo -e " - [ ] [$${source}]($${source}.md)"
 		fi
@@ -1284,7 +1285,7 @@ MANIFESTS := $(call pattern_list,$(SOURCES),-manifest.yml)
 $(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML) $$(TARGETYAMLS_$$*) | $(require_pubdir)
 	# yq -M -e -s -y 'reduce .[] as $$item({}; . + $$item)' $(filter %.yml,$^) |
 	$(PERL) -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $(filter %.yml,$^) |
-		sed -e 's/~$$/nil/g;/^--- |/d;$$a...' \
+		$(SED) -e 's/~$$/nil/g;/^--- |/d;$$a...' \
 			-e '/text: [[:digit:]]\{10,13\}/{p;s/^\([[:space:]]*\)text: \([[:digit:]]\+\)$$/python -c "import isbnlib; print(\\"\1mask: \\" + isbnlib.mask(\\"\2\\"))"/e}' \
 			-e '/\(own\|next\)cloudshare: [^"]/s/: \(.*\)$$/: "\1"/' > $@
 	$(addtopub)
@@ -1327,7 +1328,7 @@ INTERMEDIATES += *-$(_barcode).*
 			--barcode=69 \
 			--height=30 \
 			--data=$(shell $(CASILEDIR)/bin/isbn_format.py $< paperback) |\
-		sed -e 's/Helvetica\( Regular\)\?/TeX Gyre Heros/g' \
+		$(SED) -e 's/Helvetica\( Regular\)\?/TeX Gyre Heros/g' \
 		> $@
 
 %-$(_barcode).png: %-$(_barcode).svg
@@ -1414,7 +1415,7 @@ repository-worklog.pdf: repository-worklog.md
 		jq -s '[.]' | yq -M -e -y ".[0][] | map_values(.scripture)" |
 		grep -v '^---$$' |
 		# Because lua-yaml has a bug parsing non quoted keys...
-		sed -e '/^[^ ]/s/^\([^:]\+\):/"\1":/' \
+		$(SED) -e '/^[^ ]/s/^\([^:]\+\):/"\1":/' \
 			> $@
 
 .PHONY: normalize_references
@@ -1439,7 +1440,7 @@ normalize_files: $(CASILEDIR)/pandoc-filters/chapterid.lua
 			git diff-files --quiet -- $${src} || exit 1 # die if this file has uncommitted changes
 			basename $${src} | perl -pne 's/-.*$$//' | read chapno
 			dirname $${src} | read dir
-			sed -n '/^#/{s/ı/i/g;p}' $${src} |
+			$(SED) -n '/^#/{s/ı/i/g;p}' $${src} |
 				pandoc $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) | read identifier
 				target="$${dir}/$${chapno}-$${identifier}.md"
 				[[ $${src} == $${target} ]] || git mv "$${src}" "$${target}"
