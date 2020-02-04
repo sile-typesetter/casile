@@ -12,6 +12,16 @@ PUBLISHERDIR ?= $(CASILEDIR)
 # Set the language if not otherwise set
 LANGUAGE ?= en
 
+# Allow overriding executables used
+INKSCAPE ?= inkscape
+MAGICK ?= magick
+PANDOC ?= pandoc
+PERL ?= perl
+POVRAY ?= povray
+PYTHON ?= python
+SED ?= sed
+SILE ?= sile
+
 # Localization functions (source is a key => val file _and_ its inverse)
 -include $(CASILEDIR)/makefile-$(LANGUAGE) $(CASILEDIR)/makefile-$(LANGUAGE)-reversed
 
@@ -75,16 +85,6 @@ HIDPI ?= $(HIDPI_DEF)
 LODPI_DEF := $(call scale,300) # Default DPI for generated consumer resources
 LODPI ?= $(LODPI_DEF)
 SORTORDER ?= meta # Sort series by: none, alphabetical, date, meta, manual
-
-# Allow overriding executables used
-INKSCAPE ?= inkscape
-MAGICK ?= magick
-PANDOC ?= pandoc
-PERL ?= perl
-POVRAY ?= povray
-PYTHON ?= python
-SED ?= sed
-SILE ?= sile
 
 # Set default output format(s)
 LAYOUTS ?= a4-$(_print)
@@ -643,9 +643,9 @@ INTERMEDIATES += *-$(_processed).md
 	$(sourcegeometry)
 	t=$$(echo "$${trimpt} * 100" | bc)
 	s=$$(echo "$${spinept} * 100 / 4" | bc)
-	w=$$(echo "$(call pagew,$<) * 100 - $$t + $$s" | bc)
+	w=$$(echo "$(call pagew,$<) * 100 - $${t} + $${s}" | bc)
 	h=$$(echo "$(call pageh,$<) * 100" | bc)
-	podofobox $< $@ media 0 0 $$w $$h
+	podofobox $< $@ media 0 0 $${w} $${h}
 
 %-cropright.pdf: %.pdf | $$(geometryfile)
 	$(sourcegeometry)
@@ -661,9 +661,9 @@ INTERMEDIATES += *-$(_processed).md
 %-$(_cropped).pdf: %.pdf | $$(geometryfile) $(require_pubdir)
 	$(sourcegeometry)
 	t=$$(echo "$${trimpt} * 100" | bc)
-	w=$$(echo "$(call pagew,$<) * 100 - $$t * 2" | bc)
-	h=$$(echo "$(call pageh,$<) * 100 - $$t * 2" | bc)
-	podofobox $< $@ media $$t $$t $$w $$h
+	w=$$(echo "$(call pagew,$<) * 100 - $${t} * 2" | bc)
+	h=$$(echo "$(call pageh,$<) * 100 - $${t} * 2" | bc)
+	podofobox $< $@ media $${t} $${t} $${w} $${h}
 	$(addtopub)
 
 %-set1.pdf: %.pdf
@@ -844,7 +844,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		$(call magick_background_filter) \
 		$@ ||:
 	$(if $(filter %.png,$(call git_background,$@)),false,true) && $(MAGICK) \
-		-size $${pagewpx}x$${pagehpx}^ $(call magick_background_cover) -compose SrcOver -composite \
+		-size $${pagewpx}x$${pagehpx}^ $(call magick_background_cover) \
 		$@ ||:
 
 # Requires fake geometry file with no binding spec because binding not part of pattern
@@ -872,7 +872,6 @@ $(COVERIMAGES): %-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_f
 		\) -compose SrcOver -composite \
 		-gravity Center \
 		-size %[fx:u.w]x%[fx:u.h] \
-		-compose SrcOver -composite \
 		$@
 
 # Gitlab projects need a sub 200kb icon image
@@ -885,11 +884,10 @@ $(COVERIMAGES): %-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_f
 	$(addtopub)
 
 COVERPDFS := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover).pdf)
-$(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf $$(geometryfile)
+$(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf
 	$(COVERS) || exit 0
 	text=$$(mktemp kapakXXXXXX.pdf)
 	bg=$$(mktemp kapakXXXXXX.pdf)
-	$(sourcegeometry)
 	$(MAGICK) $< \
 		-density $(LODPI) \
 		-compress jpeg \
@@ -1021,9 +1019,9 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 %-$(_binding).pdf: %-$(_binding).svg $$(geometryfile) | $(require_pubdir)
 	$(sourcegeometry)
 	$(INKSCAPE) --without-gui \
-		--export-dpi=$$hidpi \
+		--export-dpi=$${hidpi} \
 		--export-area-page \
-		--export-margin=$$trimmm \
+		--export-margin=$${trimmm} \
 		--file=$< \
 		--export-pdf=$@
 	$(addtopub)
@@ -1169,7 +1167,7 @@ $(BOOKSCENESINC): %.inc: $$(geometryfile) %-pov-$(_front).png %-pov-$(_back).png
 		#declare CoilWidth = $(COILWIDTH);
 		#declare CoilColor = $(COILCOLOR);
 		#declare PaperWeight = $(PAPERWEIGHT);
-		#declare BookThickness = $$spinemm / $$pagewmm / 2;
+		#declare BookThickness = $${spinemm} / $${pagewmm} / 2;
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
@@ -1179,10 +1177,10 @@ $(BOOKSCENES): %-$(_3d).pov: $$(geometryfile) %.inc
 	cat <<- EOF > $@
 		#declare DefaultBook = "$(filter %.inc,$^)";
 		#declare Lights = $(call scale,8,2);
-		#declare BookAspect = $$pagewmm / $$pagehmm;
-		#declare BookThickness = $$spinemm / $$pagewmm / 2;
+		#declare BookAspect = $${pagewmm} / $${pagehmm};
+		#declare BookThickness = $${spinemm} / $${pagewmm} / 2;
 		#declare HalfThick = BookThickness / 2;
-		#declare toMM = 1 / $$pagehmm;
+		#declare toMM = 1 / $${pagehmm};
 	EOF
 
 ifneq ($(strip $(SOURCES)),$(strip $(PROJECT)))
@@ -1247,7 +1245,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 
 %-epub-metadata.yml: %-manifest.yml %-epub-$(_poster).jpg
 	echo '---' > $@
-	yq -M -e -y '{title: [ { type: "main", text: .title  }, { type: "subtitle", text: .subtitle } ], creator: .creator, contributor: .contributor, identifier: .identifier, date: .date | last | .text, published: .date | first | .text, lang: .lang, description: .abstract, rights: .rights, publisher: .publisher, source: (.source[]? | select(.type == "title").text), "cover-image": "$(filter %.jpg,$^)" }' < $< >> $@
+	yq -M -e -y '{title: [ { type: "main", text: .title  }, { type: "subtitle", text: .subtitle } ], creator: .creator, contributor: .contributor, identifier: .identifier, date: .date | last | .text, published: .date | first | .text, lang: .lang, description: .abstract, rights: .rights, publisher: .publisher, source: (if .source then (.source[]? | select(.type == "title").text) else null end), "cover-image": "$(filter %.jpg,$^)" }' < $< >> $@
 	echo '...' >> $@
 
 %.epub: private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/epubclean.lua
