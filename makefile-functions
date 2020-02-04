@@ -347,3 +347,9 @@ endef
 
 define magick_fragment_spine ?=
 endef
+
+define magick_binding ?=
+endef
+
+define geometry_extras ?=
+endef
