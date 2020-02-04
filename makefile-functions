@@ -36,7 +36,7 @@ parse_bookid = $(firstword $(subst -, ,$(basename $1)))
 series_sort = $(shell PROJECT=$(PROJECT) SORTORDER=$(SORTORDER) $(CASILEDIR)/bin/series_sort.lua $1)
 metainfo = $(shell yq -r '$1' < $(PROJECTYAML))
 isbntouid = $(call cachevar,$1,uuid,$(basename $(notdir $(shell grep -l $1 $(YAMLSOURCES)))))
-isbnmask = $(call cachevar,$1,mask,$(shell python -c "import isbnlib; print(isbnlib.mask('$1'))"))
+isbnmask = $(call cachevar,$1,mask,$(shell $(PYTHON) -c "import isbnlib; print(isbnlib.mask('$1'))"))
 ebookisbn = $(call cachevar,$1,ebook,$(or $(shell yq -r '.identifier[]? | select(.key == "ebook"    ).text' $1.yml),$(call printisbn,$1)))
 printisbn = $(call cachevar,$1,print,$(shell yq -r '.identifier[]? | select(.key == "paperback").text' $1.yml))
 ebooktoprint = $(call cachevar,$1,ep,$(call printisbn,$(call isbntouid,$1)))
@@ -116,7 +116,7 @@ $(shell
 			-maxdepth 2 \
 			-name '$1' \
 			$(foreach PATH,$(shell git submodule | awk '{print $$2}'),-not -path '*/$(PATH)/*') |
-			grep -f <(git ls-files | sed -e 's/$$/$$/;s#^#./#') |
+			grep -f <(git ls-files | $(SED) -e 's/$$/$$/;s#^#./#') |
 		xargs echo)
 endef
 
@@ -136,7 +136,7 @@ define find_and_munge ?=
 	$(warning Using obsolete combined find_and_munge command, please migrate to separate commands)
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
 	find $(PROJECTDIR) -maxdepth 2 -name '$1' $(foreach PATH,$(shell git submodule | awk '{print $$2}'),-not -path '*/$(PATH)/*') |
-		grep -f <(git ls-files | sed -e 's/$$/$$/;s#^#./#') |
+		grep -f <(git ls-files | $(SED) -e 's/$$/$$/;s#^#./#') |
 		while read f; do
 			grep -q "esyscmd.*loadchapters.zsh" $$f && continue # skip compilations that are mostly M4
 			git diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
@@ -151,7 +151,7 @@ define link_verses ?=
 endef
 
 define criticToSile ?=
-	sed -e 's#{==#\\criticHighlight{#g' -e 's#==}#}#g' \
+	$(SED) -e 's#{==#\\criticHighlight{#g' -e 's#==}#}#g' \
 		-e 's#{>>#\\criticComment{#g'   -e 's#<<}#}#g' \
 		-e 's#{++#\\criticAdd{#g'       -e 's#++}#}#g' \
 		-e 's#{--#\\criticDel{#g'       -e 's#--}#}#g'
