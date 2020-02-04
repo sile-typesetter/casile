@@ -844,7 +844,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 		$(call magick_background_filter) \
 		$@ ||:
 	$(if $(filter %.png,$(call git_background,$@)),false,true) && $(MAGICK) \
-		-size $${pagewpx}x$${pagehpx}^ $(call magick_background_cover) -compose SrcOver -composite \
+		-size $${pagewpx}x$${pagehpx}^ $(call magick_background_cover) \
 		$@ ||:
 
 # Requires fake geometry file with no binding spec because binding not part of pattern
@@ -872,7 +872,6 @@ $(COVERIMAGES): %-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_f
 		\) -compose SrcOver -composite \
 		-gravity Center \
 		-size %[fx:u.w]x%[fx:u.h] \
-		-compose SrcOver -composite \
 		$@
 
 # Gitlab projects need a sub 200kb icon image
