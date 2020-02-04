@@ -12,6 +12,16 @@ PUBLISHERDIR ?= $(CASILEDIR)
 # Set the language if not otherwise set
 LANGUAGE ?= en
 
+# Allow overriding executables used
+INKSCAPE ?= inkscape
+MAGICK ?= magick
+PANDOC ?= pandoc
+PERL ?= perl
+POVRAY ?= povray
+PYTHON ?= python
+SED ?= sed
+SILE ?= sile
+
 # Localization functions (source is a key => val file _and_ its inverse)
 -include $(CASILEDIR)/makefile-$(LANGUAGE) $(CASILEDIR)/makefile-$(LANGUAGE)-reversed
 
@@ -75,16 +85,6 @@ HIDPI ?= $(HIDPI_DEF)
 LODPI_DEF := $(call scale,300) # Default DPI for generated consumer resources
 LODPI ?= $(LODPI_DEF)
 SORTORDER ?= meta # Sort series by: none, alphabetical, date, meta, manual
-
-# Allow overriding executables used
-INKSCAPE ?= inkscape
-MAGICK ?= magick
-PANDOC ?= pandoc
-PERL ?= perl
-POVRAY ?= povray
-PYTHON ?= python
-SED ?= sed
-SILE ?= sile
 
 # Set default output format(s)
 LAYOUTS ?= a4-$(_print)
