@@ -2,10 +2,11 @@
 
 local yaml = require("yaml")
 
-PROJECT = os.getenv("PROJECT")
-SORTORDER = os.getenv("SORTORDER")
+local PROJECT = os.getenv("PROJECT")
+local SORTORDER = os.getenv("SORTORDER")
 
-function dump(...)
+-- luacheck: ignore dump
+local function dump(...)
   local arg = { ... } -- Avoid things that Lua stuffs in arg like args to self()
   require("pl.pretty").dump(#arg == 1 and arg[1] or arg, "/dev/stderr")
 end
@@ -22,11 +23,14 @@ for _, title in ipairs(seriesmeta.seriestitles) do
   seriesorders[title.title] = title.order
 end
 
-seriessort = function (a, b)
-  return getorder(a) < getorder(b)
+local fetchtitle = function (bookid)
+  if not booktitles[bookid] then
+    booktitles[bookid] = yaml.loadpath(bookid .. '.yml').title
+  end
+  return booktitles[bookid]
 end
 
-getorder = function (book)
+local getorder = function (book)
   if SORTORDER == "alphabetical" then
     return book
   end
@@ -45,11 +49,8 @@ getorder = function (book)
   return 1 -- TODO: add option for sorting by publish date
 end
 
-fetchtitle = function (bookid)
-  if not booktitles[bookid] then
-    booktitles[bookid] = yaml.loadpath(bookid .. '.yml').title
-  end
-  return booktitles[bookid]
+local seriessort = function (a, b)
+  return getorder(a) < getorder(b)
 end
 
 if not (SORTORDER == "none") then

@@ -1,7 +1,7 @@
 local color = "#FFFFFF"
 
 SILE.registerCommand("frontcover", function ()
-  options = {}
+  local options = {}
   options["first-content-frame"] = "front"
   SILE.call("pagetemplate", options, function ()
     SILE.call("frame", {
@@ -36,7 +36,7 @@ SILE.registerCommand("frontcover", function ()
 end)
 
 SILE.registerCommand("backcover", function ()
-  options = {}
+  local options = {}
   options["first-content-frame"] = "front"
   SILE.call("pagetemplate", options, function ()
     SILE.call("frame", {
@@ -54,7 +54,7 @@ SILE.registerCommand("backcover", function ()
       SILE.call("font", { size = "5.2%fw", language = "tr", weight = "600" })
       SILE.settings.set("linespacing.method", "fit-font")
       SILE.settings.set("linespacing.fit-font.extra-space", SILE.length("0.6ex"))
-      dropcapNextLetter()
+      CASILE.dropcapNextLetter()
       SILE.process({ CASILE.metadata.abstract })
       SILE.call("par")
       if CASILE.metadata.creator then
@@ -83,6 +83,7 @@ end)
 SILE.registerCommand("spine", function (options)
   options["first-content-frame"] = "spine1"
   SILE.call("pagetemplate", options, function ()
+		-- luacheck: ignore spine
     SILE.call("frame", {
         id = "spine1",
         top = "-" .. spine,

@@ -1,7 +1,10 @@
-SILE.registerCommand("titlepage", function (options, content)
+-- luacheck: ignore loadstring
+local loadstring = loadstring or load
+
+SILE.registerCommand("titlepage", function (_, _)
   if not SILE.Commands["meta:title"] then return end
   SILE.call("nofolios")
-  if not isScreenLayout() then
+  if not CASILE.isScreenLayout() then
     SILE.call("open-double-page")
   end
   SILE.call("center", {}, function ()
@@ -28,8 +31,8 @@ SILE.registerCommand("titlepage", function (options, content)
   SILE.call("break")
 end)
 
-SILE.registerCommand("halftitlepage", function (options, content)
-  if isScreenLayout() then return end
+SILE.registerCommand("halftitlepage", function (_, _)
+  if CASILE.isScreenLayout() then return end
   if not SILE.Commands["meta:title"] then return end
   SILE.call("nofolios")
   SILE.call("center", {}, function ()
@@ -41,8 +44,8 @@ SILE.registerCommand("halftitlepage", function (options, content)
   end)
 end)
 
-SILE.registerCommand("tableofcontents", function (options, content)
-  local f,err = io.open(SILE.masterFilename .. '.toc')
+SILE.registerCommand("tableofcontents", function (_, _)
+  local f, _ = io.open(SILE.masterFilename .. '.toc')
   if not f then return end
   local doc = f:read("*all")
   local toc = assert(loadstring(doc))()
@@ -55,7 +58,7 @@ SILE.registerCommand("tableofcontents", function (options, content)
   SILE.call("tableofcontents:footer")
 end)
 
-SILE.registerCommand("cabook:chapter:before", function (options, content)
+SILE.registerCommand("cabook:chapter:before", function (options, _)
   SILE.call("open-double-page")
   SILE.call("noindent")
   -- If Sectioning doesn't output numbering, the chapter starts too high on the page
@@ -66,7 +69,7 @@ SILE.registerCommand("cabook:chapter:before", function (options, content)
   SILE.call("skip", { height = "10%ph" })
 end)
 
-SILE.registerCommand("cabook:chapter:after", function (options, content)
+SILE.registerCommand("cabook:chapter:after", function (options, _)
   SILE.call("bigskip")
   SILE.call("fullrule")
   if (options.numbering == false or options.numbering == "false") then
@@ -102,7 +105,7 @@ SILE.registerCommand("chapter", function (options, content)
   SILE.call("cabook:chapter:after", options, content)
 end, "Begin a new chapter");
 
-SILE.registerCommand("section", function (options, content)
+SILE.registerCommand("section", function (_, content)
   SILE.call("goodbreak")
   SILE.call("ifnotattop", {}, function ()
     SILE.call("skip", { height = "12pt plus 6pt minus 4pt" })
@@ -116,7 +119,7 @@ SILE.registerCommand("section", function (options, content)
   SILE.call("novbreak")
 end, "Begin a new section")
 
-SILE.registerCommand("subsection", function (options, content)
+SILE.registerCommand("subsection", function (_, content)
   SILE.call("goodbreak")
   SILE.call("ifnotattop", {}, function ()
     SILE.call("skip", { height = "12pt plus 6pt minus 4pt" })
@@ -130,7 +133,7 @@ SILE.registerCommand("subsection", function (options, content)
   SILE.call("novbreak")
 end, "Begin a new section")
 
-SILE.registerCommand("subsubsection", function (options, content)
+SILE.registerCommand("subsubsection", function (_, content)
   SILE.call("goodbreak")
   SILE.call("ifnotattop", {}, function ()
     SILE.call("skip", { height = "12pt plus 6pt minus 4pt" })
@@ -170,7 +173,7 @@ SILE.registerCommand("part", function (options, content)
   SILE.scratch.headers.skipthispage = true
 end, "Begin a new part");
 
-SILE.registerCommand("subparagraph", function (options, content)
+SILE.registerCommand("subparagraph", function (_, content)
   SILE.typesetter:leaveHmode()
   SILE.call("novbreak")
   -- Backtracking to approximate the skip after quotations

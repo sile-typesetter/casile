@@ -1,6 +1,6 @@
 local firstheading
 
-findfirstheading = {
+local findfirstheading = {
 	Header = function (element)
 		if not firstheading then
 			firstheading = element.identifier

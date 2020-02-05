@@ -105,11 +105,11 @@ SILE.registerCommand("tableofcontents:headerfont", function (options, content)
   SILE.call("cabook:font:parttitle", options, content)
 end)
 
-SILE.registerCommand("strong", function (options, content)
+SILE.registerCommand("strong", function (_, content)
   SILE.call("font", { weight = 600 }, content)
 end)
 
-SILE.registerCommand("em", function (options, content)
+SILE.registerCommand("em", function (_, content)
   SILE.call("font", { style = "Italic" }, content)
   SILE.call("kern", { width = "1pt" })
 end)

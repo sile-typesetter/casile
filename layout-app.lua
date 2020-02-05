@@ -32,7 +32,7 @@ class:defineMaster({
 class:mirrorMaster("right", "left")
 SILE.call("switch-master-one-page", { id = "right" })
 
-SILE.registerCommand("output-right-running-head", function (options, content)
+SILE.registerCommand("output-right-running-head", function (_, _)
   if not SILE.scratch.headers.right then return end
   SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
     SILE.settings.set("current.parindent", SILE.nodefactory.glue())
@@ -53,7 +53,7 @@ SILE.registerCommand("output-right-running-head", function (options, content)
   end)
 end)
 
-SILE.registerCommand("output-left-running-head", function (options, content)
+SILE.registerCommand("output-left-running-head", function (_, _)
   SILE.call("output-right-running-head")
 end)
 
@@ -71,7 +71,7 @@ SILE.registerCommand("open-double-page", function ()
 end)
 
 -- Forgo bottom of page layouts for mobile devices
-SILE.registerCommand("topfill", function (options, content)
+SILE.registerCommand("topfill", function (_, _)
   SILE.typesetter:leaveHmode();
 end)
 

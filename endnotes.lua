@@ -1,7 +1,7 @@
 SILE.require("packages/footnotes")
 SILE.scratch.endnotes = {}
 
-SILE.registerCommand("endnote", function (options, content)
+SILE.registerCommand("endnote", function (_, content)
   SILE.call("footnotemark")
   local material = function ()
     SILE.process(content)
@@ -13,12 +13,12 @@ SILE.registerCommand("endnote", function (options, content)
   SILE.scratch.counters.footnote.value = SILE.scratch.counters.footnote.value + 1
 end)
 
-SILE.registerCommand("endnote:counter", function (options, content)
+SILE.registerCommand("endnote:counter", function (options, _)
   SILE.call("noindent")
   SILE.typesetter:typeset(options.value..".")
 end)
 
-SILE.registerCommand("endnotes", function (options, content)
+SILE.registerCommand("endnotes", function (_, _)
   local indent = "1.5em"
   SILE.settings.temporarily(function ()
     SILE.settings.set("document.lskip", SILE.nodefactory.glue(indent))

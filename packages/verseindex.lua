@@ -3,16 +3,15 @@ SILE.require("packages/url")
 SILE.scratch.tableofverses = {}
 
 local orig_href = SILE.Commands["href"]
-local loadstring = loadstring or load
 
-local writeTov = function (self)
+local writeTov = function (_)
   local contents = "return " .. std.string.pickle(SILE.scratch.tableofverses)
   local tovfile, err = io.open(SILE.masterFilename .. '.tov', "w")
   if not tovfile then return SU.error(err) end
   tovfile:write(contents)
 end
 
-local moveNodes = function (self)
+local moveNodes = function (_)
   local node = SILE.scratch.info.thispage.tov
   if node then
     for i = 1, #node do
@@ -42,9 +41,9 @@ local init = function (self)
   end
 
   local pushBack = SILE.typesetter.pushBack
-  SILE.typesetter.pushBack = function (self)
-    continuepair(self)
-    pushBack(self)
+  SILE.typesetter.pushBack = function (_self)
+    continuepair(_self)
+    pushBack(_self)
     repairbreak()
   end
 
@@ -54,7 +53,7 @@ local init = function (self)
     inpair = pair
   end
 
-  local endpair = function (seq)
+  local endpair = function (_)
     inpair = nil
     SILE.call("mergecolumns")
     SILE.settings.set("typesetter.parfillskip", defaultparskip)
@@ -65,7 +64,7 @@ local init = function (self)
     return orig_href(options, content)
   end)
 
-  SILE.registerCommand("tableofverses:book", function (options, content)
+  SILE.registerCommand("tableofverses:book", function (_, content)
     SILE.call("requireSpace", { height = "4em" })
     SILE.settings.set("typesetter.parfillskip", defaultparskip)
     SILE.call("hbox")
@@ -78,7 +77,7 @@ local init = function (self)
   SILE.registerCommand("tableofverses:reference", function (options, content)
     if #options.pages < 1 then
       SU.warn("Verse in index doesn't have page marker")
-      pages = { "0" }
+      options.pages = { "0" }
     end
     SILE.process(content)
     SILE.call("noindent")
@@ -107,7 +106,7 @@ local init = function (self)
       })
   end)
 
-  SILE.registerCommand("tableofverses", function (options, content)
+  SILE.registerCommand("tableofverses", function (_, _)
     SILE.call("chapter", { numbering = false, appendix = true }, { "Ayet Referans İndeksi" })
     SILE.call("cabook:font:serif", { size = "0.95em" })
     local origmethod = SILE.settings.get("linespacing.method")
@@ -119,7 +118,8 @@ local init = function (self)
     local refshash = {}
     local lastbook = nil
     local seq = 1
-    for i, ref in pairs(CASILE.verses) do
+		-- TODO: should this be ipairs()?
+    for _, ref in pairs(CASILE.verses) do
       if not refshash[ref.osis] then
         refshash[ref.osis] = true
         if not(lastbook == ref.b) then
@@ -142,7 +142,7 @@ local init = function (self)
             end
           end
         end
-        SILE.call("tableofverses:reference", { pages = pages }, { addr })
+        SILE.call("tableofverses:reference", { pages = pages, label = label }, { addr })
         seq = seq + 1
       end
     end

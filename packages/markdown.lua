@@ -1,5 +1,5 @@
 SILE.processMarkdown = function (content, callback)
-  local callback = callback or function (...) return ... end
+  callback = callback or function (...) return ... end
   local lunamark = require("lunamark")
   local reader = lunamark.reader.markdown
   local writer = lunamark.writer.ast.new()
@@ -8,7 +8,7 @@ SILE.processMarkdown = function (content, callback)
   SILE.process(output)
 end
 
-SILE.registerCommand("processMarkdown", function (option, content)
+SILE.registerCommand("processMarkdown", function (options, content)
   SILE.processMarkdown(SU.contentToString(content), options.callback)
 end)
 
