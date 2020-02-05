@@ -100,7 +100,7 @@ Use of the [Docker container][dockerhub] can make it a lot easier to get up and 
 
 Download (or update) the image using  `docker pull siletypesetter/casile:latest`. Once installed, the docker image run command can be substituted anywhere you would use `make` to invoke CaSILE. You'll probably want to give yourself an alias for this:
 
-    alias casile-docker='docker run --volume "$(pwd):/data" --user "$(id -u):$(id -g)" siletypesetter/casile:latest'
+    alias casile-docker='docker run --volume "$(pwd):/data" --user "$(id -u):$(id -g)" siletypesetter/casile:master'
 
 Now instead of running `make my_book-a4-print.pdf` you would run `casile-docker my_book-a4-print.pdf`. This substitution should work anywhere *make* would be run. You could even alias it to `make` if you like (and don't use make for anything else on your system!).
 
