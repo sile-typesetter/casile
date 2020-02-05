@@ -163,7 +163,7 @@ SILEPATH += $(CASILEDIR)
 # Extra arguments to pass to Pandoc
 PANDOCARGS ?= --wrap=preserve --atx-headers --top-level-division=chapter
 PANDOCARGS += --reference-location=section
-PANDOCFILTERARGS ?= --from markdown+raw_sile-space_in_atx_header+ascii_identifiers --to markdown+raw_sile-smart
+PANDOCFILTERARGS ?= --from markdown-space_in_atx_header+ascii_identifiers --to markdown-smart
 
 # For when perl one-liners need Unicode compatibility
 PERLARGS ?= -Mutf8 -CS
@@ -567,7 +567,7 @@ $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_booki
 			-V qrimg="./$(filter %-url.png,$^)" \
 			$(foreach LUA,$(call reverse,$(filter %.lua,$|)), -V script=$(basename $(LUA))) \
 			--template=$(filter %.sil,$^) \
-			--from=markdown+raw_sile \
+			--from=markdown \
 			--to=sile \
 			$(filter %-manifest.yml,$^) =(< $< $(call ah) $(call pre_sile_markdown_hook)) |
 		$(call sile_hook) > $@
