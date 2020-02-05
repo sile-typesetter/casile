@@ -13,6 +13,8 @@ CaSILE (pronounced like 'castle') started out life as a submodule called `avadan
 
 CaSILE glues together *a lot* of different tools to build a complete publishing tool chain. Behind the scenes this is messy business. In order to make everything work I've had to use an eclectic variety of software. All of these are open source and available across platforms, but to date I've only used at tested this process **on Linux**. Adapting it to run on Mac OS should be pretty straightforward but Windows support will almost certainly require some monkey business. [Not my circus, not my monkeys][nmcnmm].
 
+**Newsflash:** I've successfully built a [Docker image][dockerhub] with all the dependencies self contained that can be run on almost any platform. See [Docker Usage](#docker-usage) for more information.
+
 All of the following are utilized in one way or another. Currently the toolkit assumes all the following are present, but as not all of them are used to build all resources it could be possible to make this more selective. For example not having the ray tracing engine would just mean no fancy 3D previews of book covers, but you could still build PDFs and other digital formats. Not having Node would mean no Bible verse format normalization, but you should still be able to build books. Not having ImageMagick would mean no covers, but you could still process the interior of books. On the other hand not having Pandoc would be fatal.
 
 * The [SILE][sile] Typesetter (v0.10.0 or newer, assumes latest) is the workhorse behind most of the text layout.
@@ -90,6 +92,16 @@ Major TODO items include:
         make my_book-halfletter-3d-front.jpg
 
 See also the [CaSILE demos][demos] repository for a sample book project layout.
+
+## Docker Usage
+
+Use of the [Docker container][dockerhub] can make it a lot easier to get up and running because you won't need to have a huge collection of dependencies installed.
+
+Download (or update) the image using  `docker pull siletypesetter/casile:latest`. Once installed, the docker image run command can be substituted anywhere you would use `make` to invoke CaSILE. You'll probably want to give yourself an alias for this:
+
+    alias casile-docker='docker run --volume "$(pwd):/data" --user "$(id -u):$(id -g)" siletypesetter/casile:latest'
+
+Now instead of running `make my_book-a4-print.pdf` you would run `casile-docker my_book-a4-print.pdf`. This substitution should work anywhere *make* would be run. You could even alias it to `make` if you like (and don't use make for anything else on your system!).
 
 ### Input
 
@@ -322,3 +334,4 @@ These are functions that can be defined in your project's `Makefile` to add addi
 [zathura]: https://pwmt.org/projects/zathura/
 [calibre]: http://calibre-ebook.com/
 [demos]: https://github.com/sile-typesetter/casile-demos
+[dockerhub]: https://hub.docker.com/repository/docker/siletypesetter/casile/
