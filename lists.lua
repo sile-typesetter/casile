@@ -21,7 +21,7 @@ SILE.registerCommand("listarea", function (options, content)
   nestedlist = nestedlist - 1
 end)
 
-SILE.registerCommand("listitem", function (options, content)
+SILE.registerCommand("listitem", function (_, content)
   local markerwidth = SILE.length("1.5em")
   SILE.call("kern", { width = tostring(markerwidth:negate()) })
   SILE.call("rebox", { width = tostring(markerwidth) }, function ()

@@ -16,7 +16,9 @@ SILE.require("hyphenation_exceptions", CASILE.casiledir)
 SILE.require("inline_styles", CASILE.casiledir)
 SILE.require("block_styles", CASILE.casiledir)
 
-textcase = SILE.require("packages/textcase").exports
+local textcase = SILE.require("packages/textcase").exports
+-- luacheck: ignore loadstring
+local loadstring = loadstring or load
 
 SILE.settings.set("typesetter.underfulltolerance", SILE.length("6ex"))
 SILE.settings.set("typesetter.overfulltolerance", SILE.length("0.2ex"))
@@ -36,7 +38,7 @@ SILE.registerCommand("book:chapter:pre:tr", function ()
   SILE.typesetter:typeset("BÖLÜM ")
 end)
 
-SILE.registerCommand("cabook:chapter:post", function (options, content)
+SILE.registerCommand("cabook:chapter:post", function (options, _)
   options.weight = SU.boolean(options.decorate, true)
   SILE.call("novbreak")
   SILE.call("medskip")
@@ -81,11 +83,11 @@ SILE.registerCommand("tableofcontents:footer", function ()
   SILE.call("break")
 end)
 
-SILE.registerCommand("wraptitle", function (options, content)
+SILE.registerCommand("wraptitle", function (_, content)
   SILE.process(content)
 end)
 
-SILE.registerCommand("wrapsubtitle", function (options, content)
+SILE.registerCommand("wrapsubtitle", function (_, content)
   SILE.process(content)
 end)
 
@@ -96,15 +98,15 @@ SILE.settings.set("linespacing.method", "fit-font")
 SILE.settings.set("linespacing.fit-font.extra-space", SILE.length("0.6ex plus 0.2ex minus 0.2ex"))
 SILE.settings.set("linebreak.hyphenPenalty", 300)
 
-SILE.registerCommand("left-running-head", function (options, content)
+SILE.registerCommand("left-running-head", function (_, content)
   SILE.scratch.headers.left = content
 end, "Text to appear on the top of the left page")
 
-SILE.registerCommand("right-running-head", function (options, content)
+SILE.registerCommand("right-running-head", function (_, content)
   SILE.scratch.headers.right = content
 end, "Text to appear on the top of the right page")
 
-SILE.registerCommand("output-right-running-head", function (options, content)
+SILE.registerCommand("output-right-running-head", function (_, _)
   if not SILE.scratch.headers.right then return end
   SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
     SILE.settings.set("current.parindent", SILE.nodefactory.glue())
@@ -124,7 +126,7 @@ SILE.registerCommand("output-right-running-head", function (options, content)
   end)
 end)
 
-SILE.registerCommand("output-left-running-head", function (options, content)
+SILE.registerCommand("output-left-running-head", function (_, _)
   if not SILE.scratch.headers.left then return end
   SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.glue())
@@ -149,7 +151,7 @@ SILE.registerCommand("aki", function ()
 end)
 
 SILE.registerCommand("book:sectioning", function (options, content)
-  local content = SU.subContent(content)
+  content = SU.subContent(content)
   options.skiptoc = SU.boolean(options.skiptoc, false)
   options.numbering = SU.boolean(options.numbering, true)
   options.reset = SU.boolean(options.reset, false)
@@ -185,9 +187,9 @@ SILE.registerCommand("book:sectioning", function (options, content)
       SILE.call(options.postnumber)
     end
     local number = SILE.formatCounter({ display = "arabic", value = counters.value[level] })
-    if not skiptoc then SILE.call("tocentry", { level = options.level, number = tonumber(number) }, toc_content) end
+    if not options.skiptoc then SILE.call("tocentry", { level = options.level, number = tonumber(number) }, toc_content) end
   else
-    if not skiptoc then SILE.call("tocentry", { level = options.level, number = false }, content) end
+    if not options.skiptoc then SILE.call("tocentry", { level = options.level, number = false }, content) end
   end
 end)
 
@@ -206,11 +208,11 @@ end)
 -- This is the same as SILE's version but sets our no-headers variable on blank pages
 -- ...and allows opening to an even page
 SILE.registerCommand("open-page", function (options)
-  local odd = SU.boolean(options.odd, not isScreenLayout())
-  local double = SU.boolean(options.double, not isScreenLayout())
+  local odd = SU.boolean(options.odd, not CASILE.isScreenLayout())
+  local double = SU.boolean(options.double, not CASILE.isScreenLayout())
   local class = SILE.documentState.documentClass
   local count = 0
-  repeat 
+  repeat
     if count > 0 then
       SILE.typesetter:typeset("")
       SILE.typesetter:leaveHmode()
@@ -223,7 +225,7 @@ SILE.registerCommand("open-page", function (options)
   SILE.typesetter:leaveHmode()
 end)
 
-SILE.registerCommand("chaptertoc", function (options, content)
+SILE.registerCommand("chaptertoc", function (_, _)
   local thischapter = SILE.scratch.counters.sectioning.value[2]
   if thischapter < 1 then return end
   SILE.call("section", { numbering = false }, { "Bölümdekiler" })
@@ -232,7 +234,6 @@ SILE.registerCommand("chaptertoc", function (options, content)
   local doc = tocfile:read("*all")
   local toc = assert(loadstring(doc))()
   local zone = false
-  local chaptertoc = {}
   for _, item in pairs(toc) do
     if zone and item.level > 2 then
       SILE.call("tableofcontents:item", {
@@ -245,7 +246,7 @@ SILE.registerCommand("chaptertoc", function (options, content)
   end
 end)
 
-SILE.registerCommand("tableofcontents", function (options, content)
+SILE.registerCommand("tableofcontents", function (_, _)
   local tocfile,_ = io.open(SILE.masterFilename .. '.toc')
   if not tocfile then
     SILE.call("tableofcontents:notocmessage")
@@ -278,7 +279,7 @@ SILE.registerCommand("tableofcontents:item", function (options, content)
   SILE.settings.temporarily(function ()
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.glue())
     SILE.call("tableofcontents:level"..options.level.."item", {}, function ()
-      SILE.process(addDiscressionaryBreaks({}, content))
+      SILE.process(CASILE.addDiscressionaryBreaks({}, content))
       if options.level == 2 then
         SILE.call("hbox", {}, function ()
           if options.dotfill then SILE.call("dotfill") else SILE.call("hfill") end
@@ -291,7 +292,7 @@ SILE.registerCommand("tableofcontents:item", function (options, content)
   end)
 end)
 
-SILE.registerCommand("tableofcontents:level1item", function (options, content)
+SILE.registerCommand("tableofcontents:level1item", function (_, content)
   SILE.call("bigskip")
   SILE.settings.temporarily(function ()
     SILE.settings.set("current.parindent", SILE.nodefactory.glue())
@@ -301,7 +302,7 @@ SILE.registerCommand("tableofcontents:level1item", function (options, content)
   end)
 end)
 
-SILE.registerCommand("tableofcontents:level2item", function (options, content)
+SILE.registerCommand("tableofcontents:level2item", function (_, content)
   SILE.call("skip", { height = "4.5pt" })
   SILE.settings.set("current.parindent", SILE.nodefactory.glue())
   SILE.settings.set("document.lskip", SILE.nodefactory.glue("5ex"))
@@ -313,7 +314,7 @@ SILE.registerCommand("tableofcontents:level2item", function (options, content)
   SILE.call("skip", { height = 0 })
 end)
 
-SILE.registerCommand("tableofcontents:level3item", function (options, content)
+SILE.registerCommand("tableofcontents:level3item", function (_, content)
   SILE.call("skip", { height = "4.5pt" })
   SILE.settings.set("current.parindent", SILE.nodefactory.glue())
   SILE.settings.set("document.lskip", SILE.nodefactory.glue("5ex"))
@@ -325,7 +326,7 @@ SILE.registerCommand("tableofcontents:level3item", function (options, content)
   SILE.call("skip", { height = 0 })
 end)
 
-SILE.registerCommand("tableofcontents:level4item", function (options, content)
+SILE.registerCommand("tableofcontents:level4item", function (_, content)
   SILE.call("skip", { height = "4.5pt" })
   SILE.settings.set("current.parindent", SILE.nodefactory.glue())
   SILE.settings.set("document.lskip", SILE.nodefactory.glue("5ex"))
@@ -337,7 +338,7 @@ SILE.registerCommand("tableofcontents:level4item", function (options, content)
   SILE.call("skip", { height = 0 })
 end)
 
-SILE.registerCommand("tableofcontents:level5item", function (options, content)
+SILE.registerCommand("tableofcontents:level5item", function (_, content)
   SILE.call("skip", { height = "4.5pt" })
   SILE.settings.set("current.parindent", SILE.nodefactory.glue())
   SILE.settings.set("document.lskip", SILE.nodefactory.glue("5ex"))
@@ -380,7 +381,7 @@ SILE.registerCommand("footnote", function (options, content)
   SILE.scratch.counters.footnote.value = SILE.scratch.counters.footnote.value + 1
 end)
 
-SILE.registerCommand("footnote:counter", function (options, content)
+SILE.registerCommand("footnote:counter", function (options, _)
   SILE.call("noindent")
   local width = SILE.length(options.indent)
   SILE.typesetter:pushGlue({ width = width:negate() })
@@ -404,28 +405,28 @@ SILE.registerCommand("lang", function (options, content)
 	local fontfunc = SILE.Commands[SILE.Commands["font:" .. language] and "font:" .. language or "font"]
 	fontfunc({ language = language }, content)
 end)
-SILE.registerCommand("langund", function (options, content)
+SILE.registerCommand("langund", function (_, content)
 	SILE.call("lang", {}, content)
 end)
-SILE.registerCommand("langel", function (options, content)
+SILE.registerCommand("langel", function (_, content)
 	SILE.call("lang", { language = "el" }, content)
 end)
-SILE.registerCommand("langla", function (options, content)
+SILE.registerCommand("langla", function (_, content)
 	SILE.call("lang", { language = "la" }, content)
 end)
-SILE.registerCommand("langen", function (options, content)
+SILE.registerCommand("langen", function (_, content)
 	SILE.call("lang", { language = "en" }, content)
 end)
-SILE.registerCommand("langde", function (options, content)
+SILE.registerCommand("langde", function (_, content)
 	SILE.call("lang", { language = "de" }, content)
 end)
-SILE.registerCommand("langfr", function (options, content)
+SILE.registerCommand("langfr", function (_, content)
 	SILE.call("lang", { language = "fr" }, content)
 end)
-SILE.registerCommand("langnl", function (options, content)
+SILE.registerCommand("langnl", function (_, content)
 	SILE.call("lang", { language = "nl" }, content)
 end)
-SILE.registerCommand("langhe", function (options, content)
+SILE.registerCommand("langhe", function (_, content)
 	SILE.call("lang", { language = "he" }, content)
 end)
 
@@ -496,7 +497,7 @@ SILE.registerCommand("class:dedication", function (options, content)
   if options.eject then SILE.call("eject") end
 end)
 
-SILE.registerCommand("seriespage:series", function (options, content)
+SILE.registerCommand("seriespage:series", function (_, content)
   SILE.call("center", {}, function ()
     SILE.call("cabook:font:chaptertitle", {}, function ()
       SILE.process(content)
@@ -507,7 +508,7 @@ SILE.registerCommand("seriespage:series", function (options, content)
   end)
 end)
 
-SILE.registerCommand("seriespage:pre", function (options, content)
+SILE.registerCommand("seriespage:pre", function (_, _)
   SILE.call("open-page")
   SILE.scratch.headers.skipthispage = true
   SILE.call("nofolios")
@@ -515,7 +516,7 @@ SILE.registerCommand("seriespage:pre", function (options, content)
 end)
 
 -- Make this a function because we want to override it in some layouts
-SILE.registerCommand("topfill", function (options, content)
+SILE.registerCommand("topfill", function (_, _)
   SILE.typesetter:leaveHmode()
   SILE.call("hbox")
   SILE.call("vfill")
@@ -543,14 +544,14 @@ SILE.registerCommand("seriespage:title", function (options, content)
   end)
 end)
 
-SILE.registerCommand("criticHighlight", function (options, content)
+SILE.registerCommand("criticHighlight", function (_, content)
   SILE.settings.temporarily(function ()
     SILE.call("font", { weight = 600 })
     SILE.call("color", { color = "#0000E6" }, content)
   end)
 end)
 
-SILE.registerCommand("criticComment", function (options, content)
+SILE.registerCommand("criticComment", function (_, content)
   SILE.settings.temporarily(function ()
     SILE.call("font", { style = "Italic" })
     SILE.call("color", { color = "#bdbdbd" }, function ()
@@ -561,14 +562,14 @@ SILE.registerCommand("criticComment", function (options, content)
   end)
 end)
 
-SILE.registerCommand("criticAdd", function (options, content)
+SILE.registerCommand("criticAdd", function (_, content)
   SILE.settings.temporarily(function ()
     SILE.call("font", { weight = 600 })
     SILE.call("color", { color = "#0E7A00" }, content)
   end)
 end)
 
-SILE.registerCommand("criticDel", function (options, content)
+SILE.registerCommand("criticDel", function (_, content)
   SILE.settings.temporarily(function ()
     SILE.call("font", { weight = 600 })
     SILE.call("color", { color = "#E60000" }, content)
@@ -576,7 +577,7 @@ SILE.registerCommand("criticDel", function (options, content)
 end)
 
 local inputfilter = SILE.require("packages/inputfilter").exports
-local discressionaryBreaksFilter = function (content, args, options)
+local discressionaryBreaksFilter = function (content, _, options)
   local currentText = ""
   local result = {}
   local process
@@ -619,25 +620,25 @@ local discressionaryBreaksFilter = function (content, args, options)
   return result
 end
 
-addDiscressionaryBreaks = function (options, content)
+CASILE.addDiscressionaryBreaks = function (options, content)
   if type(options[1]) ~= "table" then options = { options } end
-  for _, options in pairs(options) do
-    if not options.breakat then options.breakat = "[:]" end
-    if not options.breakwith then options.breakwith = "aki" end
-    if not options.breakopts then options.breakopts = {} end
-    if not options.breakall then options.breakall = false end
-    if not options.breakbefore then options.breakbefore = false end
-    if not options.replace then options.replace = false end
-    content = inputfilter.transformContent(content, discressionaryBreaksFilter, options)
+  for _, opts in pairs(options) do
+    if not opts.breakat then opts.breakat = "[:]" end
+    if not opts.breakwith then opts.breakwith = "aki" end
+    if not opts.breakopts then opts.breakopts = {} end
+    if not opts.breakall then opts.breakall = false end
+    if not opts.breakbefore then opts.breakbefore = false end
+    if not opts.replace then opts.replace = false end
+    content = inputfilter.transformContent(content, discressionaryBreaksFilter, opts)
   end
   return content
 end
 
 SILE.registerCommand("addDiscressionaryBreaks", function (options, content)
-  SILE.process(addDiscressionaryBreaks(options, content))
+  SILE.process(CASILE.addDiscressionaryBreaks(options, content))
 end, "Try to find good breakpoints based on punctuation")
 
-SILE.registerCommand("pubDateFormat", function (options, content)
+SILE.registerCommand("pubDateFormat", function (_, content)
   local input = SU.contentToString(content)
   local date = {}
   for m in input:gmatch("(%d+)") do table.insert(date, tonumber(m)) end
@@ -646,7 +647,7 @@ SILE.registerCommand("pubDateFormat", function (options, content)
 end, "Output publication dates in proper format for imprint page")
 
 local originalTypesetter = SILE.typesetter.typeset
-dropcapNextLetter = function ()
+CASILE.dropcapNextLetter = function ()
   SILE.typesetter.typeset = function (self, text)
     local first, rest = text:match("([^%w]*%w)(.*)")
     if load and first and rest then
@@ -659,7 +660,7 @@ dropcapNextLetter = function ()
   end
 end
 
-SILE.registerCommand("dropcap", function (options, content)
+SILE.registerCommand("dropcap", function (_, content)
   SILE.call("noindent")
   SILE.call("float", { bottomboundary = "1.2ex", rightboundary = "1spc" }, function ()
     SILE.call("cabook:font:chaptertitle", { size = "5.2ex", weight = 800 }, content)
@@ -670,7 +671,7 @@ end)
 SILE.registerCommand("requireSpace", function (options, content)
 	local required = SILE.length(options.height or 1)
 	SILE.typesetter:leaveHmode()
-	local hbox = SILE.Commands["hbox"]({}, content)
+	SILE.Commands["hbox"]({}, content)
 	table.remove(SILE.typesetter.state.nodes) -- steal it back
 	local heightOfPageSoFar = SILE.pagebuilder.collateVboxes(SILE.typesetter.state.outputQueue).height
 	local heightOfFrame = SILE.typesetter.frame:height()
@@ -687,7 +688,7 @@ local parseSize = function (size)
   return SILE.length(size):absolute().length
 end
 
-constrainSize = function (ideal, max, min)
+CASILE.constrainSize = function (ideal, max, min)
   local idealSize = parseSize(ideal)
   if max then
     local maxSize = parseSize(max)
@@ -700,11 +701,11 @@ constrainSize = function (ideal, max, min)
   return ideal
 end
 
-isWideLayout = function ()
+CASILE.isWideLayout = function ()
   return CASILE.layout == "banner" or CASILE.layout == "wide" or CASILE.layout == "screen"
 end
 
-isScreenLayout = function ()
+CASILE.isScreenLayout = function ()
   return CASILE.layout == "app" or CASILE.layout == "screen"
 end
 

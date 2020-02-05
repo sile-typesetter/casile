@@ -1,6 +1,8 @@
 #!/usr/bin/env lua
 
-local project = os.getenv("PROJECT")
+-- luacheck: ignore loadstring
+local loadstring = loadstring or load
+
 local basename = arg[1]
 local path = arg[1] .. "/app/" .. arg[1]
 
@@ -8,6 +10,7 @@ local tocfile = io.open(arg[2], "r")
 if not tocfile then return false end
 local doc = tocfile:read("*a")
 tocfile:close()
+
 local toc = assert(loadstring(doc))()
 
 local yaml = require("yaml")
@@ -30,7 +33,7 @@ infow(meta.title, true)
 infow("SUBTITLE:")
 infow(meta.subtitle, true)
 
-for k, v in ipairs(meta.creator) do
+for _, v in ipairs(meta.creator) do
   if v.role == "author" then meta.author = v.text end
 end
 
@@ -41,16 +44,12 @@ infow("ABSTRACT:")
 infow(meta.abstract, true)
 
 infow("SINGLE PDF:")
-local out = path .. "-uygulama.pdf"
-infow(share .. out, true)
+infow(share .. path .. "-uygulama.pdf", true)
 
 infow("MEDIA:")
-local out = path .. "-square-poster.jpg"
-infow(share .. out, true)
-local out = path .. "-wide-poster.jpg"
-infow(share .. out, true)
-local out = path .. "-banner-poster.jpg"
-infow(share .. out, true)
+infow(share .. path .. "-square-poster.jpg", true)
+infow(share .. path .. "-wide-poster.jpg", true)
+infow(share .. path .. "-banner-poster.jpg", true)
 
 local labels = {}
 local breaks = {}
@@ -66,7 +65,8 @@ if #toc > 0 then
   breaks = { 1 }
 
   -- Get a table of major (more that 2 pages apart) TOC entries
-  for i, tocentry in pairs(toc) do
+	-- TODO: should this be ipairs()?
+  for _, tocentry in pairs(toc) do
     if tocentry.level <= 2 then
       local pageno = tonumber(tocentry.pageno)
       if pageno > lastpage + 2 then

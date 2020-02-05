@@ -1,6 +1,7 @@
 # CaSILE toolkit
 
-[![Docker Build Status](https://img.shields.io/docker/cloud/build/siletypesetter/casile?label=Docker%20Build&logo=Docker)](https://hub.docker.com/repository/docker/siletypesetter/casile/builds)<br />
+[![Docker Build Status](https://img.shields.io/docker/cloud/build/siletypesetter/casile?label=Docker%20Build&logo=Docker)](https://hub.docker.com/repository/docker/siletypesetter/casile/builds)
+[![Luacheck Lint Status](https://img.shields.io/github/workflow/status/sile-typesetter/casile/Luacheck?label=Luacheck&logo=Github)](https://github.com/sile-typesetter/casile/actions?workflow=Luacheck)<br />
 [![Chat on Gitter](https://img.shields.io/gitter/room/sile-typesetter/casile?color=blue&label=Chat&logo=Gitter)](https://gitter.im/sile-typesetter/casile?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-blue.svg)](https://conventionalcommits.org)
 [![Commitizen Friendly](https://img.shields.io/badge/Commitizen-friendly-blue.svg)](http://commitizen.github.io/cz-cli/)

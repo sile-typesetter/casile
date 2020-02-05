@@ -8,7 +8,7 @@ SILE.registerCommand("imprint:font", function (options, content)
   SILE.call("font", options, content)
 end)
 
-SILE.registerCommand("imprint", function (options, content)
+SILE.registerCommand("imprint", function (_, _)
   SILE.settings.temporarily(function ()
     local imgUnit = SILE.length("1em")
     SILE.settings.set("document.lskip", SILE.nodefactory.glue())
@@ -45,6 +45,7 @@ SILE.registerCommand("imprint", function (options, content)
         if CASILE.metadata.manufacturer then
           SILE.call("skip", { height = "5.4em" })
           SILE.settings.temporarily(function ()
+						-- luacheck: ignore qrimg
             SILE.call("img", { src = qrimg, height = "5.8em" })
             SILE.call("skip", { height = "-6.3em" })
             SILE.settings.set("document.lskip", SILE.nodefactory.glue({ width = imgUnit * 6.5 }))
@@ -60,7 +61,7 @@ SILE.registerCommand("imprint", function (options, content)
             for i = 1, #SILE.typesetter.state.nodes do
               lines = lines + (SILE.typesetter.state.nodes[i]:isPenalty() and 1 or 0)
             end
-            for i = lines, 5 do
+            for _ = lines, 5 do
               SILE.call("hbox")
               SILE.call("break")
             end
@@ -85,8 +86,8 @@ SILE.registerCommand("imprint", function (options, content)
           SILE.call("par")
         end
         if CASILE.metadata.publisher then
-          if SILE.Commands["meta:distribution"]() then
-          elseif SILE.Commands["meta:date"] then
+					local distributed = SILE.Commands["meta:distribution"]()
+          if not distributed and SILE.Commands["meta:date"] then
             if CASILE.metadata.manufacturer then
               SILE.call("meta:manufacturer")
               SILE.call("par")
@@ -102,7 +103,7 @@ SILE.registerCommand("imprint", function (options, content)
   SILE.call("break")
 end)
 
-SILE.registerCommand("meta:distribution", function (options, content)
+SILE.registerCommand("meta:distribution", function (_, _)
   local layout = CASILE.layout
   local distros = CASILE.metadata.distribution
   local text = nil

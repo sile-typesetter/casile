@@ -1,3 +1,3 @@
-Note = function ()
+Note = function (_)
 	return {}
 end

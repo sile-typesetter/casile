@@ -64,7 +64,7 @@ local function reconstrainFrameset(fs)
   end
 end
 
-local setup = function (self, args)
+local setup = function (_, args)
   if args then
     bleed = args.bleed or bleed
     trim = args.trim or trim
@@ -82,7 +82,8 @@ local setup = function (self, args)
   page:constrain("bottom", oldsize[2] + trim)
   page:constrain("top", trim)
   if SILE.scratch.masters then
-    for k,v in pairs(SILE.scratch.masters) do
+		-- TODO: should this be ipairs()?
+    for _, v in pairs(SILE.scratch.masters) do
       reconstrainFrameset(v.frames)
     end
   else
@@ -91,11 +92,12 @@ local setup = function (self, args)
   if SILE.typesetter.frame then SILE.typesetter.frame:init() end
 end
 
-local init = function (self)
+local init = function (_)
 
+	-- luacheck: ignore outcounter
   local outcounter = 1
 
-  SILE.registerCommand("crop:header", function (options, content)
+  SILE.registerCommand("crop:header", function (_, _)
     SILE.call("meta:surum")
     SILE.typesetter:typeset(" (" .. outcounter .. ") " .. os.getenv("HOSTNAME") .. " / " .. os.date("%Y-%m-%d, %X"))
     outcounter = outcounter + 1

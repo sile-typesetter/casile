@@ -7,7 +7,7 @@ cabook:declareOption("crop", "true")
 cabook:declareOption("background", "true")
 cabook:declareOption("verseindex", "false")
 
-cabook.init = function (self)
+cabook.init = function (_)
   if cabook.options.crop() == "true" then
     cabook:loadPackage("crop", CASILE.casiledir)
   end
@@ -17,7 +17,7 @@ cabook.init = function (self)
   return book:init()
 end
 
-cabook.endPage = function (self)
+cabook.endPage = function (_)
   cabook:moveTocNodes()
   if cabook.moveTovNodes then cabook:moveTovNodes() end
 
@@ -38,7 +38,7 @@ cabook.endPage = function (self)
   return ret
 end
 
-cabook.finish = function (self)
+cabook.finish = function (_)
   if cabook.moveTovNodes then
     cabook:writeTov()
     SILE.call("tableofverses")
