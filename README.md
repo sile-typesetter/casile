@@ -1,5 +1,9 @@
 # CaSILE toolkit
 
+[![Chat on Gitter](https://img.shields.io/gitter/room/sile-typesetter/casile?color=blue&label=Chat&logo=Gitter)](https://gitter.im/sile-typesetter/casile?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-blue.svg)](https://conventionalcommits.org)
+[![Commitizen Friendly](https://img.shields.io/badge/Commitizen-friendly-blue.svg)](http://commitizen.github.io/cz-cli/)
+
 The CaSILE toolkit is a collection of tools designed to automate book publishing from start to finish. The concept is to take very simple input and turn it into a finished product with as little manual intervention as possible. It transforms plain text document formats and meta data into press ready PDFs, E-Books, and rendered promotional materials.
 
 CaSILE (pronounced like 'castle') started out life as a submodule called `avadanlik` included inside my book project repositories (avadanlık being a Turkish word for toolkit). AS most of the parts revolve around SILE, in my head at least CaSILE became **Caleb’in Avadanlığı ile Simon’s Improved Layout Engine**, roughly translating to “Caleb's SILE Toolkit”. Come to think of it that would have been a simpler way to arrive at the name, but the project has deep Turkish roots so I'm keeping the "a" in the name name as a nod to its origin.
@@ -10,7 +14,7 @@ CaSILE glues together *a lot* of different tools to build a complete publishing 
 
 All of the following are utilized in one way or another. Currently the toolkit assumes all the following are present, but as not all of them are used to build all resources it could be possible to make this more selective. For example not having the ray tracing engine would just mean no fancy 3D previews of book covers, but you could still build PDFs and other digital formats. Not having Node would mean no Bible verse format normalization, but you should still be able to build books. Not having ImageMagick would mean no covers, but you could still process the interior of books. On the other hand not having Pandoc would be fatal.
 
-* The [SILE][sile] Typesetter (currently I'm assuming the git HEAD version) is the workhorse behind most of the text layout.
+* The [SILE][sile] Typesetter (v0.10.0 or newer, assumes latest) is the workhorse behind most of the text layout.
 * [Pandoc][pandoc] (specifically with [my branch with SILE support][pandocsile]) converts between document types.
 * [ImageMagick][im] handles raster image processing (v7 required).
 * [POVRay][pov] is used to render 3 dimensional visualizations.
@@ -302,9 +306,9 @@ These are functions that can be defined in your project's `Makefile` to add addi
 
 
 [viachristus]: http://yayinlar.viachristus.com/
-[sile]: http://sile-typesetter.org/
+[sile]: https://sile-typesetter.org
 [pandoc]: http://pandoc.org/
-[pandocsile]: https://github.com/alerque/pandoc/tree/sile-2.7.3
+[pandocsile]: https://github.com/alerque/pandoc/tree/sile-head
 [im]: http://imagemagick.org/
 [pov]: http://www.povray.org/
 [zint]: https://zint.github.io/

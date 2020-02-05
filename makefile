@@ -1455,4 +1455,7 @@ diff:
 	git diff --color=always --ignore-submodules --no-ext-diff
 	git submodule foreach git diff --color=always --no-ext-diff
 
+docker: Dockerfile build-aux/docker-entrypoint.sh build-aux/docker-yay-runner.sh
+	docker build --tag siletypesetter/casile:HEAD ./
+
 -include $(POSTCASILEINCLUDE)
