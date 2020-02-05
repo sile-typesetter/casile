@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 var readline = require('readline')
-var bcv_parser = require('bible-passage-reference-parser/js/tr_bcv_parser').bcv_parser
-var bcv = new bcv_parser()
+var BcvParser = require('bible-passage-reference-parser/js/tr_bcv_parser').bcv_parser
+var bcv = new BcvParser()
 var formatter = require('bible-reference-formatter/es6/tr')
 
-var merge_chains = false
+var mergechains = false
 
 bcv.set_options({
   sequence_combination_strategy: 'separate'
@@ -18,6 +18,7 @@ var rl = readline.createInterface({
   terminal: false
 })
 
+// eslint-disable-next-line no-extend-native
 String.prototype.replaceSplice = function (start, end, string) {
   return this.substr(0, start) + string + this.substr(end)
 }
@@ -37,7 +38,7 @@ function mergeRefs (a, b) {
   }
 }
 
-function process_line (line) {
+function processLine (line) {
   line = line + '\n' // restore that which readline rightfully stole
   // if (!line.match(/^(#|\[\^\d+\]:) /)) { // skip footnotes and headings for now
   var offset = 0
@@ -45,7 +46,7 @@ function process_line (line) {
   var context = null
   var refs = bcv.parse(line).osis_and_indices()
   refs.forEach(function (ref) {
-    if (context && isChained(context, ref, line, offset) && merge_chains) {
+    if (context && isChained(context, ref, line, offset) && mergechains) {
       var mref = mergeRefs(context, ref)
       ref = mref
       offset -= previousOffset
@@ -64,4 +65,4 @@ function process_line (line) {
   process.stdout.write(line)
 }
 
-rl.on('line', process_line)
+rl.on('line', processLine)

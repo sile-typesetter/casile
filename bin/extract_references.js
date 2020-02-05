@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 var readline = require('readline')
-var bcv_parser = require('bible-passage-reference-parser/js/tr_bcv_parser').bcv_parser
-var bcv = new bcv_parser()
+var BcvParser = require('bible-passage-reference-parser/js/tr_bcv_parser').bcv_parser
+var bcv = new BcvParser()
 var formatter = require('bible-reference-formatter/es6/tr')
 
 bcv.set_options({
@@ -18,7 +18,7 @@ var rl = readline.createInterface({
 
 var references = []
 
-function extract_references (data) {
+function extractReferences (data) {
   var res = bcv.parse(data).parsed_entities()
   res.forEach(function (match) {
     var ref = {}
@@ -33,10 +33,10 @@ function extract_references (data) {
   })
 }
 
-function output_references () {
+function outputReferences () {
   var output = JSON.stringify(references, null, '  ')
   process.stdout.write(output)
 }
 
-rl.on('line', extract_references)
-rl.on('close', output_references)
+rl.on('line', extractReferences)
+rl.on('close', outputReferences)
