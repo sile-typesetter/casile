@@ -19,6 +19,8 @@ FROM casile-base AS casile
 
 COPY --from=pandoc-builder /root/.local/bin/pandoc /usr/local/bin
 
+RUN sed -i -e '/pattern="gs"/d' /etc/ImageMagick-7/policy.xml
+
 LABEL maintainer="Caleb Maclennan <caleb@alerque.com>"
 LABEL version="$casile_tag"
 
