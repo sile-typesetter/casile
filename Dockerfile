@@ -8,7 +8,7 @@ RUN docker-yay-runner.sh "--noconfirm --asexplicit -Sq casile-git sile-git"
 
 FROM casile-base AS pandoc-builder
 
-RUN pacman --needed --noconfirm -Sq ghc stack
+RUN pacman --needed --noconfirm -Sq git base-devel ghc stack
 
 WORKDIR /pandoc-sile
 RUN git clone --depth 1 https://github.com/alerque/pandoc.git -b sile-writer-pr .
