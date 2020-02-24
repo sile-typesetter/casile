@@ -8,6 +8,7 @@ GITNAME := $(notdir $(shell git worktree list | head -n1 | awk '{print $$1}'))
 PROJECT ?= $(GITNAME)
 PUBDIR ?= $(PROJECTDIR)/pub
 PUBLISHERDIR ?= $(CASILEDIR)
+CASILEVER := $(shell cd $(CASILEDIR) && git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
 
 # Set the language if not otherwise set
 LANGUAGE ?= en
@@ -301,6 +302,7 @@ debug:
 	@echo BINDINGS: $(BINDINGS)
 	@echo BOUNDLAYOUTS: $(BOUNDLAYOUTS)
 	@echo CASILEDIR: $(CASILEDIR)
+	@echo CASILEVER: $(CASILEVER)
 	@echo CICONFIG: $(CICONFIG)
 	@echo CITEMPLATE: $(CITEMPLATE)
 	@echo DEBUG: $(DEBUG)
@@ -1455,7 +1457,7 @@ diff:
 	git diff --color=always --ignore-submodules --no-ext-diff
 	git submodule foreach git diff --color=always --no-ext-diff
 
-docker: Dockerfile build-aux/docker-entrypoint.sh build-aux/docker-yay-runner.sh
-	docker build --tag siletypesetter/casile:HEAD ./
+docker: Dockerfile build-aux/docker-entrypoint.sh
+	docker build --build-arg VCS_REF="$(CASILEVER)" --tag siletypesetter/casile:HEAD ./
 
 -include $(POSTCASILEINCLUDE)

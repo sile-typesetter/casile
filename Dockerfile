@@ -1,28 +1,27 @@
-ARG casile_tag=master
-FROM archlinux AS casile-base
+FROM archlinux AS casile
 
+# Setup Alerque's hosted Arch repository with prebuilt dependencies
+RUN pacman-key --init && pacman-key --populate
+RUN sed -i -e '/^.community/{n;n;s!^!\n\[alerque\]\nServer = https://arch.alerque.com/$arch\n!}' /etc/pacman.conf
+RUN pacman-key --recv-keys 63CC496475267693 && pacman-key --lsign-key 63CC496475267693
+
+# Freshen all base system packages
 RUN pacman --needed --noconfirm -Syyuq && yes | pacman -Sccq
 
-COPY build-aux/docker-yay-runner.sh /usr/local/bin
-RUN docker-yay-runner.sh "--noconfirm --asexplicit -Sq casile-git sile-git"
+# Install Arch SILE package (turtles all the way down)
+RUN pacman --needed --noconfirm -Sq casile-git && yes | pacman -Sccq
 
-FROM casile-base AS pandoc-builder
+# Set at build time, forces Docker's layer caching to reset at this point
+ARG VCS_REF=0
 
-RUN pacman --needed --noconfirm -Sq git base-devel ghc stack
+# Freshen everything again, makes Docker's layer caching useful to save downloads
+RUN pacman --needed --noconfirm -Syyuq && yes | pacman -Sccq
 
-WORKDIR /pandoc-sile
-RUN git clone --depth 1 https://github.com/alerque/pandoc.git -b sile-writer-pr .
-RUN sed -i -e '10s!--test !!' Makefile
-RUN make quick
-
-FROM casile-base AS casile
-
-COPY --from=pandoc-builder /root/.local/bin/pandoc /usr/local/bin
-
+# Patch up Arch's Image Magick security settings to let it run Ghostscript
 RUN sed -i -e '/pattern="gs"/d' /etc/ImageMagick-7/policy.xml
 
 LABEL maintainer="Caleb Maclennan <caleb@alerque.com>"
-LABEL version="$casile_tag"
+LABEL version="$VCS_REF"
 
 COPY build-aux/docker-entrypoint.sh /usr/local/bin
 
