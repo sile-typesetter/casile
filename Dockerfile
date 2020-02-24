@@ -11,17 +11,17 @@ RUN pacman --needed --noconfirm -Syyuq && yes | pacman -Sccq
 # Install Arch SILE package (turtles all the way down)
 RUN pacman --needed --noconfirm -Sq casile-git && yes | pacman -Sccq
 
-# Patch up Arch's Image Magick security settings to let it run Ghostscript
-RUN sed -i -e '/pattern="gs"/d' /etc/ImageMagick-7/policy.xml
-
 # Set at build time, forces Docker's layer caching to reset at this point
-ARG version=0
+ARG VCS_REF=0
 
 # Freshen everything again, makes Docker's layer caching useful to save downloads
 RUN pacman --needed --noconfirm -Syyuq && yes | pacman -Sccq
 
+# Patch up Arch's Image Magick security settings to let it run Ghostscript
+RUN sed -i -e '/pattern="gs"/d' /etc/ImageMagick-7/policy.xml
+
 LABEL maintainer="Caleb Maclennan <caleb@alerque.com>"
-LABEL version="$casile_tag"
+LABEL version="$VCS_REF"
 
 COPY build-aux/docker-entrypoint.sh /usr/local/bin
 
