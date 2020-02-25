@@ -8,8 +8,8 @@ RUN pacman-key --recv-keys 63CC496475267693 && pacman-key --lsign-key 63CC496475
 # Freshen all base system packages
 RUN pacman --needed --noconfirm -Syuq && yes | pacman -Sccq
 
-# Install Arch SILE package (turtles all the way down)
-RUN pacman --needed --noconfirm -Syq casile-git && yes | pacman -Sccq
+# Install Arch CaSILE package (turtles all the way down)
+RUN pacman --needed --noconfirm -Syq casile-git remake && yes | pacman -Sccq
 
 # Set at build time, forces Docker's layer caching to reset at this point
 ARG VCS_REF=0
