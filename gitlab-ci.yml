@@ -3,7 +3,6 @@ stages:
 variables:
   GIT_STRATEGY: fetch
   GIT_SUBMODULE_STRATEGY: normal
-  MAKEFLAGS: --jobs=$(nproc) --output-sync=target
 ci:
   stage: build
   tags:

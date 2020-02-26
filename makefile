@@ -118,9 +118,9 @@ RENDERED_DEF := $(filter $(call pattern_list,$(REALPAPERSIZES),-%),$(LAYOUTS))
 RENDERED ?= $(RENDERED_DEF)
 RENDERED += $(GOALLAYOUTS)
 
-# Default to running multiple jobs
-JOBS := $(shell nproc 2> /dev/null || sysctl -n hw.ncpu 2> /dev/null || echo 1)
-MAKEFLAGS += "-j $(JOBS)"
+# Default to running multiple jobs in parallel
+JOBS ?= $(shell nproc 2>- || sysctl -n hw.ncpu 2>- || echo 1)
+MAKEFLAGS += -j$(JOBS) -Otarget
 
 # Over-ride entr arguments, defaults to just clear
 # Add -r to kill and restart jobs on activity
