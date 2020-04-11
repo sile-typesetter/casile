@@ -359,7 +359,7 @@ SILE.registerCommand("footnote", function (options, content)
   local oldT = SILE.typesetter
   SILE.typesetter = SILE.typesetter {}
   SILE.typesetter:init(f)
-  SILE.typesetter.pageTarget = function () return 0xFFFFFF end
+  SILE.typesetter.getTargetLength = function () return SILE.length(0xFFFFFF) end
   SILE.settings.pushState()
   SILE.settings.reset()
   SILE.settings.set("linespacing.method", "fit-font")
