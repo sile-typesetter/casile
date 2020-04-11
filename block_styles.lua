@@ -71,6 +71,7 @@ end)
 
 SILE.registerCommand("cabook:chapter:after", function (options, _)
   SILE.call("bigskip")
+  SILE.call("noindent")
   SILE.call("fullrule")
   if (options.numbering == false or options.numbering == "false") then
     SILE.call("skip", { height = "10pt" })
