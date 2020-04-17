@@ -200,7 +200,7 @@ export PATH := $(CASILEDIR)/bin:$(PATH):$(shell $(PYTHON) -c "import site; print
 export HOSTNAME := $(shell hostname)
 export PROJECT := $(PROJECT)
 
-LOCALSILE ?= $(HOME)/projects/sile
+LOCALSILE ?= $(HOME)/projects/sile-typesetter/sile
 ifeq ($(DEBUG),true)
 SILE = $(LOCALSILE)/sile
 $(call prepend,SILEPATH,$(LOCALSILE) $(LOCALSILE)/core )
