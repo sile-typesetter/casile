@@ -431,7 +431,7 @@ SILE.registerCommand("langhe", function (_, content)
 end)
 
 SILE.registerCommand("quote", function (options, content)
-  options.setback = options.setback or SILE.settings.get("document.parindent")
+  options.setback = options.setback or SU.cast("length", SILE.settings.get("document.parindent"))
   SILE.settings.pushState()
   SILE.settings.temporarily(function ()
     SILE.call("noindent")
