@@ -1457,7 +1457,4 @@ diff:
 	git diff --color=always --ignore-submodules --no-ext-diff
 	git submodule foreach git diff --color=always --no-ext-diff
 
-docker: Dockerfile build-aux/docker-entrypoint.sh
-	docker build --build-arg VCS_REF="$(CASILEVER)" --tag siletypesetter/casile:HEAD ./
-
 -include $(POSTCASILEINCLUDE)

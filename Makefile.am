@@ -21,6 +21,13 @@ casile$(EXEEXT): target/release/casile
 target/release/casile: $(casile_SOURCES)
 	cargo build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
 
+.PHONY: docker
+docker: Dockerfile build-aux/docker-entrypoint.sh
+	docker build \
+		--build-arg VCS_REF="$(VERSION)" \
+		--tag siletypesetter/casile:HEAD \
+		./
+
 check-local:
 	cargo test
 
