@@ -200,7 +200,7 @@ export PATH := $(CASILEDIR)/bin:$(PATH):$(shell $(PYTHON) -c "import site; print
 export HOSTNAME := $(shell hostname)
 export PROJECT := $(PROJECT)
 
-LOCALSILE ?= $(HOME)/projects/sile
+LOCALSILE ?= $(HOME)/projects/sile-typesetter/sile
 ifeq ($(DEBUG),true)
 SILE = $(LOCALSILE)/sile
 $(call prepend,SILEPATH,$(LOCALSILE) $(LOCALSILE)/core )
@@ -610,7 +610,7 @@ SILEFLAGS += $(foreach LUAINCLUDE,$(call reverse,$(LUAINCLUDES)),-I $(LUAINCLUDE
 preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(PROJECTMACRO) $(TARGETMACROS_$1)
 
 INTERMEDIATES += *-$(_processed).md
-%-$(_processed).md: %.md $$(call preprocess_macros,$$*) $$(wildcard $$*-bolumler/*.md) | figures
+%-$(_processed).md: %.md $(wildcard %-$(_chapters)/*.md) $$(call preprocess_macros,$$*) $$(wildcard $$*-bolumler/*.md) | figures
 	if $(DIFF) && $(if $(PARENT),true,false); then
 		branch2criticmark.zsh $(PARENT) $<
 	else
