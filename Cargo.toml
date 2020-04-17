@@ -7,6 +7,7 @@ description = "CLI for the CaSILE toolkit, a book publishing workflow employing 
 homepage = "https://github.com/sile-typesetter/casile"
 repository = "https://github.com/sile-typesetter/casile"
 license = "AGPL-3"
+build = "build.rs"
 
 [dependencies]
 structopt = "0.3.13"
