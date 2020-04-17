@@ -4,3 +4,4 @@ yarn.lock
 *.toc
 makefile-*-reversed
 tags
+target
