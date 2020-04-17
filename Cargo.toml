@@ -9,7 +9,7 @@ repository = "https://github.com/sile-typesetter/casile"
 license = "AGPL-3"
 
 [dependencies]
-structopt = "0.2.10"
+structopt = "0.3.13"
 
 [profile.release]
 lto = true
