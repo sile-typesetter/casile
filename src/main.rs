@@ -7,7 +7,7 @@ struct Cli {
     // version: [ version = env!("VERGEN_SEMVER") ],
 
     /// Activate debug mode
-    #[structopt(short, long)]
+    #[structopt(short, long, env = "DEBUG")]
     debug: bool,
 
     /// Outputs verbose feedback where possible
@@ -23,7 +23,11 @@ enum Command {
     /// Executes a make target
     Make {
         target: String
-    }
+    },
+
+    /// Pass through other commands to shell
+    #[structopt(external_subcommand)]
+    Other(Vec<String>),
 }
 
 fn main() {
