@@ -1,4 +1,5 @@
-FROM archlinux AS casile
+FROM archlinux:20200306 AS casile
+RUN sed -i -e '/IgnorePkg *=/s/^.*$/IgnorePkg = coreutils/' /etc/pacman.conf
 
 # Setup Caleb's hosted Arch repository with prebuilt dependencies
 RUN pacman-key --init && pacman-key --populate
