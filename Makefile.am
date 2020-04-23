@@ -97,6 +97,15 @@ node_modules: yarn.lock
 yarn.lock: package.json
 	yarn install
 
+dist-hook:
+	yarn install --production --frozen-lockfile --modules-folder "$(distdir)/node_modules"
+
+install-data-hook:
+	yarn install --production --frozen-lockfile --modules-folder "$(DESTDIR)$(datadir)/node_modules"
+
+uninstall-hook:
+	rm -rf "$(DESTDIR)$(datadir)/node_modules"
+
 RELTYPE ?=
 
 .PHONY: tagrelease
