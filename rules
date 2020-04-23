@@ -553,7 +553,7 @@ endif
 
 FULLSILS := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil)
 FULLSILS += $(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil)
-$(FULLSILS): private PANDOCFILTERS += --filter=$(CASILEDIR)/svg2pdf.py
+$(FULLSILS): private PANDOCFILTERS += --filter=$(CASILEDIR)/pandoc-filters/svg2pdf.py
 $(FULLSILS): private THISEDITS = $(call parse_edits,$@)
 $(FULLSILS): private PROCESSEDSOURCE = $(call pattern_list,$(call parse_bookid,$@),$(_processed),$(and $(THISEDITS),-$(THISEDITS)).md)
 $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_bookid,$$@),-manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
