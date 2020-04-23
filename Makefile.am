@@ -1,7 +1,10 @@
 $(and $(word 2,$(MAKEFILE_LIST)),$(error This is not the makefile you should include in your project to run SILE, please use 'rules' instead.))
 
-licensedir = $(datarootdir)/licenses/casile
-datadir = $(datarootdir)/casile
+_casile != sed -e "$(program_transform_name)" <<< casile
+
+licensedir = $(datarootdir)/licenses/$(_casile)
+docdir = $(datarootdir)/doc/$(_casile)
+datadir = $(datarootdir)/$(_casile)
 
 bin_PROGRAMS = casile
 dist_doc_DATA = README.md CHANGELOG.md
@@ -21,7 +24,7 @@ cargo_verbose_ = $(cargo_verbose_$(AM_DEFAULT_VERBOSITY))
 cargo_verbose_0 =
 cargo_verbose_1 = --verbose
 
-casile: target/release/casile
+casile$(EXEEXT): target/release/casile
 	cp $< $@
 
 target/release/casile: $(casile_SOURCES)
