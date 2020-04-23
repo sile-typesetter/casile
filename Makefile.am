@@ -1,10 +1,14 @@
 $(and $(word 2,$(MAKEFILE_LIST)),$(error This is not the makefile you should include in your project to run SILE, please use 'rules' instead.))
 
-bin_PROGRAMS = casile$(EXEEXT)
-casile_SOURCES = Cargo.toml build.rs src/main.rs
-casile_EXTRA = Cargo.lock
+licensedir = $(datarootdir)/licenses/casile
+datadir = $(datarootdir)/casile
 
-EXTRA_DIST = $(casile_SOURCES) $(casile_EXTRA)
+bin_PROGRAMS = casile
+dist_doc_DATA = README.md CHANGELOG.md
+dist_license_DATA = LICENSE.txt
+
+casile_SOURCES = Cargo.toml build.rs src/main.rs
+EXTRA_casile_SOURCES = Cargo.lock
 
 if DEBUG_RELEASE
 CARGO_RELEASE_ARGS=
@@ -17,7 +21,7 @@ cargo_verbose_ = $(cargo_verbose_$(AM_DEFAULT_VERBOSITY))
 cargo_verbose_0 =
 cargo_verbose_1 = --verbose
 
-casile$(EXEEXT): target/release/casile
+casile: target/release/casile
 	cp $< $@
 
 target/release/casile: $(casile_SOURCES)
