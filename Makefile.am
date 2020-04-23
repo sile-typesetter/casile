@@ -16,6 +16,9 @@ bin_PROGRAMS = casile
 casile_SOURCES = Cargo.toml build.rs src/main.rs
 EXTRA_casile_SOURCES = Cargo.lock
 
+scriptsdir = $(datadir)/bin
+dist_scripts_SCRIPTS = bin
+
 fontsdir = $(datadir)/fonts
 dist_fonts_DATA = fonts
 
