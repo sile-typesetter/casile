@@ -1458,3 +1458,5 @@ diff:
 	git submodule foreach git diff --color=always --no-ext-diff
 
 -include $(POSTCASILEINCLUDE)
+
+# vim: ft=make
