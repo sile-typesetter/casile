@@ -21,6 +21,39 @@ EXTRA_casile_SOURCES = Cargo.lock
 rulesdir = $(datadir)
 dist_rules_DATA = rules makefile-functions makefile-en makefile-tr
 
+luadir = $(datadir)
+dist_lua_DATA = block_styles.lua cabook.lua casile.lua covers.lua endnotes.lua hyphenation_exceptions.lua imprint.lua inline_styles.lua lists.lua readmeta.lua
+
+povdir = $(datadir)
+dist_pov_DATA = back.pov book.pov front.pov montage.pov pile.pov
+
+xmldir = $(datadir)
+dist_xml_DATA = binding.xml cover.xml geometry.xml
+
+sildir = $(datadir)
+dist_sil_DATA = a5kesme.sil template.sil
+
+svgdir = $(datadir)
+dist_svg_DATA = binding.svg emblum.svg logo.svg
+
+m4dir = $(datadir)
+dist_m4_DATA = casile.m4
+
+yamldir = $(datadir)
+dist_yaml_DATA = casile.yml
+
+templatesdir = $(datadir)
+dist_templates_DATA = editorconfig gitignore gitlab-ci.yml
+
+namesdir = $(datadir)
+dist_names_DATA = names.en.txt names.la.txt names.part.txt names.tr.txt names.und.txt names.xx.txt
+
+seddir = $(datadir)
+dist_sed_DATA = upgrade-lua.sed upgrade-make.sed upgrade-markdown.sed upgrade-yaml.sed
+
+vimdir = $(datadir)
+dist_vim_DATA = citation_audit.vim quotation_audit.vim
+
 scriptsdir = $(datadir)/bin
 dist_scripts_DATA = bin/branch2criticmark.zsh bin/cover_title.py bin/diff2marked.zsh bin/extract_references.js bin/figure_dash.pl bin/functions.zsh bin/isbn_format.py bin/italic_reorder.pl bin/lazy_quotes.pl bin/link_verses.js bin/loadchapters.zsh bin/msword_escapes.pl bin/normalize_references.js bin/ordinal_spaces.pl bin/renumber_footnotes.pl bin/reorder_punctuation.pl bin/series_sort.lua bin/smart_quotes.pl bin/split_chapters.zsh bin/stats.zsh bin/toc2breaks.lua bin/unicode_symbols.pl bin/worklog.zsh
 
