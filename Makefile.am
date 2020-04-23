@@ -6,9 +6,12 @@ licensedir = $(datarootdir)/licenses/$(_casile)
 docdir = $(datarootdir)/doc/$(_casile)
 datadir = $(datarootdir)/$(_casile)
 
-bin_PROGRAMS = casile
 dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE.txt
+
+EXTRA_DIST = package.json yarn.lock
+
+bin_PROGRAMS = casile
 
 casile_SOURCES = Cargo.toml build.rs src/main.rs
 EXTRA_casile_SOURCES = Cargo.lock
