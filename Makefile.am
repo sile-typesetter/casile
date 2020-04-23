@@ -23,6 +23,17 @@ casile$(EXEEXT): target/release/casile
 target/release/casile: $(casile_SOURCES)
 	cargo build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
 
+all: init
+
+.PHONY:
+init: node_modules
+
+node_modules: yarn.lock
+	yarn install --frozen-lockfile
+
+yarn.lock: package.json
+	yarn install
+
 RELTYPE ?=
 
 .PHONY: tagrelease
