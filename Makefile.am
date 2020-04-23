@@ -16,17 +16,18 @@ bin_PROGRAMS = casile
 casile_SOURCES = Cargo.toml build.rs src/main.rs
 EXTRA_casile_SOURCES = Cargo.lock
 
+# use :read !git ls-files <dir> to repopulate *_DATA vars
 scriptsdir = $(datadir)/bin
-dist_scripts_SCRIPTS = bin
+dist_scripts_DATA = bin/branch2criticmark.zsh bin/cover_title.py bin/diff2marked.zsh bin/extract_references.js bin/figure_dash.pl bin/functions.zsh bin/isbn_format.py bin/italic_reorder.pl bin/lazy_quotes.pl bin/link_verses.js bin/loadchapters.zsh bin/msword_escapes.pl bin/normalize_references.js bin/ordinal_spaces.pl bin/renumber_footnotes.pl bin/reorder_punctuation.pl bin/series_sort.lua bin/smart_quotes.pl bin/split_chapters.zsh bin/stats.zsh bin/toc2breaks.lua bin/unicode_symbols.pl bin/worklog.zsh
 
 fontsdir = $(datadir)/fonts
-dist_fonts_DATA = fonts
+dist_fonts_DATA = fonts/Almendra-Bold.otf fonts/Almendra-BoldItalic.otf fonts/Almendra-Italic.otf fonts/Almendra-Regular.otf fonts/AlmendraDisplay-Regular.otf fonts/AlmendraSC-Bold.otf fonts/AlmendraSC-BoldItalic.otf fonts/AlmendraSC-Italic.otf fonts/AlmendraSC-Regular.otf fonts/FeFlow2.otf fonts/NexaRustExtras-Free.otf fonts/NexaRustHandmade-Extended-Free.otf fonts/NexaRustSans-Black-Free.otf fonts/NexaRustScriptL-0-Free.otf fonts/NexaRustSlab-BlackShadow01-Free.otf fonts/Nymphette.ttf fonts/PrintersOrnamentsOne.ttf
 
 filtersdir = $(datadir)/pandoc-filters
-dist_filters_DATA = pandoc-filters
+dist_filters_DATA = pandoc-filters/chapterid.lua pandoc-filters/epubclean.lua pandoc-filters/svg2pdf.py pandoc-filters/withoutfootnotes.lua pandoc-filters/withoutheadinglinks.lua pandoc-filters/withoutlinks.lua pandoc-filters/withverses.lua
 
 packagesdir = $(datadir)/packages
-dist_packages_DATA = packages
+dist_packages_DATA = packages/crop.lua packages/markdown.lua packages/verseindex.lua
 
 if DEBUG_RELEASE
 CARGO_RELEASE_ARGS=
