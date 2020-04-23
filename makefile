@@ -1457,6 +1457,18 @@ diff:
 	git diff --color=always --ignore-submodules --no-ext-diff
 	git submodule foreach git diff --color=always --no-ext-diff
 
+RELTYPE ?=
+
+.PHONY: tagrelease
+tagrelease:
+	test -z $$(git tag --points-at HEAD) || exit 0 # end if we are already on a release tag
+	git diff-index --quiet --cached HEAD || exit 1 # die if anything staged but not committed
+	git diff-files --quiet || exit 1 # die if any tracked files have unstagged changes
+	yarn run release $(and $(RELTYPE),--release-as $(RELTYPE))
+
+.PHONY: release
+release: tagrelease
+
 docker: Dockerfile build-aux/docker-entrypoint.sh
 	docker build --build-arg VCS_REF="$(CASILEVER)" --tag siletypesetter/casile:HEAD ./
 
