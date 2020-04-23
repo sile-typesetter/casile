@@ -16,7 +16,11 @@ bin_PROGRAMS = casile
 casile_SOURCES = Cargo.toml build.rs src/main.rs
 EXTRA_casile_SOURCES = Cargo.lock
 
-# use :read !git ls-files <dir> to repopulate *_DATA vars
+# use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
+
+rulesdir = $(datadir)
+dist_rules_DATA = rules makefile-functions makefile-en makefile-tr
+
 scriptsdir = $(datadir)/bin
 dist_scripts_DATA = bin/branch2criticmark.zsh bin/cover_title.py bin/diff2marked.zsh bin/extract_references.js bin/figure_dash.pl bin/functions.zsh bin/isbn_format.py bin/italic_reorder.pl bin/lazy_quotes.pl bin/link_verses.js bin/loadchapters.zsh bin/msword_escapes.pl bin/normalize_references.js bin/ordinal_spaces.pl bin/renumber_footnotes.pl bin/reorder_punctuation.pl bin/series_sort.lua bin/smart_quotes.pl bin/split_chapters.zsh bin/stats.zsh bin/toc2breaks.lua bin/unicode_symbols.pl bin/worklog.zsh
 
