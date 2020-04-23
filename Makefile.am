@@ -1,3 +1,5 @@
+$(and $(word 2,$(MAKEFILE_LIST)),$(error This is not the makefile you should include in your project to run SILE, please use 'rules' instead.))
+
 bin_PROGRAMS = casile$(EXEEXT)
 casile_SOURCES = Cargo.toml build.rs src/main.rs
 casile_EXTRA = Cargo.lock
