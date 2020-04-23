@@ -100,7 +100,7 @@ LAYOUTS += $(call pattern_list,$(PLACARDS),-$(_print))
 endif
 
 # Categorize supported outputs
-PAPERSIZES := $(call localize,$(subst layout-,,$(notdir $(basename $(wildcard $(CASILEDIR)/layout-*.lua)))))
+PAPERSIZES := $(call localize,$(subst layouts/,,$(notdir $(basename $(wildcard $(CASILEDIR)/layouts/*.lua)))))
 BINDINGS = $(call localize,print paperback hardcover coil stapled)
 DISPLAYS := $(_app) $(_screen)
 PLACARDS := $(_square) $(_wide) $(_banner) epub
@@ -511,7 +511,7 @@ endif
 coverpreq = $(and $(filter true,$(COVERS)),$(filter $(_print),$(call parse_binding,$1)),$(filter-out $(DISPLAYS) $(PLACARDS),$(call parse_papersize,$1)),$(basename $1)-$(_cover).pdf)
 
 # Order is important here, these are included in reverse order so early supersedes late
-onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(CASILEDIR)/layout-$(call unlocalize,$(call parse_papersize,$1)).lua $(LUALIBS)
+onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(CASILEDIR)/layouts/$(call unlocalize,$(call parse_papersize,$1)).lua $(LUALIBS)
 
 MOCKUPPDFS := $(call pattern_list,$(MOCKUPSOURCES),$(REALLAYOUTS),.pdf)
 $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
@@ -901,7 +901,7 @@ $(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf
 	rm $${text} $${bg}
 
 BINDINGFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_text).pdf)
-$(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
+$(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -939,7 +939,7 @@ $(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfil
 		$@
 
 COVERFRAGMENTS := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_text).pdf)
-$(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
+$(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
