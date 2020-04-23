@@ -33,6 +33,9 @@ dist_filters_DATA = pandoc-filters/chapterid.lua pandoc-filters/epubclean.lua pa
 packagesdir = $(datadir)/packages
 dist_packages_DATA = packages/crop.lua packages/markdown.lua packages/verseindex.lua
 
+layoutsdir = $(datadir)/layouts
+dist_layouts_DATA = layouts/a4.lua layouts/a4ciltli.lua layouts/a5trim.lua layouts/a6.lua layouts/a6trim.lua layouts/a7.lua layouts/a7kart.lua layouts/a7trimkart.lua layouts/app.lua layouts/banner.lua layouts/businesscard.lua layouts/cep.lua layouts/ekran.lua layouts/epub.lua layouts/halfletter.lua layouts/octavo.lua layouts/royaloctavo.lua layouts/square.lua layouts/wide.lua
+
 if DEBUG_RELEASE
 CARGO_RELEASE_ARGS=
 else
