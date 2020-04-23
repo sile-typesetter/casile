@@ -46,3 +46,5 @@ _withoutfootnotes := dipnotsuz
 _withverses := ayetli
 _withoutlinks := linksiz
 _chapters := bolumler
+
+# vim: ft=make

@@ -24,10 +24,10 @@ SED ?= sed
 SILE ?= sile
 
 # Localization functions (source is a key => val file _and_ its inverse)
--include $(CASILEDIR)/makefile-$(LANGUAGE) $(CASILEDIR)/makefile-$(LANGUAGE)-reversed
+-include $(CASILEDIR)/rules-$(LANGUAGE) $(CASILEDIR)/rules-$(LANGUAGE)-reversed
 
 # CaSILE Utility functions
-include $(CASILEDIR)/makefile-functions
+include $(CASILEDIR)/rules-functions
 
 # Empty recipies for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;

@@ -19,7 +19,7 @@ EXTRA_casile_SOURCES = Cargo.lock
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
 rulesdir = $(datadir)
-dist_rules_DATA = rules makefile-functions makefile-en makefile-tr
+dist_rules_DATA = rules rules-functions rules-en rules-tr
 
 luadir = $(datadir)
 dist_lua_DATA = block_styles.lua cabook.lua casile.lua covers.lua endnotes.lua hyphenation_exceptions.lua imprint.lua inline_styles.lua lists.lua readmeta.lua
