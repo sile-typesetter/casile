@@ -1,8 +1,11 @@
 {
   "name": "casile",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "The CaSILE toolkit, a book publishing workflow employing SILE and other wizardry.",
   "main": "index.js",
+  "scripts": {
+    "release": "standard-version"
+  },
   "repository": "https://github.com/sile-typesetter/casile.git",
   "author": "Caleb Maclennan <caleb@alerque.com>",
   "license": "LGPL-3.0",
