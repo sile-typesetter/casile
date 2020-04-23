@@ -16,6 +16,15 @@ bin_PROGRAMS = casile
 casile_SOURCES = Cargo.toml build.rs src/main.rs
 EXTRA_casile_SOURCES = Cargo.lock
 
+fontsdir = $(datadir)/fonts
+dist_fonts_DATA = fonts
+
+filtersdir = $(datadir)/pandoc-filters
+dist_filters_DATA = pandoc-filters
+
+packagesdir = $(datadir)/packages
+dist_packages_DATA = packages
+
 if DEBUG_RELEASE
 CARGO_RELEASE_ARGS=
 else
