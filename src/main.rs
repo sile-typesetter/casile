@@ -13,14 +13,22 @@ struct Cli {
     verbose: bool,
 
     #[structopt(subcommand)]
-    command: Command,
+    command: Subcommand,
 }
 
 #[derive(StructOpt)]
-enum Command {
+enum Subcommand {
     /// Executes a make target
     Make {
+        /// Target as defined in CaSILE makefile
         target: String
+    },
+
+    /// Configure a book repository
+    Setup {
+        #[structopt(default_value = "./")]
+        /// Path to project repository
+        path: String
     },
 
     /// Pass through other commands to shell
