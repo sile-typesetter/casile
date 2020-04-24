@@ -10,6 +10,26 @@ PUBDIR ?= $(PROJECTDIR)/pub
 PUBLISHERDIR ?= $(CASILEDIR)
 CASILEVER := $(shell cd $(CASILEDIR) && git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
 
+# submodule, symlink, system, docker, ci
+ifneq ($(wildcard $(CASILEDIR)/configure.ac),)
+CASILEWRITABLE := true
+ifneq ($(shell grep -l casile .gitmodules),)
+CASILEMODE := submodule
+else
+CASILEMODE := symlink
+endif
+else
+ifdef CI
+CASILEMODE := ci
+else
+ifneq ($(shell grep -l docker /proc/1/cgroup),)
+CASILEMODE := system
+else
+CASILEMODE := docker
+endif
+endif
+endif
+
 # Set the language if not otherwise set
 LANGUAGE ?= en
 
@@ -24,10 +44,10 @@ SED ?= sed
 SILE ?= sile
 
 # Localization functions (source is a key => val file _and_ its inverse)
--include $(CASILEDIR)/makefile-$(LANGUAGE) $(CASILEDIR)/makefile-$(LANGUAGE)-reversed
+-include $(CASILEDIR)/rules-$(LANGUAGE) $(CASILEDIR)/rules-$(LANGUAGE)-reversed
 
 # CaSILE Utility functions
-include $(CASILEDIR)/makefile-functions
+include $(CASILEDIR)/rules-functions
 
 # Empty recipies for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;
@@ -100,7 +120,7 @@ LAYOUTS += $(call pattern_list,$(PLACARDS),-$(_print))
 endif
 
 # Categorize supported outputs
-PAPERSIZES := $(call localize,$(subst layout-,,$(notdir $(basename $(wildcard $(CASILEDIR)/layout-*.lua)))))
+PAPERSIZES := $(call localize,$(subst layouts/,,$(notdir $(basename $(wildcard $(CASILEDIR)/layouts/*.lua)))))
 BINDINGS = $(call localize,print paperback hardcover coil stapled)
 DISPLAYS := $(_app) $(_screen)
 PLACARDS := $(_square) $(_wide) $(_banner) epub
@@ -377,9 +397,11 @@ init: check_dependencies init_toolkits time_warp $(PUBDIR) $(and $(wildcard pack
 $(PUBDIR):
 	mkdir -p $@
 
+ifdef CASILEWRITABLE
 # See https://stackoverflow.com/a/44226605/313192
 $(CASILEDIR)/yarn.lock: time_warp_casile $(CASILEDIR)/package.json
 	cd $(CASILEDIR) && yarn install
+endif
 
 yarn.lock: time_warp package.json
 	yarn install
@@ -432,13 +454,25 @@ update_toolkits: update_casile
 upgrade_toolkits: upgrade_casile
 
 .PHONY: init_casile
-init_casile: time_warp_casile $(CASILEDIR)/yarn.lock
+init_casile: time_warp_casile
+ifdef CASILEWRITABLE
+init_casile: $(CASILEDIR)/yarn.lock
+endif
 
 .PHONY: update_casile
 update_casile:
+ifdef CASILEWRITABLE
+ifeq ($(CASILEMODE),submodule)
 	git submodule update --init --remote -- $(CASILEDIR)
+else
+	cd $(CASILEDIR) && git pull --rebase
+endif
+	make -C $(CASILEDIR)
 	$(call time_warp,$(CASILEDIR))
 	cd $(CASILEDIR) && yarn install
+else
+	$(warning CaSILE cannot self-update when used in $(CASILEMODE) mode.)
+endif
 
 .PHONY: upgrade_repository
 upgrade_repository: upgrade_toolkits $(CICONFIG)_current .gitattributes
@@ -497,7 +531,9 @@ time_warp: time_warp_casile
 
 .PHONY:	time_warp_casile
 time_warp_casile:
+ifdef CASILEWRITABLE
 	$(call time_warp,$(CASILEDIR))
+endif
 
 # Some layouts have matching extra resources to build such as covers
 ifneq ($(strip $(COVERS)),false)
@@ -511,7 +547,7 @@ endif
 coverpreq = $(and $(filter true,$(COVERS)),$(filter $(_print),$(call parse_binding,$1)),$(filter-out $(DISPLAYS) $(PLACARDS),$(call parse_papersize,$1)),$(basename $1)-$(_cover).pdf)
 
 # Order is important here, these are included in reverse order so early supersedes late
-onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(CASILEDIR)/layout-$(call unlocalize,$(call parse_papersize,$1)).lua $(LUALIBS)
+onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(CASILEDIR)/layouts/$(call unlocalize,$(call parse_papersize,$1)).lua $(LUALIBS)
 
 MOCKUPPDFS := $(call pattern_list,$(MOCKUPSOURCES),$(REALLAYOUTS),.pdf)
 $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
@@ -553,7 +589,7 @@ endif
 
 FULLSILS := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil)
 FULLSILS += $(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil)
-$(FULLSILS): private PANDOCFILTERS += --filter=$(CASILEDIR)/svg2pdf.py
+$(FULLSILS): private PANDOCFILTERS += --filter=$(CASILEDIR)/pandoc-filters/svg2pdf.py
 $(FULLSILS): private THISEDITS = $(call parse_edits,$@)
 $(FULLSILS): private PROCESSEDSOURCE = $(call pattern_list,$(call parse_bookid,$@),$(_processed),$(and $(THISEDITS),-$(THISEDITS)).md)
 $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_bookid,$$@),-manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
@@ -901,7 +937,7 @@ $(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf
 	rm $${text} $${bg}
 
 BINDINGFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_text).pdf)
-$(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
+$(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -939,7 +975,7 @@ $(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfil
 		$@
 
 COVERFRAGMENTS := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_text).pdf)
-$(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layout-$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
+$(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -1457,19 +1493,6 @@ diff:
 	git diff --color=always --ignore-submodules --no-ext-diff
 	git submodule foreach git diff --color=always --no-ext-diff
 
-RELTYPE ?=
-
-.PHONY: tagrelease
-tagrelease:
-	test -z $$(git tag --points-at HEAD) || exit 0 # end if we are already on a release tag
-	git diff-index --quiet --cached HEAD || exit 1 # die if anything staged but not committed
-	git diff-files --quiet || exit 1 # die if any tracked files have unstagged changes
-	yarn run release $(and $(RELTYPE),--release-as $(RELTYPE))
-
-.PHONY: release
-release: tagrelease
-
-docker: Dockerfile build-aux/docker-entrypoint.sh
-	docker build --build-arg VCS_REF="$(CASILEVER)" --tag siletypesetter/casile:HEAD ./
-
 -include $(POSTCASILEINCLUDE)
+
+# vim: ft=make

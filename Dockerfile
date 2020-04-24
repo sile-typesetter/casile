@@ -1,4 +1,4 @@
-FROM archlinux:20200306 AS casile
+FROM archlinux:20200306 AS casile-base
 RUN sed -i -e '/IgnorePkg *=/s/^.*$/IgnorePkg = coreutils/' /etc/pacman.conf
 
 # Setup Caleb's hosted Arch repository with prebuilt dependencies
@@ -9,11 +9,27 @@ RUN pacman-key --recv-keys 63CC496475267693 && pacman-key --lsign-key 63CC496475
 # Freshen all base system packages
 RUN pacman --needed --noconfirm -Syuq && yes | pacman -Sccq
 
-# Install Arch CaSILE package (turtles all the way down)
-RUN pacman --needed --noconfirm -Syq casile-git remake && yes | pacman -Sccq
+# Install Arch CaSILE package for dependencies, then remove (turtles all the way down)
+RUN pacman --needed --noconfirm -Syq casile-git && pacman --noconfirm -R casile-git && yes | pacman -Sccq
+
+FROM casile-base AS casile-builder
+
+RUN pacman --needed --noconfirm -Syq base-devel rust cargo && yes | pacman -Sccq
 
 # Set at build time, forces Docker's layer caching to reset at this point
 ARG VCS_REF=0
+
+COPY ./ /src
+WORKDIR /src
+
+RUN ./bootstrap.sh
+RUN ./configure
+RUN make
+RUN make install DESTDIR=/pkgdir
+
+FROM casile-base AS casile
+
+COPY --from=casile-builder /pkgdir /
 
 # Freshen everything again, makes Docker's layer caching useful to save downloads
 RUN pacman --needed --noconfirm -Syuq && yes | pacman -Sccq

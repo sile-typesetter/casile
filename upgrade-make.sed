@@ -889,3 +889,4 @@ s#(_3b)#(_3d)#g
 s#cover\([wh]..\)\b#page\1#g
 s#coveraspect#pageaspect#g
 s#cilt\([wh]..\)\b#binding\1#g
+s#\(include casile/\)makefile#\1rules#
