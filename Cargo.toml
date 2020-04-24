@@ -10,6 +10,7 @@ license = "AGPL-3"
 build = "build.rs"
 
 [dependencies]
+git2 = "0.13.5"
 structopt = "0.3.14"
 
 [build-dependencies]
