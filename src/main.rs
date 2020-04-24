@@ -4,6 +4,7 @@ use std::path;
 use std::vec;
 use std::fs;
 use std::io;
+use std::io::{Error, ErrorKind};
 
 /// The command line interface to the CaSILE toolkit, a book publishing
 /// workflow employing SILE and other wizardry
@@ -80,20 +81,14 @@ fn make (_target: vec::Vec<String>) -> io::Result<()> {
 
 fn setup (path: path::PathBuf) -> io::Result<()> {
 
-    let pathmeta = fs::metadata(path);
+    let metadata = fs::metadata(path)?;
 
-    match pathmeta {
-        Ok(file) => {
-            if file.is_dir() {
-                println!("Run setup, “They said you were this great colossus!”")
-            } else {
-                println!("Not a dir, Frank!")
-            }
-        }
-        Err(error) => { return Err(error.into()) },
-    };
-
-    Ok(())
+    return match metadata.is_dir() {
+        true => Ok(
+            println!("Run setup, “They said you were this great colossus!”")
+            ),
+        false => Err(Error::new(ErrorKind::InvalidInput, "Not a dir, Frank!")),
+    }
 
 }
 
