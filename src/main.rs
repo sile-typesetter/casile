@@ -5,6 +5,7 @@ use std::vec;
 use std::fs;
 use std::io;
 use std::io::{Error, ErrorKind};
+use git2::Repository;
 
 /// The command line interface to the CaSILE toolkit, a book publishing
 /// workflow employing SILE and other wizardry
@@ -81,12 +82,15 @@ fn make (_target: vec::Vec<String>) -> io::Result<()> {
 
 fn setup (path: path::PathBuf) -> io::Result<()> {
 
-    let metadata = fs::metadata(path)?;
+    let metadata = fs::metadata(&path)?;
 
     return match metadata.is_dir() {
-        true => Ok(
-            println!("Run setup, “They said you were this great colossus!”")
+        true => match Repository::open(path) {
+            Ok(_repo) => Ok(
+                println!("Run setup, “They said you were this great colossus!”")
             ),
+            Err(_error) => Err(Error::new(ErrorKind::InvalidInput, "Not a git repo!")),
+        },
         false => Err(Error::new(ErrorKind::InvalidInput, "Not a dir, Frank!")),
     }
 
