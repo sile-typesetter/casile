@@ -72,7 +72,7 @@ dist_layouts_DATA = layouts/a4.lua layouts/a4ciltli.lua layouts/a5trim.lua layou
 if DEBUG_RELEASE
 CARGO_RELEASE_ARGS=
 else
-CARGO_RELEASE_ARGS=--release
+CARGO_RELEASE_ARGS=--release --locked --all-features
 endif
 
 CARGO_VERBOSE = $(cargo_verbose_$(V))
