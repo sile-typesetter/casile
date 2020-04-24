@@ -1,9 +1,11 @@
 use structopt::StructOpt;
 
-/// The CaSILE command line interface, publishing automation level wizard.
+/// The command line interface to the CaSILE toolkit, a book publishing
+/// workflow employing SILE and other wizardry
 #[derive(StructOpt)]
 #[structopt(version = env!("VERGEN_SEMVER"))]
 struct Cli {
+
     /// Activate debug mode
     #[structopt(short, long, env = "DEBUG")]
     debug: bool,
@@ -14,10 +16,12 @@ struct Cli {
 
     #[structopt(subcommand)]
     command: Subcommand,
+
 }
 
 #[derive(StructOpt)]
 enum Subcommand {
+
     /// Executes a make target
     Make {
         /// Target as defined in CaSILE makefile
@@ -34,9 +38,12 @@ enum Subcommand {
     /// Pass through other commands to shell
     #[structopt(external_subcommand)]
     Other(Vec<String>),
+
 }
 
 fn main() {
+
     let args = Cli::from_args();
-    println!("Insert magic potion!");
+    println!("Insert magic potion! (Unimplemented)");
+
 }
