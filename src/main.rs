@@ -13,8 +13,9 @@ use std::iter;
 use std::path;
 use std::str;
 use std::vec;
-use structopt::clap::AppSettings;
 use structopt::StructOpt;
+use structopt::clap::AppSettings;
+use structopt::clap::Shell;
 use unic_langid::LanguageIdentifier;
 
 static L10N_RESOURCES: &[&str] = &["cli.ftl"];
@@ -61,6 +62,10 @@ fn main() -> io::Result<()> {
         #[structopt(external_subcommand)]
         Other(Vec<String>),
     }
+
+    Cli::clap().gen_completions(env!("CARGO_PKG_NAME"), Shell::Bash, "target");
+    Cli::clap().gen_completions(env!("CARGO_PKG_NAME"), Shell::Fish, "target");
+    Cli::clap().gen_completions(env!("CARGO_PKG_NAME"), Shell::Zsh, "target");
 
     let args = Cli::from_args();
 
