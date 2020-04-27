@@ -1,11 +1,17 @@
+use elsa::FrozenMap;
+use fluent::{FluentBundle, FluentResource};
+use fluent_fallback::Localization;
 use fluent_langneg::{accepted_languages, negotiate_languages, NegotiationStrategy};
-use fluent_resmgr::resource_manager::ResourceManager;
 use git2::Repository;
 use regex::Regex;
+use std::env;
 use std::fs;
 use std::io;
+use std::io::prelude::*;
 use std::io::{Error, ErrorKind};
+use std::iter;
 use std::path;
+use std::str;
 use std::vec;
 use structopt::clap::AppSettings;
 use structopt::StructOpt;
@@ -53,6 +59,8 @@ enum Subcommand {
     Other(Vec<String>),
 }
 
+static L10N_RESOURCES: &[&str] = &["cli.ftl"];
+
 fn main() -> io::Result<()> {
     let args = Cli::from_args();
 
@@ -75,18 +83,42 @@ fn main() -> io::Result<()> {
         Some(&default),
         NegotiationStrategy::Filtering,
     );
-    println!("Lang ended up {:?}", resolved_locales[0]);
-    let resources: vec::Vec<String> = vec!["cli.ftl".into()];
-    let mgr = ResourceManager::new("./resources/{locale}/{res_id}".into());
-    let bundle = mgr.get_bundle(
-        resolved_locales.into_iter().map(|s| s.to_owned()).collect(),
-        resources,
+
+    let resources: FrozenMap<String, Box<FluentResource>> = FrozenMap::new();
+    let mut res_path_scheme = env::current_dir().expect("Failed to retireve current dir.");
+    res_path_scheme.push("resources");
+    res_path_scheme.push("{locale}");
+    res_path_scheme.push("{res_id}");
+    let res_path_scheme = res_path_scheme.to_str().unwrap();
+    let generate_messages = |res_ids: &[String]| {
+        let mut locales = resolved_locales.iter();
+        let res_mgr = &resources;
+        let res_ids = res_ids.to_vec();
+
+        iter::from_fn(move || {
+            locales.next().map(|locale| {
+                let mut bundle = FluentBundle::new(vec![locale.clone()]);
+                let res_path = res_path_scheme.replace("{locale}", &locale.to_string());
+
+                for res_id in &res_ids {
+                    let path = res_path.replace("{res_id}", res_id);
+                    let res = res_mgr.get(&path).unwrap_or_else(|| {
+                        let source = read_file(&path).unwrap();
+                        let res = FluentResource::try_new(source).unwrap();
+                        res_mgr.insert(path.to_string(), Box::new(res))
+                    });
+                    bundle.add_resource(res).unwrap();
+                }
+                bundle
+            })
+        })
+    };
+    let loc = Localization::new(
+        L10N_RESOURCES.iter().map(|s| s.to_string()).collect(),
+        generate_messages,
     );
 
-    let mut errors = vec![];
-    let msg = bundle.get_message("debug-shell").expect("Message exists");
-    let pattern = msg.value.expect("Message has a value");
-    let value = bundle.format_pattern(&pattern, None, &mut errors);
+    let value = loc.format_value("debug-make", None);
     println!("Message is: {}", value);
 
     match args.subcommand {
@@ -117,6 +149,14 @@ fn setup(path: path::PathBuf) -> io::Result<()> {
 fn shell() -> io::Result<()> {
     println!("Ship all this off to the shell, maybe they can handle it.");
     Ok(())
+}
+
+// https://github.com/projectfluent/fluent-rs/blob/c9e45651/fluent-fallback/examples/simple-fallback.rs#L38
+fn read_file(path: &str) -> Result<String, io::Error> {
+    let mut f = fs::File::open(path)?;
+    let mut s = String::new();
+    f.read_to_string(&mut s)?;
+    Ok(s)
 }
 
 // TODO: Move to build.rs?
