@@ -52,6 +52,7 @@ name = "casile"
 version = "0.2.0"
 dependencies = [
  "fluent",
+ "fluent-fallback",
  "fluent-langneg",
  "fluent-resmgr",
  "git2",
