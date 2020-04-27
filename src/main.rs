@@ -65,20 +65,29 @@ fn main() -> io::Result<()> {
     }
 
     let available = get_available_locales().expect("Could not find valid BCP47 resource files.");
-
     let re = Regex::new(r"\..*$").unwrap();
     let input = re.replace(&args.language, "");
     let requested = accepted_languages::parse(&input);
     let default: LanguageIdentifier = "en-US".parse().unwrap();
-
-    let language = negotiate_languages(
+    let resolved_locales = negotiate_languages(
         &requested,
         &available,
         Some(&default),
         NegotiationStrategy::Filtering,
     );
+    println!("Lang ended up {:?}", resolved_locales[0]);
+    let resources: vec::Vec<String> = vec!["cli.ftl".into()];
+    let mgr = ResourceManager::new("./resources/{locale}/{res_id}".into());
+    let bundle = mgr.get_bundle(
+        resolved_locales.into_iter().map(|s| s.to_owned()).collect(),
+        resources,
+    );
 
-    println!("Lang ended up {:?}", language[0]);
+    let mut errors = vec![];
+    let msg = bundle.get_message("debug-shell").expect("Message exists");
+    let pattern = msg.value.expect("Message has a value");
+    let value = bundle.format_pattern(&pattern, None, &mut errors);
+    println!("Message is: {}", value);
 
     match args.subcommand {
         Subcommand::Make { target } => make(target),
