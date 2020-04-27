@@ -17,51 +17,51 @@ use structopt::clap::AppSettings;
 use structopt::StructOpt;
 use unic_langid::LanguageIdentifier;
 
-/// The command line interface to the CaSILE toolkit, a book publishing
-/// workflow employing SILE and other wizardry
-#[derive(StructOpt)]
-#[structopt(version = env!("VERGEN_SEMVER"))]
-#[structopt(setting = AppSettings::InferSubcommands)]
-struct Cli {
-    /// Activate debug mode
-    #[structopt(short, long, env = "DEBUG")]
-    debug: bool,
-
-    /// Set language
-    #[structopt(short, long, env = "LANG")]
-    language: String,
-
-    /// Outputs verbose feedback where possible
-    #[structopt(short, long)]
-    verbose: bool,
-
-    #[structopt(subcommand)]
-    subcommand: Subcommand,
-}
-
-#[derive(StructOpt)]
-enum Subcommand {
-    /// Executes a make target
-    Make {
-        /// Target as defined in CaSILE makefile
-        target: Vec<String>,
-    },
-
-    /// Configure a book repository
-    Setup {
-        /// Path to project repository
-        #[structopt(parse(from_os_str), default_value = "./")]
-        path: path::PathBuf,
-    },
-
-    /// Pass through other commands to shell
-    #[structopt(external_subcommand)]
-    Other(Vec<String>),
-}
-
 static L10N_RESOURCES: &[&str] = &["cli.ftl"];
 
 fn main() -> io::Result<()> {
+    /// The command line interface to the CaSILE toolkit, a book publishing
+    /// workflow employing SILE and other wizardry
+    #[derive(StructOpt)]
+    #[structopt(version = env!("VERGEN_SEMVER"))]
+    #[structopt(setting = AppSettings::InferSubcommands)]
+    struct Cli {
+        /// Activate debug mode
+        #[structopt(short, long, env = "DEBUG")]
+        debug: bool,
+
+        /// Set language
+        #[structopt(short, long, env = "LANG")]
+        language: String,
+
+        /// Outputs verbose feedback where possible
+        #[structopt(short, long)]
+        verbose: bool,
+
+        #[structopt(subcommand)]
+        subcommand: Subcommand,
+    }
+
+    #[derive(StructOpt)]
+    enum Subcommand {
+        /// Executes a make target
+        Make {
+            /// Target as defined in CaSILE makefile
+            target: Vec<String>,
+        },
+
+        /// Configure a book repository
+        Setup {
+            /// Path to project repository
+            #[structopt(parse(from_os_str), default_value = "./")]
+            path: path::PathBuf,
+        },
+
+        /// Pass through other commands to shell
+        #[structopt(external_subcommand)]
+        Other(Vec<String>),
+    }
+
     let args = Cli::from_args();
 
     if args.debug {
