@@ -51,10 +51,10 @@ checksum = "08c48aae112d48ed9f069b33538ea9e3e90aa263cfa3d1c24309612b1f7472de"
 name = "casile"
 version = "0.2.0"
 dependencies = [
+ "elsa",
  "fluent",
  "fluent-fallback",
  "fluent-langneg",
- "fluent-resmgr",
  "git2",
  "regex",
  "structopt",
@@ -115,37 +115,20 @@ dependencies = [
 [[package]]
 name = "fluent"
 version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9ebe7532e1e5146a909de9e019e31835a84b5dee3eeb234561e525844f3cf3bf"
+source = "git+https://github.com/projectfluent/fluent-rs#c9e456515f4c084eb9650f3910722a31707a6b32"
 dependencies = [
- "fluent-bundle 0.11.0",
- "unic-langid",
-]
-
-[[package]]
-name = "fluent-bundle"
-version = "0.10.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "67fc7bdf8a047142c86627fed5789fda5ffad8ce549e4fc8b8b3bcd08710a1e7"
-dependencies = [
- "fluent-langneg",
- "fluent-syntax",
- "intl-memoizer 0.3.0",
- "intl_pluralrules",
- "rental",
- "smallvec",
+ "fluent-bundle",
  "unic-langid",
 ]
 
 [[package]]
 name = "fluent-bundle"
 version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "27ade33328521266c81cc0924523988f43ccd7359f64689a1b6e818afca3a646"
+source = "git+https://github.com/projectfluent/fluent-rs#c9e456515f4c084eb9650f3910722a31707a6b32"
 dependencies = [
  "fluent-langneg",
  "fluent-syntax",
- "intl-memoizer 0.4.0",
+ "intl-memoizer",
  "intl_pluralrules",
  "rental",
  "smallvec",
@@ -155,10 +138,9 @@ dependencies = [
 [[package]]
 name = "fluent-fallback"
 version = "0.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "033047f88fbbe4d8f87d48e39f98bfce903aed1cb1112dad9e6ae97de41e82c6"
+source = "git+https://github.com/projectfluent/fluent-rs#c9e456515f4c084eb9650f3910722a31707a6b32"
 dependencies = [
- "fluent-bundle 0.10.2",
+ "fluent-bundle",
  "reiterate",
 ]
 
@@ -172,22 +154,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "fluent-resmgr"
-version = "0.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9fa117359c931add109df17ef5f43039c7e54014d0adde29fd98ddf35afda4bc"
-dependencies = [
- "elsa",
- "fluent-bundle 0.10.2",
- "fluent-fallback",
- "unic-langid",
-]
-
-[[package]]
 name = "fluent-syntax"
 version = "0.9.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac0f7e83d14cccbf26e165d8881dcac5891af0d85a88543c09dd72ebd31d91ba"
+source = "git+https://github.com/projectfluent/fluent-rs#c9e456515f4c084eb9650f3910722a31707a6b32"
 
 [[package]]
 name = "fxhash"
@@ -244,19 +213,8 @@ dependencies = [
 
 [[package]]
 name = "intl-memoizer"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ff533e7939a956a8b4f328b498b3ac59ee4259f9aaede10a58c28cbeb59e1c0d"
-dependencies = [
- "type-map",
- "unic-langid",
-]
-
-[[package]]
-name = "intl-memoizer"
 version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9867e2d65d82936ef34217ed0f87b639a94384e93a0676158142c861c705391f"
+source = "git+https://github.com/projectfluent/fluent-rs#c9e456515f4c084eb9650f3910722a31707a6b32"
 dependencies = [
  "type-map",
  "unic-langid",
