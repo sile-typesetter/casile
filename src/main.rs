@@ -118,7 +118,7 @@ fn main() -> io::Result<()> {
         generate_messages,
     );
 
-    let value = loc.format_value("debug-make", None);
+    let value = loc.format_value("debug-shell", None);
     println!("Message is: {}", value);
 
     match args.subcommand {
