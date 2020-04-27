@@ -46,3 +46,9 @@ setup-not-dir =
 
 debug-shell  =
   Ship all this off to the shell, maybe they can handle it.
+
+error-invalid-language =
+  Could not parse BCP47 language tag.
+
+error-invalid-resources =
+  Could not find valid BCP47 resource files.

@@ -1,6 +1,4 @@
-use fluent_langneg::{
-    accepted_languages, convert_vec_str_to_langids_lossy, negotiate_languages, NegotiationStrategy,
-};
+use fluent_langneg::{accepted_languages, negotiate_languages, NegotiationStrategy};
 use fluent_resmgr::resource_manager::ResourceManager;
 use git2::Repository;
 use regex::Regex;
@@ -66,8 +64,7 @@ fn main() -> io::Result<()> {
         println!("User requested verbose output")
     }
 
-    // TODO: scan i18n dir(s) at run time for available languages
-    let available = convert_vec_str_to_langids_lossy(&["en_US", "tr_TR"]);
+    let available = get_available_locales().expect("Could not find valid BCP47 resource files.");
 
     let re = Regex::new(r"\..*$").unwrap();
     let input = re.replace(&args.language, "");
@@ -111,4 +108,26 @@ fn setup(path: path::PathBuf) -> io::Result<()> {
 fn shell() -> io::Result<()> {
     println!("Ship all this off to the shell, maybe they can handle it.");
     Ok(())
+}
+
+// TODO: Move to build.rs?
+// https://github.com/projectfluent/fluent-rs/blob/c9e45651/fluent-resmgr/examples/simple-resmgr.rs#L35
+fn get_available_locales() -> Result<Vec<LanguageIdentifier>, io::Error> {
+    let mut locales = vec![];
+    let res_dir = fs::read_dir("./resources/")?;
+    for entry in res_dir {
+        if let Ok(entry) = entry {
+            let path = entry.path();
+            if path.is_dir() {
+                if let Some(name) = path.file_name() {
+                    if let Some(name) = name.to_str() {
+                        let langid: LanguageIdentifier =
+                            name.parse().expect("Could not parse BCP47 language tag.");
+                        locales.push(langid);
+                    }
+                }
+            }
+        }
+    }
+    return Ok(locales);
 }
