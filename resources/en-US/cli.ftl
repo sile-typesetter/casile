@@ -11,6 +11,9 @@ flags-verbose =
 subcommand-make =
   Executes a make target
 
+flags-language =
+  Set language
+
 subcommand-make-target =
   Target as defined in CaSILE makefile
 

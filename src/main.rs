@@ -1,4 +1,9 @@
+use fluent_langneg::{
+    accepted_languages, convert_vec_str_to_langids_lossy, negotiate_languages, NegotiationStrategy,
+};
+use fluent_resmgr::resource_manager::ResourceManager;
 use git2::Repository;
+use regex::Regex;
 use std::fs;
 use std::io;
 use std::io::{Error, ErrorKind};
@@ -6,6 +11,7 @@ use std::path;
 use std::vec;
 use structopt::clap::AppSettings;
 use structopt::StructOpt;
+use unic_langid::LanguageIdentifier;
 
 /// The command line interface to the CaSILE toolkit, a book publishing
 /// workflow employing SILE and other wizardry
@@ -16,6 +22,10 @@ struct Cli {
     /// Activate debug mode
     #[structopt(short, long, env = "DEBUG")]
     debug: bool,
+
+    /// Set language
+    #[structopt(short, long, env = "LANG")]
+    language: String,
 
     /// Outputs verbose feedback where possible
     #[structopt(short, long)]
@@ -55,6 +65,23 @@ fn main() -> io::Result<()> {
     if args.verbose {
         println!("User requested verbose output")
     }
+
+    // TODO: scan i18n dir(s) at run time for available languages
+    let available = convert_vec_str_to_langids_lossy(&["en_US", "tr_TR"]);
+
+    let re = Regex::new(r"\..*$").unwrap();
+    let input = re.replace(&args.language, "");
+    let requested = accepted_languages::parse(&input);
+    let default: LanguageIdentifier = "en-US".parse().unwrap();
+
+    let language = negotiate_languages(
+        &requested,
+        &available,
+        Some(&default),
+        NegotiationStrategy::Filtering,
+    );
+
+    println!("Lang ended up {:?}", language[0]);
 
     match args.subcommand {
         Subcommand::Make { target } => make(target),
