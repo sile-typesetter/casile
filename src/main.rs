@@ -56,23 +56,21 @@ fn main() -> io::Result<()> {
         println!("User requested verbose output")
     }
 
-    return match args.subcommand {
+    match args.subcommand {
         Subcommand::Make { target } => make(target),
         Subcommand::Setup { path } => setup(path),
         _a => shell(),
-    };
+    }
 }
 
 fn make(_target: vec::Vec<String>) -> io::Result<()> {
     println!("Make make make sense or I’ll make you make makefiles.");
-
     Ok(())
 }
 
 fn setup(path: path::PathBuf) -> io::Result<()> {
     let metadata = fs::metadata(&path)?;
-
-    return match metadata.is_dir() {
+    match metadata.is_dir() {
         true => match Repository::open(path) {
             Ok(_repo) => Ok(println!(
                 "Run setup, “They said you were this great colossus!”"
@@ -80,11 +78,10 @@ fn setup(path: path::PathBuf) -> io::Result<()> {
             Err(_error) => Err(Error::new(ErrorKind::InvalidInput, "Not a git repo!")),
         },
         false => Err(Error::new(ErrorKind::InvalidInput, "Not a dir, Frank!")),
-    };
+    }
 }
 
 fn shell() -> io::Result<()> {
     println!("Ship all this off to the shell, maybe they can handle it.");
-
     Ok(())
 }
