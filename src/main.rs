@@ -67,6 +67,16 @@ fn main() -> io::Result<()> {
     Cli::clap().gen_completions(env!("CARGO_PKG_NAME"), Shell::Fish, "target");
     Cli::clap().gen_completions(env!("CARGO_PKG_NAME"), Shell::Zsh, "target");
 
+    let a = Cli::from_args();
+
+    let config = casile::Config {
+        verbose: a.verbose,
+        debug: a.debug,
+    };
+
+    println!("First pass {:?}", a.language);
+    println!("CONF pass {:?}", config);
+
     let args = Cli::from_args();
 
     if args.debug {
@@ -127,18 +137,18 @@ fn main() -> io::Result<()> {
     println!("Message is: {}", value);
 
     match args.subcommand {
-        Subcommand::Make { target } => make(target),
-        Subcommand::Setup { path } => setup(path),
-        _a => shell(),
+        Subcommand::Make { target } => make(config, target),
+        Subcommand::Setup { path } => setup(config, path),
+        _a => shell(config),
     }
 }
 
-fn make(_target: vec::Vec<String>) -> io::Result<()> {
+fn make(config: casile::Config, _target: vec::Vec<String>) -> io::Result<()> {
     println!("Make make make sense or I’ll make you make makefiles.");
     Ok(())
 }
 
-fn setup(path: path::PathBuf) -> io::Result<()> {
+fn setup(config: casile::Config, path: path::PathBuf) -> io::Result<()> {
     let metadata = fs::metadata(&path)?;
     match metadata.is_dir() {
         true => match Repository::open(path) {
@@ -151,7 +161,7 @@ fn setup(path: path::PathBuf) -> io::Result<()> {
     }
 }
 
-fn shell() -> io::Result<()> {
+fn shell(config: casile::Config) -> io::Result<()> {
     println!("Ship all this off to the shell, maybe they can handle it.");
     Ok(())
 }
