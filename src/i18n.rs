@@ -7,13 +7,12 @@ use elsa::FrozenMap;
 use regex::Regex;
 
 static FLUENT_RESOURCES: &[&str] = &["cli.ftl"];
-static DEFAULT_LOCALE: &'static str = "en-US";
 
 pub fn init(lang: String) {
     let lang = &normalize_lang(lang);
     let available = self::get_available_locales().expect("Could not find valid BCP47 resource files.");
     let requested = accepted_languages::parse(lang);
-    let default: LanguageIdentifier = DEFAULT_LOCALE.parse().unwrap();
+    let default: LanguageIdentifier = crate::DEFAULT_LOCALE.parse().unwrap();
     let neg = negotiate_languages(
         &requested,
         &available,
