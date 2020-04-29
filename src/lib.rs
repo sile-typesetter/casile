@@ -12,6 +12,7 @@ pub static DEFAULT_LOCALE: &'static str = "en-US";
 pub struct Config {
     pub verbose: bool,
     pub debug: bool,
+    pub locales: i18n::Locales,
 }
 
 // https://github.com/projectfluent/fluent-rs/blob/c9e45651/fluent-fallback/examples/simple-fallback.rs#L38

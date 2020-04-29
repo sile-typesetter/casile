@@ -1,25 +1,34 @@
-use std::{env, fs, io, iter};
+use std::{env, fs, io, iter, vec};
 use fluent::{FluentBundle, FluentResource};
 use fluent_fallback::Localization;
-use fluent_langneg::{accepted_languages, negotiate_languages, NegotiationStrategy};
+use fluent_langneg;
 use unic_langid::LanguageIdentifier;
 use elsa::FrozenMap;
 use regex::Regex;
 
 static FLUENT_RESOURCES: &[&str] = &["cli.ftl"];
 
-pub fn init(lang: String) {
-    let lang = &normalize_lang(lang);
-    let available = self::get_available_locales().expect("Could not find valid BCP47 resource files.");
-    let requested = accepted_languages::parse(lang);
-    let default: LanguageIdentifier = crate::DEFAULT_LOCALE.parse().unwrap();
-    let neg = negotiate_languages(
-        &requested,
-        &available,
-        Some(&default),
-        NegotiationStrategy::Filtering,
-    );
-    // locales = neg;
+#[derive(Debug)]
+pub struct Locales {
+    pub negotiated: Vec<LanguageIdentifier>,
+}
+
+impl Locales {
+    pub fn negotiate(language: String) -> Locales {
+        let language = normalize_lang(language);
+        let available = self::get_available_locales().unwrap();
+        let requested = fluent_langneg::accepted_languages::parse(&language);
+        let default: LanguageIdentifier = crate::DEFAULT_LOCALE.parse().unwrap();
+        let negotiated = fluent_langneg::negotiate_languages(
+            &requested,
+            &available,
+            Some(&default),
+            fluent_langneg::NegotiationStrategy::Filtering,
+        ).iter().map(|x| *x).cloned().collect();
+        Locales {
+            negotiated
+        }
+    }
 }
 
 /// Strip off any potential system locale encoding on the end of LC_LANG

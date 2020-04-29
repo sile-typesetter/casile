@@ -57,7 +57,6 @@ fn main() -> io::Result<()> {
     // let clap = Cli::clap().about("what about bob");
 
     // println!("First pass {:?}", a.language);
-    // println!("CONF pass {:?}", config);
     // println!("CLI structs {:?}", &clap);
 
     let args = Cli::from_clap(&clap.get_matches());
@@ -65,9 +64,10 @@ fn main() -> io::Result<()> {
     let config = casile::Config {
         verbose: args.verbose,
         debug: args.debug,
+        locales: i18n::Locales::negotiate(args.language)
     };
 
-    i18n::init(args.language);
+    println!("CONF = {:#?}", config);
 
     if args.debug {
         println!("User requested debug mode")
