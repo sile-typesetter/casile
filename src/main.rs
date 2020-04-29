@@ -5,6 +5,8 @@ use unic_langid::LanguageIdentifier;
 
 /// The command line interface to the CaSILE toolkit, a book publishing
 /// workflow employing SILE and other wizardry
+#[derive(Debug)]
+// #[structopt(about = "bob is a turtle")]
 #[derive(StructOpt)]
 #[structopt(version = env!("VERGEN_SEMVER"))]
 #[structopt(setting = clap::AppSettings::InferSubcommands)]
@@ -25,6 +27,7 @@ struct Cli {
     subcommand: Subcommand,
 }
 
+#[derive(Debug)]
 #[derive(StructOpt)]
 enum Subcommand {
     /// Executes a make target
@@ -50,17 +53,19 @@ fn main() -> io::Result<()> {
     Cli::clap().gen_completions(env!("CARGO_PKG_NAME"), clap::Shell::Fish, "target");
     Cli::clap().gen_completions(env!("CARGO_PKG_NAME"), clap::Shell::Zsh, "target");
 
-    let a = Cli::from_args();
+    let clap = Cli::clap();
+    // let clap = Cli::clap().about("what about bob");
+
+    // println!("First pass {:?}", a.language);
+    // println!("CONF pass {:?}", config);
+    // println!("CLI structs {:?}", &clap);
+
+    let args = Cli::from_clap(&clap.get_matches());
 
     let config = casile::Config {
-        verbose: a.verbose,
-        debug: a.debug,
+        verbose: args.verbose,
+        debug: args.debug,
     };
-
-    println!("First pass {:?}", a.language);
-    println!("CONF pass {:?}", config);
-
-    let args = Cli::from_args();
 
     i18n::init(args.language);
 
