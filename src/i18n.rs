@@ -3,11 +3,16 @@ use fluent::{FluentBundle, FluentResource};
 use fluent_fallback::Localization;
 use fluent_langneg;
 use regex::Regex;
-use std::{env, fs, io, iter, vec};
+use rust_embed::RustEmbed;
+use std::{env, fs, io, iter, path, vec};
 use std::collections::HashMap;
 use unic_langid::LanguageIdentifier;
 
 static FTL_RESOURCE: &str = "cli.ftl";
+
+#[derive(RustEmbed)]
+#[folder = "assets/"]
+struct Asset;
 
 #[derive(Debug)]
 pub struct Locale {
@@ -17,7 +22,7 @@ pub struct Locale {
 impl Locale {
     pub fn negotiate(language: String) -> Locale {
         let language = normalize_lang(language);
-        let (available, preloads) = self::load_available_locales().unwrap();
+        let available = self::list_available_locales();
         let requested = fluent_langneg::accepted_languages::parse(&language);
         let default: LanguageIdentifier = crate::DEFAULT_LOCALE.parse().unwrap();
         let negotiated = fluent_langneg::negotiate_languages(
@@ -39,46 +44,27 @@ fn normalize_lang(input: String) -> String {
     re.replace(&input, "").to_string()
 }
 
-#[derive(Debug)]
-pub struct FtlData {
-    lang: String,
-    data: String,
-}
-
-impl FtlData {
-    pub fn preload(lang: &LanguageIdentifier) -> FtlData {
-        let code = lang.to_string();
-        FtlData {
-            lang: code,
-            data: include_str!("../te.ftl").to_string(),
-        }
-    }
-}
-
 // https://github.com/projectfluent/fluent-rs/blob/c9e45651/fluent-resmgr/examples/simple-resmgr.rs#L35
-pub fn load_available_locales() -> Result<(Vec<LanguageIdentifier>, Vec<FtlData>), io::Error> {
-    let mut found_locales = vec![];
-    let mut preloads = vec![];
-    let res_dir = fs::read_dir("./resources/")?;
-    for entry in res_dir {
-        if let Ok(entry) = entry {
-            let path = entry.path();
-            if path.is_dir() {
-                if let Some(name) = path.file_name() {
-                    let bytes = name.to_str().unwrap().as_bytes();
-                    if let Ok(langid) = LanguageIdentifier::from_bytes(bytes) {
-                        let mut resource_file = path.clone();
-                        resource_file.push(self::FTL_RESOURCE);
-                        if let Ok(data) = fs::read_to_string(resource_file) {
-                            preloads.push(FtlData::preload(&langid));
-                            found_locales.push(langid);
-                        }
+pub fn list_available_locales() -> Vec<LanguageIdentifier> {
+    let mut embeded = vec![];
+    for asset in Asset::iter() {
+        let asset_name = asset.to_string();
+        let path = path::Path::new(&asset_name);
+        let mut components = path.components();
+        if let Some(path::Component::Normal(part)) = components.next() {
+            let bytes = part.to_str().unwrap().as_bytes();
+            if let Ok(langid) = LanguageIdentifier::from_bytes(bytes) {
+                if let Some(path::Component::Normal(part)) = components.next() {
+                    if part.to_str().unwrap() == self::FTL_RESOURCE {
+                        embeded.push(langid);
                     }
                 }
             }
+
         }
     }
-    return Ok((found_locales, preloads));
+    embeded.dedup();
+    embeded
 }
 
 pub fn get_str(key: &str) -> &str {

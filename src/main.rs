@@ -64,18 +64,10 @@ fn main() -> io::Result<()> {
     let config = casile::Config {
         verbose: args.verbose,
         debug: args.debug,
-        locales: i18n::Locales::negotiate(args.language)
+        locale: i18n::Locale::negotiate(args.language)
     };
 
-    println!("CONF = {:#?}", config);
-
-    if args.debug {
-        println!("User requested debug mode")
-    }
-
-    if args.verbose {
-        println!("User requested verbose output")
-    }
+    println!("{:#?}", config);
 
     match args.subcommand {
         Subcommand::Make { target } => casile::make::run(config, target),
