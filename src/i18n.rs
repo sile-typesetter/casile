@@ -1,22 +1,23 @@
-use std::{env, fs, io, iter, vec};
+use elsa::FrozenMap;
 use fluent::{FluentBundle, FluentResource};
 use fluent_fallback::Localization;
 use fluent_langneg;
-use unic_langid::LanguageIdentifier;
-use elsa::FrozenMap;
 use regex::Regex;
+use std::{env, fs, io, iter, vec};
+use std::collections::HashMap;
+use unic_langid::LanguageIdentifier;
 
-static FLUENT_RESOURCES: &[&str] = &["cli.ftl"];
+static FTL_RESOURCE: &str = "cli.ftl";
 
 #[derive(Debug)]
-pub struct Locales {
+pub struct Locale {
     pub negotiated: Vec<LanguageIdentifier>,
 }
 
-impl Locales {
-    pub fn negotiate(language: String) -> Locales {
+impl Locale {
+    pub fn negotiate(language: String) -> Locale {
         let language = normalize_lang(language);
-        let available = self::get_available_locales().unwrap();
+        let (available, preloads) = self::load_available_locales().unwrap();
         let requested = fluent_langneg::accepted_languages::parse(&language);
         let default: LanguageIdentifier = crate::DEFAULT_LOCALE.parse().unwrap();
         let negotiated = fluent_langneg::negotiate_languages(
@@ -25,7 +26,8 @@ impl Locales {
             Some(&default),
             fluent_langneg::NegotiationStrategy::Filtering,
         ).iter().map(|x| *x).cloned().collect();
-        Locales {
+        // println!("PRELOADS: {:#?}", preloads);
+        Locale {
             negotiated
         }
     }
@@ -37,9 +39,26 @@ fn normalize_lang(input: String) -> String {
     re.replace(&input, "").to_string()
 }
 
+#[derive(Debug)]
+pub struct FtlData {
+    lang: String,
+    data: String,
+}
+
+impl FtlData {
+    pub fn preload(lang: &LanguageIdentifier) -> FtlData {
+        let code = lang.to_string();
+        FtlData {
+            lang: code,
+            data: include_str!("../te.ftl").to_string(),
+        }
+    }
+}
+
 // https://github.com/projectfluent/fluent-rs/blob/c9e45651/fluent-resmgr/examples/simple-resmgr.rs#L35
-pub fn get_available_locales() -> Result<Vec<LanguageIdentifier>, io::Error> {
+pub fn load_available_locales() -> Result<(Vec<LanguageIdentifier>, Vec<FtlData>), io::Error> {
     let mut found_locales = vec![];
+    let mut preloads = vec![];
     let res_dir = fs::read_dir("./resources/")?;
     for entry in res_dir {
         if let Ok(entry) = entry {
@@ -48,13 +67,18 @@ pub fn get_available_locales() -> Result<Vec<LanguageIdentifier>, io::Error> {
                 if let Some(name) = path.file_name() {
                     let bytes = name.to_str().unwrap().as_bytes();
                     if let Ok(langid) = LanguageIdentifier::from_bytes(bytes) {
-                        found_locales.push(langid);
+                        let mut resource_file = path.clone();
+                        resource_file.push(self::FTL_RESOURCE);
+                        if let Ok(data) = fs::read_to_string(resource_file) {
+                            preloads.push(FtlData::preload(&langid));
+                            found_locales.push(langid);
+                        }
                     }
                 }
             }
         }
     }
-    return Ok(found_locales);
+    return Ok((found_locales, preloads));
 }
 
 pub fn get_str(key: &str) -> &str {
@@ -91,7 +115,7 @@ pub fn get_str(key: &str) -> &str {
         })
     };
     let loc = Localization::new(
-        FLUENT_RESOURCES.iter().map(|s| s.to_string()).collect(),
+        // FLUENT_RESOURCES.iter().map(|s| s.to_string()).collect(),
         generate_messages,
     );
 
