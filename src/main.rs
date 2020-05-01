@@ -1,5 +1,5 @@
 use casile::i18n;
-use std::{env, path, str};
+use std::{env, error, io, path, str};
 use structopt::{clap, StructOpt};
 
 /// The command line interface to the CaSILE toolkit, a book publishing
@@ -11,11 +11,11 @@ use structopt::{clap, StructOpt};
 #[structopt(setting = clap::AppSettings::InferSubcommands)]
 struct Cli {
     /// Activate debug mode
-    #[structopt(short, long, env = "DEBUG")]
+    #[structopt(short, long)]
     debug: bool,
 
     /// Set language
-    #[structopt(short, long, env = "LANG")]
+    #[structopt(short, long, required = false, env = "LANG")]
     language: String,
 
     /// Outputs verbose feedback where possible
@@ -39,6 +39,10 @@ enum Subcommand {
         /// Path to project repository
         #[structopt(parse(from_os_str), default_value = "./")]
         path: path::PathBuf,
+
+        /// Output Bash, Fish, Zsh, PowerShell, or Elvish shell completion rules
+        #[structopt(long)]
+        completions: Option<clap::Shell>,
     },
 
     /// Pass through other commands to shell
@@ -46,11 +50,7 @@ enum Subcommand {
     Other(Vec<String>),
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    Cli::clap().gen_completions(env!("CARGO_PKG_NAME"), clap::Shell::Bash, "target");
-    Cli::clap().gen_completions(env!("CARGO_PKG_NAME"), clap::Shell::Fish, "target");
-    Cli::clap().gen_completions(env!("CARGO_PKG_NAME"), clap::Shell::Zsh, "target");
-
+fn main() -> Result<(), Box<dyn error::Error>> {
     let clap = Cli::clap();
     // let clap = Cli::clap().about("what about bob");
     // println!("First pass {:?}", a.language);
@@ -65,7 +65,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     match args.subcommand {
         Subcommand::Make { target } => casile::make::run(&config, target),
-        Subcommand::Setup { path } => casile::setup::run(&config, path),
+        Subcommand::Setup { path, completions } => match completions {
+            None => casile::setup::run(&config, path),
+            Some(shell) => {
+                Cli::clap().gen_completions_to(env!("CARGO_PKG_NAME"), shell, &mut io::stdout());
+                Ok(())
+            }
+        },
         Subcommand::Other(input) => casile::shell::run(&config, input),
     }
 }
