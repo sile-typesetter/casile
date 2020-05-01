@@ -69,6 +69,6 @@ fn main() -> io::Result<()> {
     match args.subcommand {
         Subcommand::Make { target } => casile::make::run(config, target),
         Subcommand::Setup { path } => casile::setup::run(config, path),
-        _a => casile::shell::run(config),
+        Subcommand::Other(input) => casile::shell::run(config, input),
     }
 }

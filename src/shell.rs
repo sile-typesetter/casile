@@ -1,6 +1,7 @@
 use std::io;
 
-pub fn run(config: crate::Config) -> io::Result<()> {
+pub fn run(config: crate::Config, input: Vec<String>) -> io::Result<()> {
     println!("{}", config.locale.translate("debug-shell"));
+    crate::run_shell(config, input);
     Ok(())
 }
