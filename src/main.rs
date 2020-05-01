@@ -54,7 +54,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let clap = Cli::clap();
     // let clap = Cli::clap().about("what about bob");
     // println!("First pass {:?}", a.language);
-    // println!("CLI structs {:?}", &clap);
 
     let args = Cli::from_clap(&clap.get_matches());
 
@@ -64,11 +63,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         locale: i18n::Locale::negotiate(args.language),
     };
 
-    // println!("{:#?}", config);
-
     match args.subcommand {
-        Subcommand::Make { target } => casile::make::run(config, target),
-        Subcommand::Setup { path } => casile::setup::run(config, path),
-        Subcommand::Other(input) => casile::shell::run(config, input),
+        Subcommand::Make { target } => casile::make::run(&config, target),
+        Subcommand::Setup { path } => casile::setup::run(&config, path),
+        Subcommand::Other(input) => casile::shell::run(&config, input),
     }
 }
