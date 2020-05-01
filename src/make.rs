@@ -1,6 +1,6 @@
-use std::{io, vec};
+use std::error;
 
-pub fn run(config: crate::Config, input: vec::Vec<String>) -> io::Result<()> {
+pub fn run(config: crate::Config, input: Vec<String>) -> Result<(), Box<dyn error::Error>> {
     println!("{}", config.locale.translate("debug-make"));
     let mut cmd: Vec<String> = Vec::new();
     cmd.push(String::from("make"));

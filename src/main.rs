@@ -1,5 +1,5 @@
 use casile::i18n;
-use std::{env, io, path, str};
+use std::{env, path, str};
 use structopt::{clap, StructOpt};
 
 /// The command line interface to the CaSILE toolkit, a book publishing
@@ -46,7 +46,7 @@ enum Subcommand {
     Other(Vec<String>),
 }
 
-fn main() -> io::Result<()> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     Cli::clap().gen_completions(env!("CARGO_PKG_NAME"), clap::Shell::Bash, "target");
     Cli::clap().gen_completions(env!("CARGO_PKG_NAME"), clap::Shell::Fish, "target");
     Cli::clap().gen_completions(env!("CARGO_PKG_NAME"), clap::Shell::Zsh, "target");
