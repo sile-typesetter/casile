@@ -20,6 +20,7 @@ git2 = "0.13.5"
 regex = "1.3.7"
 rust-embed = "5.5.1"
 structopt = "0.3.14"
+subprocess = "0.2.4"
 unic-langid = "0.8.0"
 
 [build-dependencies]
