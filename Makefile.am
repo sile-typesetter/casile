@@ -104,8 +104,13 @@ casile$(EXEEXT): target/release/casile
 
 target/casile.bash: target/release/casile
 
-target/release/casile: $(casile_SOURCES)
+target/release/casile: $(casile_SOURCES) clean-embedded-assets
 	cargo build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
+
+.PHONY: clean-embedded-assets
+clean-embedded-assets:
+	[[ -d .git  ]] || exit 0
+	git clean -dxf assets
 
 all: init
 
