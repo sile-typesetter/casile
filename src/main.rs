@@ -1,32 +1,32 @@
 use casile::i18n;
-use std::{env, error, io, path, str};
-use structopt::{clap, StructOpt};
+use clap::{AppSettings, Clap};
+use std::{env, error, path, str};
 
 /// The command line interface to the CaSILE toolkit, a book publishing
 /// workflow employing SILE and other wizardry
-#[derive(Debug)]
-// #[structopt(about = "bob is a turtle")]
-#[derive(StructOpt)]
-#[structopt(version = env!("VERGEN_SEMVER"))]
-#[structopt(setting = clap::AppSettings::InferSubcommands)]
+#[derive(Clap, Debug)]
+// #[clap(about = "bob is a turtle")]
+#[clap(version = env!("VERGEN_SEMVER"))]
+#[clap(setting = AppSettings::InferSubcommands)]
+#[clap(setting = AppSettings::AllowExternalSubcommands)]
 struct Cli {
     /// Activate debug mode
-    #[structopt(short, long)]
+    #[clap(short, long)]
     debug: bool,
 
     /// Set language
-    #[structopt(short, long, required = false, env = "LANG")]
+    #[clap(short, long, required = false, env = "LANG")]
     language: String,
 
     /// Outputs verbose feedback where possible
-    #[structopt(short, long)]
+    #[clap(short, long)]
     verbose: bool,
 
-    #[structopt(subcommand)]
+    #[clap(subcommand)]
     subcommand: Subcommand,
 }
 
-#[derive(Debug, StructOpt)]
+#[derive(Clap, Debug)]
 enum Subcommand {
     /// Executes a make target
     Make {
@@ -37,41 +37,36 @@ enum Subcommand {
     /// Configure a book repository
     Setup {
         /// Path to project repository
-        #[structopt(parse(from_os_str), default_value = "./")]
+        #[clap(parse(from_os_str), default_value = "./")]
         path: path::PathBuf,
-
-        /// Output Bash, Fish, Zsh, PowerShell, or Elvish shell completion rules
-        #[structopt(long)]
-        completions: Option<clap::Shell>,
+        // /// Output Bash, Fish, Zsh, PowerShell, or Elvish shell completion rules
+        // #[clap(long)]
+        // // completions: clap::Shell,
+        // completions: Option<String>,
     },
 
     /// Pass through other commands to shell
-    #[structopt(external_subcommand)]
+    #[clap(external_subcommand)]
     Other(Vec<String>),
 }
 
 fn main() -> Result<(), Box<dyn error::Error>> {
-    let clap = Cli::clap();
-    // let clap = Cli::clap().about("what about bob");
-    // println!("First pass {:?}", a.language);
-
-    let args = Cli::from_clap(&clap.get_matches());
-
+    let args = Cli::parse();
     let config = casile::Config {
         verbose: args.verbose,
         debug: args.debug,
         locale: i18n::Locale::negotiate(args.language),
     };
-
     match args.subcommand {
         Subcommand::Make { target } => casile::make::run(&config, target),
-        Subcommand::Setup { path, completions } => match completions {
-            None => casile::setup::run(&config, path),
-            Some(shell) => {
-                Cli::clap().gen_completions_to(env!("CARGO_PKG_NAME"), shell, &mut io::stdout());
-                Ok(())
-            }
-        },
+        Subcommand::Setup { path } => casile::setup::run(&config, path),
+        // Subcommand::Setup { path, completions } => match completions {
+        //     None => casile::setup::run(&config, path),
+        //     Some(_shell) => {
+        //         Cli::clap_completions::generate_to(env!("CARGO_PKG_NAME"), "Zsh", &mut io::stdout());
+        //         Ok(())
+        //     }
+        // },
         Subcommand::Other(input) => casile::shell::run(&config, input),
     }
 }
