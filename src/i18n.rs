@@ -4,11 +4,11 @@ use fluent_fallback::Localization;
 use fluent_langneg;
 use regex::Regex;
 use rust_embed::RustEmbed;
-use std::{env, fs, io, iter, path, vec};
+use std::{env, fs, io, iter, path, str, vec};
 use std::collections::HashMap;
 use unic_langid::LanguageIdentifier;
 
-static FTL_RESOURCE: &str = "cli.ftl";
+static FTL_RESOURCES: &[&str] = &["cli.ftl"];
 
 #[derive(RustEmbed)]
 #[folder = "assets/"]
@@ -31,10 +31,43 @@ impl Locale {
             Some(&default),
             fluent_langneg::NegotiationStrategy::Filtering,
         ).iter().map(|x| *x).cloned().collect();
-        // println!("PRELOADS: {:#?}", preloads);
         Locale {
             negotiated
         }
+    }
+
+    pub fn translate(&self, key: &str) -> String {
+        let mut res_path_scheme = path::PathBuf::new();
+        res_path_scheme.push("{locale}");
+        res_path_scheme.push("{res_id}");
+        let generate_messages = |res_ids: &[String]| {
+        let mut resolved_locales = self.negotiated.iter();
+            let res_path_scheme = res_path_scheme.to_str().unwrap();
+            let res_ids = res_ids.to_vec();
+
+            iter::from_fn(move || {
+                resolved_locales.next().map(|locale| {
+                    let x = vec![locale.clone()];
+                    let mut bundle = FluentBundle::new(&x);
+                    let res_path = res_path_scheme.replace("{locale}", &locale.to_string());
+                    for res_id in &res_ids {
+                        let path = res_path.replace("{res_id}", res_id);
+                        if let Some(source) = Asset::get(&path) {
+                            let data = str::from_utf8(source.as_ref()).unwrap();
+                            let res = FluentResource::try_new(data.to_string()).unwrap();
+                            bundle.add_resource(res).unwrap();
+                        }
+                    }
+                    bundle
+                })
+            })
+        };
+        let loc = Localization::new(
+            FTL_RESOURCES.iter().map(|s| s.to_string()).collect(),
+            generate_messages,
+        );
+        let value: String = loc.format_value(key, None).to_string();
+        value
     }
 }
 
@@ -55,7 +88,7 @@ pub fn list_available_locales() -> Vec<LanguageIdentifier> {
             let bytes = part.to_str().unwrap().as_bytes();
             if let Ok(langid) = LanguageIdentifier::from_bytes(bytes) {
                 if let Some(path::Component::Normal(part)) = components.next() {
-                    if part.to_str().unwrap() == self::FTL_RESOURCE {
+                    if self::FTL_RESOURCES.iter().any(|v| v == &part.to_str().unwrap()) {
                         embeded.push(langid);
                     }
                 }
@@ -65,47 +98,4 @@ pub fn list_available_locales() -> Vec<LanguageIdentifier> {
     }
     embeded.dedup();
     embeded
-}
-
-pub fn get_str(key: &str) -> &str {
-    "bob"
-    /*
-
-    let resources: FrozenMap<String, Box<FluentResource>> = FrozenMap::new();
-    let mut res_path_scheme = env::current_dir().expect("Failed to retireve current dir.");
-    res_path_scheme.push("resources");
-    res_path_scheme.push("{locale}");
-    res_path_scheme.push("{res_id}");
-    let res_path_scheme = res_path_scheme.to_str().unwrap();
-    let generate_messages = |res_ids: &[String]| {
-        let mut resolved_locales = locales.iter();
-        let res_mgr = &resources;
-        let res_ids = res_ids.to_vec();
-
-        iter::from_fn(move || {
-            resolved_locales.next().map(|locale| {
-                let mut bundle = FluentBundle::new(vec![locale.clone()]);
-                let res_path = res_path_scheme.replace("{locale}", &locale.to_string());
-
-                for res_id in &res_ids {
-                    let path = res_path.replace("{res_id}", res_id);
-                    let res = res_mgr.get(&path).unwrap_or_else(|| {
-                        let source = crate::read_file(&path).unwrap();
-                        let res = FluentResource::try_new(source).unwrap();
-                        res_mgr.insert(path.to_string(), Box::new(res))
-                    });
-                    bundle.add_resource(res).unwrap();
-                }
-                bundle
-            })
-        })
-    };
-    let loc = Localization::new(
-        // FLUENT_RESOURCES.iter().map(|s| s.to_string()).collect(),
-        generate_messages,
-    );
-
-    let value = loc.format_value(key, None);
-    &value
-        */
 }
