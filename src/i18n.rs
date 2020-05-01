@@ -1,11 +1,9 @@
-use elsa::FrozenMap;
 use fluent::{FluentBundle, FluentResource};
 use fluent_fallback::Localization;
 use fluent_langneg;
 use regex::Regex;
 use rust_embed::RustEmbed;
-use std::{env, fs, io, iter, path, str, vec};
-use std::collections::HashMap;
+use std::{iter, path, str, vec};
 use unic_langid::LanguageIdentifier;
 
 static FTL_RESOURCES: &[&str] = &["cli.ftl"];
@@ -30,10 +28,12 @@ impl Locale {
             &available,
             Some(&default),
             fluent_langneg::NegotiationStrategy::Filtering,
-        ).iter().map(|x| *x).cloned().collect();
-        Locale {
-            negotiated
-        }
+        )
+        .iter()
+        .map(|x| *x)
+        .cloned()
+        .collect();
+        Locale { negotiated }
     }
 
     pub fn translate(&self, key: &str) -> String {
@@ -41,7 +41,7 @@ impl Locale {
         res_path_scheme.push("{locale}");
         res_path_scheme.push("{res_id}");
         let generate_messages = |res_ids: &[String]| {
-        let mut resolved_locales = self.negotiated.iter();
+            let mut resolved_locales = self.negotiated.iter();
             let res_path_scheme = res_path_scheme.to_str().unwrap();
             let res_ids = res_ids.to_vec();
 
@@ -88,12 +88,14 @@ pub fn list_available_locales() -> Vec<LanguageIdentifier> {
             let bytes = part.to_str().unwrap().as_bytes();
             if let Ok(langid) = LanguageIdentifier::from_bytes(bytes) {
                 if let Some(path::Component::Normal(part)) = components.next() {
-                    if self::FTL_RESOURCES.iter().any(|v| v == &part.to_str().unwrap()) {
+                    if self::FTL_RESOURCES
+                        .iter()
+                        .any(|v| v == &part.to_str().unwrap())
+                    {
                         embeded.push(langid);
                     }
                 }
             }
-
         }
     }
     embeded.dedup();

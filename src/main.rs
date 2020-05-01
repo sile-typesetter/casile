@@ -1,7 +1,6 @@
 use casile::i18n;
-use std::{env, fs, io, path, str, vec};
+use std::{env, io, path, str};
 use structopt::{clap, StructOpt};
-use unic_langid::LanguageIdentifier;
 
 /// The command line interface to the CaSILE toolkit, a book publishing
 /// workflow employing SILE and other wizardry
@@ -27,8 +26,7 @@ struct Cli {
     subcommand: Subcommand,
 }
 
-#[derive(Debug)]
-#[derive(StructOpt)]
+#[derive(Debug, StructOpt)]
 enum Subcommand {
     /// Executes a make target
     Make {
@@ -55,7 +53,6 @@ fn main() -> io::Result<()> {
 
     let clap = Cli::clap();
     // let clap = Cli::clap().about("what about bob");
-
     // println!("First pass {:?}", a.language);
     // println!("CLI structs {:?}", &clap);
 
@@ -64,10 +61,10 @@ fn main() -> io::Result<()> {
     let config = casile::Config {
         verbose: args.verbose,
         debug: args.debug,
-        locale: i18n::Locale::negotiate(args.language)
+        locale: i18n::Locale::negotiate(args.language),
     };
 
-    println!("{:#?}", config);
+    // println!("{:#?}", config);
 
     match args.subcommand {
         Subcommand::Make { target } => casile::make::run(config, target),
