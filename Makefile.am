@@ -69,6 +69,25 @@ dist_packages_DATA = packages/crop.lua packages/markdown.lua packages/verseindex
 layoutsdir = $(datadir)/layouts
 dist_layouts_DATA = layouts/a4.lua layouts/a4ciltli.lua layouts/a5trim.lua layouts/a6.lua layouts/a6trim.lua layouts/a7.lua layouts/a7kart.lua layouts/a7trimkart.lua layouts/app.lua layouts/banner.lua layouts/businesscard.lua layouts/cep.lua layouts/ekran.lua layouts/epub.lua layouts/halfletter.lua layouts/octavo.lua layouts/royaloctavo.lua layouts/square.lua layouts/wide.lua
 
+EXTRA_DIST += assets
+assetsdir = $(datadir)/assets
+dist_assets_DATA =
+
+if ENABLE_BASH_COMPLETION
+bashcompletiondir = $(BASH_COMPLETION_DIR)
+dist_bashcompletion_DATA = target/casile.bash
+endif
+
+if ENABLE_FISH_COMPLETION
+fishcompletiondir = $(FISH_COMPLETION_DIR)
+dist_fishcompletion_DATA = target/casile.fish
+endif
+
+if ENABLE_ZSH_COMPLETION
+zshcompletiondir = $(ZSH_COMPLETION_DIR)
+dist_zshcompletion_DATA = target/_casile
+endif
+
 if DEBUG_RELEASE
 CARGO_RELEASE_ARGS=
 else
@@ -82,6 +101,8 @@ cargo_verbose_1 = --verbose
 
 casile$(EXEEXT): target/release/casile
 	cp $< $@
+
+target/casile.bash: target/release/casile
 
 target/release/casile: $(casile_SOURCES)
 	cargo build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
