@@ -1,5 +1,6 @@
 use subprocess::Exec;
 
+pub mod cli;
 pub mod i18n;
 pub mod make;
 pub mod setup;
