@@ -1,11 +1,10 @@
 use clap::{AppSettings, Clap};
-use std::{env, path};
+use std::path;
 
 /// The command line interface to the CaSILE toolkit, a book publishing
 /// workflow employing SILE and other wizardry
 #[derive(Clap, Debug)]
-// #[clap(about = "bob is a turtle")]
-#[clap(version = env!("VERGEN_SEMVER"))]
+#[clap(bin_name = "casile")]
 #[clap(setting = AppSettings::InferSubcommands)]
 #[clap(setting = AppSettings::AllowExternalSubcommands)]
 pub struct Cli {
@@ -36,12 +35,12 @@ pub enum Subcommand {
     /// Configure a book repository
     Setup {
         /// Path to project repository
-        #[clap(parse(from_os_str), default_value = "./")]
+        #[clap(default_value = "./")]
         path: path::PathBuf,
+
         // /// Output Bash, Fish, Zsh, PowerShell, or Elvish shell completion rules
         // #[clap(long)]
-        // // completions: clap::Shell,
-        // completions: Option<String>,
+        // completions: clap::Shell,
     },
 
     /// Pass through other commands to shell

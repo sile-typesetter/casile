@@ -1,9 +1,11 @@
 use casile::{cli::*, i18n};
-use clap::Clap;
-use std::{error};
+use clap::{FromArgMatches, IntoApp};
+use std::error;
 
 fn main() -> Result<(), Box<dyn error::Error>> {
-    let args = Cli::parse();
+    let app = Cli::into_app().version(env!("VERGEN_SEMVER"));
+    let matches = app.get_matches();
+    let args = Cli::from_arg_matches(&matches);
     let config = casile::Config {
         verbose: args.verbose,
         debug: args.debug,
