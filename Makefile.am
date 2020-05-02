@@ -74,17 +74,17 @@ dist_assets_DATA =
 
 if ENABLE_BASH_COMPLETION
 bashcompletiondir = $(BASH_COMPLETION_DIR)
-dist_bashcompletion_DATA = target/casile
+dist_bashcompletion_DATA = target/release/completions/casile
 endif
 
 if ENABLE_FISH_COMPLETION
 fishcompletiondir = $(FISH_COMPLETION_DIR)
-dist_fishcompletion_DATA = target/casile.fish
+dist_fishcompletion_DATA = target/release/completions/casile.fish
 endif
 
 if ENABLE_ZSH_COMPLETION
 zshcompletiondir = $(ZSH_COMPLETION_DIR)
-dist_zshcompletion_DATA = target/_casile
+dist_zshcompletion_DATA = target/release/completions/_casile
 endif
 
 if DEBUG_RELEASE
@@ -98,17 +98,17 @@ cargo_verbose_ = $(cargo_verbose_$(AM_DEFAULT_VERBOSITY))
 cargo_verbose_0 =
 cargo_verbose_1 = --verbose
 
+CARGO_OUT_DIR = $(shell cargo build -Z unstable-options --build-plan | jq -r '.invocations[] | select((.package_name == "casile") and (.compile_mode == "run-custom-build")).env.OUT_DIR')
+
 casile$(EXEEXT): target/release/casile
 	cp $< $@
 
-target/casile: target/release/casile
-	$< setup --completions bash > $@
+target/release/completions/casile: target/release/completions/casile.bash
+	cp $< $@
 
-target/_casile: target/release/casile
-	$< setup --completions zsh > $@
-
-target/casile.fish: target/release/casile
-	$< setup --completions fish > $@
+target/release/completions/%: $(CARGO_OUT_DIR)/%
+	mkdir -p $(@D)
+	cp $< $@
 
 target/release/casile: $(casile_SOURCES) clean-embedded-assets
 	cargo build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
