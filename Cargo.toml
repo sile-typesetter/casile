@@ -28,6 +28,8 @@ git = "https://github.com/clap-rs/clap"
 features = ["suggestions", "color", "wrap_help", "derive", "std", "cargo", "unstable"]
 
 [build-dependencies]
+clap = { git = "https://github.com/clap-rs/clap" }
+clap_generate = { git = "https://github.com/clap-rs/clap" }
 vergen = "3.1.0"
 
 [profile.release]

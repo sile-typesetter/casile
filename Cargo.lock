@@ -43,6 +43,7 @@ name = "casile"
 version = "0.2.0"
 dependencies = [
  "clap",
+ "clap_generate",
  "fluent",
  "fluent-fallback",
  "fluent-langneg",
@@ -109,6 +110,14 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "clap_generate"
+version = "3.0.0-beta.1"
+source = "git+https://github.com/clap-rs/clap#19e3e97544df55bda7f313883aa759df072ca056"
+dependencies = [
+ "clap",
 ]
 
 [[package]]
