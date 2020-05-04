@@ -18,6 +18,6 @@ pub struct Config {
 pub fn header(config: &crate::Config, key: &str) {
     let mut args = FluentArgs::new();
     args.insert("version", FluentValue::from(config.version.as_str()));
-    println!("==> {} \n", config.locale.translate("welcome", Some(&args)));
-    println!("--> {} \n", config.locale.translate(key, None));
+    eprintln!("==> {} \n", config.locale.translate("welcome", Some(&args)));
+    eprintln!("--> {} \n", config.locale.translate(key, None));
 }
