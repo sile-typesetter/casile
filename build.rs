@@ -19,8 +19,7 @@ fn main() {
     // let outdir = env::var_os("OUT_DIR").unwrap();
     let profile = env::var("PROFILE").unwrap();
     let completionsdir = format!("target/{}/completions", profile);
-    fs::create_dir(&completionsdir).unwrap();
-    println!("CoDi {}", &completionsdir);
+    fs::create_dir_all(&completionsdir).unwrap();
     let mut app = Cli::into_app();
     let bin_name = "casile";
     generate_to::<Bash, _, _>(&mut app, bin_name, &completionsdir);
