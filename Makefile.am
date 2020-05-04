@@ -13,8 +13,8 @@ EXTRA_DIST = package.json yarn.lock Dockerfile build-aux/docker-entrypoint.sh
 
 bin_PROGRAMS = casile
 
-casile_SOURCES = Cargo.toml build.rs src/main.rs
-EXTRA_casile_SOURCES = Cargo.lock
+casile_SOURCES = Cargo.toml build.rs src/main.rs src/lib.rs src/i18n.rs src/make.rs src/setup.rs src/shell.rs
+EXTRA_casile_SOURCES = Cargo.lock assets/en-US/cli.ftl assets/tr-TR/cli.ftl
 
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
@@ -69,23 +69,22 @@ dist_packages_DATA = packages/crop.lua packages/markdown.lua packages/verseindex
 layoutsdir = $(datadir)/layouts
 dist_layouts_DATA = layouts/a4.lua layouts/a4ciltli.lua layouts/a5trim.lua layouts/a6.lua layouts/a6trim.lua layouts/a7.lua layouts/a7kart.lua layouts/a7trimkart.lua layouts/app.lua layouts/banner.lua layouts/businesscard.lua layouts/cep.lua layouts/ekran.lua layouts/epub.lua layouts/halfletter.lua layouts/octavo.lua layouts/royaloctavo.lua layouts/square.lua layouts/wide.lua
 
-EXTRA_DIST += assets
 assetsdir = $(datadir)/assets
 dist_assets_DATA =
 
 if ENABLE_BASH_COMPLETION
 bashcompletiondir = $(BASH_COMPLETION_DIR)
-dist_bashcompletion_DATA = target/casile.bash
+dist_bashcompletion_DATA = target/release/completions/casile
 endif
 
 if ENABLE_FISH_COMPLETION
 fishcompletiondir = $(FISH_COMPLETION_DIR)
-dist_fishcompletion_DATA = target/casile.fish
+dist_fishcompletion_DATA = target/release/completions/casile.fish
 endif
 
 if ENABLE_ZSH_COMPLETION
 zshcompletiondir = $(ZSH_COMPLETION_DIR)
-dist_zshcompletion_DATA = target/_casile
+dist_zshcompletion_DATA = target/release/completions/_casile
 endif
 
 if DEBUG_RELEASE
@@ -99,13 +98,25 @@ cargo_verbose_ = $(cargo_verbose_$(AM_DEFAULT_VERBOSITY))
 cargo_verbose_0 =
 cargo_verbose_1 = --verbose
 
+CARGO_OUT_DIR = $(shell cargo build -Z unstable-options --build-plan | jq -r '.invocations[] | select((.package_name == "casile") and (.compile_mode == "run-custom-build")).env.OUT_DIR')
+
 casile$(EXEEXT): target/release/casile
 	cp $< $@
 
-target/casile.bash: target/release/casile
+target/release/completions/casile: target/release/completions/casile.bash
+	cp $< $@
 
-target/release/casile: $(casile_SOURCES)
+target/release/completions/%: $(CARGO_OUT_DIR)/%
+	mkdir -p $(@D)
+	cp $< $@
+
+target/release/casile: $(casile_SOURCES) clean-embedded-assets
 	cargo build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
+
+.PHONY: clean-embedded-assets
+clean-embedded-assets:
+	[[ -d .git  ]] || exit 0
+	git clean -dxf assets
 
 all: init
 

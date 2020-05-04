@@ -52,9 +52,9 @@ AC_ARG_WITH([fish-completion-dir],
     [],
     [with_fish_completion_dir=yes])
 if test "x$with_fish_completion_dir" = "xyes"; then
-    PKG_CHECK_MODULES([FISH_COMPLETION], [fish-completion >= 2.0],
-        [FISH_COMPLETION_DIR="`pkg-config --variable=completionsdir fish-completion`"],
-        [FISH_COMPLETION_DIR="$datadir/fish/vendor-completions.d"])
+    PKG_CHECK_MODULES([FISH_COMPLETION], [fish >= 3.0],
+        [FISH_COMPLETION_DIR="`pkg-config --variable=completionsdir fish`"],
+        [FISH_COMPLETION_DIR="$datadir/fish/vendor_completions.d"])
 else
     FISH_COMPLETION_DIR="$with_fish_completion_dir"
 fi
@@ -67,9 +67,7 @@ AC_ARG_WITH([zsh-completion-dir],
     [],
     [with_zsh_completion_dir=yes])
 if test "x$with_zsh_completion_dir" = "xyes"; then
-    PKG_CHECK_MODULES([ZSH_COMPLETION], [zsh-completion >= 2.0],
-        [ZSH_COMPLETION_DIR="`pkg-config --variable=completionsdir zsh-completion`"],
-        [ZSH_COMPLETION_DIR="$datadir/zsh/site-functions"])
+    ZSH_COMPLETION_DIR="$datadir/zsh/site-functions"
 else
     ZSH_COMPLETION_DIR="$with_zsh_completion_dir"
 fi

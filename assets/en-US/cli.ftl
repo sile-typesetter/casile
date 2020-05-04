@@ -1,54 +1,51 @@
-description =
+help-description =
   The command line interface to the CaSILE toolkit, a book publishing workflow
   employing SILE and other wizardry
 
-flags-debug =
+help-flags-debug =
   Activate debug mode
 
-flags-verbose =
+help-flags-verbose =
   Outputs verbose feedback where possible
 
-subcommand-make =
+help-subcommand-make =
   Executes a make target
 
-flags-language =
+help-flags-language =
   Set language
 
-subcommand-make-target =
+help-subcommand-make-target =
   Target as defined in CaSILE makefile
 
-subcommand-setup =
+help-subcommand-setup =
   Configure a book repository
 
-subcommand-setup-path =
+help-subcommand-setup-path =
   Path to project repository
 
-subcommand-shell =
+help-subcommand-shell =
   Pass through other commands to shell
-
-debug-debug =
-  User requested debug mode
-
-debug-verbose =
-  User requested verbose output
-
-debug-make =
-  Make make make sense or I’ll make you make makefiles.
-
-debug-setup =
-  Run setup, “They said you were this great colossus!”
-
-setup-not-git =
-  Not a git repo!
-
-setup-not-dir =
-  Not a dir, Frank!
-
-debug-shell  =
-  Ship all this off to the shell, maybe they can handle it.
 
 error-invalid-language =
   Could not parse BCP47 language tag.
 
 error-invalid-resources =
   Could not find valid BCP47 resource files.
+
+welcome =
+  Welcome to CaSILE version {$version}. Stand by while we stir the caldron.
+
+make-header =
+  Make make make sense or I’ll make you make makefiles.
+
+setup-header =
+  Setup CaSILE, “They said you were this great colossus!”
+
+setup-error-not-git =
+  Supplied path is not a Git repository.
+
+setup-error-not-dir =
+  Path is not a directory.
+
+shell-header  =
+  Ship all this off to the shell, maybe they can handle it.

@@ -1,4 +1,4 @@
-use fluent::{FluentBundle, FluentResource};
+use fluent::{FluentArgs, FluentBundle, FluentResource};
 use fluent_fallback::Localization;
 use fluent_langneg;
 use regex::Regex;
@@ -36,38 +36,8 @@ impl Locale {
         Locale { negotiated }
     }
 
-    pub fn translate(&self, key: &str) -> String {
-        let mut res_path_scheme = path::PathBuf::new();
-        res_path_scheme.push("{locale}");
-        res_path_scheme.push("{res_id}");
-        let generate_messages = |res_ids: &[String]| {
-            let mut resolved_locales = self.negotiated.iter();
-            let res_path_scheme = res_path_scheme.to_str().unwrap();
-            let res_ids = res_ids.to_vec();
-
-            iter::from_fn(move || {
-                resolved_locales.next().map(|locale| {
-                    let x = vec![locale.clone()];
-                    let mut bundle = FluentBundle::new(&x);
-                    let res_path = res_path_scheme.replace("{locale}", &locale.to_string());
-                    for res_id in &res_ids {
-                        let path = res_path.replace("{res_id}", res_id);
-                        if let Some(source) = Asset::get(&path) {
-                            let data = str::from_utf8(source.as_ref()).unwrap();
-                            let res = FluentResource::try_new(data.to_string()).unwrap();
-                            bundle.add_resource(res).unwrap();
-                        }
-                    }
-                    bundle
-                })
-            })
-        };
-        let loc = Localization::new(
-            FTL_RESOURCES.iter().map(|s| s.to_string()).collect(),
-            generate_messages,
-        );
-        let value: String = loc.format_value(key, None).to_string();
-        value
+    pub fn translate(&self, key: &str, args: Option<&FluentArgs>) -> String {
+        translate(&self.negotiated, key, args)
     }
 }
 
@@ -78,7 +48,7 @@ fn normalize_lang(input: String) -> String {
 }
 
 // https://github.com/projectfluent/fluent-rs/blob/c9e45651/fluent-resmgr/examples/simple-resmgr.rs#L35
-pub fn list_available_locales() -> Vec<LanguageIdentifier> {
+fn list_available_locales() -> Vec<LanguageIdentifier> {
     let mut embeded = vec![];
     for asset in Asset::iter() {
         let asset_name = asset.to_string();
@@ -100,4 +70,38 @@ pub fn list_available_locales() -> Vec<LanguageIdentifier> {
     }
     embeded.dedup();
     embeded
+}
+
+fn translate(locales: &Vec<LanguageIdentifier>, key: &str, args: Option<&FluentArgs>) -> String {
+    let mut res_path_scheme = path::PathBuf::new();
+    res_path_scheme.push("{locale}");
+    res_path_scheme.push("{res_id}");
+    let generate_messages = |res_ids: &[String]| {
+        let mut resolved_locales = locales.iter();
+        let res_path_scheme = res_path_scheme.to_str().unwrap();
+        let res_ids = res_ids.to_vec();
+
+        iter::from_fn(move || {
+            resolved_locales.next().map(|locale| {
+                let x = vec![locale.clone()];
+                let mut bundle = FluentBundle::new(&x);
+                let res_path = res_path_scheme.replace("{locale}", &locale.to_string());
+                for res_id in &res_ids {
+                    let path = res_path.replace("{res_id}", res_id);
+                    if let Some(source) = Asset::get(&path) {
+                        let data = str::from_utf8(source.as_ref()).unwrap();
+                        let res = FluentResource::try_new(data.to_string()).unwrap();
+                        bundle.add_resource(res).unwrap();
+                    }
+                }
+                bundle
+            })
+        })
+    };
+    let loc = Localization::new(
+        FTL_RESOURCES.iter().map(|s| s.to_string()).collect(),
+        generate_messages,
+    );
+    let value: String = loc.format_value(key, args).to_string();
+    value
 }
