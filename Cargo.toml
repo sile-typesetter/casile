@@ -10,7 +10,6 @@ license = "AGPL-3"
 build = "build.rs"
 
 [dependencies]
-elsa = "1.3.2"
 # Using Git HEAD because of https://github.com/projectfluent/fluent-rs/issues/175
 fluent = { git = "https://github.com/projectfluent/fluent-rs" }
 fluent-fallback = { git = "https://github.com/projectfluent/fluent-rs" }
@@ -19,11 +18,18 @@ fluent-langneg = "0.12.1"
 git2 = "0.13.5"
 regex = "1.3.7"
 rust-embed = "5.5.1"
-structopt = "0.3.14"
 subprocess = "0.2.4"
 unic-langid = "0.8.0"
 
+[dependencies.clap]
+# Unrleleased Clap has integrated structopt
+git = "https://github.com/clap-rs/clap"
+# version = "3.0.0"
+features = ["suggestions", "color", "wrap_help", "derive", "std", "cargo", "unstable"]
+
 [build-dependencies]
+clap = { git = "https://github.com/clap-rs/clap" }
+clap_generate = { git = "https://github.com/clap-rs/clap" }
 vergen = "3.1.0"
 
 [profile.release]
