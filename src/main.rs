@@ -3,7 +3,7 @@ use clap::{FromArgMatches, IntoApp};
 use std::error;
 
 fn main() -> Result<(), Box<dyn error::Error>> {
-    let app = Cli::into_app().version(env!("VERGEN_SEMVER"));
+    let app = Cli::into_app().version(env!("VERGEN_SEMVER_LIGHTWEIGHT"));
     let matches = app.get_matches();
     let args = Cli::from_arg_matches(&matches);
     let config = casile::Config {
