@@ -1,3 +1,6 @@
+welcome =
+  CaSILE {$version} sürümüne hoş geldiniz. Kazanı karıştırırken bekleyin.
+
 make-header =
   What can I do is the sometimes is the football?
 

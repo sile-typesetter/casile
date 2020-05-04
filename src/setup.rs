@@ -9,12 +9,12 @@ pub fn run(config: &crate::Config, path: path::PathBuf) -> Result<(), Box<dyn er
             Ok(_repo) => Ok(()),
             Err(_error) => Err(Box::new(io::Error::new(
                 io::ErrorKind::InvalidInput,
-                config.locale.translate("setup-error-not-git"),
+                config.locale.translate("setup-error-not-git", None),
             ))),
         },
         false => Err(Box::new(io::Error::new(
             io::ErrorKind::InvalidInput,
-            config.locale.translate("setup-error-not-dir"),
+            config.locale.translate("setup-error-not-dir", None),
         ))),
     }
 }
