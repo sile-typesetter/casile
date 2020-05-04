@@ -98,17 +98,10 @@ cargo_verbose_ = $(cargo_verbose_$(AM_DEFAULT_VERBOSITY))
 cargo_verbose_0 =
 cargo_verbose_1 = --verbose
 
-CARGO_OUT_DIR = $(shell cargo build -Z unstable-options --build-plan | jq -r '.invocations[] | select((.package_name == "casile") and (.compile_mode == "run-custom-build")).env.OUT_DIR')
-
 casile$(EXEEXT): target/release/casile
 	cp $< $@
 
-target/release/completions/casile: target/release/completions/casile.bash
-	cp $< $@
-
-target/release/completions/%: $(CARGO_OUT_DIR)/%
-	mkdir -p $(@D)
-	cp $< $@
+target/release/completions/%: target/release/casile
 
 target/release/casile: $(casile_SOURCES) clean-embedded-assets
 	cargo build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
@@ -162,3 +155,6 @@ check-local:
 
 clean-local:
 	cargo clean
+
+tt:
+	echo BOB ${DEBUG} END
