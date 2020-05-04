@@ -37,10 +37,6 @@ pub enum Subcommand {
         /// Path to project repository
         #[clap(default_value = "./")]
         path: path::PathBuf,
-
-        // /// Output Bash, Fish, Zsh, PowerShell, or Elvish shell completion rules
-        // #[clap(long)]
-        // completions: clap::Shell,
     },
 
     /// Pass through other commands to shell

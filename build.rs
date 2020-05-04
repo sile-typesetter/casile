@@ -1,7 +1,8 @@
 extern crate vergen;
 
-use clap::{IntoApp};
-use clap_generate::{generate_to, generators};
+use clap::IntoApp;
+use clap_generate::generate_to;
+use clap_generate::generators::{Bash, Elvish, Fish, PowerShell, Zsh};
 use std::env;
 use vergen::{generate_cargo_keys, ConstantsFlags};
 
@@ -20,7 +21,10 @@ fn main() {
         Some(outdir) => outdir,
     };
     let mut app = Cli::into_app();
-    generate_to::<generators::Bash, _, _>(&mut app, "casile", &outdir,);
-    generate_to::<generators::Fish, _, _>(&mut app, "casile", &outdir,);
-    generate_to::<generators::Zsh, _, _>(&mut app, "casile", &outdir,);
+    let bin_name = "casile";
+    generate_to::<Bash, _, _>(&mut app, bin_name, &outdir);
+    generate_to::<Elvish, _, _>(&mut app, bin_name, &outdir);
+    generate_to::<Fish, _, _>(&mut app, bin_name, &outdir);
+    generate_to::<PowerShell, _, _>(&mut app, bin_name, &outdir);
+    generate_to::<Zsh, _, _>(&mut app, bin_name, &outdir);
 }
