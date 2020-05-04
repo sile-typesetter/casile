@@ -39,5 +39,8 @@ pub enum Subcommand {
     },
 
     /// Pass any command through to the system shell
-    Shell { command: Vec<String> },
+    Shell {
+        #[clap(default_value = "bash")]
+        command: Vec<String>,
+    },
 }
