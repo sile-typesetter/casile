@@ -6,7 +6,6 @@ use std::path;
 #[derive(Clap, Debug)]
 #[clap(bin_name = "casile")]
 #[clap(setting = AppSettings::InferSubcommands)]
-#[clap(setting = AppSettings::AllowExternalSubcommands)]
 pub struct Cli {
     /// Activate debug mode
     #[clap(short, long)]
@@ -39,7 +38,6 @@ pub enum Subcommand {
         path: path::PathBuf,
     },
 
-    /// Pass through other commands to shell
-    #[clap(external_subcommand)]
-    Other(Vec<String>),
+    /// Pass any command through to the system shell
+    Shell { command: Vec<String> },
 }

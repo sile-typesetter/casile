@@ -1,4 +1,6 @@
-use casile::{cli::*, i18n};
+use casile::cli::{Cli, Subcommand};
+use casile::i18n;
+use casile::{make, setup, shell};
 use clap::{FromArgMatches, IntoApp};
 use std::error;
 
@@ -12,8 +14,8 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         locale: i18n::Locale::negotiate(args.language),
     };
     match args.subcommand {
-        Subcommand::Make { target } => casile::make::run(&config, target),
-        Subcommand::Setup { path } => casile::setup::run(&config, path),
-        Subcommand::Other(input) => casile::shell::run(&config, input),
+        Subcommand::Make { target } => make::run(&config, target),
+        Subcommand::Setup { path } => setup::run(&config, path),
+        Subcommand::Shell { command } => shell::run(&config, command),
     }
 }
