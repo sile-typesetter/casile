@@ -101,7 +101,13 @@ cargo_verbose_1 = --verbose
 casile$(EXEEXT): target/release/casile
 	cp $< $@
 
-target/release/completions/%: target/release/casile
+target/release/completions/casile: target/release/casile
+	cp $@.bash $@
+
+target/release/completions/_casile: target/release/casile
+target/release/completions/casile.elv: target/release/casile
+target/release/completions/casile.fish: target/release/casile
+target/release/completions/casile.ps1: target/release/casile
 
 target/release/casile: $(casile_SOURCES) clean-embedded-assets
 	cargo build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
