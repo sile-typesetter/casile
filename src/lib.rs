@@ -10,10 +10,10 @@ pub static DEFAULT_LOCALE: &'static str = "en-US";
 
 #[derive(Debug)]
 pub struct Config {
-    version: String,
-    verbose: bool,
-    debug: bool,
-    locale: i18n::Locale,
+    pub version: String,
+    pub verbose: bool,
+    pub debug: bool,
+    pub locale: i18n::Locale,
 }
 
 impl Config {
