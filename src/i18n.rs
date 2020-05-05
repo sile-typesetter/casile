@@ -12,12 +12,14 @@ static FTL_RESOURCES: &[&str] = &["cli.ftl"];
 #[folder = "assets/"]
 struct Asset;
 
+/// Prioritized locale fallback stack
 #[derive(Debug)]
 pub struct Locale {
     pub negotiated: Vec<LanguageIdentifier>,
 }
 
 impl Locale {
+    /// Negotiate a locale based on user preference and what we have available
     pub fn negotiate(language: &String) -> Locale {
         let language = normalize_lang(language);
         let available = self::list_available_locales();
@@ -36,6 +38,7 @@ impl Locale {
         Locale { negotiated }
     }
 
+    /// Use pre-negotiated locale fallback to try translating a string
     pub fn translate(&self, key: &str, args: Option<&FluentArgs>) -> String {
         translate(&self.negotiated, key, args)
     }
