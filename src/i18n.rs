@@ -108,3 +108,21 @@ fn translate(locales: &Vec<LanguageIdentifier>, key: &str, args: Option<&FluentA
     let value: String = loc.format_value(key, args).to_string();
     value
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn trim_systemd_locale() {
+        let out = normalize_lang(&String::from("en_US.utf8"));
+        assert_eq!(out, String::from("en_US"));
+    }
+
+    #[test]
+    fn parse_locale() {
+        let out = &fluent_langneg::accepted_languages::parse("tr_tr")[0];
+        let tr: LanguageIdentifier = "tr-TR".parse().unwrap();
+        assert_eq!(out.to_string(), tr.to_string());
+    }
+}
