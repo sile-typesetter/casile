@@ -26,9 +26,12 @@ impl Config {
     }
 }
 
-pub fn header(config: &crate::Config, key: &str) {
+pub fn show_welcome(config: &crate::Config) {
     let mut args = FluentArgs::new();
     args.insert("version", FluentValue::from(config.version.as_str()));
     eprintln!("==> {} \n", config.locale.translate("welcome", Some(&args)));
+}
+
+pub fn header(config: &crate::Config, key: &str) {
     eprintln!("--> {} \n", config.locale.translate(key, None));
 }

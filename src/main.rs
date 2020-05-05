@@ -9,6 +9,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
     let matches = app.get_matches();
     let args = Cli::from_arg_matches(&matches);
     let config = casile::Config::init(&args, version.to_string());
+    casile::show_welcome(&config);
     match args.subcommand {
         Subcommand::Make { target } => make::run(&config, target),
         Subcommand::Setup { path } => setup::run(&config, path),
