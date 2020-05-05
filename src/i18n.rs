@@ -18,7 +18,7 @@ pub struct Locale {
 }
 
 impl Locale {
-    pub fn negotiate(language: String) -> Locale {
+    pub fn negotiate(language: &String) -> Locale {
         let language = normalize_lang(language);
         let available = self::list_available_locales();
         let requested = fluent_langneg::accepted_languages::parse(&language);
@@ -42,7 +42,7 @@ impl Locale {
 }
 
 /// Strip off any potential system locale encoding on the end of LC_LANG
-fn normalize_lang(input: String) -> String {
+fn normalize_lang(input: &String) -> String {
     let re = Regex::new(r"\..*$").unwrap();
     re.replace(&input, "").to_string()
 }

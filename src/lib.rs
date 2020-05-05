@@ -9,10 +9,21 @@ pub static DEFAULT_LOCALE: &'static str = "en-US";
 
 #[derive(Debug)]
 pub struct Config {
-    pub version: String,
-    pub verbose: bool,
-    pub debug: bool,
-    pub locale: i18n::Locale,
+    version: String,
+    verbose: bool,
+    debug: bool,
+    locale: i18n::Locale,
+}
+
+impl Config {
+    pub fn init(args: &cli::Cli, version: String) -> Config {
+        Config {
+            version,
+            verbose: args.verbose,
+            debug: args.debug,
+            locale: i18n::Locale::negotiate(&args.language),
+        }
+    }
 }
 
 pub fn header(config: &crate::Config, key: &str) {
