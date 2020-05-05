@@ -74,17 +74,17 @@ dist_assets_DATA =
 
 if ENABLE_BASH_COMPLETION
 bashcompletiondir = $(BASH_COMPLETION_DIR)
-dist_bashcompletion_DATA = target/release/completions/$(_casile)
+dist_bashcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(_casile)
 endif
 
 if ENABLE_FISH_COMPLETION
 fishcompletiondir = $(FISH_COMPLETION_DIR)
-dist_fishcompletion_DATA = target/release/completions/$(_casile).fish
+dist_fishcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(_casile).fish
 endif
 
 if ENABLE_ZSH_COMPLETION
 zshcompletiondir = $(ZSH_COMPLETION_DIR)
-dist_zshcompletion_DATA = target/release/completions/_$(_casile)
+dist_zshcompletion_DATA = $(COMPLETIONS_OUT_DIR)/_$(_casile)
 endif
 
 if DEBUG_RELEASE
@@ -98,25 +98,28 @@ cargo_verbose_ = $(cargo_verbose_$(AM_DEFAULT_VERBOSITY))
 cargo_verbose_0 =
 cargo_verbose_1 = --verbose
 
-casile$(EXEEXT): target/release/casile
-	cp $< $@
+CARGO_TARGET = target/release/casile
+COMPLETIONS_OUT_DIR = target/release/completions
 
-target/release/completions/$(_casile): target/release/completions/casile.bash
-	cp $< $@
+casile$(EXEEXT): $(CARGO_TARGET)
+	cp -bf $< $@
 
-target/release/completions/_$(_casile): target/release/completions/_casile
-	cp $< $@
+$(COMPLETIONS_OUT_DIR)/$(_casile): $(CARGO_TARGET)
+	cp -bf $(COMPLETIONS_OUT_DIR)/casile.bash $@
 
-target/release/completions/$(_casile).%: target/release/completions/casile.%
-	cp $< $@
+$(COMPLETIONS_OUT_DIR)/$(_casile).elv: $(CARGO_TARGET)
+	cp -bf $(COMPLETIONS_OUT_DIR)/casile.elv $@
 
-target/release/completions/_casile: target/release/casile
-target/release/completions/casile.bash: target/release/casile
-target/release/completions/casile.elv: target/release/casile
-target/release/completions/casile.fish: target/release/casile
-target/release/completions/casile.ps1: target/release/casile
+$(COMPLETIONS_OUT_DIR)/$(_casile).fish: $(CARGO_TARGET)
+	cp -bf $(COMPLETIONS_OUT_DIR)/casile.fish $@
 
-target/release/casile: $(casile_SOURCES) clean-embedded-assets
+$(COMPLETIONS_OUT_DIR)/_$(_casile).ps1: $(CARGO_TARGET)
+	cp -bf $(COMPLETIONS_OUT_DIR)/_casile.ps1 $@
+
+$(COMPLETIONS_OUT_DIR)/_$(_casile): $(CARGO_TARGET)
+	cp -bf $(COMPLETIONS_OUT_DIR)/_casile $@
+
+$(CARGO_TARGET): $(casile_SOURCES) clean-embedded-assets
 	cargo build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
 
 .PHONY: clean-embedded-assets
@@ -168,6 +171,3 @@ check-local:
 
 clean-local:
 	cargo clean
-
-tt:
-	echo BOB ${DEBUG} END
