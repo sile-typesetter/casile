@@ -1,9 +1,10 @@
+use fluent::{FluentArgs, FluentValue};
+
 pub mod cli;
 pub mod i18n;
 pub mod make;
 pub mod setup;
 pub mod shell;
-use fluent::{FluentArgs, FluentValue};
 
 pub static DEFAULT_LOCALE: &'static str = "en-US";
 
