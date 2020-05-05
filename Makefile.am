@@ -157,7 +157,7 @@ docker: Dockerfile build-aux/docker-entrypoint.sh
 		./
 
 check-local:
-	cargo test
+	cargo test --locked
 
 clean-local:
 	cargo clean

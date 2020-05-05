@@ -37,6 +37,9 @@ jobs:
       - name: Run cargo build
         run: |
           cargo build --locked
+      - name: Run cargo test
+        run: |
+          cargo test --locked
 
   rustfmt:
     strategy:
