@@ -1,6 +1,6 @@
 $(and $(word 2,$(MAKEFILE_LIST)),$(error This is not the makefile you should include in your project to run SILE, please use 'rules' instead.))
 
-_casile != sed -e "$(program_transform_name)" <<< casile
+_casile = $(shell sed -e "$(program_transform_name)" <<< casile)
 
 licensedir = $(datarootdir)/licenses/$(_casile)
 docdir = $(datarootdir)/doc/$(_casile)
@@ -74,17 +74,17 @@ dist_assets_DATA =
 
 if ENABLE_BASH_COMPLETION
 bashcompletiondir = $(BASH_COMPLETION_DIR)
-dist_bashcompletion_DATA = target/release/completions/casile
+dist_bashcompletion_DATA = target/release/completions/$(_casile)
 endif
 
 if ENABLE_FISH_COMPLETION
 fishcompletiondir = $(FISH_COMPLETION_DIR)
-dist_fishcompletion_DATA = target/release/completions/casile.fish
+dist_fishcompletion_DATA = target/release/completions/$(_casile).fish
 endif
 
 if ENABLE_ZSH_COMPLETION
 zshcompletiondir = $(ZSH_COMPLETION_DIR)
-dist_zshcompletion_DATA = target/release/completions/_casile
+dist_zshcompletion_DATA = target/release/completions/_$(_casile)
 endif
 
 if DEBUG_RELEASE
@@ -101,10 +101,17 @@ cargo_verbose_1 = --verbose
 casile$(EXEEXT): target/release/casile
 	cp $< $@
 
-target/release/completions/casile: target/release/casile
-	cp $@.bash $@
+target/release/completions/$(_casile): target/release/completions/casile.bash
+	cp $< $@
+
+target/release/completions/_$(_casile): target/release/completions/_casile
+	cp $< $@
+
+target/release/completions/$(_casile).%: target/release/completions/casile.%
+	cp $< $@
 
 target/release/completions/_casile: target/release/casile
+target/release/completions/casile.bash: target/release/casile
 target/release/completions/casile.elv: target/release/casile
 target/release/completions/casile.fish: target/release/casile
 target/release/completions/casile.ps1: target/release/casile
