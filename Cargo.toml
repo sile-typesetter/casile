@@ -32,5 +32,9 @@ clap = { git = "https://github.com/clap-rs/clap" }
 clap_generate = { git = "https://github.com/clap-rs/clap" }
 vergen = "3.1.0"
 
+[dev-dependencies]
+assert_cmd = "0.10"
+predicates = "1.0.4"
+
 [profile.release]
 lto = true

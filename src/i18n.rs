@@ -12,13 +12,15 @@ static FTL_RESOURCES: &[&str] = &["cli.ftl"];
 #[folder = "assets/"]
 struct Asset;
 
+/// Prioritized locale fallback stack
 #[derive(Debug)]
 pub struct Locale {
     pub negotiated: Vec<LanguageIdentifier>,
 }
 
 impl Locale {
-    pub fn negotiate(language: String) -> Locale {
+    /// Negotiate a locale based on user preference and what we have available
+    pub fn negotiate(language: &String) -> Locale {
         let language = normalize_lang(language);
         let available = self::list_available_locales();
         let requested = fluent_langneg::accepted_languages::parse(&language);
@@ -36,13 +38,14 @@ impl Locale {
         Locale { negotiated }
     }
 
+    /// Use pre-negotiated locale fallback to try translating a string
     pub fn translate(&self, key: &str, args: Option<&FluentArgs>) -> String {
         translate(&self.negotiated, key, args)
     }
 }
 
 /// Strip off any potential system locale encoding on the end of LC_LANG
-fn normalize_lang(input: String) -> String {
+fn normalize_lang(input: &String) -> String {
     let re = Regex::new(r"\..*$").unwrap();
     re.replace(&input, "").to_string()
 }
@@ -104,4 +107,22 @@ fn translate(locales: &Vec<LanguageIdentifier>, key: &str, args: Option<&FluentA
     );
     let value: String = loc.format_value(key, args).to_string();
     value
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn trim_systemd_locale() {
+        let out = normalize_lang(&String::from("en_US.utf8"));
+        assert_eq!(out, String::from("en_US"));
+    }
+
+    #[test]
+    fn parse_locale() {
+        let out = &fluent_langneg::accepted_languages::parse("tr_tr")[0];
+        let tr: LanguageIdentifier = "tr-TR".parse().unwrap();
+        assert_eq!(out.to_string(), tr.to_string());
+    }
 }
