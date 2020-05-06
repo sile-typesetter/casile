@@ -17,6 +17,8 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - name: Fetch tags
+        run: git fetch --tags
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
