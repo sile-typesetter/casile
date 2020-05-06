@@ -10,15 +10,14 @@ license = "AGPL-3"
 build = "build.rs"
 
 [dependencies]
-# Using Git HEAD because of https://github.com/projectfluent/fluent-rs/issues/175
-fluent = { git = "https://github.com/projectfluent/fluent-rs" }
-fluent-fallback = { git = "https://github.com/projectfluent/fluent-rs" }
-fluent-langneg = "0.12.1"
+fluent = "0.12.0"
+fluent-fallback = "0.0.4"
+fluent-langneg = "0.13.0"
 git2 = "0.13.5"
 regex = "1.3.7"
 rust-embed = "5.5.1"
 subprocess = "0.2.4"
-unic-langid = "0.8.0"
+unic-langid = "0.9.0"
 
 [dependencies.clap]
 version = "3.0.0-beta.1"
