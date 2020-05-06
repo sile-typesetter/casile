@@ -44,6 +44,10 @@ impl Locale {
     }
 }
 
+pub fn _t(key: &str) {
+    eprintln!("Asked to translate {}.", key);
+}
+
 /// Strip off any potential system locale encoding on the end of LC_LANG
 fn normalize_lang(input: &String) -> String {
     let re = Regex::new(r"\..*$").unwrap();
