@@ -59,6 +59,7 @@ jobs:
           git ls-files '*.rs' | xargs rustfmt --check
 
   cargo_bloat:
+    if: false
     strategy:
       fail-fast: false
     runs-on: ubuntu-latest
