@@ -13,8 +13,11 @@ EXTRA_DIST = package.json yarn.lock Dockerfile build-aux/docker-entrypoint.sh
 
 bin_PROGRAMS = casile
 
-casile_SOURCES = Cargo.toml build.rs src/main.rs src/lib.rs src/i18n.rs src/make.rs src/setup.rs src/shell.rs
-EXTRA_casile_SOURCES = Cargo.lock assets/en-US/cli.ftl assets/tr-TR/cli.ftl
+_casile_libs = src/lib.rs src/i18n.rs
+_casile_modules = src/make/mod.rs src/setup/mod.rs src/shell/mod.rs
+_casile_assets = assets/en-US/cli.ftl assets/tr-TR/cli.ftl
+casile_SOURCES = Cargo.toml build.rs src/main.rs $(_casile_libs) $(_casile_modules) $(_casile_assets)
+EXTRA_casile_SOURCES = Cargo.lock tests/cli.rs
 
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
@@ -166,7 +169,7 @@ docker: Dockerfile build-aux/docker-entrypoint.sh
 		--tag siletypesetter/casile:HEAD \
 		./
 
-check-local:
+check-local: $(casile_SOURCES) $(EXTRA_casile_SOURCES)
 	cargo test --locked
 
 clean-local:
