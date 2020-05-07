@@ -21,6 +21,11 @@ impl CASILE {
     pub fn from_args(&self, args: &cli::Cli) -> Result<(), Box<dyn error::Error>> {
         self.set_bool("debug", args.debug)?;
         self.set_bool("verbose", args.verbose)?;
+        let language = match &args.language {
+            Some(language) => language,
+            None => crate::DEFAULT_LOCALE,
+        };
+        self.set_str("language", &language)?;
         Ok(())
     }
 
@@ -43,7 +48,7 @@ impl CASILE {
 pub struct Settings {
     pub verbose: bool,
     pub debug: bool,
-    pub locale: i18n::Locale,
+    // pub locale: i18n::Locale,
 }
 
 impl Settings {
@@ -51,7 +56,7 @@ impl Settings {
         Settings {
             verbose: args.verbose,
             debug: args.debug,
-            locale: i18n::Locale::negotiate(&args.language),
+            // locale: i18n::Locale::negotiate(&args.language),
         }
     }
 }
@@ -59,10 +64,10 @@ impl Settings {
 pub fn show_welcome(config: &crate::Settings) {
     let mut args = FluentArgs::new();
     let version = CASILE.get_string("version").unwrap();
-    args.insert("version", FluentValue::from(version));
-    eprintln!("==> {} \n", config.locale.translate("welcome", Some(&args)));
+    // args.insert("version", FluentValue::from(version));
+    // eprintln!("==> {} \n", config.locale.translate("welcome", Some(&args)));
 }
 
 pub fn header(config: &crate::Settings, key: &str) {
-    eprintln!("--> {} \n", config.locale.translate(key, None));
+    // eprintln!("--> {} \n", config.locale.translate(key, None));
 }

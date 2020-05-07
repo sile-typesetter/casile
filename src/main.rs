@@ -24,6 +24,6 @@ fn main() -> Result<(), Box<dyn error::Error>> {
 
 fn foo() -> Result<(), Box<dyn error::Error>> {
     // eprintln!("BBBBBetter = {:?}", CASILE.read()?.get_str("version"));
-    _t("welcome");
+    // _t("welcome");
     Ok(())
 }

@@ -12,8 +12,8 @@ pub struct Cli {
     pub debug: bool,
 
     /// Set language
-    #[clap(short, long, required = false, env = "LANG")]
-    pub language: String,
+    #[clap(short, long, env = "LANG")]
+    pub language: Option<String>,
 
     /// Outputs verbose feedback where possible
     #[clap(short, long)]

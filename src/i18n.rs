@@ -3,7 +3,7 @@ use fluent_fallback::Localization;
 use fluent_langneg;
 use regex::Regex;
 use rust_embed::RustEmbed;
-use std::{iter, path, str, vec};
+use std::{iter, path, str, sync, vec};
 use unic_langid::LanguageIdentifier;
 
 static FTL_RESOURCES: &[&str] = &["cli.ftl"];
@@ -18,10 +18,15 @@ pub struct Locale {
     pub negotiated: Vec<LanguageIdentifier>,
 }
 
+lazy_static! {
+    pub static ref FLUENT: sync::RwLock<Locale> =
+        sync::RwLock::new(Locale::new(crate::CASILE.get_string("language").unwrap()));
+}
+
 impl Locale {
     /// Negotiate a locale based on user preference and what we have available
-    pub fn negotiate(language: &String) -> Locale {
-        let language = normalize_lang(language);
+    pub fn new(language: String) -> Locale {
+        let language = normalize_lang(&language);
         let available = self::list_available_locales();
         let requested = fluent_langneg::accepted_languages::parse(&language);
         let default: LanguageIdentifier = crate::DEFAULT_LOCALE.parse().unwrap();
