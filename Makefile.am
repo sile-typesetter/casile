@@ -106,6 +106,7 @@ COMPLETIONS_OUT_DIR = target/release/completions
 
 casile$(EXEEXT): $(CARGO_TARGET)
 	cp -bf $< $@
+	ln -sf ../$@ bin/$@
 
 $(COMPLETIONS_OUT_DIR)/$(_casile): $(CARGO_TARGET)
 	cp -bf $(COMPLETIONS_OUT_DIR)/casile.bash $@
