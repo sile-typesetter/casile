@@ -40,7 +40,5 @@ RUN sed -i -e '/pattern="gs"/d' /etc/ImageMagick-7/policy.xml
 LABEL maintainer="Caleb Maclennan <caleb@alerque.com>"
 LABEL version="$VCS_REF"
 
-COPY build-aux/docker-entrypoint.sh /usr/local/bin
-
 WORKDIR /data
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["casile"]

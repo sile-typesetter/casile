@@ -9,7 +9,7 @@ datadir = $(datarootdir)/$(_casile)
 dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE.txt
 
-EXTRA_DIST = package.json yarn.lock Dockerfile build-aux/docker-entrypoint.sh
+EXTRA_DIST = package.json yarn.lock Dockerfile
 
 bin_PROGRAMS = casile
 
@@ -163,7 +163,7 @@ tagrelease:
 release: tagrelease
 
 .PHONY: docker
-docker: Dockerfile build-aux/docker-entrypoint.sh
+docker: Dockerfile
 	docker build \
 		--build-arg VCS_REF="$(VERSION)" \
 		--tag siletypesetter/casile:HEAD \
