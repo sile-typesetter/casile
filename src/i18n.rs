@@ -12,20 +12,20 @@ static FTL_RESOURCES: &[&str] = &["cli.ftl"];
 #[folder = "assets/"]
 struct Asset;
 
+lazy_static! {
+    pub static ref LOCALES: sync::RwLock<Locales> =
+        sync::RwLock::new(Locales::new(crate::CASILE.get_string("language").unwrap()));
+}
+
 /// Prioritized locale fallback stack
 #[derive(Debug)]
-pub struct Locale {
+pub struct Locales {
     pub negotiated: Vec<LanguageIdentifier>,
 }
 
-lazy_static! {
-    pub static ref FLUENT: sync::RwLock<Locale> =
-        sync::RwLock::new(Locale::new(crate::CASILE.get_string("language").unwrap()));
-}
-
-impl Locale {
+impl Locales {
     /// Negotiate a locale based on user preference and what we have available
-    pub fn new(language: String) -> Locale {
+    pub fn new(language: String) -> Locales {
         let language = normalize_lang(&language);
         let available = self::list_available_locales();
         let requested = fluent_langneg::accepted_languages::parse(&language);
@@ -40,12 +40,24 @@ impl Locale {
         .map(|x| *x)
         .cloned()
         .collect();
-        Locale { negotiated }
+        Locales { negotiated }
+    }
+}
+
+#[derive(Debug)]
+pub struct LocalText {
+    key: String,
+}
+
+impl LocalText {
+    pub fn new(key: &str) -> LocalText {
+        LocalText {
+            key: String::from(key),
+        }
     }
 
-    /// Use pre-negotiated locale fallback to try translating a string
-    pub fn translate(&self, key: &str, args: Option<&FluentArgs>) -> String {
-        translate(&self.negotiated, key, args)
+    pub fn fmt(&self, args: Option<&FluentArgs>) -> String {
+        translate(&self.key, args)
     }
 }
 
@@ -84,37 +96,43 @@ fn list_available_locales() -> Vec<LanguageIdentifier> {
     embeded
 }
 
-fn translate(locales: &Vec<LanguageIdentifier>, key: &str, args: Option<&FluentArgs>) -> String {
-    let mut res_path_scheme = path::PathBuf::new();
-    res_path_scheme.push("{locale}");
-    res_path_scheme.push("{res_id}");
-    let generate_messages = |res_ids: &[String]| {
-        let mut resolved_locales = locales.iter();
-        let res_path_scheme = res_path_scheme.to_str().unwrap();
-        let res_ids = res_ids.to_vec();
+fn translate(key: &str, args: Option<&FluentArgs>) -> String {
+    // let Locales {
+    //     negotiated: locales,
+    // } = LOCALES.read().unwrap();
+    let a = LOCALES.read().unwrap();
+    eprintln!("What is {:#?}", *a);
+    let value = String::from("habit");
+    // let mut res_path_scheme = path::PathBuf::new();
+    // res_path_scheme.push("{locale}");
+    // res_path_scheme.push("{res_id}");
+    // let generate_messages = |res_ids: &[String]| {
+    //     let mut resolved_locales = locales.iter();
+    //     let res_path_scheme = res_path_scheme.to_str().unwrap();
+    //     let res_ids = res_ids.to_vec();
 
-        iter::from_fn(move || {
-            resolved_locales.next().map(|locale| {
-                let x = vec![locale.clone()];
-                let mut bundle = FluentBundle::new(&x);
-                let res_path = res_path_scheme.replace("{locale}", &locale.to_string());
-                for res_id in &res_ids {
-                    let path = res_path.replace("{res_id}", res_id);
-                    if let Some(source) = Asset::get(&path) {
-                        let data = str::from_utf8(source.as_ref()).unwrap();
-                        let res = FluentResource::try_new(data.to_string()).unwrap();
-                        bundle.add_resource(res).unwrap();
-                    }
-                }
-                bundle
-            })
-        })
-    };
-    let loc = Localization::new(
-        FTL_RESOURCES.iter().map(|s| s.to_string()).collect(),
-        generate_messages,
-    );
-    let value: String = loc.format_value(key, args).to_string();
+    //     iter::from_fn(move || {
+    //         resolved_locales.next().map(|locale| {
+    //             let x = vec![locale.clone()];
+    //             let mut bundle = FluentBundle::new(&x);
+    //             let res_path = res_path_scheme.replace("{locale}", &locale.to_string());
+    //             for res_id in &res_ids {
+    //                 let path = res_path.replace("{res_id}", res_id);
+    //                 if let Some(source) = Asset::get(&path) {
+    //                     let data = str::from_utf8(source.as_ref()).unwrap();
+    //                     let res = FluentResource::try_new(data.to_string()).unwrap();
+    //                     bundle.add_resource(res).unwrap();
+    //                 }
+    //             }
+    //             bundle
+    //         })
+    //     })
+    // };
+    // let loc = Localization::new(
+    //     FTL_RESOURCES.iter().map(|s| s.to_string()).collect(),
+    //     generate_messages,
+    // );
+    // let value: String = loc.format_value(key, args).to_string();
     value
 }
 

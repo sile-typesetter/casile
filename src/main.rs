@@ -1,5 +1,6 @@
 use casile::cli::{Cli, Subcommand};
 use casile::i18n::_t;
+// use casile::i18n::FLUENT;
 use casile::CASILE;
 use casile::{make, setup, shell};
 use clap::{FromArgMatches, IntoApp};
@@ -14,6 +15,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
     CASILE.set_str("version", version)?;
     casile::show_welcome();
     foo().unwrap();
+    // eprintln!("After {:#?}", FLUENT.read().unwrap());
     match args.subcommand {
         Subcommand::Make { target } => make::run(target),
         Subcommand::Setup { path } => setup::run(path),

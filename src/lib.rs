@@ -68,8 +68,9 @@ impl Settings {
 pub fn show_welcome() {
     let mut args = FluentArgs::new();
     let version = CASILE.get_string("version").unwrap();
-    // args.insert("version", FluentValue::from(version));
-    // eprintln!("==> {} \n", config.locale.translate("welcome", Some(&args)));
+    args.insert("version", FluentValue::from(version));
+    let welcome = i18n::LocalText::new("welcome");
+    eprintln!("==> {} \n", welcome.fmt(Some(&args)));
 }
 
 pub fn header(key: &str) {
