@@ -2,8 +2,8 @@ use git2::Repository;
 use std::{error, fs, io, path};
 
 /// Setup CaSILE config file(s) on new repository
-pub fn run(config: &crate::Settings, path: path::PathBuf) -> Result<(), Box<dyn error::Error>> {
-    crate::header(config, "setup-header");
+pub fn run(path: path::PathBuf) -> Result<(), Box<dyn error::Error>> {
+    crate::header("setup-header");
     let metadata = fs::metadata(&path)?;
     match metadata.is_dir() {
         true => match Repository::open(path) {

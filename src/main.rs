@@ -12,13 +12,12 @@ fn main() -> Result<(), Box<dyn error::Error>> {
     let args = Cli::from_arg_matches(&matches);
     CASILE.from_args(&args)?;
     CASILE.set_str("version", version)?;
-    let config = casile::Settings::init(&args);
-    casile::show_welcome(&config);
+    casile::show_welcome();
     foo().unwrap();
     match args.subcommand {
-        Subcommand::Make { target } => make::run(&config, target),
-        Subcommand::Setup { path } => setup::run(&config, path),
-        Subcommand::Shell { command } => shell::run(&config, command),
+        Subcommand::Make { target } => make::run(target),
+        Subcommand::Setup { path } => setup::run(path),
+        Subcommand::Shell { command } => shell::run(command),
     }
 }
 

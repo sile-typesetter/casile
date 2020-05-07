@@ -34,6 +34,10 @@ impl CASILE {
         Ok(())
     }
 
+    pub fn get_bool(&self, key: &str) -> Result<bool, Box<dyn error::Error>> {
+        Ok(self.read().unwrap().get_bool(key)?)
+    }
+
     pub fn set_str(&self, key: &str, val: &str) -> Result<(), Box<dyn error::Error>> {
         self.write().unwrap().set(key, val)?;
         Ok(())
@@ -61,13 +65,13 @@ impl Settings {
     }
 }
 
-pub fn show_welcome(config: &crate::Settings) {
+pub fn show_welcome() {
     let mut args = FluentArgs::new();
     let version = CASILE.get_string("version").unwrap();
     // args.insert("version", FluentValue::from(version));
     // eprintln!("==> {} \n", config.locale.translate("welcome", Some(&args)));
 }
 
-pub fn header(config: &crate::Settings, key: &str) {
+pub fn header(key: &str) {
     // eprintln!("--> {} \n", config.locale.translate(key, None));
 }
