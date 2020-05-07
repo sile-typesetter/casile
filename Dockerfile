@@ -24,6 +24,7 @@ WORKDIR /src
 
 RUN ./bootstrap.sh
 RUN ./configure
+RUN make clean
 RUN make
 RUN make install DESTDIR=/pkgdir
 
