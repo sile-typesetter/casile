@@ -17,6 +17,9 @@ fn main() -> Result<(), Box<dyn error::Error>> {
     match args.subcommand {
         Subcommand::Make { target } => make::run(target),
         Subcommand::Setup { path } => setup::run(path),
-        Subcommand::Shell { command } => shell::run(command),
+        Subcommand::Shell {
+            command,
+            interactive,
+        } => shell::run(command, interactive),
     }
 }
