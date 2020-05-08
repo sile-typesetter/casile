@@ -1,4 +1,4 @@
-use crate::CONFIG;
+use crate::config::CONFIG;
 use fluent::{FluentArgs, FluentBundle, FluentResource};
 use fluent_fallback::Localization;
 use fluent_langneg;

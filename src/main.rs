@@ -1,5 +1,5 @@
 use casile::cli::{Cli, Subcommand};
-use casile::CONFIG;
+use casile::config::CONFIG;
 use casile::{make, setup, shell};
 use clap::{FromArgMatches, IntoApp};
 use std::error;
