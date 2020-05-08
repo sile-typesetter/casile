@@ -9,6 +9,8 @@ fn main() -> Result<(), Box<dyn error::Error>> {
     let app = Cli::into_app().version(version);
     let matches = app.get_matches();
     let args = Cli::from_arg_matches(&matches);
+    CONFIG.defaults()?;
+    CONFIG.from_env()?;
     CONFIG.from_args(&args)?;
     CONFIG.set_str("version", version)?;
     casile::show_welcome();
