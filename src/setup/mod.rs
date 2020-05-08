@@ -1,3 +1,4 @@
+use crate::i18n::LocalText;
 use git2::Repository;
 use std::{error, fs, io, path, result};
 
@@ -10,14 +11,20 @@ pub fn run(path: path::PathBuf) -> Result<()> {
     match metadata.is_dir() {
         true => match Repository::open(path) {
             Ok(_repo) => Ok(()),
-            Err(_error) => Err(Box::new(io::Error::new(
-                io::ErrorKind::InvalidInput,
-                "", // config.locale.translate("setup-error-not-git", None),
-            ))),
+            Err(_error) => {
+                let error_text = LocalText::new("setup-error-not-git");
+                Err(Box::new(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    error_text.fmt(None),
+                )))
+            }
         },
-        false => Err(Box::new(io::Error::new(
-            io::ErrorKind::InvalidInput,
-            "", // config.locale.translate("setup-error-not-dir", None),
-        ))),
+        false => {
+            let error_text = LocalText::new("setup-error-not-dir");
+            Err(Box::new(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                error_text.fmt(None),
+            )))
+        }
     }
 }
