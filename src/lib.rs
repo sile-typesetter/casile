@@ -12,10 +12,10 @@ pub mod setup;
 pub mod shell;
 
 pub static DEFAULT_LOCALE: &'static str = "en-US";
+pub static VERSION: &'static str = env!("VERGEN_SEMVER_LIGHTWEIGHT");
 
 pub fn show_welcome() {
-    let version = CONFIG.get_string("version").unwrap();
-    let welcome = LocalText::new("welcome").arg("version", version);
+    let welcome = LocalText::new("welcome").arg("version", VERSION);
     eprintln!("==> {} \n", welcome.fmt());
 }
 
