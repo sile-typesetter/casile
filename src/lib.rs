@@ -2,6 +2,7 @@
 extern crate lazy_static;
 
 use fluent::{FluentArgs, FluentValue};
+use i18n::LocalText;
 use std::{error, sync};
 
 pub mod cli;
@@ -52,7 +53,6 @@ impl CASILE {
 pub struct Settings {
     pub verbose: bool,
     pub debug: bool,
-    // pub locale: i18n::Locale,
 }
 
 impl Settings {
@@ -60,7 +60,6 @@ impl Settings {
         Settings {
             verbose: args.verbose,
             debug: args.debug,
-            // locale: i18n::Locale::negotiate(&args.language),
         }
     }
 }
@@ -69,10 +68,11 @@ pub fn show_welcome() {
     let mut args = FluentArgs::new();
     let version = CASILE.get_string("version").unwrap();
     args.insert("version", FluentValue::from(version));
-    let welcome = i18n::LocalText::new("welcome");
+    let welcome = LocalText::new("welcome");
     eprintln!("==> {} \n", welcome.fmt(Some(&args)));
 }
 
 pub fn header(key: &str) {
-    // eprintln!("--> {} \n", config.locale.translate(key, None));
+    let text = LocalText::new(key);
+    eprintln!("--> {} \n", text.fmt(None));
 }

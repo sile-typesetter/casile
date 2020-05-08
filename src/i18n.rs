@@ -3,7 +3,7 @@ use fluent_fallback::Localization;
 use fluent_langneg;
 use regex::Regex;
 use rust_embed::RustEmbed;
-use std::{iter, path, str, sync, vec};
+use std::{iter, ops, path, str, sync, vec};
 use unic_langid::LanguageIdentifier;
 
 static FTL_RESOURCES: &[&str] = &["cli.ftl"];
@@ -19,8 +19,14 @@ lazy_static! {
 
 /// Prioritized locale fallback stack
 #[derive(Debug)]
-pub struct Locales {
-    pub negotiated: Vec<LanguageIdentifier>,
+pub struct Locales(Vec<LanguageIdentifier>);
+
+impl ops::Deref for Locales {
+    type Target = Vec<LanguageIdentifier>;
+
+    fn deref(&self) -> &Vec<LanguageIdentifier> {
+        &self.0
+    }
 }
 
 impl Locales {
@@ -30,17 +36,18 @@ impl Locales {
         let available = self::list_available_locales();
         let requested = fluent_langneg::accepted_languages::parse(&language);
         let default: LanguageIdentifier = crate::DEFAULT_LOCALE.parse().unwrap();
-        let negotiated = fluent_langneg::negotiate_languages(
-            &requested,
-            &available,
-            Some(&default),
-            fluent_langneg::NegotiationStrategy::Filtering,
+        Locales(
+            fluent_langneg::negotiate_languages(
+                &requested,
+                &available,
+                Some(&default),
+                fluent_langneg::NegotiationStrategy::Filtering,
+            )
+            .iter()
+            .map(|x| *x)
+            .cloned()
+            .collect(),
         )
-        .iter()
-        .map(|x| *x)
-        .cloned()
-        .collect();
-        Locales { negotiated }
     }
 }
 
@@ -59,10 +66,6 @@ impl LocalText {
     pub fn fmt(&self, args: Option<&FluentArgs>) -> String {
         translate(&self.key, args)
     }
-}
-
-pub fn _t(key: &str) {
-    eprintln!("Asked to translate {}.", key);
 }
 
 /// Strip off any potential system locale encoding on the end of LC_LANG
@@ -97,42 +100,36 @@ fn list_available_locales() -> Vec<LanguageIdentifier> {
 }
 
 fn translate(key: &str, args: Option<&FluentArgs>) -> String {
-    // let Locales {
-    //     negotiated: locales,
-    // } = LOCALES.read().unwrap();
-    let a = LOCALES.read().unwrap();
-    eprintln!("What is {:#?}", *a);
-    let value = String::from("habit");
-    // let mut res_path_scheme = path::PathBuf::new();
-    // res_path_scheme.push("{locale}");
-    // res_path_scheme.push("{res_id}");
-    // let generate_messages = |res_ids: &[String]| {
-    //     let mut resolved_locales = locales.iter();
-    //     let res_path_scheme = res_path_scheme.to_str().unwrap();
-    //     let res_ids = res_ids.to_vec();
-
-    //     iter::from_fn(move || {
-    //         resolved_locales.next().map(|locale| {
-    //             let x = vec![locale.clone()];
-    //             let mut bundle = FluentBundle::new(&x);
-    //             let res_path = res_path_scheme.replace("{locale}", &locale.to_string());
-    //             for res_id in &res_ids {
-    //                 let path = res_path.replace("{res_id}", res_id);
-    //                 if let Some(source) = Asset::get(&path) {
-    //                     let data = str::from_utf8(source.as_ref()).unwrap();
-    //                     let res = FluentResource::try_new(data.to_string()).unwrap();
-    //                     bundle.add_resource(res).unwrap();
-    //                 }
-    //             }
-    //             bundle
-    //         })
-    //     })
-    // };
-    // let loc = Localization::new(
-    //     FTL_RESOURCES.iter().map(|s| s.to_string()).collect(),
-    //     generate_messages,
-    // );
-    // let value: String = loc.format_value(key, args).to_string();
+    let locales = LOCALES.read().unwrap();
+    let mut res_path_scheme = path::PathBuf::new();
+    res_path_scheme.push("{locale}");
+    res_path_scheme.push("{res_id}");
+    let generate_messages = |res_ids: &[String]| {
+        let mut resolved_locales = locales.iter();
+        let res_path_scheme = res_path_scheme.to_str().unwrap();
+        let res_ids = res_ids.to_vec();
+        iter::from_fn(move || {
+            resolved_locales.next().map(|locale| {
+                let x = vec![locale.clone()];
+                let mut bundle = FluentBundle::new(&x);
+                let res_path = res_path_scheme.replace("{locale}", &locale.to_string());
+                for res_id in &res_ids {
+                    let path = res_path.replace("{res_id}", res_id);
+                    if let Some(source) = Asset::get(&path) {
+                        let data = str::from_utf8(source.as_ref()).unwrap();
+                        let res = FluentResource::try_new(data.to_string()).unwrap();
+                        bundle.add_resource(res).unwrap();
+                    }
+                }
+                bundle
+            })
+        })
+    };
+    let loc = Localization::new(
+        FTL_RESOURCES.iter().map(|s| s.to_string()).collect(),
+        generate_messages,
+    );
+    let value: String = loc.format_value(key, args).to_string();
     value
 }
 
