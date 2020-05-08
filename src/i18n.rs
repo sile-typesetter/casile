@@ -7,18 +7,21 @@ use rust_embed::RustEmbed;
 use std::{iter, ops, path, str, sync, vec};
 use unic_langid::LanguageIdentifier;
 
+// List of Fluent resource filenames to scan for keys from each locale directory.
 static FTL_RESOURCES: &[&str] = &["cli.ftl"];
 
+/// Embed everything in the assets folder directly into the binary
 #[derive(RustEmbed)]
 #[folder = "assets/"]
-struct Asset;
+pub struct Asset;
 
 lazy_static! {
+    /// List of Locales in order of closeness to the runtime config
     pub static ref LOCALES: sync::RwLock<Locales> =
         sync::RwLock::new(Locales::new(CONFIG.get_string("language").unwrap()));
 }
 
-/// Prioritized locale fallback stack
+/// A prioritized locale fallback stack
 #[derive(Debug)]
 pub struct Locales(Vec<LanguageIdentifier>);
 
@@ -52,6 +55,7 @@ impl Locales {
     }
 }
 
+/// A Fluent key plus any variables that will be needed to format it.
 #[derive(Debug)]
 pub struct LocalText<'a> {
     key: String,
@@ -59,6 +63,7 @@ pub struct LocalText<'a> {
 }
 
 impl<'a> LocalText<'a> {
+    /// Make a new localizable text placeholder for a Fluent key with no args
     pub fn new(key: &str) -> LocalText {
         LocalText {
             key: String::from(key),
@@ -66,6 +71,7 @@ impl<'a> LocalText<'a> {
         }
     }
 
+    /// Add values for variables to be passed as arguments to Fluent
     pub fn arg(self, var: &'a str, val: impl ToString) -> LocalText<'a> {
         let value = FluentValue::from(val.to_string());
         let args: Option<FluentArgs<'a>> = match self.args {
@@ -85,6 +91,8 @@ impl<'a> LocalText<'a> {
         }
     }
 
+    /// Format and return a string for the given key and args using the prefered locale fallback
+    /// stack as negotiated at runtime.
     pub fn fmt(&self) -> String {
         let locales = LOCALES.read().unwrap();
         let mut res_path_scheme = path::PathBuf::new();
@@ -122,13 +130,14 @@ impl<'a> LocalText<'a> {
 }
 
 /// Strip off any potential system locale encoding on the end of LC_LANG
-fn normalize_lang(input: &String) -> String {
+pub fn normalize_lang(input: &String) -> String {
     let re = Regex::new(r"\..*$").unwrap();
     re.replace(&input, "").to_string()
 }
 
+/// Scan our embedded assets for what recognisable locale data we have on hand
 // https://github.com/projectfluent/fluent-rs/blob/c9e45651/fluent-resmgr/examples/simple-resmgr.rs#L35
-fn list_available_locales() -> Locales {
+pub fn list_available_locales() -> Locales {
     let mut embeded = vec![];
     for asset in Asset::iter() {
         let asset_name = asset.to_string();
