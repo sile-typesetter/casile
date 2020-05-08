@@ -1,4 +1,4 @@
-use crate::CASILE;
+use crate::CONFIG;
 use std::error;
 use subprocess::Exec;
 
@@ -6,7 +6,7 @@ use subprocess::Exec;
 pub fn run(command: Vec<String>) -> Result<(), Box<dyn error::Error>> {
     crate::header("shell-header");
     let mut process = Exec::shell(command.join(" "));
-    if CASILE.get_bool("debug")? {
+    if CONFIG.get_bool("debug")? {
         process = process.env("DEBUG", "true");
     };
     process.join()?;

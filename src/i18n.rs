@@ -1,3 +1,4 @@
+use crate::CONFIG;
 use fluent::{FluentArgs, FluentBundle, FluentResource};
 use fluent_fallback::Localization;
 use fluent_langneg;
@@ -14,7 +15,7 @@ struct Asset;
 
 lazy_static! {
     pub static ref LOCALES: sync::RwLock<Locales> =
-        sync::RwLock::new(Locales::new(crate::CASILE.get_string("language").unwrap()));
+        sync::RwLock::new(Locales::new(CONFIG.get_string("language").unwrap()));
 }
 
 /// Prioritized locale fallback stack

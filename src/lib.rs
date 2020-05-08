@@ -14,11 +14,11 @@ pub mod shell;
 pub static DEFAULT_LOCALE: &'static str = "en-US";
 
 lazy_static! {
-    pub static ref CASILE: sync::RwLock<config::Config> =
+    pub static ref CONFIG: sync::RwLock<config::Config> =
         sync::RwLock::new(config::Config::default());
 }
 
-impl CASILE {
+impl CONFIG {
     pub fn from_args(&self, args: &cli::Cli) -> Result<(), Box<dyn error::Error>> {
         self.set_bool("debug", args.debug)?;
         self.set_bool("verbose", args.verbose)?;
@@ -66,7 +66,7 @@ impl Settings {
 
 pub fn show_welcome() {
     let mut args = FluentArgs::new();
-    let version = CASILE.get_string("version").unwrap();
+    let version = CONFIG.get_string("version").unwrap();
     args.insert("version", FluentValue::from(version));
     let welcome = LocalText::new("welcome");
     eprintln!("==> {} \n", welcome.fmt(Some(&args)));

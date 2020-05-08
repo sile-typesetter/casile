@@ -1,3 +1,4 @@
+use crate::CONFIG;
 use std::error;
 use subprocess::Exec;
 
@@ -5,7 +6,7 @@ use subprocess::Exec;
 pub fn run(target: Vec<String>) -> Result<(), Box<dyn error::Error>> {
     crate::header("make-header");
     let mut process = Exec::cmd("make").args(&target);
-    if crate::CASILE.get_bool("debug")? {
+    if CONFIG.get_bool("debug")? {
         process = process.env("DEBUG", "true");
     };
     process.join()?;
