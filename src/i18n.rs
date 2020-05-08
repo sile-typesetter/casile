@@ -1,9 +1,10 @@
+use crate::config::CONFIG;
 use fluent::{FluentArgs, FluentBundle, FluentResource};
 use fluent_fallback::Localization;
 use fluent_langneg;
 use regex::Regex;
 use rust_embed::RustEmbed;
-use std::{iter, path, str, vec};
+use std::{iter, ops, path, str, sync, vec};
 use unic_langid::LanguageIdentifier;
 
 static FTL_RESOURCES: &[&str] = &["cli.ftl"];
@@ -12,35 +13,59 @@ static FTL_RESOURCES: &[&str] = &["cli.ftl"];
 #[folder = "assets/"]
 struct Asset;
 
-/// Prioritized locale fallback stack
-#[derive(Debug)]
-pub struct Locale {
-    pub negotiated: Vec<LanguageIdentifier>,
+lazy_static! {
+    pub static ref LOCALES: sync::RwLock<Locales> =
+        sync::RwLock::new(Locales::new(CONFIG.get_string("language").unwrap()));
 }
 
-impl Locale {
+/// Prioritized locale fallback stack
+#[derive(Debug)]
+pub struct Locales(Vec<LanguageIdentifier>);
+
+impl ops::Deref for Locales {
+    type Target = Vec<LanguageIdentifier>;
+
+    fn deref(&self) -> &Vec<LanguageIdentifier> {
+        &self.0
+    }
+}
+
+impl Locales {
     /// Negotiate a locale based on user preference and what we have available
-    pub fn negotiate(language: &String) -> Locale {
-        let language = normalize_lang(language);
+    pub fn new(language: String) -> Locales {
+        let language = normalize_lang(&language);
         let available = self::list_available_locales();
         let requested = fluent_langneg::accepted_languages::parse(&language);
         let default: LanguageIdentifier = crate::DEFAULT_LOCALE.parse().unwrap();
-        let negotiated = fluent_langneg::negotiate_languages(
-            &requested,
-            &available,
-            Some(&default),
-            fluent_langneg::NegotiationStrategy::Filtering,
+        Locales(
+            fluent_langneg::negotiate_languages(
+                &requested,
+                &available,
+                Some(&default),
+                fluent_langneg::NegotiationStrategy::Filtering,
+            )
+            .iter()
+            .map(|x| *x)
+            .cloned()
+            .collect(),
         )
-        .iter()
-        .map(|x| *x)
-        .cloned()
-        .collect();
-        Locale { negotiated }
+    }
+}
+
+#[derive(Debug)]
+pub struct LocalText {
+    key: String,
+}
+
+impl LocalText {
+    pub fn new(key: &str) -> LocalText {
+        LocalText {
+            key: String::from(key),
+        }
     }
 
-    /// Use pre-negotiated locale fallback to try translating a string
-    pub fn translate(&self, key: &str, args: Option<&FluentArgs>) -> String {
-        translate(&self.negotiated, key, args)
+    pub fn fmt(&self, args: Option<&FluentArgs>) -> String {
+        translate(&self.key, args)
     }
 }
 
@@ -75,7 +100,8 @@ fn list_available_locales() -> Vec<LanguageIdentifier> {
     embeded
 }
 
-fn translate(locales: &Vec<LanguageIdentifier>, key: &str, args: Option<&FluentArgs>) -> String {
+fn translate(key: &str, args: Option<&FluentArgs>) -> String {
+    let locales = LOCALES.read().unwrap();
     let mut res_path_scheme = path::PathBuf::new();
     res_path_scheme.push("{locale}");
     res_path_scheme.push("{res_id}");
@@ -83,7 +109,6 @@ fn translate(locales: &Vec<LanguageIdentifier>, key: &str, args: Option<&FluentA
         let mut resolved_locales = locales.iter();
         let res_path_scheme = res_path_scheme.to_str().unwrap();
         let res_ids = res_ids.to_vec();
-
         iter::from_fn(move || {
             resolved_locales.next().map(|locale| {
                 let x = vec![locale.clone()];

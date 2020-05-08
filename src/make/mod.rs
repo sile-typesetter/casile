@@ -1,11 +1,12 @@
+use crate::CONFIG;
 use std::error;
 use subprocess::Exec;
 
 /// Execute GNU Make on given target
-pub fn run(config: &crate::Config, target: Vec<String>) -> Result<(), Box<dyn error::Error>> {
-    crate::header(config, "make-header");
+pub fn run(target: Vec<String>) -> Result<(), Box<dyn error::Error>> {
+    crate::header("make-header");
     let mut process = Exec::cmd("make").args(&target);
-    if config.debug {
+    if CONFIG.get_bool("debug")? {
         process = process.env("DEBUG", "true");
     };
     process.join()?;

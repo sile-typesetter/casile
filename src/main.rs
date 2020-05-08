@@ -1,4 +1,5 @@
 use casile::cli::{Cli, Subcommand};
+use casile::config::CONFIG;
 use casile::{make, setup, shell};
 use clap::{FromArgMatches, IntoApp};
 use std::error;
@@ -8,11 +9,14 @@ fn main() -> Result<(), Box<dyn error::Error>> {
     let app = Cli::into_app().version(version);
     let matches = app.get_matches();
     let args = Cli::from_arg_matches(&matches);
-    let config = casile::Config::init(&args, version.to_string());
-    casile::show_welcome(&config);
+    CONFIG.defaults()?;
+    CONFIG.from_env()?;
+    CONFIG.from_args(&args)?;
+    CONFIG.set_str("version", version)?;
+    casile::show_welcome();
     match args.subcommand {
-        Subcommand::Make { target } => make::run(&config, target),
-        Subcommand::Setup { path } => setup::run(&config, path),
-        Subcommand::Shell { command } => shell::run(&config, command),
+        Subcommand::Make { target } => make::run(target),
+        Subcommand::Setup { path } => setup::run(path),
+        Subcommand::Shell { command } => shell::run(command),
     }
 }
