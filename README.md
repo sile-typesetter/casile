@@ -75,8 +75,8 @@ There are several different ways to use CaSILE, with or without installation.
 
 * Using Docker.
 
-  - Pros: No dependencies to run and hence very easy to get started, easy to switch between versions including full dependency stack.
-  - Cons: Tricky to setup access to fonts or other resources available outside your project.
+  - Pros: No dependencies to run and hence very easy to get started, easy to switch between versions including full matching dependency stack.
+  - Cons: Tricky to setup access to fonts or other resources available outside your project. Some overhead in startup time and reduced CPU and memory resources.
 
 * From a CI runner.
 
@@ -112,10 +112,20 @@ It is also possible to mix and match, notably you can use both local options and
 
 1. Clone the Git repository or download and extract a source tarball.
 
+2. Optionally create a symlink to the external directory so the location can be changed without editing your makefile:
+
+    ```bash
+    $ ln -s /path/to/casile
+    ```
+
 2. Include the rules file from your project's Makefile:
 
     ```makefile
-    include path/to/casile/rules
+    # Direct approach
+    include /path/to/casile/rules
+
+    # Optional symlinked approach
+    include casile/rules
     ```
 
 3. Initialize the toolkit before first use:
@@ -149,7 +159,12 @@ If you are using Arch Linux, take your pick of AUR recipes at [casile][aur-casil
        $ make install
        ```
 
-  b. "Install" to your user by adding the base CasILE directory to your `$PATH`.
+  b. "Install" for just your user by adding the CasILE bin directory to your `$PATH`.
+
+      ```bash
+      # Can be added to your .bashrc or similar...
+      export PATH="~/path/to/casile/bin:$PATH"
+      ```
 
 4. Include the rules file from your project's Makefile:
 
@@ -173,15 +188,19 @@ Optionally you may build a docker image yourself. From any CasILE source directo
 
 Once installed, the docker image run command can be substituted anywhere you would invoke CaSILE. For convenience you'll probably want to give yourself an alias:
 
-    alias casile-docker='docker run --volume "$(pwd):/data" --user "$(id -u):$(id -g)" siletypesetter/casile:latest
+```bash
+alias casile-docker='docker run -it --volume "$(pwd):/data" --user "$(id -u):$(id -g)" siletypesetter/casile:latest'
+```
 
-Now instead of running `make my_book-a4-print.pdf` you would run `casile-docker make my_book-a4-print.pdf`. This substitution should work anywhere *make* would be run.
+Now instead of running `make my_book-a4-print.pdf` you would run `casile-docker make my_book-a4-print.pdf`. This substitution should work anywhere you would have run `make` in a submodule or linked directory usage.
 
 ### CI Setup
 
 (To be documented.)
 
-    $ make .gitlab-conf.yml
+```bash
+$ make .gitlab-conf.yml
+```
 
 ## Input
 

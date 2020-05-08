@@ -12,8 +12,8 @@ pub struct Cli {
     pub debug: bool,
 
     /// Set language
-    #[clap(short, long, required = false, env = "LANG")]
-    pub language: String,
+    #[clap(short, long, env = "LANG")]
+    pub language: Option<String>,
 
     /// Outputs verbose feedback where possible
     #[clap(short, long)]
@@ -31,7 +31,7 @@ pub enum Subcommand {
         target: Vec<String>,
     },
 
-    /// Configure a book repository
+    /// Configure a project repository
     Setup {
         /// Path to project repository
         #[clap(default_value = "./")]
@@ -40,7 +40,10 @@ pub enum Subcommand {
 
     /// Pass any command through to the system shell
     Shell {
-        #[clap(default_value = "bash")]
+        /// Enter interactive shell
+        #[clap(short, long)]
+        interactive: bool,
+
         command: Vec<String>,
     },
 }

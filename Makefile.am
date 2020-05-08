@@ -9,11 +9,11 @@ datadir = $(datarootdir)/$(_casile)
 dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE.txt
 
-EXTRA_DIST = package.json yarn.lock Dockerfile build-aux/docker-entrypoint.sh
+EXTRA_DIST = package.json yarn.lock Dockerfile
 
 bin_PROGRAMS = casile
 
-_casile_libs = src/lib.rs src/i18n.rs
+_casile_libs = src/lib.rs src/cli.rs src/config.rs src/i18n.rs
 _casile_modules = src/make/mod.rs src/setup/mod.rs src/shell/mod.rs
 _casile_assets = assets/en-US/cli.ftl assets/tr-TR/cli.ftl
 casile_SOURCES = Cargo.toml build.rs src/main.rs $(_casile_libs) $(_casile_modules) $(_casile_assets)
@@ -106,6 +106,7 @@ COMPLETIONS_OUT_DIR = target/release/completions
 
 casile$(EXEEXT): $(CARGO_TARGET)
 	cp -bf $< $@
+	ln -sf ../$@ bin/$@
 
 $(COMPLETIONS_OUT_DIR)/$(_casile): $(CARGO_TARGET)
 	cp -bf $(COMPLETIONS_OUT_DIR)/casile.bash $@
@@ -163,7 +164,7 @@ tagrelease:
 release: tagrelease
 
 .PHONY: docker
-docker: Dockerfile build-aux/docker-entrypoint.sh
+docker: Dockerfile
 	docker build \
 		--build-arg VCS_REF="$(VERSION)" \
 		--tag siletypesetter/casile:HEAD \
