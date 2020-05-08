@@ -76,7 +76,7 @@ fn normalize_lang(input: &String) -> String {
 }
 
 // https://github.com/projectfluent/fluent-rs/blob/c9e45651/fluent-resmgr/examples/simple-resmgr.rs#L35
-fn list_available_locales() -> Vec<LanguageIdentifier> {
+fn list_available_locales() -> Locales {
     let mut embeded = vec![];
     for asset in Asset::iter() {
         let asset_name = asset.to_string();
@@ -97,7 +97,7 @@ fn list_available_locales() -> Vec<LanguageIdentifier> {
         }
     }
     embeded.dedup();
-    embeded
+    Locales(embeded)
 }
 
 fn translate(key: &str, args: Option<&FluentArgs>) -> String {

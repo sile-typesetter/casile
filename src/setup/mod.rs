@@ -1,8 +1,10 @@
 use git2::Repository;
-use std::{error, fs, io, path};
+use std::{error, fs, io, path, result};
+
+type Result<T> = result::Result<T, Box<dyn error::Error>>;
 
 /// Setup CaSILE config file(s) on new repository
-pub fn run(path: path::PathBuf) -> Result<(), Box<dyn error::Error>> {
+pub fn run(path: path::PathBuf) -> Result<()> {
     crate::header("setup-header");
     let metadata = fs::metadata(&path)?;
     match metadata.is_dir() {
