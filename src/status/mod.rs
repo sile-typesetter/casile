@@ -1,42 +1,36 @@
 use crate::i18n::LocalText;
 use git2::Repository;
-use std::{env, error, result};
+use std::{env, error, path, result};
 
 type Result<T> = result::Result<T, Box<dyn error::Error>>;
 
 /// Dump what we know about the repo
 pub fn run() -> Result<()> {
     crate::header("status-header");
-    let ya = LocalText::new("status-true");
-    let no = LocalText::new("status-false");
-    eprintln!(
-        "{} {}",
-        LocalText::new("status-is-repo").fmt(),
-        if is_repo()? { &ya } else { &no }.fmt()
-    );
-    eprintln!(
-        "{}",
-        LocalText::new(if is_setup()? {
-            "setup-good"
-        } else {
-            "setup-bad"
-        })
-        .fmt()
-    );
+    is_setup()?;
     Ok(())
 }
 
-/// Evaluate whether this project is properl configured
+/// Evaluate whether this project is pis_setup()?roperly configured
 pub fn is_setup() -> Result<bool> {
     let mut checks: Vec<bool> = Vec::new();
-    let is_repo = is_repo()?;
+    let is_repo = is_repo(env::current_dir()?)?;
     checks.push(is_repo);
-    Ok(checks.iter().all(|&v| v))
+    let ret = checks.iter().all(|&v| v);
+    eprintln!(
+        "{}",
+        LocalText::new(if ret { "status-good" } else { "status-bad" }).fmt()
+    );
+    Ok(ret)
 }
 
 /// Are we in a git repo?
-pub fn is_repo() -> Result<bool> {
-    let cwd = env::current_dir()?;
-    Repository::open(cwd)?;
-    Ok(true)
+pub fn is_repo(path: path::PathBuf) -> Result<bool> {
+    let ret = Repository::open(path).is_ok();
+    eprintln!(
+        "{} {}",
+        LocalText::new("status-is-repo").fmt(),
+        LocalText::new(if ret { "status-true" } else { "status-false" }).fmt()
+    );
+    Ok(ret)
 }
