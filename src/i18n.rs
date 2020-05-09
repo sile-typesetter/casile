@@ -1,5 +1,5 @@
 use crate::config::CONFIG;
-use fluent::{FluentArgs, FluentBundle, FluentResource};
+use fluent::{FluentArgs, FluentBundle, FluentResource, FluentValue};
 use fluent_fallback::Localization;
 use fluent_langneg;
 use regex::Regex;
@@ -7,18 +7,21 @@ use rust_embed::RustEmbed;
 use std::{iter, ops, path, str, sync, vec};
 use unic_langid::LanguageIdentifier;
 
+// List of Fluent resource filenames to scan for keys from each locale directory.
 static FTL_RESOURCES: &[&str] = &["cli.ftl"];
 
+/// Embed everything in the assets folder directly into the binary
 #[derive(RustEmbed)]
 #[folder = "assets/"]
-struct Asset;
+pub struct Asset;
 
 lazy_static! {
+    /// List of Locales in order of closeness to the runtime config
     pub static ref LOCALES: sync::RwLock<Locales> =
         sync::RwLock::new(Locales::new(CONFIG.get_string("language").unwrap()));
 }
 
-/// Prioritized locale fallback stack
+/// A prioritized locale fallback stack
 #[derive(Debug)]
 pub struct Locales(Vec<LanguageIdentifier>);
 
@@ -52,31 +55,89 @@ impl Locales {
     }
 }
 
+/// A Fluent key plus any variables that will be needed to format it.
 #[derive(Debug)]
-pub struct LocalText {
+pub struct LocalText<'a> {
     key: String,
+    args: Option<FluentArgs<'a>>,
 }
 
-impl LocalText {
+impl<'a> LocalText<'a> {
+    /// Make a new localizable text placeholder for a Fluent key with no args
     pub fn new(key: &str) -> LocalText {
         LocalText {
             key: String::from(key),
+            args: None,
         }
     }
 
-    pub fn fmt(&self, args: Option<&FluentArgs>) -> String {
-        translate(&self.key, args)
+    /// Add values for variables to be passed as arguments to Fluent
+    pub fn arg(self, var: &'a str, val: impl ToString) -> LocalText<'a> {
+        let value = FluentValue::from(val.to_string());
+        let args: Option<FluentArgs<'a>> = match self.args {
+            Some(mut args) => {
+                args.insert(var, value);
+                Some(args)
+            }
+            None => {
+                let mut args: FluentArgs<'a> = FluentArgs::new();
+                args.insert(var, value);
+                Some(args)
+            }
+        };
+        LocalText {
+            key: String::from(&self.key),
+            args: args,
+        }
+    }
+
+    /// Format and return a string for the given key and args using the prefered locale fallback
+    /// stack as negotiated at runtime.
+    pub fn fmt(&self) -> String {
+        let locales = LOCALES.read().unwrap();
+        let mut res_path_scheme = path::PathBuf::new();
+        res_path_scheme.push("{locale}");
+        res_path_scheme.push("{res_id}");
+        let generate_messages = |res_ids: &[String]| {
+            let mut resolved_locales = locales.iter();
+            let res_path_scheme = res_path_scheme.to_str().unwrap();
+            let res_ids = res_ids.to_vec();
+            iter::from_fn(move || {
+                resolved_locales.next().map(|locale| {
+                    let x = vec![locale.clone()];
+                    let mut bundle = FluentBundle::new(&x);
+                    let res_path = res_path_scheme.replace("{locale}", &locale.to_string());
+                    for res_id in &res_ids {
+                        let path = res_path.replace("{res_id}", res_id);
+                        if let Some(source) = Asset::get(&path) {
+                            let data = str::from_utf8(source.as_ref()).unwrap();
+                            let res = FluentResource::try_new(data.to_string()).unwrap();
+                            bundle.add_resource(res).unwrap();
+                        }
+                    }
+                    bundle
+                })
+            })
+        };
+        let loc = Localization::new(
+            FTL_RESOURCES.iter().map(|s| s.to_string()).collect(),
+            generate_messages,
+        );
+        // let value: String = loc.format_value(&self.key, &self.args).to_string();
+        let value: String = loc.format_value(&self.key, self.args.as_ref()).to_string();
+        value
     }
 }
 
 /// Strip off any potential system locale encoding on the end of LC_LANG
-fn normalize_lang(input: &String) -> String {
+pub fn normalize_lang(input: &String) -> String {
     let re = Regex::new(r"\..*$").unwrap();
     re.replace(&input, "").to_string()
 }
 
+/// Scan our embedded assets for what recognisable locale data we have on hand
 // https://github.com/projectfluent/fluent-rs/blob/c9e45651/fluent-resmgr/examples/simple-resmgr.rs#L35
-fn list_available_locales() -> Locales {
+pub fn list_available_locales() -> Locales {
     let mut embeded = vec![];
     for asset in Asset::iter() {
         let asset_name = asset.to_string();
@@ -98,40 +159,6 @@ fn list_available_locales() -> Locales {
     }
     embeded.dedup();
     Locales(embeded)
-}
-
-fn translate(key: &str, args: Option<&FluentArgs>) -> String {
-    let locales = LOCALES.read().unwrap();
-    let mut res_path_scheme = path::PathBuf::new();
-    res_path_scheme.push("{locale}");
-    res_path_scheme.push("{res_id}");
-    let generate_messages = |res_ids: &[String]| {
-        let mut resolved_locales = locales.iter();
-        let res_path_scheme = res_path_scheme.to_str().unwrap();
-        let res_ids = res_ids.to_vec();
-        iter::from_fn(move || {
-            resolved_locales.next().map(|locale| {
-                let x = vec![locale.clone()];
-                let mut bundle = FluentBundle::new(&x);
-                let res_path = res_path_scheme.replace("{locale}", &locale.to_string());
-                for res_id in &res_ids {
-                    let path = res_path.replace("{res_id}", res_id);
-                    if let Some(source) = Asset::get(&path) {
-                        let data = str::from_utf8(source.as_ref()).unwrap();
-                        let res = FluentResource::try_new(data.to_string()).unwrap();
-                        bundle.add_resource(res).unwrap();
-                    }
-                }
-                bundle
-            })
-        })
-    };
-    let loc = Localization::new(
-        FTL_RESOURCES.iter().map(|s| s.to_string()).collect(),
-        generate_messages,
-    );
-    let value: String = loc.format_value(key, args).to_string();
-    value
 }
 
 #[cfg(test)]

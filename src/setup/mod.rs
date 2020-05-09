@@ -11,20 +11,14 @@ pub fn run(path: path::PathBuf) -> Result<()> {
     match metadata.is_dir() {
         true => match Repository::open(path) {
             Ok(_repo) => Ok(()),
-            Err(_error) => {
-                let error_text = LocalText::new("setup-error-not-git");
-                Err(Box::new(io::Error::new(
-                    io::ErrorKind::InvalidInput,
-                    error_text.fmt(None),
-                )))
-            }
-        },
-        false => {
-            let error_text = LocalText::new("setup-error-not-dir");
-            Err(Box::new(io::Error::new(
+            Err(_error) => Err(Box::new(io::Error::new(
                 io::ErrorKind::InvalidInput,
-                error_text.fmt(None),
-            )))
-        }
+                LocalText::new("setup-error-not-git").fmt(),
+            ))),
+        },
+        false => Err(Box::new(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            LocalText::new("setup-error-not-dir").fmt(),
+        ))),
     }
 }

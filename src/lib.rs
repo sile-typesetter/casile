@@ -2,27 +2,31 @@
 extern crate lazy_static;
 
 use crate::config::CONFIG;
-use fluent::{FluentArgs, FluentValue};
 use i18n::LocalText;
 
 pub mod cli;
 pub mod config;
 pub mod i18n;
+
+// Subcommands
 pub mod make;
 pub mod setup;
 pub mod shell;
 
+/// If all else fails, use this BCP-47 locale
 pub static DEFAULT_LOCALE: &'static str = "en-US";
 
+/// CaSILE version number as detected by `git describe --tags` at build time
+pub static VERSION: &'static str = env!("VERGEN_SEMVER_LIGHTWEIGHT");
+
+/// Output welcome header at start of run before moving on to actual commands
 pub fn show_welcome() {
-    let mut args = FluentArgs::new();
-    let version = CONFIG.get_string("version").unwrap();
-    args.insert("version", FluentValue::from(version));
-    let welcome = LocalText::new("welcome");
-    eprintln!("==> {} \n", welcome.fmt(Some(&args)));
+    let welcome = LocalText::new("welcome").arg("version", VERSION);
+    eprintln!("==> {} \n", welcome.fmt());
 }
 
+/// Output header before starting work on a subcommand
 pub fn header(key: &str) {
     let text = LocalText::new(key);
-    eprintln!("--> {} \n", text.fmt(None));
+    eprintln!("--> {} \n", text.fmt());
 }
