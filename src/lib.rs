@@ -13,6 +13,11 @@ pub mod make;
 pub mod setup;
 pub mod shell;
 
+// Import stuff set by autoconf/automake at build time
+pub static CONFIGURE_PREFIX: &'static str = env!["CONFIGURE_PREFIX"];
+pub static CONFIGURE_BINDIR: &'static str = env!["CONFIGURE_BINDIR"];
+pub static CONFIGURE_DATADIR: &'static str = env!["CONFIGURE_DATADIR"];
+
 /// If all else fails, use this BCP-47 locale
 pub static DEFAULT_LOCALE: &'static str = "en-US";
 

@@ -3,7 +3,7 @@ extern crate vergen;
 use clap::IntoApp;
 use clap_generate::generate_to;
 use clap_generate::generators::{Bash, Elvish, Fish, PowerShell, Zsh};
-use std::{env, fs};
+use std::{collections, env, fs};
 use vergen::{generate_cargo_keys, ConstantsFlags};
 
 include!("src/cli.rs");
@@ -15,7 +15,9 @@ fn main() {
 
     // Generate the 'cargo:' key output
     generate_cargo_keys(flags).expect("Unable to generate the cargo keys!");
-    generate_shell_completions()
+
+    pass_on_configure_details();
+    generate_shell_completions();
 }
 
 /// Generate shell completion files from CLI interface
@@ -35,4 +37,17 @@ fn generate_shell_completions() {
     generate_to::<Fish, _, _>(&mut app, bin_name, &completionsdir);
     generate_to::<PowerShell, _, _>(&mut app, bin_name, &completionsdir);
     generate_to::<Zsh, _, _>(&mut app, bin_name, &completionsdir);
+}
+
+/// Pass through some variables set by autoconf/automake about where we're installed to cargo for
+/// use in finding resources at runtime
+fn pass_on_configure_details() {
+    let mut autoconf_vars = collections::HashMap::new();
+    autoconf_vars.insert("CONFIGURE_PREFIX", String::from("./"));
+    autoconf_vars.insert("CONFIGURE_BINDIR", String::from("./"));
+    autoconf_vars.insert("CONFIGURE_DATADIR", String::from("./"));
+    for (var, default) in autoconf_vars {
+        let val = env::var(var).unwrap_or(default);
+        println!("cargo:rustc-env={}={}", var, val);
+    }
 }
