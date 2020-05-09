@@ -33,7 +33,7 @@ error-invalid-resources =
   Could not find valid BCP47 resource files.
 
 welcome =
-  Welcome to CaSILE version {$version}. Stand by while we stir the caldron.
+  Welcome to CaSILE version { $version }. Stand by while we stir the caldron.
 
 make-header =
   Make make make sense or I’ll make you make makefiles.
@@ -47,5 +47,23 @@ setup-error-not-git =
 setup-error-not-dir =
   Path is not a directory.
 
-shell-header  =
+shell-header =
   Ship all this off to the shell, maybe they can handle it.
+
+status-header =
+  Project status report.
+
+status-true =
+  Yes.
+
+status-false =
+  Hayır.
+
+status-is-repo =
+  Is directory a Git repository?
+
+status-good =
+  Everything is in place, it’s a happy CaSILE!
+
+status-bad =
+  Not everything is in place, please run 'setup'.
