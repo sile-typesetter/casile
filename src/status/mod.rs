@@ -26,7 +26,7 @@ pub fn is_setup() -> Result<bool> {
 
 /// Are we in a git repo?
 pub fn is_repo(path: path::PathBuf) -> Result<bool> {
-    let ret = Repository::open(path).is_ok();
+    let ret = Repository::discover(path).is_ok();
     eprintln!(
         "{} {}",
         LocalText::new("status-is-repo").fmt(),
