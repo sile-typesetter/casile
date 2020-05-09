@@ -20,11 +20,15 @@ fn main() {
 
 /// Generate shell completion files from CLI interface
 fn generate_shell_completions() {
-    let profile = env::var("PROFILE").unwrap();
+    let profile =
+        env::var("PROFILE").expect("Could not find what build profile is boing used by Cargo");
     let completionsdir = format!("target/{}/completions", profile);
-    fs::create_dir_all(&completionsdir).unwrap();
+    fs::create_dir_all(&completionsdir)
+        .expect("Could not create directory in which to place completions");
     let app = Cli::into_app();
-    let bin_name: &str = app.get_bin_name().unwrap();
+    let bin_name: &str = app
+        .get_bin_name()
+        .expect("Could not retrieve bin-name from generated Clap app");
     let mut app = Cli::into_app();
     generate_to::<Bash, _, _>(&mut app, bin_name, &completionsdir);
     generate_to::<Elvish, _, _>(&mut app, bin_name, &completionsdir);
