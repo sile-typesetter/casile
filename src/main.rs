@@ -1,7 +1,7 @@
 use casile::cli::{Cli, Subcommand};
 use casile::config::CONFIG;
 use casile::VERSION;
-use casile::{make, setup, shell};
+use casile::{make, setup, shell, status};
 use clap::{FromArgMatches, IntoApp};
 use std::error;
 
@@ -20,5 +20,6 @@ fn main() -> Result<(), Box<dyn error::Error>> {
             command,
             interactive,
         } => shell::run(command, interactive),
+        Subcommand::Status {} => status::run(),
     }
 }

@@ -46,4 +46,7 @@ pub enum Subcommand {
 
         command: Vec<String>,
     },
+
+    /// Show build status information
+    Status {},
 }

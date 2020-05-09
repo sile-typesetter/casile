@@ -12,6 +12,7 @@ pub mod i18n;
 pub mod make;
 pub mod setup;
 pub mod shell;
+pub mod status;
 
 // Import stuff set by autoconf/automake at build time
 pub static CONFIGURE_PREFIX: &'static str = env!["CONFIGURE_PREFIX"];
