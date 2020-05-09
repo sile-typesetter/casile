@@ -33,7 +33,7 @@ error-invalid-resources =
   Could not find valid BCP47 resource files.
 
 welcome =
-  Welcome to CaSILE version { $version }. Stand by while we stir the caldron.
+  Welcome to CaSILE version { $version }.
 
 make-header =
   Make make make sense or I’ll make you make makefiles.

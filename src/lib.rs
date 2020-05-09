@@ -28,11 +28,11 @@ pub static VERSION: &'static str = env!("VERGEN_SEMVER_LIGHTWEIGHT");
 /// Output welcome header at start of run before moving on to actual commands
 pub fn show_welcome() {
     let welcome = LocalText::new("welcome").arg("version", VERSION);
-    eprintln!("==> {} \n", welcome.fmt());
+    eprintln!("==> {}", welcome.fmt());
 }
 
 /// Output header before starting work on a subcommand
 pub fn header(key: &str) {
     let text = LocalText::new(key);
-    eprintln!("--> {} \n", text.fmt());
+    eprintln!("--> {}", text.fmt());
 }

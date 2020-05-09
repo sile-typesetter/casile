@@ -1,5 +1,5 @@
 welcome =
-  CaSILE { $version } sürümüne hoş geldiniz. Kazanı karıştırırken bekleyin.
+  CaSILE { $version } sürümüne hoş geldiniz.
 
 make-header =
   What can I do is the sometimes is the football?
