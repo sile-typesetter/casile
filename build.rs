@@ -15,13 +15,17 @@ fn main() {
 
     // Generate the 'cargo:' key output
     generate_cargo_keys(flags).expect("Unable to generate the cargo keys!");
+    generate_shell_completions()
+}
 
-    // let outdir = env::var_os("OUT_DIR").unwrap();
+/// Generate shell completion files from CLI interface
+fn generate_shell_completions() {
     let profile = env::var("PROFILE").unwrap();
     let completionsdir = format!("target/{}/completions", profile);
     fs::create_dir_all(&completionsdir).unwrap();
+    let app = Cli::into_app();
+    let bin_name: &str = app.get_bin_name().unwrap();
     let mut app = Cli::into_app();
-    let bin_name = "casile";
     generate_to::<Bash, _, _>(&mut app, bin_name, &completionsdir);
     generate_to::<Elvish, _, _>(&mut app, bin_name, &completionsdir);
     generate_to::<Fish, _, _>(&mut app, bin_name, &completionsdir);
