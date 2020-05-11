@@ -15,6 +15,19 @@ pub fn run() -> Result<()> {
     Ok(())
 }
 
+enum RunAsMode {
+    RunAsSubmodule,
+    RunAsDirectory,
+    RunAsDocker,
+    RunAsRunner,
+    RunAsSystem,
+}
+
+/// Determine the runtime mode
+fn run_as() -> RunAsMode {
+    RunAsMode::RunAsDocker {}
+}
+
 /// Evaluate whether this project is pis_setup()?roperly configured
 pub fn is_setup() -> Result<bool> {
     let results = Arc::new(RwLock::new(Vec::new()));
