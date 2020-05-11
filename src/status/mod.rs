@@ -18,27 +18,33 @@ pub fn run() -> Result<()> {
 /// Evaluate whether this project is pis_setup()?roperly configured
 pub fn is_setup() -> Result<bool> {
     let results = Arc::new(RwLock::new(Vec::new()));
+
     // First round of tests, entirely independent
     rayon::scope(|s| {
         s.spawn(|_| {
-            results.write().unwrap().push(is_repo().unwrap());
+            let ret = is_repo().unwrap();
+            results.write().unwrap().push(ret);
         });
         s.spawn(|_| {
-            results.write().unwrap().push(is_make_exectuable().unwrap());
+            let ret = is_make_exectuable().unwrap();
+            results.write().unwrap().push(ret);
         });
     });
-    let ret = results.read().unwrap().iter().all(|&v| v);
+
     // Second round of tests, dependent on first set
-    if ret {
+    if results.read().unwrap().iter().all(|&v| v) {
         rayon::scope(|s| {
             s.spawn(|_| {
-                results.write().unwrap().push(is_writable().unwrap());
+                let ret = is_writable().unwrap();
+                results.write().unwrap().push(ret);
             });
             s.spawn(|_| {
-                results.write().unwrap().push(is_make_gnu().unwrap());
+                let ret = is_make_gnu().unwrap();
+                results.write().unwrap().push(ret);
             });
         });
     }
+
     let ret = results.read().unwrap().iter().all(|&v| v);
     let msg = LocalText::new(if ret { "status-good" } else { "status-bad" }).fmt();
     eprintln!(
