@@ -67,6 +67,7 @@ dependencies = [
  "assert_cmd",
  "clap",
  "clap_generate",
+ "colored",
  "config",
  "fluent",
  "fluent-fallback",
@@ -148,6 +149,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "188d8b137fa922515d549cf17ece165ddbc71bf21e723e81d84406958dcdef67"
 dependencies = [
  "clap",
+]
+
+[[package]]
+name = "colored"
+version = "1.9.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f4ffc801dacf156c5854b9df4f425a626539c3a6ef7893cc0c5084a23f0b6c59"
+dependencies = [
+ "atty",
+ "lazy_static",
+ "winapi 0.3.8",
 ]
 
 [[package]]
