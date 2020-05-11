@@ -1,4 +1,5 @@
 use crate::i18n::LocalText;
+use colored::{ColoredString, Colorize};
 use git2::Repository;
 use std::io::prelude::*;
 use std::sync::{Arc, RwLock};
@@ -39,9 +40,11 @@ pub fn is_setup() -> Result<bool> {
         });
     }
     let ret = results.read().unwrap().iter().all(|&v| v);
+    let msg = LocalText::new(if ret { "status-good" } else { "status-bad" }).fmt();
     eprintln!(
-        "{}",
-        LocalText::new(if ret { "status-good" } else { "status-bad" }).fmt()
+        "{} {}",
+        "┗━".cyan(),
+        if ret { msg.green() } else { msg.red() }
     );
     Ok(ret)
 }
@@ -50,11 +53,7 @@ pub fn is_setup() -> Result<bool> {
 pub fn is_repo() -> Result<bool> {
     let cwd = env::current_dir()?;
     let ret = Repository::discover(cwd).is_ok();
-    eprintln!(
-        "{} {}",
-        LocalText::new("status-is-repo").fmt(),
-        fmt_t_f(ret)
-    );
+    display_check("status-is-repo", ret);
     Ok(ret)
 }
 
@@ -68,11 +67,7 @@ pub fn is_writable() -> Result<bool> {
     file.write_all(b"test")?;
     fs::remove_file(&testfile)?;
     let ret = true;
-    eprintln!(
-        "{} {}",
-        LocalText::new("status-is-writable").fmt(),
-        fmt_t_f(ret)
-    );
+    display_check("status-is-writable", ret);
     Ok(true)
 }
 
@@ -84,11 +79,7 @@ pub fn is_make_exectuable() -> Result<bool> {
         .stderr(NullFile)
         .join()
         .is_ok();
-    eprintln!(
-        "{} {}",
-        LocalText::new("status-is-make-executable").fmt(),
-        fmt_t_f(ret)
-    );
+    display_check("status-is-make-executable", ret);
     Ok(true)
 }
 
@@ -101,16 +92,26 @@ pub fn is_make_gnu() -> Result<bool> {
         .capture()?
         .stdout_str();
     let ret = out.starts_with("GNU Make 4.");
-    eprintln!(
-        "{} {}",
-        LocalText::new("status-is-make-gnu").fmt(),
-        fmt_t_f(ret)
-    );
+    display_check("status-is-make-gnu", ret);
     Ok(true)
 }
 
+fn display_check(key: &str, val: bool) {
+    eprintln!(
+        "{} {} {}",
+        "┠─".cyan(),
+        LocalText::new(key).fmt(),
+        fmt_t_f(val)
+    );
+}
+
 /// Format a localized string just for true / false status prints
-fn fmt_t_f(val: bool) -> String {
+fn fmt_t_f(val: bool) -> ColoredString {
     let key = if val { "status-true" } else { "status-false" };
-    LocalText::new(key).fmt()
+    let text = LocalText::new(key).fmt();
+    if val {
+        text.green()
+    } else {
+        text.red()
+    }
 }

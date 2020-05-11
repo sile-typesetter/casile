@@ -1,5 +1,5 @@
 welcome =
-  CaSILE { $version } sürümüne hoş geldiniz.
+  CaSILE { $version } sürümüne hoş geldiniz!
 
 make-header =
   What can I do is the sometimes is the football?
@@ -17,19 +17,19 @@ shell-header =
   Bizle ahlakası yok shell’e göre bir işmiş gibi, ona sevk edelim.
 
 status-header =
-  Proje durum rapörü.
+  Proje durum rapörü:
 
 status-true =
-  Evet.
+  Evet
 
 status-false =
-  Hayır.
+  Hayır
 
 status-is-repo =
-  Klasör Git deposu mudur?
+  Git deposu içinde bulunuyor muyuz?
 
 status-is-writable =
-  Proje klasöründe yazma izinimiz var mıdır?
+  Projenin kök klasöründe yazma izinimiz var mıdır?
 
 status-is-make-executable =
   Sistemin `make`i yürütülebilir durumda mıdır?

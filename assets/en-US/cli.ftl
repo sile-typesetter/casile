@@ -33,7 +33,7 @@ error-invalid-resources =
   Could not find valid BCP47 resource files.
 
 welcome =
-  Welcome to CaSILE version { $version }.
+  Welcome to CaSILE version { $version }!
 
 make-header =
   Make make make sense or I’ll make you make makefiles.
@@ -51,19 +51,19 @@ shell-header =
   Ship all this off to the shell, maybe they can handle it.
 
 status-header =
-  Project status report.
+  Project status report:
 
 status-true =
-  Yes.
+  Yes
 
 status-false =
-  Hayır.
+  No
 
 status-is-repo =
-  Is directory a Git repository?
+  Are we in a Git repository?
 
 status-is-writable =
-  Can we write to the project directory?
+  Can we write to the project base directory?
 
 status-is-make-executable =
  Can we execute the system's `make`?
