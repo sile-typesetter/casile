@@ -31,6 +31,12 @@ status-is-repo =
 status-is-writable =
   Proje klasöründe yazma izinimiz var mıdır?
 
+status-is-make-executable =
+  Sistemin `make`i yürütülebilir durumda mıdır?
+
+status-is-make-gnu =
+  Sistemin `make` GNU Make midir?
+
 status-good =
   Her şey yerinde gibi, CaSILE mutludur!
 

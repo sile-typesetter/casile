@@ -65,6 +65,12 @@ status-is-repo =
 status-is-writable =
   Can we write to the project directory?
 
+status-is-make-executable =
+ Can we execute the system's `make`?
+
+status-is-make-gnu =
+  Is the system's `make` GNU Make?
+
 status-good =
   Everything is in place, it’s a happy CaSILE!
 

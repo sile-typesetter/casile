@@ -3,6 +3,7 @@ use git2::Repository;
 use std::io::prelude::*;
 use std::sync::{Arc, RwLock};
 use std::{env, error, fs, result};
+use subprocess::{Exec, NullFile, Redirection};
 
 type Result<T> = result::Result<T, Box<dyn error::Error>>;
 
@@ -19,8 +20,10 @@ pub fn is_setup() -> Result<bool> {
     // First round of tests, entirely independent
     rayon::scope(|s| {
         s.spawn(|_| {
-            let repo = is_repo().unwrap();
-            results.write().unwrap().push(repo);
+            results.write().unwrap().push(is_repo().unwrap());
+        });
+        s.spawn(|_| {
+            results.write().unwrap().push(is_make_exectuable().unwrap());
         });
     });
     let ret = results.read().unwrap().iter().all(|&v| v);
@@ -28,8 +31,10 @@ pub fn is_setup() -> Result<bool> {
     if ret {
         rayon::scope(|s| {
             s.spawn(|_| {
-                let writable = is_writable().unwrap();
-                results.write().unwrap().push(writable);
+                results.write().unwrap().push(is_writable().unwrap());
+            });
+            s.spawn(|_| {
+                results.write().unwrap().push(is_make_gnu().unwrap());
             });
         });
     }
@@ -66,6 +71,39 @@ pub fn is_writable() -> Result<bool> {
     eprintln!(
         "{} {}",
         LocalText::new("status-is-writable").fmt(),
+        fmt_t_f(ret)
+    );
+    Ok(true)
+}
+
+/// Check if we can execute the system's `make` utility
+pub fn is_make_exectuable() -> Result<bool> {
+    let ret = Exec::cmd("make")
+        .arg("-v")
+        .stdout(NullFile)
+        .stderr(NullFile)
+        .join()
+        .is_ok();
+    eprintln!(
+        "{} {}",
+        LocalText::new("status-is-make-executable").fmt(),
+        fmt_t_f(ret)
+    );
+    Ok(true)
+}
+
+/// Check that the system's `make` utility is GNU Make
+pub fn is_make_gnu() -> Result<bool> {
+    let out = Exec::cmd("make")
+        .arg("-v")
+        .stdout(Redirection::Pipe)
+        .stderr(NullFile)
+        .capture()?
+        .stdout_str();
+    let ret = out.starts_with("GNU Make 4.");
+    eprintln!(
+        "{} {}",
+        LocalText::new("status-is-make-gnu").fmt(),
         fmt_t_f(ret)
     );
     Ok(true)
