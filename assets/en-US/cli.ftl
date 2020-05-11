@@ -62,8 +62,12 @@ status-false =
 status-is-repo =
   Is directory a Git repository?
 
+status-is-writable =
+  Can we write to the project directory?
+
 status-good =
   Everything is in place, it’s a happy CaSILE!
 
 status-bad =
   Not everything is in place, please run 'setup'.
+

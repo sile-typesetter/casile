@@ -28,6 +28,9 @@ status-false =
 status-is-repo =
   Klasör Git deposu mudur?
 
+status-is-writable =
+  Proje klasöründe yazma izinimiz var mıdır?
+
 status-good =
   Her şey yerinde gibi, CaSILE mutludur!
 
