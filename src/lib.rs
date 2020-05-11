@@ -4,6 +4,7 @@ extern crate lazy_static;
 use crate::config::CONFIG;
 use colored::Colorize;
 use i18n::LocalText;
+use std::{error, fmt};
 
 pub mod cli;
 pub mod config;
@@ -25,6 +26,32 @@ pub static DEFAULT_LOCALE: &'static str = "en-US";
 
 /// CaSILE version number as detected by `git describe --tags` at build time
 pub static VERSION: &'static str = env!("VERGEN_SEMVER_LIGHTWEIGHT");
+
+/// A type for our internal whoops
+#[derive(Debug)]
+pub struct Error {
+    details: String,
+}
+
+impl Error {
+    pub fn new(key: &str) -> Error {
+        Error {
+            details: LocalText::new(key).fmt(),
+        }
+    }
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.details)
+    }
+}
+
+impl error::Error for Error {
+    fn description(&self) -> &str {
+        &self.details
+    }
+}
 
 /// Output welcome header at start of run before moving on to actual commands
 pub fn show_welcome() {
