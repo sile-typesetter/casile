@@ -14,7 +14,7 @@ EXTRA_DIST = package.json yarn.lock Dockerfile
 bin_PROGRAMS = casile
 
 _casile_libs = src/lib.rs src/cli.rs src/config.rs src/i18n.rs
-_casile_modules = src/make/mod.rs src/setup/mod.rs src/shell/mod.rs
+_casile_modules = src/make/mod.rs src/setup/mod.rs src/shell/mod.rs src/status/mod.rs
 _casile_assets = assets/en-US/cli.ftl assets/tr-TR/cli.ftl
 casile_SOURCES = Cargo.toml build.rs src/main.rs $(_casile_libs) $(_casile_modules) $(_casile_assets)
 EXTRA_casile_SOURCES = Cargo.lock tests/cli.rs
@@ -95,6 +95,11 @@ CARGO_RELEASE_ARGS=
 else
 CARGO_RELEASE_ARGS=--release --locked --all-features
 endif
+
+# Leave some tips for cargo to use so CLI knows where it is
+export CONFIGURE_PREFIX = $(prefix)
+export CONFIGURE_DATADIR = $(datadir)
+export CONFIGURE_BINDIR = $(bindir)
 
 CARGO_VERBOSE = $(cargo_verbose_$(V))
 cargo_verbose_ = $(cargo_verbose_$(AM_DEFAULT_VERBOSITY))

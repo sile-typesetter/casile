@@ -18,7 +18,7 @@ pub struct Asset;
 lazy_static! {
     /// List of Locales in order of closeness to the runtime config
     pub static ref LOCALES: sync::RwLock<Locales> =
-        sync::RwLock::new(Locales::new(CONFIG.get_string("language").unwrap()));
+        sync::RwLock::new(Locales::new(CONFIG.get_string("language").expect("Unable to retrieve language from config")));
 }
 
 /// A prioritized locale fallback stack
@@ -39,7 +39,9 @@ impl Locales {
         let language = normalize_lang(&language);
         let available = self::list_available_locales();
         let requested = fluent_langneg::accepted_languages::parse(&language);
-        let default: LanguageIdentifier = crate::DEFAULT_LOCALE.parse().unwrap();
+        let default: LanguageIdentifier = crate::DEFAULT_LOCALE
+            .parse()
+            .expect("Unable to parse default locale");
         Locales(
             fluent_langneg::negotiate_languages(
                 &requested,
@@ -94,13 +96,17 @@ impl<'a> LocalText<'a> {
     /// Format and return a string for the given key and args using the prefered locale fallback
     /// stack as negotiated at runtime.
     pub fn fmt(&self) -> String {
-        let locales = LOCALES.read().unwrap();
+        let locales = LOCALES
+            .read()
+            .expect("Unable to read negotiated locale list");
         let mut res_path_scheme = path::PathBuf::new();
         res_path_scheme.push("{locale}");
         res_path_scheme.push("{res_id}");
         let generate_messages = |res_ids: &[String]| {
             let mut resolved_locales = locales.iter();
-            let res_path_scheme = res_path_scheme.to_str().unwrap();
+            let res_path_scheme = res_path_scheme
+                .to_str()
+                .expect("Locale resource path not valid");
             let res_ids = res_ids.to_vec();
             iter::from_fn(move || {
                 resolved_locales.next().map(|locale| {
@@ -110,9 +116,13 @@ impl<'a> LocalText<'a> {
                     for res_id in &res_ids {
                         let path = res_path.replace("{res_id}", res_id);
                         if let Some(source) = Asset::get(&path) {
-                            let data = str::from_utf8(source.as_ref()).unwrap();
-                            let res = FluentResource::try_new(data.to_string()).unwrap();
-                            bundle.add_resource(res).unwrap();
+                            let data = str::from_utf8(source.as_ref())
+                                .expect("Fluent data source not valid UTF-8");
+                            let res = FluentResource::try_new(data.to_string())
+                                .expect("Fluent data source not valid resource");
+                            bundle
+                                .add_resource(res)
+                                .expect("Unable to add Fluent resource to bundle");
                         }
                     }
                     bundle
@@ -144,7 +154,10 @@ pub fn list_available_locales() -> Locales {
         let path = path::Path::new(&asset_name);
         let mut components = path.components();
         if let Some(path::Component::Normal(part)) = components.next() {
-            let bytes = part.to_str().unwrap().as_bytes();
+            let bytes = part
+                .to_str()
+                .expect("Cannot handle directory name in assets")
+                .as_bytes();
             if let Ok(langid) = LanguageIdentifier::from_bytes(bytes) {
                 if let Some(path::Component::Normal(part)) = components.next() {
                     if self::FTL_RESOURCES
