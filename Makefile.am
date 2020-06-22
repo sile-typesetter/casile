@@ -1,4 +1,4 @@
-$(and $(word 2,$(MAKEFILE_LIST)),$(error This is not the makefile you should include in your project to run SILE, please use 'rules' instead.))
+$(and $(word 2,$(MAKEFILE_LIST)),$(error This is not the makefile you should include in your project to run SILE, please use 'rules.mk' instead.))
 
 _casile = $(shell sed -e "$(program_transform_name)" <<< casile)
 
@@ -22,7 +22,7 @@ EXTRA_casile_SOURCES = Cargo.lock tests/cli.rs
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
 rulesdir = $(datadir)
-dist_rules_DATA = rules rules-functions rules-en rules-tr
+dist_rules_DATA = rules.mk functions.mk en.mk tr.mk
 
 luadir = $(datadir)
 dist_lua_DATA = block_styles.lua cabook.lua casile.lua covers.lua endnotes.lua hyphenation_exceptions.lua imprint.lua inline_styles.lua lists.lua readmeta.lua
