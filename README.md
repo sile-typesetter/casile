@@ -96,10 +96,10 @@ It is also possible to mix and match, notably you can use both local options and
 
     Note the `-b master` here tells git you want to track the master branch and update to that whenever it changes. This is what I use for my books while I'm working on them. When I publish (and want to be able to regenerate the same output again even if the toolkit changes) I commit the current version SHA to the book repo and stop tracking the master branch.
 
-2. Include the rules file from your project's Makefile:
+2. Include the rules.mk file from your project's Makefile:
 
     ```makefile
-    include casile/rules
+    include casile/rules.mk
     ```
 
 3. Initialize the toolkit before first use:
@@ -118,14 +118,14 @@ It is also possible to mix and match, notably you can use both local options and
     $ ln -s /path/to/casile
     ```
 
-2. Include the rules file from your project's Makefile:
+2. Include the rules.mk file from your project's Makefile:
 
     ```makefile
     # Direct approach
-    include /path/to/casile/rules
+    include /path/to/casile/rules.mk
 
     # Optional symlinked approach
-    include casile/rules
+    include casile/rules.mk
     ```
 
 3. Initialize the toolkit before first use:
@@ -166,13 +166,13 @@ If you are using Arch Linux, take your pick of AUR recipes at [casile][aur-casil
       export PATH="~/path/to/casile/bin:$PATH"
       ```
 
-4. Include the rules file from your project's Makefile:
+4. Include the rules.mk file from your project's Makefile:
 
     ```makefile
-    include /usr/share/casile/rules
+    include /usr/share/casile/rules.mk
     ```
 
-    (Note the path may be `/usr/local/share/casile/rules` if you installed manually or a different path entirely if you opted for a user-only installation.
+    (Note the path may be `/usr/local/share/casile/rules.mk` if you installed manually or a different path entirely if you opted for a user-only installation.
 
 5. Initialize _only if_ your project has project specific initialization hooks:
 
@@ -292,7 +292,7 @@ These settings apply to the whole project. To override the defaults set them in 
 
 * `CASILEDIR` is where CaSILE is located.
 
-    Defaults to the location of the CaSILE rules file as determined by the last makefile in the loaded list (so if you included it from your Makefile, do the include after any others or hard code the location yourself. This can also be used to run a version of CaSILE outside of the current project directory.
+    Defaults to the location of the CaSILE rules.mk file as determined by the last makefile in the loaded list (so if you included it from your Makefile, do the include after any others or hard code the location yourself. This can also be used to run a version of CaSILE outside of the current project directory.
 
 * `PROJECTDIR` is where your project is located. Sources will be examined here and the build process will run here.
 

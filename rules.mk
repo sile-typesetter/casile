@@ -44,10 +44,10 @@ SED ?= sed
 SILE ?= sile
 
 # Localization functions (source is a key => val file _and_ its inverse)
--include $(CASILEDIR)/rules-$(LANGUAGE) $(CASILEDIR)/rules-$(LANGUAGE)-reversed
+-include $(CASILEDIR)/$(LANGUAGE).mk $(CASILEDIR)/$(LANGUAGE)-reversed.mk
 
 # CaSILE Utility functions
-include $(CASILEDIR)/rules-functions
+include $(CASILEDIR)/functions.mk
 
 # Empty recipies for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;
@@ -515,7 +515,7 @@ $(CICONFIG): $(CITEMPLATE)
 	git add -- $@
 	git diff-index --quiet --cached HEAD || git commit -m "[auto] Rebuild CI config file"
 
-%-reversed: %
+%-reversed.mk: %.mk
 	@awk -F' := ' '/^_/ { gsub(/_/, "", $$1); print "__" $$2 " := " $$1 }' < $< > $@
 
 # Pass or fail target showing whether the CI config is up to date
