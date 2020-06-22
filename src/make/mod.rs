@@ -1,4 +1,3 @@
-use crate::i18n::LocalText;
 use crate::status;
 use crate::Error;
 use crate::CONFIG;
