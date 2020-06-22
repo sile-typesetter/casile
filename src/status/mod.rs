@@ -12,10 +12,12 @@ type Result<T> = result::Result<T, Box<dyn error::Error>>;
 pub fn run() -> Result<()> {
     crate::header("status-header");
     is_setup()?;
+    // println!("{:?}", run_as());
     Ok(())
 }
 
 #[allow(dead_code)]
+#[derive(Debug)]
 enum RunAsMode {
     RunAsSubmodule,
     RunAsDirectory,
