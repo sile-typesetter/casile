@@ -15,6 +15,7 @@ pub fn run() -> Result<()> {
     Ok(())
 }
 
+#[allow(dead_code)]
 enum RunAsMode {
     RunAsSubmodule,
     RunAsDirectory,
@@ -23,6 +24,7 @@ enum RunAsMode {
     RunAsSystem,
 }
 
+#[allow(dead_code)]
 /// Determine the runtime mode
 fn run_as() -> RunAsMode {
     RunAsMode::RunAsDocker {}
