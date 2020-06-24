@@ -219,7 +219,7 @@ SILE.registerCommand("open-page", function (options)
       SILE.scratch.headers.skipthispage = true
     end
     SILE.typesetter:leaveHmode()
-    SILE.Commands["supereject"]()
+    SILE.call("supereject")
     count = count + 1
   until (not double or count > 1) and (not odd or class:oddPage())
   SILE.typesetter:leaveHmode()
@@ -365,8 +365,8 @@ SILE.registerCommand("footnote", function (options, content)
   SILE.settings.set("linespacing.method", "fit-font")
   SILE.settings.set("linespacing.fit-font.extra-space", SILE.length("0.05ex plus 0.1pt minus 0.1pt"))
   SILE.settings.set("document.lskip", SILE.nodefactory.glue(options.indent))
-  local material = SILE.Commands["vbox"]({}, function ()
-    SILE.Commands["cabook:font:footnote"]({}, function ()
+  local material = SILE.call("vbox", {}, function ()
+    SILE.call("cabook:font:footnote", {}, function ()
       SILE.call("footnote:counter", options, content)
       -- don't justify footnotes
       SILE.call("raggedright", {}, function ()
@@ -402,8 +402,8 @@ SILE.registerCommand("font:el", function (options, content)
 end)
 SILE.registerCommand("lang", function (options, content)
 	local language = options.language or "und"
-	local fontfunc = SILE.Commands[SILE.Commands["font:" .. language] and "font:" .. language or "font"]
-	fontfunc({ language = language }, content)
+	local fontfunc = SILE.Commands["font:" .. language] and "font:" .. language or "font"
+	SILE.call(fontfunc, { language = language }, content)
 end)
 SILE.registerCommand("langund", function (_, content)
 	SILE.call("lang", {}, content)

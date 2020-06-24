@@ -188,7 +188,7 @@ SILE.registerCommand("subparagraph", function (_, content)
   -- Backtracking to approximate the skip after quotations
   SILE.call("skip", { height = "-8pt" })
   SILE.call("novbreak")
-  SILE.Commands["cabook:font:subparagraph"]({}, function ()
+  SILE.call("cabook:font:subparagraph", {}, function ()
     SILE.call("raggedleft", {}, function ()
       SILE.settings.set("document.rskip", SILE.nodefactory.glue("20pt"))
       SILE.process(content)

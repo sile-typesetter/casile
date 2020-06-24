@@ -71,9 +71,9 @@ end)
 
 -- Screen based PDF readers don't need blank even numbered pages ;)
 SILE.registerCommand("open-double-page", function ()
-  SILE.typesetter:leaveHmode();
-  SILE.Commands["supereject"]();
-  SILE.typesetter:leaveHmode();
+  SILE.typesetter:leaveHmode()
+  SILE.call("supereject")
+  SILE.typesetter:leaveHmode()
 end)
 
 local origToc = SILE.Commands["tableofcontents"]

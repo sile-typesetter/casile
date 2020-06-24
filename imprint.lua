@@ -86,7 +86,7 @@ SILE.registerCommand("imprint", function (_, _)
           SILE.call("par")
         end
         if CASILE.metadata.publisher then
-					local distributed = SILE.Commands["meta:distribution"]()
+					local distributed = SILE.call("meta:distribution")
           if not distributed and SILE.Commands["meta:date"] then
             if CASILE.metadata.manufacturer then
               SILE.call("meta:manufacturer")
