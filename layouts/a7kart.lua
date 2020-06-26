@@ -26,9 +26,9 @@ SILE.registerCommand("output-left-running-head", function () end)
 
 -- Card layouts don’t need blanks of any kind.
 SILE.registerCommand("open-double-page", function ()
-  SILE.typesetter:leaveHmode();
-  SILE.Commands["supereject"]();
-  SILE.typesetter:leaveHmode();
+  SILE.typesetter:leaveHmode()
+  SILE.call("supereject")
+  SILE.typesetter:leaveHmode()
 end)
 
 SILE.setCommandDefaults("imprint:font", { size = "7pt" })

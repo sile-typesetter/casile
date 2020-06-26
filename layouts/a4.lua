@@ -40,7 +40,7 @@ SILE.call("switch-master-one-page", { id = "right" })
 
 -- We have a bound A4 format too, but this one doesn't need double-page openers
 SILE.registerCommand("open-double-page", function ()
-  SILE.typesetter:leaveHmode();
-  SILE.Commands["supereject"]();
-  SILE.typesetter:leaveHmode();
+  SILE.typesetter:leaveHmode()
+  SILE.call("supereject")
+  SILE.typesetter:leaveHmode()
 end)

@@ -29,7 +29,9 @@ SILE.registerCommand("imprint", function (_, _)
         end
 
         if SILE.Commands["meta:title"] then
-          SILE.call("font", { weight = 600, style = "Bold" }, SILE.Commands["meta:title"])
+          SILE.call("font", { weight = 600, style = "Bold" }, function ()
+            SILE.call("meta:title")
+          end)
           SILE.call("break")
         end
         if SILE.Commands["meta:creators"] then SILE.call("meta:creators") end
@@ -51,10 +53,14 @@ SILE.registerCommand("imprint", function (_, _)
             SILE.settings.set("document.lskip", SILE.nodefactory.glue({ width = imgUnit * 6.5 }))
             if SILE.Commands["meta:identifiers"] then SILE.call("meta:identifiers") end
             SILE.call("font", { weight = 600, style = "Bold" }, { "Version: " })
-            SILE.call("font", { family = "Hack", size = "0.8em" }, SILE.Commands["meta:surum"])
+            SILE.call("font", { family = "Hack", size = "0.8em" }, function ()
+              SILE.call("meta:surum")
+            end)
             SILE.call("break")
             SILE.call("font", { weight = 600, style = "Bold" }, { "URL: " })
-            SILE.call("font", { family = "Hack", size = "0.8em" }, SILE.Commands["meta:url"])
+            SILE.call("font", { family = "Hack", size = "0.8em" }, function ()
+              SILE.call("meta:url")
+            end)
             -- Hack around not being able to output a vbox with an indent
             -- See https://github.com/simoncozens/sile/issues/318
             local lines = 1
@@ -69,7 +75,9 @@ SILE.registerCommand("imprint", function (_, _)
           end)
         else
           SILE.call("font", { weight = 600, style = "Bold" }, { "Version: " })
-          SILE.call("font", { family = "Hack", size = "0.8em" }, SILE.Commands["meta:surum"])
+          SILE.call("font", { family = "Hack", size = "0.8em" }, function()
+            SILE.call("meta:surum")
+          end)
           SILE.call("par")
         end
 
@@ -86,7 +94,7 @@ SILE.registerCommand("imprint", function (_, _)
           SILE.call("par")
         end
         if CASILE.metadata.publisher then
-					local distributed = SILE.Commands["meta:distribution"]()
+					local distributed = SILE.call("meta:distribution")
           if not distributed and SILE.Commands["meta:date"] then
             if CASILE.metadata.manufacturer then
               SILE.call("meta:manufacturer")

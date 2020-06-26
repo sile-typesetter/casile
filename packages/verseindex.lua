@@ -48,7 +48,9 @@ local init = function (self)
   end
 
   local startpair = function (pair)
-    SILE.call("makecolumns", { gutter = "4%pw" })
+    -- Temporarily disable columns pending upstream bugfix
+    -- https://github.com/sile-typesetter/sile/issues/891
+    -- SILE.call("makecolumns", { gutter = "4%pw" })
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.glue())
     inpair = pair
   end
@@ -118,7 +120,7 @@ local init = function (self)
     local refshash = {}
     local lastbook = nil
     local seq = 1
-		-- TODO: should this be ipairs()?
+    -- TODO: should this be ipairs()?
     for _, ref in pairs(CASILE.verses) do
       if not refshash[ref.osis] then
         refshash[ref.osis] = true
