@@ -224,6 +224,7 @@ LOCALSILE ?= $(HOME)/projects/sile-typesetter/sile
 ifeq ($(DEBUG),true)
 SILE = $(LOCALSILE)/sile
 $(call prepend,SILEPATH,$(LOCALSILE) $(LOCALSILE)/core )
+SILEFLAGS += -t
 .SHELLFLAGS += -x
 endif
 
