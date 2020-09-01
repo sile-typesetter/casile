@@ -10,20 +10,20 @@ local outputMarks = function ()
   local page = SILE.getFrame("page")
 
   -- Top left
-  SILE.outputter.rule(page:left() - bleed, page:top(), -len, 0.5)
-  SILE.outputter.rule(page:left(), page:top() - bleed, 0.5, -len)
+  SILE.outputter:drawRule(page:left() - bleed, page:top(), -len, 0.5)
+  SILE.outputter:drawRule(page:left(), page:top() - bleed, 0.5, -len)
 
   -- Top  right
-  SILE.outputter.rule(page:right() + bleed, page:top(), len, 0.5)
-  SILE.outputter.rule(page:right(), page:top() - bleed, 0.5, -len)
+  SILE.outputter:drawRule(page:right() + bleed, page:top(), len, 0.5)
+  SILE.outputter:drawRule(page:right(), page:top() - bleed, 0.5, -len)
 
   -- Bottom left
-  SILE.outputter.rule(page:left() - bleed, page:bottom(), -len, 0.5)
-  SILE.outputter.rule(page:left(), page:bottom() + bleed, 0.5, len)
+  SILE.outputter:drawRule(page:left() - bleed, page:bottom(), -len, 0.5)
+  SILE.outputter:drawRule(page:left(), page:bottom() + bleed, 0.5, len)
 
   -- Bottom right
-  SILE.outputter.rule(page:right() + bleed, page:bottom(), len, 0.5)
-  SILE.outputter.rule(page:right(), page:bottom() + bleed, 0.5, len)
+  SILE.outputter:drawRule(page:right() + bleed, page:bottom(), len, 0.5)
+  SILE.outputter:drawRule(page:right(), page:bottom() + bleed, 0.5, len)
 
   SILE.call("hbox", {}, function ()
     SILE.settings.temporarily(function ()
