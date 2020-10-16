@@ -27,7 +27,7 @@ pub struct Cli {
 pub enum Subcommand {
     /// Executes a make target
     Make {
-        /// Target as defined in CaSILE makefile
+        /// Target as defined in CaSILE or project rules
         target: Vec<String>,
     },
 

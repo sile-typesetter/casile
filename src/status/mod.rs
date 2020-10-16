@@ -32,7 +32,7 @@ fn run_as() -> RunAsMode {
     RunAsMode::RunAsDocker {}
 }
 
-/// Evaluate whether this project is pis_setup()?roperly configured
+/// Evaluate whether this project is properly configured
 pub fn is_setup() -> Result<bool> {
     let results = Arc::new(RwLock::new(Vec::new()));
 
