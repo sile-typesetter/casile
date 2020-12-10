@@ -26,6 +26,9 @@ help-subcommand-setup-path =
 help-subcommand-shell =
   Pass through other commands to shell
 
+help-subcommand-status =
+  Dump what we know about the repo
+
 error-invalid-language =
   Could not parse BCP47 language tag.
 
@@ -75,5 +78,5 @@ status-good =
   Everything is in place, it’s a happy CaSILE!
 
 status-bad =
-  Not everything is in place, please run 'setup'.
+  Not everything is in place, please run `casile setup`.
 

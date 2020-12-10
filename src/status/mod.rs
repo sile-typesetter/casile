@@ -8,6 +8,7 @@ use subprocess::{Exec, NullFile, Redirection};
 
 type Result<T> = result::Result<T, Box<dyn error::Error>>;
 
+// FTL: help-subcommand-status
 /// Dump what we know about the repo
 pub fn run() -> Result<()> {
     crate::header("status-header");
