@@ -9,7 +9,7 @@ datadir = $(datarootdir)/$(_casile)
 dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE.txt
 
-EXTRA_DIST = package.json yarn.lock Dockerfile
+EXTRA_DIST = package.json yarn.lock Dockerfile build-aux/cargo-updater.js
 
 bin_PROGRAMS = casile
 
