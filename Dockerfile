@@ -36,9 +36,9 @@ ARG VCS_REF=0
 COPY ./ /src
 WORKDIR /src
 
-RUN git clean -dxf ||:
-RUN git fetch --unshallow ||:
-RUN git fetch --tags ||:
+# GitHub Actions builder stopped providing git history :(
+# See feature request at https://github.com/actions/runner/issues/767
+RUN build-aux/bootstrap-docker.sh
 
 RUN ./bootstrap.sh
 RUN ./configure
