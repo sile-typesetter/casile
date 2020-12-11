@@ -18,17 +18,25 @@ ARG DOCKER_HUB_CACHE=0
 # Freshen all base system packages
 RUN pacman --needed --noconfirm -Syuq && yes | pacman -Sccq
 
-# Install Arch CaSILE package for dependencies, then remove (turtles all the way down)
-RUN pacman --needed --noconfirm -Syq casile-git \
-      && pacman --noconfirm -R casile-git \
-      && yes | pacman -Sccq
+# Install CaSILE run-time dependecies (increment cache var above)
+RUN pacman --needed --noconfirm -Syq \
+		bc bcprov cpdf entr epubcheck git imagemagick inetutils inkscape \
+		java-commons-lang jq kindlegen m4 make moreutils nodejs otf-libertinus \
+		pandoc-sile-git pcre pdftk podofo poppler povray rsync sile-git sqlite \
+		tex-gyre-fonts texlive-core ttf-hack xcftools yarn yq zint zsh \
+		lua-{colors,filesystem,yaml} \
+		perl-{yaml,yaml-merge-simple} \
+		python-{isbnlib,pandocfilters,pantable,ruamel-yaml,usfm2osis-cw-git} \
+    && yes | pacman -Sccq
 
 # Patch up Arch's Image Magick security settings to let it run Ghostscript
 RUN sed -i -e '/pattern="gs"/d' /etc/ImageMagick-7/policy.xml
 
 FROM casile-base AS casile-builder
 
-RUN pacman --needed --noconfirm -Syq base-devel rust cargo && yes | pacman -Sccq
+RUN pacman --needed --noconfirm -Syq \
+		base-devel rust cargo \
+	&& yes | pacman -Sccq
 
 # Set at build time, forces Docker's layer caching to reset at this point
 ARG VCS_REF=0
