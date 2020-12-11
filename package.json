@@ -1,17 +1,21 @@
 {
   "name": "casile",
   "version": "0.2.0",
-  "description": "The CaSILE toolkit, a book publishing workflow employing SILE and other wizardry.",
-  "main": "index.js",
+  "description": "The CaSILE toolkit, a book publishing workflow employing SILE and other wizardry",
+  "main": "casile",
   "scripts": {
     "release": "standard-version"
   },
-  "repository": "https://github.com/sile-typesetter/casile.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sile-typesetter/casile.git"
+  },
   "author": "Caleb Maclennan <caleb@alerque.com>",
   "license": "AGPL-3.0",
   "bugs": {
     "url": "https://github.com/sile-typesetter/casile/issues"
   },
+  "homepage": "https://github.com/sile-typesetter/casile",
   "dependencies": {
     "bible-passage-reference-parser": "https://github.com/alerque/Bible-Passage-Reference-Parser",
     "bible-reference-formatter": "https://github.com/alerque/Bible-Reference-Formatter",
@@ -21,16 +25,16 @@
     "@commitlint/cli": "^9.1.1",
     "@commitlint/config-conventional": "^9.1.1",
     "@commitlint/prompt": "^9.1.1",
-    "commitizen": "^4.1.2",
-    "conventional-changelog-cli": "^2.0.34",
-    "eslint": "^7.4.0",
-    "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-import": "^2.22.0",
+    "commitizen": "^4.2.2",
+    "conventional-changelog-cli": "^2.1.1",
+    "eslint": "^7.15.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "husky": "^4.2.5",
-    "standard-version": "^8.0.1"
+    "husky": "^4.3.5",
+    "standard-version": "^9.0.0"
   },
   "config": {
     "commitizen": {
@@ -43,6 +47,20 @@
     }
   },
   "standard-version": {
+    "bumpFiles": [
+      {
+        "filename": "package.json",
+        "type": "json"
+      },
+      {
+        "filename": "Cargo.toml",
+        "updater": "build-aux/cargo-updater.js"
+      }
+    ],
+    "scripts": {
+      "postbump": "cargo generate-lockfile --offline",
+      "postcommit": "git add -u Cargo.lock && git commit --amend --no-edit"
+    },
     "infile": "CHANGELOG.md",
     "types": [
       {

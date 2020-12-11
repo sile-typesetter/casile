@@ -1,8 +1,4 @@
-FROM docker.io/library/archlinux:20200705 AS casile-base
-
-# Downgrade coreutils to avoid filesystem bug on DockerHub host kernels
-RUN pacman --noconfirm -U https://archive.archlinux.org/packages/c/coreutils/coreutils-8.31-3-x86_64.pkg.tar.xz
-RUN sed -i -e '/IgnorePkg *=/s/^.*$/IgnorePkg = coreutils/' /etc/pacman.conf
+FROM docker.io/library/archlinux:base-20201108.0.8567 AS casile-base
 
 # Setup Caleb's hosted Arch repository with prebuilt dependencies
 RUN pacman-key --init && pacman-key --populate
@@ -17,22 +13,30 @@ RUN pacman-key --recv-keys 63CC496475267693 && pacman-key --lsign-key 63CC496475
 # because it saves a lot of time for local builds, but it does periodically
 # need a poke. Incrementing this when changing dependencies or just when the
 # remote Docker Hub builds die should be enough.
-ARG DOCKER_HUB_CACHE=1
+ARG DOCKER_HUB_CACHE=0
 
 # Freshen all base system packages
 RUN pacman --needed --noconfirm -Syuq && yes | pacman -Sccq
 
-# Install Arch CaSILE package for dependencies, then remove (turtles all the way down)
-RUN pacman --needed --noconfirm -Syq casile-git \
-      && pacman --noconfirm -R casile-git \
-      && yes | pacman -Sccq
+# Install CaSILE run-time dependecies (increment cache var above)
+RUN pacman --needed --noconfirm -Syq \
+		bc bcprov cpdf entr epubcheck git imagemagick inetutils inkscape \
+		java-commons-lang jq kindlegen m4 make moreutils nodejs otf-libertinus \
+		pandoc-sile-git pcre pdftk podofo poppler povray rsync sile-git sqlite \
+		tex-gyre-fonts texlive-core ttf-hack xcftools yarn yq zint zsh \
+		lua-{colors,filesystem,yaml} \
+		perl-{yaml,yaml-merge-simple} \
+		python-{isbnlib,pandocfilters,ruamel-yaml,usfm2osis-cw-git} \
+    && yes | pacman -Sccq
 
 # Patch up Arch's Image Magick security settings to let it run Ghostscript
 RUN sed -i -e '/pattern="gs"/d' /etc/ImageMagick-7/policy.xml
 
 FROM casile-base AS casile-builder
 
-RUN pacman --needed --noconfirm -Syq base-devel rust cargo && yes | pacman -Sccq
+RUN pacman --needed --noconfirm -Syq \
+		base-devel rust cargo \
+	&& yes | pacman -Sccq
 
 # Set at build time, forces Docker's layer caching to reset at this point
 ARG VCS_REF=0
@@ -40,9 +44,9 @@ ARG VCS_REF=0
 COPY ./ /src
 WORKDIR /src
 
-RUN git clean -dxf ||:
-RUN git fetch --unshallow ||:
-RUN git fetch --tags ||:
+# GitHub Actions builder stopped providing git history :(
+# See feature request at https://github.com/actions/runner/issues/767
+RUN build-aux/bootstrap-docker.sh
 
 RUN ./bootstrap.sh
 RUN ./configure

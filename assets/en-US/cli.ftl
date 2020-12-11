@@ -1,30 +1,33 @@
 help-description =
-  The command line interface to the CaSILE toolkit, a book publishing workflow
-  employing SILE and other wizardry
+  The command line interface to the CaSILE toolkit,
+  a book publishing workflow employing SILE and other wizardry
 
 help-flags-debug =
-  Activate debug mode
-
-help-flags-verbose =
-  Outputs verbose feedback where possible
-
-help-subcommand-make =
-  Executes a make target
+  Enable debug mode flags
 
 help-flags-language =
   Set language
 
+help-flags-verbose =
+  Enable verbose mode flags
+
+help-subcommand-make =
+  Build specified target(s)
+
 help-subcommand-make-target =
-  Target as defined in CaSILE makefile
+  Target as defined in CaSILE or project rules
 
 help-subcommand-setup =
-  Configure a book repository
+  Configure a book project repository
 
 help-subcommand-setup-path =
-  Path to project repository
+  Path to book project repository
 
 help-subcommand-shell =
   Pass through other commands to shell
+
+help-subcommand-status =
+  Dump what we know about the repo
 
 error-invalid-language =
   Could not parse BCP47 language tag.
@@ -75,5 +78,5 @@ status-good =
   Everything is in place, it’s a happy CaSILE!
 
 status-bad =
-  Not everything is in place, please run 'setup'.
+  Not everything is in place, please run `casile setup`.
 

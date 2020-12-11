@@ -8,6 +8,7 @@ use subprocess::{Exec, NullFile, Redirection};
 
 type Result<T> = result::Result<T, Box<dyn error::Error>>;
 
+// FTL: help-subcommand-status
 /// Dump what we know about the repo
 pub fn run() -> Result<()> {
     crate::header("status-header");
@@ -32,7 +33,7 @@ fn run_as() -> RunAsMode {
     RunAsMode::RunAsDocker {}
 }
 
-/// Evaluate whether this project is pis_setup()?roperly configured
+/// Evaluate whether this project is properly configured
 pub fn is_setup() -> Result<bool> {
     let results = Arc::new(RwLock::new(Vec::new()));
 
