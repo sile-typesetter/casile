@@ -91,9 +91,11 @@ dist_zshcompletion_DATA = $(COMPLETIONS_OUT_DIR)/_$(_casile)
 endif
 
 if DEBUG_RELEASE
-CARGO_RELEASE_ARGS=
+CARGO_RELEASE_ARGS=--all-features
+_TARGETDIR=debug
 else
 CARGO_RELEASE_ARGS=--release --locked --all-features
+_TARGETDIR=release
 endif
 
 export CASILE_VERSION = v$(VERSION)
@@ -108,8 +110,8 @@ cargo_verbose_ = $(cargo_verbose_$(AM_DEFAULT_VERBOSITY))
 cargo_verbose_0 =
 cargo_verbose_1 = --verbose
 
-CARGO_TARGET = target/release/casile
-COMPLETIONS_OUT_DIR = target/release/completions
+CARGO_TARGET = target/$(_TARGETDIR)/casile
+COMPLETIONS_OUT_DIR = target/$(_TARGETDIR)/completions
 
 casile$(EXEEXT): $(CARGO_TARGET)
 	cp -bf $< $@
