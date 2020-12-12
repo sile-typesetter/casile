@@ -1,9 +1,8 @@
 use crate::config::CONFIG;
 use crate::i18n::LOCALES;
-use std::{error, result};
-use subprocess::Exec;
+use crate::*;
 
-type Result<T> = result::Result<T, Box<dyn error::Error>>;
+use subprocess::Exec;
 
 /// Exectute some set of argumets as a shell command with CaSILE related enviroment variables set.
 pub fn run(command: Vec<String>, interactive: bool) -> Result<()> {

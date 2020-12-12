@@ -1,11 +1,11 @@
+use clap::{FromArgMatches, IntoApp};
+
 use casile::cli::{Cli, Subcommand};
 use casile::config::CONFIG;
-use casile::VERSION;
 use casile::{make, setup, shell, status};
-use clap::{FromArgMatches, IntoApp};
-use std::error;
+use casile::{Result, VERSION};
 
-fn main() -> Result<(), Box<dyn error::Error>> {
+fn main() -> Result<()> {
     let app = Cli::into_app().version(VERSION);
     let matches = app.get_matches();
     let args = Cli::from_arg_matches(&matches);

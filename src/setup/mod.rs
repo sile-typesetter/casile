@@ -1,8 +1,8 @@
 use crate::i18n::LocalText;
-use git2::Repository;
-use std::{error, fs, io, path, result};
+use crate::*;
 
-type Result<T> = result::Result<T, Box<dyn error::Error>>;
+use git2::Repository;
+use std::{fs, io, path};
 
 /// Setup CaSILE config file(s) on new repository
 pub fn run(path: path::PathBuf) -> Result<()> {

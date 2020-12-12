@@ -1,12 +1,12 @@
 use crate::i18n::LocalText;
+use crate::*;
+
 use colored::{ColoredString, Colorize};
 use git2::Repository;
 use std::io::prelude::*;
 use std::sync::{Arc, RwLock};
-use std::{env, error, fs, result};
+use std::{env, fs};
 use subprocess::{Exec, NullFile, Redirection};
-
-type Result<T> = result::Result<T, Box<dyn error::Error>>;
 
 // FTL: help-subcommand-status
 /// Dump what we know about the repo

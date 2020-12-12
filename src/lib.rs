@@ -4,7 +4,7 @@ extern crate lazy_static;
 use crate::config::CONFIG;
 use colored::Colorize;
 use i18n::LocalText;
-use std::{error, fmt};
+use std::{error, fmt, result};
 
 pub mod cli;
 pub mod config;
@@ -26,6 +26,8 @@ pub static DEFAULT_LOCALE: &'static str = "en-US";
 
 /// CaSILE version number as detected by `git describe --tags` at build time
 pub static VERSION: &'static str = env!("VERGEN_SEMVER_LIGHTWEIGHT");
+
+pub type Result<T> = result::Result<T, Box<dyn error::Error>>;
 
 /// A type for our internal whoops
 #[derive(Debug)]

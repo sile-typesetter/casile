@@ -1,10 +1,6 @@
-use crate::status;
-use crate::Error;
-use crate::CONFIG;
-use std::{error, result};
-use subprocess::Exec;
+use crate::*;
 
-type Result<T> = result::Result<T, Box<dyn error::Error>>;
+use subprocess::Exec;
 
 /// Execute GNU Make on given target
 pub fn run(target: Vec<String>) -> Result<()> {
