@@ -96,6 +96,8 @@ else
 CARGO_RELEASE_ARGS=--release --locked --all-features
 endif
 
+export CASILE_VERSION = v$(VERSION)
+
 # Leave some tips for cargo to use so CLI knows where it is
 export CONFIGURE_PREFIX = $(prefix)
 export CONFIGURE_DATADIR = $(datadir)
