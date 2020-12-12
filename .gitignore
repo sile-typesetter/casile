@@ -1,6 +1,64 @@
-node_modules
-package-lock.json
+### CaSILE runtime generated files ###
+
 *.toc
 makefile-*-reversed
+
+### Generated files ###
+
+casile-*
+.version
+.version-prev
+
+### Editor cruft ###
+
 tags
-target
+
+# Development environment cruft
+
+node_modules
+package-lock.json
+
+### Autotools ###
+# http://www.gnu.org/software/automake
+
+/Makefile
+Makefile.in
+/ar-lib
+/mdate-sh
+/py-compile
+/test-driver
+/ylwrap
+
+# http://www.gnu.org/software/autoconf
+
+autom4te.cache
+/autoscan.log
+/autoscan-*.log
+/aclocal.m4
+/compile
+/config.guess
+/config.h.in
+/config.log
+/config.status
+/config.sub
+/configure
+/configure.scan
+/depcomp
+/install-sh
+/missing
+/stamp-h1
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+### Rust ###
+#Added by cargo
+
+/target
