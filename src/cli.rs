@@ -32,12 +32,13 @@ pub enum Subcommand {
     // FTL: help-subcommand-make
     /// Executes a make target
     Make {
-        /// Target as defined in CaSILE or project rules
+        // FTL: help-subcommand-make-target
+        /// Target as defined by rules in CaSILE or project
         target: Vec<String>,
     },
 
     // FTL: help-subcommand-setup
-    /// Configure a project repository
+    /// Configure a publishing project repository
     Setup {
         /// Path to project repository
         #[clap(default_value = "./")]

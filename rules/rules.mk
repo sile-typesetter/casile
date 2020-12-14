@@ -1,11 +1,13 @@
-# Initial setup, environment dependent
-PROJECTDIR != cd "$(shell dirname $(firstword $(MAKEFILE_LIST)))/" && pwd
-CASILEDIR != cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/" && pwd
-GITNAME := $(notdir $(shell git worktree list | head -n1 | awk '{print $$1}'))
-PROJECT ?= $(GITNAME)
+# If called using the CaSILE CLI the init rules will be sourced before any
+# project specific ones, then everything will be sourced in order. If people do
+# a manual include to rules they may or may not know to source the
+# initilazation rules first. this is to warn them.
+ifeq ($(CASILEDIR),)
+$(error Please initialize CaSILE by sourcing casile.mk first, then include your project rules, then source this rules.mk file)
+endif
+
 PUBDIR ?= $(PROJECTDIR)/pub
 PUBLISHERDIR ?= $(CASILEDIR)
-CASILEVER := $(shell cd $(CASILEDIR) && git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
 
 # submodule, symlink, system, docker, ci
 ifneq ($(wildcard $(CASILEDIR)/configure.ac),)
@@ -32,9 +34,6 @@ LANGUAGE ?= en
 
 # Localization functions (source is a key => val file _and_ its inverse)
 -include $(CASILEDIR)/$(LANGUAGE).mk $(CASILEDIR)/$(LANGUAGE)-reversed.mk
-
-# CaSILE Utility functions
-include $(CASILEDIR)/functions.mk
 
 # Empty recipies for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;
@@ -296,7 +295,6 @@ debug:
 	@echo BINDINGS: $(BINDINGS)
 	@echo BOUNDLAYOUTS: $(BOUNDLAYOUTS)
 	@echo CASILEDIR: $(CASILEDIR)
-	@echo CASILEVER: $(CASILEVER)
 	@echo CICONFIG: $(CICONFIG)
 	@echo CITEMPLATE: $(CITEMPLATE)
 	@echo DEBUG: $(DEBUG)

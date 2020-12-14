@@ -11,14 +11,16 @@ help-flags-language =
 help-flags-verbose =
   Enable verbose mode flags
 
+# Currently hard coded, see clap issue #1880
 help-subcommand-make =
-  Build specified target(s)
+  Build specified target(s) with ‘make’
 
+# Currently hard coded, see clap issue #1880
 help-subcommand-make-target =
-  Target as defined in CaSILE or project rules
+  Target as defined by rules in CaSILE or project
 
 help-subcommand-setup =
-  Configure a book project repository
+  Configure a publishing project repository
 
 help-subcommand-setup-path =
   Path to book project repository
@@ -36,7 +38,43 @@ welcome =
   Welcome to CaSILE version { $version }!
 
 make-header =
-  Make make make sense or I’ll make you make makefiles.
+  Building target(s) using ‘make’
+
+make-report-start =
+  Starting make job for target: { $target }
+
+make-report-end =
+  Finished make job for target: { $target }
+
+make-report-fail =
+  Failed make job for target: { $target }
+
+make-backlog-start =
+  Dumping captured output of ‘make’
+
+make-backlog-end =
+  End dump
+
+make-error-unknown-code =
+  Make returned an action code CaSILE doesn't have a handler for.  The most
+  likely cause is the shell helper script being out of sync with the CLI
+  binary.  Needless to say this should not have happened. If you are not
+  currently hacking on CaSILE itself please report this as a bug.
+
+make-error =
+  Failed to execute a subprocess for ‘make’.
+
+make-error-unfinished =
+  Make reported outdated targets were not built.
+
+make-error-build =
+  Make failed to parse or execute a build plan.
+
+make-error-target =
+  Make failed to execute a recipe.
+
+make-error-unknown =
+  Make returned unknown error.
 
 setup-header =
   Setup CaSILE, “They said you were this great colossus!”
