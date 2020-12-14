@@ -1,4 +1,4 @@
-use crate::config::CONFIG;
+use crate::config::CONF;
 use crate::i18n::LOCALES;
 use crate::*;
 
@@ -11,7 +11,7 @@ pub fn run(command: Vec<String>, interactive: bool) -> Result<()> {
     let locale = locales[0].to_string();
     let lang: &str = &[&locale.replace("-", "_"), "utf8"].join(".");
     let mut process = Exec::cmd("zsh").env("LANG", lang);
-    if CONFIG.get_bool("debug")? {
+    if CONF.get_bool("debug")? {
         process = process.env("CASILE_DEBUG", "true").arg("-x");
     };
     let process = if interactive {

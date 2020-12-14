@@ -1,7 +1,8 @@
 #[macro_use]
 extern crate lazy_static;
 
-use crate::config::CONFIG;
+use crate::config::CONF;
+
 use colored::Colorize;
 use i18n::LocalText;
 use std::{error, fmt, result};

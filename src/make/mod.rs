@@ -9,7 +9,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
     }
     crate::header("make-header");
     let mut process = Exec::cmd("make").args(&target);
-    if CONFIG.get_bool("debug")? {
+    if CONF.get_bool("debug")? {
         process = process.env("DEBUG", "true");
     };
     process.join()?;
