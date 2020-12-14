@@ -23,9 +23,6 @@ help-subcommand-setup =
 help-subcommand-setup-path =
   Path to book project repository
 
-help-subcommand-shell =
-  Pass through other commands to shell
-
 help-subcommand-status =
   Dump what we know about the repo
 
@@ -49,9 +46,6 @@ setup-error-not-git =
 
 setup-error-not-dir =
   Path is not a directory.
-
-shell-header =
-  Ship all this off to the shell, maybe they can handle it.
 
 status-header =
   Project status report:

@@ -14,7 +14,6 @@ pub mod i18n;
 // Subcommands
 pub mod make;
 pub mod setup;
-pub mod shell;
 pub mod status;
 
 // Import stuff set by autoconf/automake at build time

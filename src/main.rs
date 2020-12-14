@@ -2,7 +2,7 @@ use clap::{FromArgMatches, IntoApp};
 
 use casile::cli::{Cli, Subcommand};
 use casile::config::CONF;
-use casile::{make, setup, shell, status};
+use casile::{make, setup, status};
 use casile::{Result, VERSION};
 
 fn main() -> Result<()> {
@@ -16,10 +16,6 @@ fn main() -> Result<()> {
     match args.subcommand {
         Subcommand::Make { target } => make::run(target),
         Subcommand::Setup { path } => setup::run(path),
-        Subcommand::Shell {
-            command,
-            interactive,
-        } => shell::run(command, interactive),
         Subcommand::Status {} => status::run(),
     }
 }

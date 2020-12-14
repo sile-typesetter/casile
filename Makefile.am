@@ -14,7 +14,7 @@ EXTRA_DIST = package.json yarn.lock Dockerfile build-aux/cargo-updater.js build-
 bin_PROGRAMS = casile
 
 _casile_libs = src/lib.rs src/cli.rs src/config.rs src/i18n.rs
-_casile_modules = src/make/mod.rs src/setup/mod.rs src/shell/mod.rs src/status/mod.rs
+_casile_modules = src/make/mod.rs src/setup/mod.rs src/status/mod.rs
 _casile_assets = assets/en-US/cli.ftl assets/tr-TR/cli.ftl
 casile_SOURCES = Cargo.toml build.rs src/main.rs $(_casile_libs) $(_casile_modules) $(_casile_assets)
 EXTRA_casile_SOURCES = Cargo.lock tests/cli.rs

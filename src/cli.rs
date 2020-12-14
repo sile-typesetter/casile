@@ -44,16 +44,6 @@ pub enum Subcommand {
         path: path::PathBuf,
     },
 
-    // FTL: help-subcommand-shell
-    /// Pass any command through to the system shell
-    Shell {
-        /// Enter interactive shell
-        #[clap(short, long)]
-        interactive: bool,
-
-        command: Vec<String>,
-    },
-
     // FTL: help-subcommand-status
     /// Dump what we know about the repo
     Status {},

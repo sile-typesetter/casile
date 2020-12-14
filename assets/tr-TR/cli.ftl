@@ -13,9 +13,6 @@ setup-error-not-git =
 setup-error-not-dir =
   Girilen yol klasör değildir.
 
-shell-header =
-  Bizle ahlakası yok shell’e göre bir işmiş gibi, ona sevk edelim.
-
 status-header =
   Proje durum rapörü:
 
