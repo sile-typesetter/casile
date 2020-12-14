@@ -9,7 +9,7 @@ pkgdatadir = $(datadir)
 
 dist_pkgdata_SCRIPTS = make-shell.zsh
 dist_doc_DATA = README.md CHANGELOG.md
-dist_license_DATA = LICENSE.txt
+dist_license_DATA = LICENSE
 
 EXTRA_DIST = package.json yarn.lock Dockerfile build-aux/cargo-updater.js build-aux/bootstrap-docker.sh
 
