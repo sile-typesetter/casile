@@ -5,7 +5,9 @@ _casile = $(shell sed -e "$(program_transform_name)" <<< casile)
 licensedir = $(datarootdir)/licenses/$(_casile)
 docdir = $(datarootdir)/doc/$(_casile)
 datadir = $(datarootdir)/$(_casile)
+pkgdatadir = $(datadir)
 
+dist_pkgdata_SCRIPTS = make-shell.zsh
 dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE.txt
 
