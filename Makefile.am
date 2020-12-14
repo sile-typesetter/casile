@@ -10,7 +10,7 @@ pkgdatadir = $(datadir)
 dist_pkgdata_SCRIPTS = make-shell.zsh
 dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE
-
+nobase_dist_data_DATA = rules/casile.mk rules/rules.mk rules/functions.mk rules/en.mk rules/tr.mk
 EXTRA_DIST = package.json yarn.lock Dockerfile build-aux/cargo-updater.js build-aux/bootstrap-docker.sh
 
 bin_PROGRAMS = casile
@@ -22,9 +22,6 @@ casile_SOURCES = Cargo.toml build.rs src/main.rs $(_casile_libs) $(_casile_modul
 EXTRA_casile_SOURCES = Cargo.lock tests/cli.rs
 
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
-
-rulesdir = $(datadir)
-dist_rules_DATA = rules.mk functions.mk en.mk tr.mk
 
 luadir = $(datadir)
 dist_lua_DATA = block_styles.lua cabook.lua casile.lua covers.lua endnotes.lua hyphenation_exceptions.lua imprint.lua inline_styles.lua lists.lua readmeta.lua

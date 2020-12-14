@@ -1,6 +1,3 @@
-SHELL := zsh
-.SHELLFLAGS := +o nomatch -e -c
-
 # Initial setup, environment dependent
 PROJECTDIR != cd "$(shell dirname $(firstword $(MAKEFILE_LIST)))/" && pwd
 CASILEDIR != cd "$(shell dirname $(lastword $(MAKEFILE_LIST)))/" && pwd
@@ -32,16 +29,6 @@ endif
 
 # Set the language if not otherwise set
 LANGUAGE ?= en
-
-# Allow overriding executables used
-INKSCAPE ?= inkscape
-MAGICK ?= magick
-PANDOC ?= pandoc
-PERL ?= perl
-POVRAY ?= povray
-PYTHON ?= python
-SED ?= sed
-SILE ?= sile
 
 # Localization functions (source is a key => val file _and_ its inverse)
 -include $(CASILEDIR)/$(LANGUAGE).mk $(CASILEDIR)/$(LANGUAGE)-reversed.mk
@@ -137,10 +124,6 @@ RENDERINGS := $(_3d)-$(_front) $(_3d)-$(_back) $(_3d)-$(_pile)
 RENDERED_DEF := $(filter $(call pattern_list,$(REALPAPERSIZES),-%),$(LAYOUTS))
 RENDERED ?= $(RENDERED_DEF)
 RENDERED += $(GOALLAYOUTS)
-
-# Default to running multiple jobs in parallel
-JOBS ?= $(shell nproc 2>- || sysctl -n hw.ncpu 2>- || echo 1)
-MAKEFLAGS += -j$(JOBS) -Otarget
 
 # Over-ride entr arguments, defaults to just clear
 # Add -r to kill and restart jobs on activity
@@ -247,16 +230,6 @@ endif
 $(foreach SOURCE,$(SOURCES),$(eval TARGETMACROS_$(SOURCE) := $(wildcard $(SOURCE).lua)))
 $(foreach SOURCE,$(SOURCES),$(eval TARGETYAMLS_$(SOURCE) := $(wildcard $(SOURCE).yml)))
 $(foreach SOURCE,$(SOURCES),$(eval TARGETLUAS_$(SOURCE) := $(wildcard $(SOURCE).lua)))
-
-.ONESHELL:
-.SECONDEXPANSION:
-.SECONDARY:
-.PRECIOUS: %.pdf %.sil %.toc %.dat %.inc
-.DELETE_ON_ERROR:
-
-# Disable as many default suffix and pattern rules as we can (makes debug output saner)
-.SUFFIXES:
-MAKEFLAGS += --no-builtin-rules
 
 .PHONY: pdfs
 pdfs: $(call pattern_list,$(TARGETS),.pdfs)
@@ -1495,5 +1468,3 @@ diff:
 	git submodule foreach git diff --color=always --no-ext-diff
 
 -include $(POSTCASILEINCLUDE)
-
-# vim: ft=make
