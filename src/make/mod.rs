@@ -2,7 +2,6 @@ use crate::i18n::LocalText;
 use crate::*;
 
 use colored::Colorize;
-use itertools::Itertools;
 use regex::Regex;
 use std::io::prelude::*;
 use std::{ffi::OsString, io};
@@ -11,10 +10,8 @@ use subprocess::{Exec, ExitStatus, Redirection};
 // FTL: help-subcommand-make
 /// Build specified target(s)
 pub fn run(target: Vec<String>) -> Result<()> {
-    if !status::is_setup().unwrap() {
-        return Err(Error::new("status-bad").into());
-    }
-    crate::header("make-header");
+    setup::is_setup()?;
+    show_header("make-header");
     let mut makeflags: Vec<OsString> = Vec::new();
     let cpus = num_cpus::get();
     makeflags.push(OsString::from(format!("--jobs={}", cpus)));
@@ -24,6 +21,12 @@ pub fn run(target: Vec<String>) -> Result<()> {
         "{}{}",
         CONFIGURE_DATADIR, "rules/casile.mk"
     )));
+    let rules = status::get_rules()?;
+    for rule in rules {
+        makefiles.push(OsString::from("-f"));
+        let p = rule.into_os_string();
+        makefiles.push(p);
+    }
     makefiles.push(OsString::from("-f"));
     makefiles.push(OsString::from(format!(
         "{}{}",
@@ -33,12 +36,122 @@ pub fn run(target: Vec<String>) -> Result<()> {
         .args(&makeflags)
         .args(&makefiles)
         .args(&target);
-    let mut process = Exec::cmd("make").args(&target);
+    let targets: Vec<_> = target.into_iter().collect();
+    let gitname = status::get_gitname()?;
+    let git_version = status::get_git_version();
+    process = process
+        .env("CASILE_CLI", "true")
+        .env("CASILEDIR", CONFIGURE_DATADIR)
+        .env("CONTAINERIZED", status::is_container().to_string())
+        .env("GITNAME", &gitname)
+        .env("PROJECT", pname(&gitname))
+        .env("PROJECTDIR", CONF.get_string("path")?)
+        .env("PROJECTVERSION", git_version);
     if CONF.get_bool("debug")? {
         process = process.env("DEBUG", "true");
     };
-    process.join()?;
-    Ok(())
+    if CONF.get_bool("quiet")? {
+        process = process.env("QUIET", "true");
+    };
+    if CONF.get_bool("verbose")? || targets.contains(&"debug".into()) {
+        process = process.env("VERBOSE", "true");
+    };
+    let repo = get_repo()?;
+    let workdir = repo.workdir().unwrap();
+    process = process.cwd(workdir);
+    let process = process.stderr(Redirection::Merge).stdout(Redirection::Pipe);
+    let mut popen = process.popen()?;
+    let buf = io::BufReader::new(popen.stdout.as_mut().unwrap());
+    let mut backlog: Vec<String> = Vec::new();
+    let seps = Regex::new(r"").unwrap();
+    let mut ret: u32 = 0;
+    for line in buf.lines() {
+        let text: &str = &line.unwrap();
+        let fields: Vec<&str> = seps.splitn(text, 4).collect();
+        match fields[0] {
+            "CASILE" => match fields[1] {
+                "PRE" => report_start(fields[2]),
+                "STDOUT" => {
+                    if targets.contains(&"_gha".into()) {
+                        println!("{}", fields[3]);
+                    } else if CONF.get_bool("verbose")? {
+                        report_line(fields[3]);
+                    } else {
+                        backlog.push(String::from(fields[3]));
+                    }
+                }
+                "STDERR" => {
+                    if CONF.get_bool("verbose")? {
+                        report_line(fields[3]);
+                    } else {
+                        backlog.push(String::from(fields[3]));
+                    }
+                }
+                "POST" => match fields[2] {
+                    "0" => {
+                        report_end(fields[3]);
+                    }
+                    val => {
+                        report_fail(fields[3]);
+                        ret = val.parse().unwrap_or(1);
+                    }
+                },
+                _ => {
+                    let errmsg = LocalText::new("make-error-unknown-code").fmt();
+                    panic!(errmsg)
+                }
+            },
+            _ => backlog.push(String::from(fields[0])),
+        }
+    }
+    let status = popen.wait();
+    match status {
+        Ok(ExitStatus::Exited(int)) => {
+            let foo = int + ret;
+            match foo {
+                0 => {
+                    if targets.contains(&"debug".into()) {
+                        dump_backlog(&backlog)
+                    };
+                    Ok(())
+                }
+                1 => {
+                    dump_backlog(&backlog);
+                    Err(Box::new(io::Error::new(
+                        io::ErrorKind::InvalidInput,
+                        LocalText::new("make-error-unfinished").fmt(),
+                    )))
+                }
+                2 => {
+                    dump_backlog(&backlog);
+                    Err(Box::new(io::Error::new(
+                        io::ErrorKind::InvalidInput,
+                        LocalText::new("make-error-build").fmt(),
+                    )))
+                }
+                3 => {
+                    if !CONF.get_bool("verbose")? {
+                        dump_backlog(&backlog);
+                    }
+                    Err(Box::new(io::Error::new(
+                        io::ErrorKind::InvalidInput,
+                        LocalText::new("make-error-target").fmt(),
+                    )))
+                }
+                _ => {
+                    dump_backlog(&backlog);
+                    Err(Box::new(io::Error::new(
+                        io::ErrorKind::InvalidInput,
+                        LocalText::new("make-error-unknown").fmt(),
+                    )))
+                }
+            }
+        }
+        _ => Err(Box::new(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            LocalText::new("make-error").fmt(),
+        ))),
+    }
 }
 
 fn dump_backlog(backlog: &Vec<String>) {

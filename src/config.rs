@@ -16,8 +16,10 @@ impl CONF {
         self.write()
             .expect(ERROR_CONFIG_WRITE)
             .set_default("debug", false)?
+            .set_default("quiet", false)?
             .set_default("verbose", false)?
-            .set_default("language", crate::DEFAULT_LOCALE)?;
+            .set_default("language", crate::DEFAULT_LOCALE)?
+            .set_default("path", "./")?;
         Ok(())
     }
 
@@ -31,9 +33,14 @@ impl CONF {
     pub fn from_args(&self, args: &Cli) -> Result<()> {
         if args.debug {
             self.set_bool("debug", true)?;
-        }
-        if args.verbose {
             self.set_bool("verbose", true)?;
+        } else if args.verbose {
+            self.set_bool("verbose", true)?;
+        } else if args.quiet {
+            self.set_bool("quiet", true)?;
+        }
+        if let Some(path) = &args.path.to_str() {
+            self.set_str("path", path)?;
         }
         if let Some(language) = &args.language {
             self.set_str("language", &language)?;

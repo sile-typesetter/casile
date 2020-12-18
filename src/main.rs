@@ -5,17 +5,33 @@ use casile::config::CONF;
 use casile::{make, setup, status};
 use casile::{Result, VERSION};
 
+use std::env;
+
 fn main() -> Result<()> {
-    let app = Cli::into_app().version(VERSION);
-    let matches = app.get_matches();
-    let args = Cli::from_arg_matches(&matches);
     CONF.defaults()?;
     CONF.from_env()?;
-    CONF.from_args(&args)?;
-    casile::show_welcome();
-    match args.subcommand {
-        Subcommand::Make { target } => make::run(target),
-        Subcommand::Setup { path } => setup::run(path),
-        Subcommand::Status {} => status::run(),
-    }
+    // Workaround for Github Actions usage to make the prebuilt Docker image
+    // invocation interchangeable with the default run-time built invocation we
+    // need to set some default arguments. These are not used by the regular CLI.
+    // See the action.yml file for matching arguments for run-time invocations.
+    let invocation: Vec<String> = env::args().collect();
+    let ret = if status::is_gha()? && invocation.len() == 1 {
+        CONF.set_str("language", "en-US")?;
+        casile::show_welcome();
+        let target = vec![String::from("_gha"), String::from("pdfs")];
+        make::run(target)
+    } else {
+        let app = Cli::into_app().version(VERSION);
+        let matches = app.get_matches();
+        let args = Cli::from_arg_matches(&matches);
+        CONF.from_args(&args)?;
+        casile::show_welcome();
+        match args.subcommand {
+            Subcommand::Make { target } => make::run(target),
+            Subcommand::Setup {} => setup::run(),
+            Subcommand::Status {} => status::run(),
+        }
+    };
+    casile::show_outro();
+    return ret;
 }

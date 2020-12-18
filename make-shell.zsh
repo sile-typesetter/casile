@@ -8,24 +8,24 @@ local status() {
 }
 
 local pre_hook() {
-  status "FONTSHIPPRE$target"
+  status "CASILEPRE$target"
 }
 
 local post_hook() {
-  status "FONTSHIPPOST$2$target"
+  status "CASILEPOST$2$target"
 }
 
 local report_stdout() {
   cat - |
     while read line; do
-      echo -e "FONTSHIPSTDOUT$target$line"
+      echo -e "CASILESTDOUT$target$line"
     done
 }
 
 local report_stderr() {
   cat - |
     while read line; do
-      echo -e "FONTSHIPSTDERR$target$line" >&2
+      echo -e "CASILESTDERR$target$line" >&2
     done
 }
 

@@ -2,14 +2,14 @@ use clap::{AppSettings, Clap};
 use std::path;
 
 // FTL: help-flags-debug
-/// The command line interface to the CaSILE toolkit, a book publishing
-/// workflow employing SILE and other wizardry
+/// The command line interface to the CaSILE toolkit,
+/// a book publishing workflow employing SILE and other wizardry.
 #[derive(Clap, Debug)]
 #[clap(bin_name = "casile")]
 #[clap(setting = AppSettings::InferSubcommands)]
 pub struct Cli {
     // FTL: help-flags-debug
-    /// Activate debug mode
+    /// Enable extra debug output from tooling
     #[clap(short, long)]
     pub debug: bool,
 
@@ -18,8 +18,18 @@ pub struct Cli {
     #[clap(short, long, env = "LANG")]
     pub language: Option<String>,
 
+    // FTL: help-flags-path
+    /// Set project root path
+    #[clap(short, long, default_value = "./")]
+    pub path: path::PathBuf,
+
+    // FTL: help-flags-quiet
+    /// Discard all non-error output messages
+    #[clap(short, long)]
+    pub quiet: bool,
+
     // FTL: help-flags-verbose
-    /// Outputs verbose feedback where possible
+    /// Enable extra verbose output from tooling
     #[clap(short, long)]
     pub verbose: bool,
 
@@ -30,22 +40,18 @@ pub struct Cli {
 #[derive(Clap, Debug)]
 pub enum Subcommand {
     // FTL: help-subcommand-make
-    /// Executes a make target
+    /// Build specified target(s) with ‘make’
     Make {
         // FTL: help-subcommand-make-target
-        /// Target as defined by rules in CaSILE or project
+        /// Target as defined in CaSILE or project rules
         target: Vec<String>,
     },
 
     // FTL: help-subcommand-setup
     /// Configure a publishing project repository
-    Setup {
-        /// Path to project repository
-        #[clap(default_value = "./")]
-        path: path::PathBuf,
-    },
+    Setup {},
 
     // FTL: help-subcommand-status
-    /// Dump what we know about the repo
+    /// Show status information about setup, configuration, and build state
     Status {},
 }

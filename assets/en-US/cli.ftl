@@ -20,7 +20,7 @@ help-subcommand-make-target =
   Target as defined by rules in CaSILE or project
 
 help-subcommand-setup =
-  Configure a publishing project repository
+  Setup a publishing project for use with CaSILE
 
 help-subcommand-setup-path =
   Path to book project repository

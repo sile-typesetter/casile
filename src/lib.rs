@@ -4,9 +4,13 @@ extern crate num_cpus;
 
 use crate::config::CONF;
 
-use colored::Colorize;
+use colored::{ColoredString, Colorize};
+use git2::{Oid, Repository, Signature};
 use i18n::LocalText;
-use std::{error, fmt, result};
+use inflector::Inflector;
+use regex::Regex;
+use std::ffi::OsStr;
+use std::{error, fmt, path, result, str};
 
 pub mod cli;
 pub mod config;
@@ -56,14 +60,82 @@ impl error::Error for Error {
     }
 }
 
+pub fn pname(input: &str) -> String {
+    let seps = Regex::new(r"[-_]").unwrap();
+    let spaces = Regex::new(r" ").unwrap();
+    let title = seps.replace(input, " ").to_title_case();
+    spaces.replace(&title, "").to_string()
+}
+
+/// Get repository object
+pub fn get_repo() -> Result<Repository> {
+    let path = CONF.get_string("path")?;
+    Ok(Repository::discover(path)?)
+}
+
+pub fn commit(repo: Repository, oid: Oid, msg: &str) -> result::Result<Oid, git2::Error> {
+    let prefix = "[casile]";
+    let commiter = repo.signature()?;
+    let author = Signature::now("CaSILE", commiter.email().unwrap())?;
+    let parent = repo.head()?.peel_to_commit()?;
+    let tree = repo.find_tree(oid)?;
+    let parents = [&parent];
+    repo.commit(
+        Some("HEAD"),
+        &author,
+        &commiter,
+        &[prefix, msg].join(" "),
+        &tree,
+        &parents,
+    )
+}
 /// Output welcome header at start of run before moving on to actual commands
 pub fn show_welcome() {
     let welcome = LocalText::new("welcome").arg("version", VERSION);
     eprintln!("{} {}", "┏━".cyan(), welcome.fmt().cyan());
 }
 
+/// Output welcome header at start of run before moving on to actual commands
+pub fn show_outro() {
+    let outro = LocalText::new("outro");
+    eprintln!("{} {}", "┗━".cyan(), outro.fmt().cyan());
+}
+
 /// Output header before starting work on a subcommand
-pub fn header(key: &str) {
+pub fn show_header(key: &str) {
     let text = LocalText::new(key);
     eprintln!("{} {}", "┣━".cyan(), text.fmt().yellow());
+}
+
+pub fn display_check(key: &str, val: bool) {
+    if CONF.get_bool("debug").unwrap() || CONF.get_bool("verbose").unwrap() {
+        eprintln!(
+            "{} {} {}",
+            "┠─".cyan(),
+            LocalText::new(key).fmt(),
+            fmt_t_f(val)
+        );
+    };
+}
+
+/// Format a localized string just for true / false status prints
+fn fmt_t_f(val: bool) -> ColoredString {
+    let key = if val { "setup-true" } else { "setup-false" };
+    let text = LocalText::new(key).fmt();
+    if val {
+        text.green()
+    } else {
+        text.red()
+    }
+}
+
+#[cfg(unix)]
+pub fn bytes2path(b: &[u8]) -> &path::Path {
+    use std::os::unix::prelude::*;
+    path::Path::new(OsStr::from_bytes(b))
+}
+#[cfg(windows)]
+pub fn bytes2path(b: &[u8]) -> &path::Path {
+    use std::str;
+    path::Path::new(str::from_utf8(b).unwrap())
 }
