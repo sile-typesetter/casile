@@ -9,25 +9,6 @@ endif
 PUBDIR ?= $(PROJECTDIR)/pub
 PUBLISHERDIR ?= $(CASILEDIR)
 
-# submodule, symlink, system, docker, ci
-ifneq ($(wildcard $(CASILEDIR)/configure.ac),)
-CASILEWRITABLE := true
-ifneq ($(shell grep -l casile .gitmodules),)
-CASILEMODE := submodule
-else
-CASILEMODE := symlink
-endif
-else
-ifdef CI
-CASILEMODE := ci
-else
-ifneq ($(shell grep -l docker /proc/1/cgroup),)
-CASILEMODE := system
-else
-CASILEMODE := docker
-endif
-endif
-endif
 
 # Set the language if not otherwise set
 LANGUAGE ?= en
@@ -240,13 +221,12 @@ $(PERSOURCEPDFS): %.pdfs: $(call pattern_list,$$*,$(LAYOUTS),.pdf) $(and $(EDITI
 # Setup target dependencies to mimic stages of a CI pipeline
 ifeq ($(MAKECMDGOALS),ci)
 CI ?= 1
-debug: init
-pdfs: init debug
+pdfs: debug
 renderings promotionals: pdfs
 endif
 
 .PHONY: ci
-ci: init debug pdfs renderings promotionals
+ci: debug pdfs renderings promotionals
 
 .PHONY: renderings
 renderings: $(call pattern_list,$(TARGETS),.renderings)
@@ -363,20 +343,8 @@ $(MOCKUPSOURCES): $(foreach FORMAT,$(filter pdfs,$(FORMATS)),$$@.$(FORMAT))
 .PHONY: figures
 figures: $(FIGURES)
 
-.PHONY: init
-init: check_dependencies init_toolkits time_warp $(PUBDIR) $(and $(wildcard package.json),yarn.lock)
-
 $(PUBDIR):
 	mkdir -p $@
-
-ifdef CASILEWRITABLE
-# See https://stackoverflow.com/a/44226605/313192
-$(CASILEDIR)/yarn.lock: time_warp_casile $(CASILEDIR)/package.json
-	cd $(CASILEDIR) && yarn install
-endif
-
-yarn.lock: time_warp package.json
-	yarn install
 
 .PHONY: check_dependencies
 check_dependencies:
@@ -416,35 +384,11 @@ check_dependencies:
 	$(call depend_font,Libertinus Serif Display)
 	$(call depend_font,Libertinus Sans)
 
-.PHONY: init_toolkits
-init_toolkits: init_casile .gitignore .editorconfig
-
 .PHONY: update_toolkits
 update_toolkits: update_casile
 
 .PHONY: upgrade_toolkits
 upgrade_toolkits: upgrade_casile
-
-.PHONY: init_casile
-init_casile: time_warp_casile
-ifdef CASILEWRITABLE
-init_casile: $(CASILEDIR)/yarn.lock
-endif
-
-.PHONY: update_casile
-update_casile:
-ifdef CASILEWRITABLE
-ifeq ($(CASILEMODE),submodule)
-	git submodule update --init --remote -- $(CASILEDIR)
-else
-	cd $(CASILEDIR) && git pull --rebase
-endif
-	make -C $(CASILEDIR)
-	$(call time_warp,$(CASILEDIR))
-	cd $(CASILEDIR) && yarn install
-else
-	$(warning CaSILE cannot self-update when used in $(CASILEMODE) mode.)
-endif
 
 .PHONY: upgrade_repository
 upgrade_repository: upgrade_toolkits $(CICONFIG)_current .gitattributes
@@ -498,14 +442,8 @@ $(CICONFIG)_current: $(CICONFIG)
 
 # Reset file timestamps to git history to avoid unnecessary builds
 .PHONY: time_warp
-time_warp: time_warp_casile
+time_warp:
 	$(call time_warp,$(PROJECTDIR))
-
-.PHONY:	time_warp_casile
-time_warp_casile:
-ifdef CASILEWRITABLE
-	$(call time_warp,$(CASILEDIR))
-endif
 
 # Some layouts have matching extra resources to build such as covers
 ifneq ($(strip $(COVERS)),false)
@@ -1360,7 +1298,7 @@ INTERMEDIATES += *-$(_barcode).*
 STATSSOURCES := $(call pattern_list,$(SOURCES),-stats)
 
 .PHONY: stats
-stats: $(STATSSOURCES) $(and $(CI),init)
+stats: $(STATSSOURCES)
 
 .PHONY: $(STATSSOURCES)
 $(STATSSOURCES): %-stats:
