@@ -348,36 +348,6 @@ $(PUBDIR):
 
 .PHONY: check_dependencies
 check_dependencies:
-	hash yarn
-	hash $(SILE)
-	hash $(PANDOC)
-	$(PANDOC) --list-output-formats | grep -q sile
-	hash $(MAGICK)
-	hash $(POVRAY)
-	hash jq
-	hash zint
-	hash pdfinfo
-	hash pdftk
-	hash $(INKSCAPE)
-	hash podofobox
-	hash sponge
-	hash m4
-	hash entr
-	hash pcregrep
-	hash node
-	hash perl
-	hash $(PYTHON)
-	hash lua
-	hash bc
-	hash zsh
-	hash epubcheck
-	hash sqlite3
-	lua -v -l yaml
-	$(PERL) -e ';' -MYAML
-	$(PERL) -e ';' -MYAML::Merge::Simple
-	$(PYTHON) -c "import ruamel"
-	$(PYTHON) -c "import isbnlib"
-	$(PYTHON) -c "import pandocfilters"
 	$(call depend_font,Hack)
 	$(call depend_font,TeX Gyre Heros)
 	$(call depend_font,Libertinus Serif)
