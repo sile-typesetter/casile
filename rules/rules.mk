@@ -1403,7 +1403,7 @@ repository-worklog.md: repository-worklog.sqlite force
 					echo
 				done
 		done |
-			$(PANDOC) $(PANDOCARGS) -o $@
+			$(PANDOC) $(PANDOCARGS) -F pantable -o $@
 
 repository-worklog.pdf: repository-worklog.md
 	$(PANDOC) $(PANDOCARGS) \

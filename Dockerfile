@@ -26,7 +26,7 @@ RUN pacman --needed --noconfirm -Syq \
 		tex-gyre-fonts texlive-core ttf-hack xcftools yarn yq zint zsh \
 		lua-{colors,filesystem,yaml} \
 		perl-{yaml,yaml-merge-simple} \
-		python-{isbnlib,pandocfilters,ruamel-yaml,usfm2osis-cw-git} \
+		python-{isbnlib,pandocfilters,pantable,ruamel-yaml,usfm2osis-cw-git} \
     && yes | pacman -Sccq
 
 # Patch up Arch's Image Magick security settings to let it run Ghostscript
