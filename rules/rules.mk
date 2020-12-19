@@ -346,14 +346,6 @@ figures: $(FIGURES)
 $(PUBDIR):
 	mkdir -p $@
 
-.PHONY: check_dependencies
-check_dependencies:
-	$(call depend_font,Hack)
-	$(call depend_font,TeX Gyre Heros)
-	$(call depend_font,Libertinus Serif)
-	$(call depend_font,Libertinus Serif Display)
-	$(call depend_font,Libertinus Sans)
-
 .PHONY: update_toolkits
 update_toolkits: update_casile
 

@@ -158,6 +158,13 @@ AX_PYTHON_MODULE(ruamel, true)
 AX_PYTHON_MODULE(isbnlib, true)
 AX_PYTHON_MODULE(pandocfilters, true)
 
+m4_include([build-aux/ax_font.m4])
+AX_FONT(Hack)
+AX_FONT(TeX Gyre Heros)
+AX_FONT(Libertinus Serif)
+AX_FONT(Libertinus Serif Display)
+AX_FONT(Libertinus Sans)
+
 AC_CONFIG_FILES([Makefile])
 
 AC_OUTPUT
