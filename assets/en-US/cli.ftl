@@ -1,15 +1,23 @@
+# Currently hard coded, see clap issue #1880
 help-description =
   The command line interface to the CaSILE toolkit,
-  a book publishing workflow employing SILE and other wizardry
+  a publishing workflow employing SILE and other wizardry.
 
+# Currently hard coded, see clap issue #1880
 help-flags-debug =
-  Enable debug mode flags
+  Enable extra debug output from tooling
 
+# Currently hard coded, see clap issue #1880
 help-flags-language =
   Set language
 
+# Currently hard coded, see clap issue #1880
+help-flags-quiet =
+  Enable extra debug output from tooling
+
+# Currently hard coded, see clap issue #1880
 help-flags-verbose =
-  Enable verbose mode flags
+  Enable extra verbose output from tooling
 
 # Currently hard coded, see clap issue #1880
 help-subcommand-make =
@@ -19,14 +27,18 @@ help-subcommand-make =
 help-subcommand-make-target =
   Target as defined by rules in CaSILE or project
 
+# Currently hard coded, see clap issue #1880
 help-subcommand-setup =
   Setup a publishing project for use with CaSILE
 
+# Currently hard coded, see clap issue #1880
 help-subcommand-setup-path =
-  Path to book project repository
+  Path to publishing project repository
 
-help-subcommand-status =
-  Dump what we know about the repo
+error-not-setup =
+  This project path (if it is a project path) is not setup for use with
+  CaSILE.  Please run run ‘casile status’ for details or ‘casile setup’
+  to initialize it properly.
 
 error-invalid-language =
   Could not parse BCP47 language tag.
@@ -34,8 +46,17 @@ error-invalid-language =
 error-invalid-resources =
   Could not find valid BCP47 resource files.
 
+error-no-remote =
+  Git repository does not have a working remote named 'origin'.
+
+error-no-path =
+  Cannot parse directory path.
+
 welcome =
-  Welcome to CaSILE version { $version }!
+  Welcome to CaSILE { $version }!
+
+outro =
+  CaSILE run complete
 
 make-header =
   Building target(s) using ‘make’
@@ -77,38 +98,43 @@ make-error-unknown =
   Make returned unknown error.
 
 setup-header =
-  Setup CaSILE, “They said you were this great colossus!”
+  Configuring repository for use with CaSILE
 
-setup-error-not-git =
-  Supplied path is not a Git repository.
-
-setup-error-not-dir =
-  Path is not a directory.
-
-status-header =
-  Project status report:
-
-status-true =
+setup-true =
   Yes
 
-status-false =
+setup-false =
   No
 
-status-is-repo =
-  Are we in a Git repository?
+setup-good =
+  Everything seems to be ship shape, warm up the presses!
 
-status-is-writable =
+setup-bad =
+  Hold the presses, something isn’t right, run ‘casile setup’
+
+setup-is-repo =
+  Is the path a Git repository?
+
+setup-is-writable =
   Can we write to the project base directory?
 
-status-is-make-executable =
- Can we execute the system's `make`?
+setup-is-make-executable =
+  Is the system’s ‘make’ executable?
 
-status-is-make-gnu =
-  Is the system's `make` GNU Make?
+setup-is-make-gnu =
+  Is the system’s ‘make’ a supported version of GNU Make?
 
-status-good =
-  Everything is in place, it’s a happy CaSILE!
+setup-gitignore-committing =
+  Committing updated .gitignore file
 
-status-bad =
-  Not everything is in place, please run `casile setup`.
+setup-gitignore-fresh =
+  Existing .gitignore file is up to date
 
+setup-short-shas =
+  Setting default length of short SHA hashes in repository
+
+status-header =
+  Scanning project status
+
+status-is-gha =
+  Are we running as a GitHub Action?

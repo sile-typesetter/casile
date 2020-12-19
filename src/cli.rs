@@ -1,9 +1,9 @@
 use clap::{AppSettings, Clap};
 use std::path;
 
-// FTL: help-flags-debug
+// FTL: help-description
 /// The command line interface to the CaSILE toolkit,
-/// a book publishing workflow employing SILE and other wizardry.
+/// a publishing workflow employing SILE and other wizardry.
 #[derive(Clap, Debug)]
 #[clap(bin_name = "casile")]
 #[clap(setting = AppSettings::InferSubcommands)]
