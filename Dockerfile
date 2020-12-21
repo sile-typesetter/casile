@@ -35,7 +35,7 @@ RUN sed -i -e '/pattern="gs"/d' /etc/ImageMagick-7/policy.xml
 FROM casile-base AS casile-builder
 
 RUN pacman --needed --noconfirm -Syq \
-		base-devel rust cargo luarocks \
+		base-devel autoconf-archive rust cargo luarocks \
 	&& yes | pacman -Sccq
 
 # Set at build time, forces Docker's layer caching to reset at this point
