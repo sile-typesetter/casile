@@ -1,5 +1,5 @@
-AC_PROG_GREP
 AC_DEFUN([AX_FONT], [
+    AC_PROG_GREP
     if test -z "$FCMATCH"; then
         AC_PATH_PROG(FCMATCH, fc-match)
         if test -z "$FCMATCH"; then

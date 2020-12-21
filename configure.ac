@@ -4,6 +4,8 @@ AC_INIT([casile],
 AM_INIT_AUTOMAKE([foreign tar-pax dist-xz dist-zip no-dist-gzip subdir-objects color-tests])
 AM_SILENT_RULES([yes])
 
+AC_CONFIG_MACRO_DIRS([build-aux])
+
 # Check that we have rust stuff
 AC_CHECK_PROG(CARGO, [cargo], [yes], [no])
 AS_IF(test x$CARGO = xno,
@@ -143,7 +145,6 @@ test "x$epubcheck" == "xyes" || AC_MSG_ERROR([epubcheck is required])
 AC_CHECK_PROG(sqlite3, sqlite3, yes)
 test "x$sqlite3" == "xyes" || AC_MSG_ERROR([sqlite3 is required])
 
-m4_include([build-aux/ax_lua.m4])
 AX_PROG_LUA(5.1, , , AC_MSG_ERROR([lua interpreter is required]))
 AX_LUAROCKS_ROCK(yaml)
 
@@ -152,13 +153,11 @@ AX_PROG_PERL_VERSION(5, ,AC_MSG_ERROR([perl interpreter is required]))
 AX_PERL_MODULE_VERSION(YAML 1.30, , AC_MSG_ERROR(Need Perl YAML module))
 AX_PERL_MODULE_VERSION(YAML::Merge::Simple 0.01, , AC_MSG_ERROR(Need Perl YAML::Merge::Simple module))
 
-m4_include([build-aux/ax_python.m4])
 AX_PYTHON
 AX_PYTHON_MODULE(ruamel, true)
 AX_PYTHON_MODULE(isbnlib, true)
 AX_PYTHON_MODULE(pandocfilters, true)
 
-m4_include([build-aux/ax_font.m4])
 AX_FONT(Hack)
 AX_FONT(TeX Gyre Heros)
 AX_FONT(Libertinus Serif)
