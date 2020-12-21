@@ -184,8 +184,13 @@ release: tagrelease
 docker: Dockerfile hooks/build .version
 	IMAGE_NAME=siletypesetter/casile:HEAD ./hooks/build $(VERSION)
 
-check-local: $(casile_SOURCES) $(EXTRA_casile_SOURCES)
+check-local: cargo-test check-version
+
+cargo-test: $(_casile)
 	cargo test --locked
+
+check-version: $(_casile) | .version
+	./$< --version | grep -Ff $|
 
 clean-local:
 	cargo clean
