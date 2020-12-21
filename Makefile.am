@@ -146,8 +146,7 @@ $(CARGO_TARGET): $(casile_SOURCES) clean-embedded-assets
 
 .PHONY: clean-embedded-assets
 clean-embedded-assets:
-	[[ -d .git  ]] || exit 0
-	git clean -dxf assets
+	[[ ! -e .git  ]] || git clean -dxf assets
 
 all: init
 
