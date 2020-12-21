@@ -46,7 +46,7 @@ AC_DEFUN([AX_LUAROCKS_ROCK],[
     AS_IF(["$LUAROCKS" show ROCK > /dev/null],[
         AC_MSG_RESULT(yes)
     ],[
-        AX_WITH_PROG(LUA,lua)
+        AX_PROG_LUA
         AS_IF(["$LUA" -v -l ROCK > /dev/null],[
             AC_MSG_RESULT(yes)
         ],[

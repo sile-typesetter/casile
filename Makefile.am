@@ -11,7 +11,7 @@ dist_pkgdata_SCRIPTS = make-shell.zsh
 dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE
 nobase_dist_data_DATA = rules/casile.mk rules/rules.mk rules/functions.mk rules/en.mk rules/tr.mk
-EXTRA_DIST = package.json yarn.lock Dockerfile build-aux/cargo-updater.js build-aux/bootstrap-docker.sh
+EXTRA_DIST = .version package.json yarn.lock Dockerfile build-aux/cargo-updater.js build-aux/bootstrap-docker.sh hook/build
 
 bin_PROGRAMS = casile
 
@@ -20,6 +20,15 @@ _casile_modules = src/make/mod.rs src/setup/mod.rs src/status/mod.rs
 _casile_assets = assets/en-US/cli.ftl assets/tr-TR/cli.ftl
 casile_SOURCES = Cargo.toml build.rs src/main.rs $(_casile_libs) $(_casile_modules) $(_casile_assets)
 EXTRA_casile_SOURCES = Cargo.lock tests/cli.rs
+
+BUILT_SOURCES = .version
+
+CLEANFILES = $(BUILT_SOURCES) $(bin_PROGRAMS)
+
+.version: $(shell test -e .git && awk '{print ".git/" $$2}' .git/HEAD)
+	mv $@{,-prev} 2>/dev/null || touch $@-prev
+	( test -e .git && ./build-aux/git-version-gen .tarball-version || echo $(VERSION) ) > $@
+	cmp -s $@{,-prev} || autoreconf configure.ac --force -W none
 
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
@@ -172,11 +181,8 @@ tagrelease:
 release: tagrelease
 
 .PHONY: docker
-docker: Dockerfile
-	docker build \
-		--build-arg VCS_REF="$(VERSION)" \
-		--tag siletypesetter/casile:HEAD \
-		./
+docker: Dockerfile hooks/build .version
+	IMAGE_NAME=siletypesetter/casile:HEAD ./hooks/build $(VERSION)
 
 check-local: $(casile_SOURCES) $(EXTRA_casile_SOURCES)
 	cargo test --locked
