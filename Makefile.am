@@ -11,7 +11,7 @@ dist_pkgdata_SCRIPTS = make-shell.zsh
 dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE
 nobase_dist_data_DATA = rules/casile.mk rules/rules.mk rules/functions.mk rules/en.mk rules/tr.mk
-EXTRA_DIST = .version package.json yarn.lock Dockerfile build-aux/cargo-updater.js build-aux/bootstrap-docker.sh hook/build
+EXTRA_DIST = .version package.json yarn.lock Dockerfile build-aux/cargo-updater.js build-aux/bootstrap-docker.sh hooks/build
 
 bin_PROGRAMS = casile
 
