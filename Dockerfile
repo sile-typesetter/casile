@@ -22,7 +22,7 @@ RUN pacman --needed --noconfirm -Syuq && yes | pacman -Sccq
 RUN pacman --needed --noconfirm -Syq \
 		bc bcprov cpdf entr epubcheck git imagemagick inetutils inkscape \
 		java-commons-lang jq kindlegen m4 make moreutils nodejs otf-libertinus \
-		pandoc-sile-git pcre pdftk podofo poppler povray rsync sile-git sqlite \
+		pandoc-sile-git pcre pdftk podofo poppler povray rsync sile sqlite \
 		tex-gyre-fonts texlive-core ttf-hack xcftools yarn yq zint zsh \
 		lua-{colors,filesystem,yaml} \
 		perl-{yaml,yaml-merge-simple} \
