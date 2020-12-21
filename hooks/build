@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-CASILEVER=$(git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
-
 docker build \
-	--build-arg VCS_REF=$CASILEVER \
+	--build-arg VCS_REF=${1:-$(git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')} \
 	--tag $IMAGE_NAME \
 	./

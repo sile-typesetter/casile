@@ -1,4 +1,4 @@
-FROM docker.io/library/archlinux:base-20201108.0.8567 AS casile-base
+FROM docker.io/library/archlinux:base-20201213.0.11146 AS casile-base
 
 # Setup Caleb's hosted Arch repository with prebuilt dependencies
 RUN pacman-key --init && pacman-key --populate
@@ -13,7 +13,7 @@ RUN pacman-key --recv-keys 63CC496475267693 && pacman-key --lsign-key 63CC496475
 # because it saves a lot of time for local builds, but it does periodically
 # need a poke. Incrementing this when changing dependencies or just when the
 # remote Docker Hub builds die should be enough.
-ARG DOCKER_HUB_CACHE=0
+ARG DOCKER_HUB_CACHE=1
 
 # Freshen all base system packages
 RUN pacman --needed --noconfirm -Syuq && yes | pacman -Sccq
@@ -22,11 +22,11 @@ RUN pacman --needed --noconfirm -Syuq && yes | pacman -Sccq
 RUN pacman --needed --noconfirm -Syq \
 		bc bcprov cpdf entr epubcheck git imagemagick inetutils inkscape \
 		java-commons-lang jq kindlegen m4 make moreutils nodejs otf-libertinus \
-		pandoc-sile-git pcre pdftk podofo poppler povray rsync sile-git sqlite \
+		pandoc-sile-git pcre pdftk podofo poppler povray rsync sile sqlite \
 		tex-gyre-fonts texlive-core ttf-hack xcftools yarn yq zint zsh \
 		lua-{colors,filesystem,yaml} \
 		perl-{yaml,yaml-merge-simple} \
-		python-{isbnlib,pandocfilters,ruamel-yaml,usfm2osis-cw-git} \
+		python-{isbnlib,pandocfilters,pantable,ruamel-yaml,usfm2osis-cw-git} \
     && yes | pacman -Sccq
 
 # Patch up Arch's Image Magick security settings to let it run Ghostscript
@@ -35,7 +35,7 @@ RUN sed -i -e '/pattern="gs"/d' /etc/ImageMagick-7/policy.xml
 FROM casile-base AS casile-builder
 
 RUN pacman --needed --noconfirm -Syq \
-		base-devel rust cargo \
+		base-devel autoconf-archive rust cargo luarocks \
 	&& yes | pacman -Sccq
 
 # Set at build time, forces Docker's layer caching to reset at this point

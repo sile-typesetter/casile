@@ -5,24 +5,32 @@ _casile = $(shell sed -e "$(program_transform_name)" <<< casile)
 licensedir = $(datarootdir)/licenses/$(_casile)
 docdir = $(datarootdir)/doc/$(_casile)
 datadir = $(datarootdir)/$(_casile)
+pkgdatadir = $(datadir)
 
+dist_pkgdata_SCRIPTS = make-shell.zsh
 dist_doc_DATA = README.md CHANGELOG.md
-dist_license_DATA = LICENSE.txt
-
-EXTRA_DIST = package.json yarn.lock Dockerfile build-aux/cargo-updater.js build-aux/bootstrap-docker.sh
+dist_license_DATA = LICENSE
+nobase_dist_data_DATA = rules/casile.mk rules/rules.mk rules/functions.mk rules/en.mk rules/tr.mk
+EXTRA_DIST = .version package.json yarn.lock Dockerfile build-aux/cargo-updater.js build-aux/bootstrap-docker.sh hook/build
 
 bin_PROGRAMS = casile
 
 _casile_libs = src/lib.rs src/cli.rs src/config.rs src/i18n.rs
-_casile_modules = src/make/mod.rs src/setup/mod.rs src/shell/mod.rs src/status/mod.rs
+_casile_modules = src/make/mod.rs src/setup/mod.rs src/status/mod.rs
 _casile_assets = assets/en-US/cli.ftl assets/tr-TR/cli.ftl
 casile_SOURCES = Cargo.toml build.rs src/main.rs $(_casile_libs) $(_casile_modules) $(_casile_assets)
 EXTRA_casile_SOURCES = Cargo.lock tests/cli.rs
 
-# use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
+BUILT_SOURCES = .version
 
-rulesdir = $(datadir)
-dist_rules_DATA = rules.mk functions.mk en.mk tr.mk
+CLEANFILES = $(BUILT_SOURCES) $(bin_PROGRAMS)
+
+.version: $(shell test -e .git && awk '{print ".git/" $$2}' .git/HEAD)
+	mv $@{,-prev} 2>/dev/null || touch $@-prev
+	( test -e .git && ./build-aux/git-version-gen .tarball-version || echo $(VERSION) ) > $@
+	cmp -s $@{,-prev} || autoreconf configure.ac --force -W none
+
+# use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
 luadir = $(datadir)
 dist_lua_DATA = block_styles.lua cabook.lua casile.lua covers.lua endnotes.lua hyphenation_exceptions.lua imprint.lua inline_styles.lua lists.lua readmeta.lua
@@ -91,23 +99,27 @@ dist_zshcompletion_DATA = $(COMPLETIONS_OUT_DIR)/_$(_casile)
 endif
 
 if DEBUG_RELEASE
-CARGO_RELEASE_ARGS=
+CARGO_RELEASE_ARGS=--all-features
+_TARGETDIR=debug
 else
 CARGO_RELEASE_ARGS=--release --locked --all-features
+_TARGETDIR=release
 endif
 
+export CASILE_VERSION = v$(VERSION)
+
 # Leave some tips for cargo to use so CLI knows where it is
-export CONFIGURE_PREFIX = $(prefix)
-export CONFIGURE_DATADIR = $(datadir)
-export CONFIGURE_BINDIR = $(bindir)
+export CONFIGURE_PREFIX = $(prefix)/
+export CONFIGURE_DATADIR = $(datadir)/
+export CONFIGURE_BINDIR = $(bindir)/
 
 CARGO_VERBOSE = $(cargo_verbose_$(V))
 cargo_verbose_ = $(cargo_verbose_$(AM_DEFAULT_VERBOSITY))
 cargo_verbose_0 =
 cargo_verbose_1 = --verbose
 
-CARGO_TARGET = target/release/casile
-COMPLETIONS_OUT_DIR = target/release/completions
+CARGO_TARGET = target/$(_TARGETDIR)/casile
+COMPLETIONS_OUT_DIR = target/$(_TARGETDIR)/completions
 
 casile$(EXEEXT): $(CARGO_TARGET)
 	cp -bf $< $@
@@ -169,14 +181,16 @@ tagrelease:
 release: tagrelease
 
 .PHONY: docker
-docker: Dockerfile
-	docker build \
-		--build-arg VCS_REF="$(VERSION)" \
-		--tag siletypesetter/casile:HEAD \
-		./
+docker: Dockerfile hooks/build .version
+	IMAGE_NAME=siletypesetter/casile:HEAD ./hooks/build $(VERSION)
 
-check-local: $(casile_SOURCES) $(EXTRA_casile_SOURCES)
+check-local: cargo-test check-version
+
+cargo-test: $(_casile)
 	cargo test --locked
+
+check-version: $(_casile) | .version
+	./$< --version | grep -Ff $|
 
 clean-local:
 	cargo clean
