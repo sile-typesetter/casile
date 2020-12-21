@@ -1,4 +1,4 @@
-FROM docker.io/library/archlinux:base-20201108.0.8567 AS casile-base
+FROM docker.io/library/archlinux:base-20201213.0.11146 AS casile-base
 
 # Setup Caleb's hosted Arch repository with prebuilt dependencies
 RUN pacman-key --init && pacman-key --populate
