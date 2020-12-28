@@ -7,11 +7,14 @@ docdir = $(datarootdir)/doc/$(_casile)
 datadir = $(datarootdir)/$(_casile)
 pkgdatadir = $(datadir)
 
+lang_key_files = rules/en.mk rules/tr.mk
+reverse_lang_key_files = $(patsubst %.mk,%-reversed.mk,$(lang_key_files))
+
 dist_pkgdata_SCRIPTS = make-shell.zsh
 dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE
-nobase_data_DATA = rules/casile.mk
-nobase_dist_data_DATA = rules/rules.mk rules/functions.mk rules/en.mk rules/tr.mk
+nobase_data_DATA = rules/casile.mk $(reverse_lang_key_files)
+nobase_dist_data_DATA = rules/rules.mk rules/functions.mk $(lang_key_files)
 EXTRA_DIST = .version package.json yarn.lock Dockerfile build-aux/cargo-updater.js build-aux/bootstrap-docker.sh hooks/build
 
 bin_PROGRAMS = casile
@@ -158,6 +161,9 @@ node_modules: yarn.lock
 
 yarn.lock: package.json
 	yarn install
+
+%-reversed.mk: %.mk
+	awk -F' := ' '/^_/ { gsub(/_/, "", $$1); print "__" $$2 " := " $$1 }' < $< > $@
 
 dist-hook:
 	yarn install --production --frozen-lockfile --modules-folder "$(distdir)/node_modules"
