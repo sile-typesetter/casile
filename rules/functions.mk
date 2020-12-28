@@ -8,8 +8,6 @@ rparen := )
 # Utility functions for simplifying per-project makefiles
 depend_font = fc-match "$1" family | grep -qx "$1"
 require_pubdir = $(and $(filter-out true,$(DRAFT)),$(or $(strip $(PUBDIR)),$(error Required PUBDIR not set)))
-require_inputdir := $(or $(strip $(INPUTDIR)),fail)
-require_outputdir := $(or $(strip $(OUTPUTDIR)),fail)
 
 # Assorted utility functions for juggling information about books
 mockupbase = $(if $(filter $(MOCKUPSOURCES),$(call parse_bookid,$1)),$(subst $(call parse_bookid,$1),$(MOCKUPBASE),$1),$1)
