@@ -13,7 +13,7 @@ PUBLISHERDIR ?= $(CASILEDIR)
 LANGUAGE ?= en
 
 # Localization functions (source is a key => val file _and_ its inverse)
--include $(CASILEDIR)/rules/$(LANGUAGE).mk $(CASILEDIR)/rules/$(LANGUAGE)-reversed.mk
+-include $(CASILEDIR)rules/$(LANGUAGE).mk $(CASILEDIR)rules/$(LANGUAGE)-reversed.mk
 
 # Empty recipies for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;
@@ -86,7 +86,7 @@ LAYOUTS += $(call pattern_list,$(PLACARDS),-$(_print))
 endif
 
 # Categorize supported outputs
-PAPERSIZES := $(call localize,$(subst layouts/,,$(notdir $(basename $(wildcard $(CASILEDIR)/layouts/*.lua)))))
+PAPERSIZES := $(call localize,$(subst layouts/,,$(notdir $(basename $(wildcard $(CASILEDIR)layouts/*.lua)))))
 BINDINGS = $(call localize,print paperback hardcover coil stapled)
 DISPLAYS := $(_app) $(_screen)
 PLACARDS := $(_square) $(_wide) $(_banner) epub
@@ -128,7 +128,7 @@ LUAINCLUDES += .casile.lua
 PROJECTLUA := $(wildcard $(PROJECT).lua)
 
 # Primary libraries to include (loaded in reverse order so this one is first)
-LUALIBS += $(CASILEDIR)/casile.lua
+LUALIBS += $(CASILEDIR)casile.lua
 
 # Extensible list of files for git to ignore
 IGNORES += $(PROJECTCONFIGS)
@@ -162,7 +162,7 @@ DOCUMENTCLASS ?= cabook
 DOCUMENTOPTIONS += binding=$(call unlocalize,$(or $(call parse_binding,$@),$(firstword $(BINDINGS))))
 
 # Default template for setting up Gitlab CI runners
-CITEMPLATE ?= $(CASILEDIR)/travis.yml
+CITEMPLATE ?= $(CASILEDIR)travis.yml
 CICONFIG ?= .travis.yml
 
 # List of files that persist across make clean
@@ -178,7 +178,7 @@ WATCHARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 $(eval $(WATCHARGS):;@:)
 endif
 
-export PATH := $(CASILEDIR)/bin:$(PATH):$(shell $(PYTHON) -c "import site; print(site.getsitepackages()[0]+'/bin')")
+export PATH := $(CASILEDIR)bin:$(PATH):$(shell $(PYTHON) -c "import site; print(site.getsitepackages()[0]+'/bin')")
 export HOSTNAME := $(shell hostname)
 export PROJECT := $(PROJECT)
 
@@ -355,7 +355,7 @@ upgrade_toolkits: upgrade_casile
 upgrade_repository: upgrade_toolkits $(CICONFIG)_current .gitattributes
 
 .PHONY: upgrade_casile
-upgrade_casile: $(CASILEDIR)/upgrade-lua.sed $(CASILEDIR)/upgrade-make.sed $(CASILEDIR)/upgrade-yaml.sed $(CASILEDIR)/upgrade-markdown.sed
+upgrade_casile: $(CASILEDIR)upgrade-lua.sed $(CASILEDIR)upgrade-make.sed $(CASILEDIR)upgrade-yaml.sed $(CASILEDIR)upgrade-markdown.sed
 	$(call munge,$(LUASOURCES),$(SED) -f $(filter %-lua.sed,$^),Replace old Lua variables and functions with new namespaces)
 	$(call munge,$(MAKESOURCES),$(SED) -f $(filter %-make.sed,$^),Replace old Makefile variables and functions with new namespaces)
 	$(call munge,$(YAMLSOURCES),$(SED) -f $(filter %-yaml.sed,$^),Replace old YAML key names and data formats)
@@ -363,12 +363,12 @@ upgrade_casile: $(CASILEDIR)/upgrade-lua.sed $(CASILEDIR)/upgrade-make.sed $(CAS
 	$(call munge,$(MARKDOWNSOURCES),$(SED) -f $(filter %-markdown.sed,$^),Replace obsolete Markdown syntax)
 
 PROJECTCONFIGS += .editorconfig
-.editorconfig: $(CASILEDIR)/editorconfig
+.editorconfig: $(CASILEDIR)editorconfig
 	$(call skip_if_tracked,$@)
 	cp $< $@
 
 PROJECTCONFIGS += .gitignore
-.gitignore: $(CASILEDIR)/gitignore $(MAKEFILE_LIST) | $(require_pubdir)
+.gitignore: $(CASILEDIR)gitignore $(MAKEFILE_LIST) | $(require_pubdir)
 	$(call skip_if_tracked,$@)
 	cp $< $@
 	$(foreach IGNORE,$(IGNORES),echo '$(IGNORE)' >> $@;)
@@ -415,7 +415,7 @@ endif
 coverpreq = $(and $(filter true,$(COVERS)),$(filter $(_print),$(call parse_binding,$1)),$(filter-out $(DISPLAYS) $(PLACARDS),$(call parse_papersize,$1)),$(basename $1)-$(_cover).pdf)
 
 # Order is important here, these are included in reverse order so early supersedes late
-onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(CASILEDIR)/layouts/$(call unlocalize,$(call parse_papersize,$1)).lua $(LUALIBS)
+onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(CASILEDIR)layouts/$(call unlocalize,$(call parse_papersize,$1)).lua $(LUALIBS)
 
 MOCKUPPDFS := $(call pattern_list,$(MOCKUPSOURCES),$(REALLAYOUTS),.pdf)
 $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
@@ -457,10 +457,10 @@ endif
 
 FULLSILS := $(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil)
 FULLSILS += $(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil)
-$(FULLSILS): private PANDOCFILTERS += --filter=$(CASILEDIR)/pandoc-filters/svg2pdf.py
+$(FULLSILS): private PANDOCFILTERS += --filter=$(CASILEDIR)pandoc-filters/svg2pdf.py
 $(FULLSILS): private THISEDITS = $(call parse_edits,$@)
 $(FULLSILS): private PROCESSEDSOURCE = $(call pattern_list,$(call parse_bookid,$@),$(_processed),$(and $(THISEDITS),-$(THISEDITS)).md)
-$(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_bookid,$$@),-manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)/template.sil | $$(call onpaperlibs,$$@)
+$(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_bookid,$$@),-manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)template.sil | $$(call onpaperlibs,$$@)
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
 			$(PANDOCFILTERS) \
@@ -489,18 +489,18 @@ $(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_booki
 
 INTERMEDIATES += $(pattern_list *,$(EDITS),.md)
 
-WITHVERSEFILTER := $(CASILEDIR)/pandoc-filters/withverses.lua
+WITHVERSEFILTER := $(CASILEDIR)pandoc-filters/withverses.lua
 SOURCESWITHVERSES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withverses).md)
 $(SOURCESWITHVERSES): private PANDOCFILTERS += --lua-filter=$(WITHVERSEFILTER)
 $(SOURCESWITHVERSES): private PANDOCFILTERS += -M versedatafile="$(filter %-$(_verses)-$(_text).yml,$^)"
 $(SOURCESWITHVERSES): $$(call parse_bookid,$$@)-$(_verses)-$(_text).yml $(WITHVERSEFILTER)
 
 SOURCESWITHOUTFOOTNOTES := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutfootnotes).md)
-$(SOURCESWITHOUTFOOTNOTES): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/withoutfootnotes.lua
-$(SOURCESWITHOUTFOOTNOTES): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/withoutlinks.lua
+$(SOURCESWITHOUTFOOTNOTES): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)pandoc-filters/withoutfootnotes.lua
+$(SOURCESWITHOUTFOOTNOTES): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)pandoc-filters/withoutlinks.lua
 
 SOURCESWITHOUTLINKS := $(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutlinks).md)
-$(SOURCESWITHOUTLINKS): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/withoutlinks.lua
+$(SOURCESWITHOUTLINKS): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)pandoc-filters/withoutlinks.lua
 
 SOURCESWITHEDITS := $(SOURCESWITHVERSES) $(SOURCESWITHOUTFOOTNOTES) $(SOURCESWITHOUTLINKS)
 $(SOURCESWITHEDITS): $$(call strip_edits,$$@)
@@ -511,7 +511,7 @@ $(SOURCESWITHEDITS): $$(call strip_edits,$$@)
 # Configure SILE arguments to include common Lua library
 SILEFLAGS += $(foreach LUAINCLUDE,$(call reverse,$(LUAINCLUDES)),-I $(LUAINCLUDE))
 
-preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(PROJECTMACRO) $(TARGETMACROS_$1)
+preprocess_macros = $(CASILEDIR)casile.m4 $(M4MACROS) $(PROJECTMACRO) $(TARGETMACROS_$1)
 
 INTERMEDIATES += *-$(_processed).md
 %-$(_processed).md: %.md $(wildcard %-$(_chapters)/*.md) $$(call preprocess_macros,$$*) $$(wildcard $$*-bolumler/*.md) | figures
@@ -712,7 +712,7 @@ $(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub | $(require_pubdir)
 	rm -f $(PUBDIR)/$<
 
 %-$(_app).info: %-$(_app)-$(_print).toc %-$(_app)-$(_print).pdf %-manifest.yml | $(require_pubdir)
-	$(CASILEDIR)/bin/toc2breaks.lua $* $(filter %-$(_app)-$(_print).toc,$^) $(filter %-manifest.yml,$^) $@ |
+	$(CASILEDIR)bin/toc2breaks.lua $* $(filter %-$(_app)-$(_print).toc,$^) $(filter %-manifest.yml,$^) $@ |
 		while read range out; do
 			pdftk $(filter %-$(_app)-$(_print).pdf,$^) cat $$range output $$out
 			ln -f $$out $(PUBDIR)/$$out
@@ -805,7 +805,7 @@ $(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf
 	rm $${text} $${bg}
 
 BINDINGFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_text).pdf)
-$(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
+$(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -843,7 +843,7 @@ $(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfil
 		$@
 
 COVERFRAGMENTS := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_text).pdf)
-$(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)/layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
+$(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
@@ -904,7 +904,7 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 %-printcolor.png: %.png
 	$(MAGICK) $< $(call magick_printcolor) $@
 
-%-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printcolor.png $$(geometryfile)
+%-$(_binding).svg: $(CASILEDIR)binding.svg $$(basename $$@)-printcolor.png $$(geometryfile)
 	$(sourcegeometry)
 	ver=$(subst @,\\@,$(call versioninfo,$@))
 	$(PERL) $(PERLARGS) -pne "
@@ -940,7 +940,7 @@ $(UNBOUNDGEOMETRIES): private TRIM = $(NOTRIM)
 # Some output formats don't have PDF content, but we still need to calculate the
 # page geometry, so generate a single page PDF to measure with no binding scenario
 EMPTYGEOMETRIES := $(call pattern_list,$(_geometry),$(PAPERSIZES),.pdf)
-$(EMPTYGEOMETRIES): $(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(LUAINCLUDES)
+$(EMPTYGEOMETRIES): $(_geometry)-%.pdf: $(CASILEDIR)geometry.xml $(LUAINCLUDES)
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
 	$(SILE) $(SILEFLAGS) \
 		-e "papersize = '$(call unlocalize,$*)'" \
@@ -1104,28 +1104,28 @@ endif
 %-$(_light).png: private SCENELIGHT = rgb<1,1,1>
 %-$(_dark).png:  private SCENELIGHT = rgb<0,0,0>
 
-%-$(_3d)-$(_front)-$(_light).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/front.pov
+%-$(_3d)-$(_front)-$(_light).png: $(CASILEDIR)book.pov %-$(_3d).pov $(CASILEDIR)front.pov
 	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/front.pov,$^),$@,$(SCENEX),$(SCENEY))
 
-%-$(_3d)-$(_front)-$(_dark).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/front.pov
+%-$(_3d)-$(_front)-$(_dark).png: $(CASILEDIR)book.pov %-$(_3d).pov $(CASILEDIR)front.pov
 	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/front.pov,$^),$@,$(SCENEX),$(SCENEY))
 
-%-$(_3d)-$(_back)-$(_light).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/back.pov
+%-$(_3d)-$(_back)-$(_light).png: $(CASILEDIR)book.pov %-$(_3d).pov $(CASILEDIR)back.pov
 	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/back.pov,$^),$@,$(SCENEX),$(SCENEY))
 
-%-$(_3d)-$(_back)-$(_dark).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/back.pov
+%-$(_3d)-$(_back)-$(_dark).png: $(CASILEDIR)book.pov %-$(_3d).pov $(CASILEDIR)back.pov
 	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/back.pov,$^),$@,$(SCENEX),$(SCENEY))
 
-%-$(_3d)-$(_pile)-$(_light).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/pile.pov
+%-$(_3d)-$(_pile)-$(_light).png: $(CASILEDIR)book.pov %-$(_3d).pov $(CASILEDIR)pile.pov
 	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/pile.pov,$^),$@,$(SCENEY),$(SCENEX))
 
-%-$(_3d)-$(_pile)-$(_dark).png: $(CASILEDIR)/book.pov %-$(_3d).pov $(CASILEDIR)/pile.pov
+%-$(_3d)-$(_pile)-$(_dark).png: $(CASILEDIR)book.pov %-$(_3d).pov $(CASILEDIR)pile.pov
 	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/pile.pov,$^),$@,$(SCENEY),$(SCENEX))
 
-$(PROJECT)-%-$(_3d)-$(_montage)-$(_light).png: $(CASILEDIR)/book.pov $(PROJECT)-%-$(_3d).pov $(CASILEDIR)/montage.pov
+$(PROJECT)-%-$(_3d)-$(_montage)-$(_light).png: $(CASILEDIR)book.pov $(PROJECT)-%-$(_3d).pov $(CASILEDIR)montage.pov
 	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/montage.pov,$^),$@,$(SCENEY),$(SCENEX))
 
-$(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%-$(_3d).pov $(CASILEDIR)/montage.pov
+$(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)book.pov $(PROJECT)-%-$(_3d).pov $(CASILEDIR)montage.pov
 	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/montage.pov,$^),$@,$(SCENEY),$(SCENEX))
 
 # Combine black / white background renderings into transparent one with shadows
@@ -1154,7 +1154,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 	$(YQ) -M -e -y '{title: [ { type: "main", text: .title  }, { type: "subtitle", text: .subtitle } ], creator: .creator, contributor: .contributor, identifier: .identifier, date: .date | last | .text, published: .date | first | .text, lang: .lang, description: .abstract, rights: .rights, publisher: .publisher, source: (if .source then (.source[]? | select(.type == "title").text) else null end), "cover-image": "$(filter %.jpg,$^)" }' < $< >> $@
 	echo '...' >> $@
 
-%.epub: private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/epubclean.lua
+%.epub: private PANDOCFILTERS += --lua-filter=$(CASILEDIR)pandoc-filters/epubclean.lua
 %.epub: %-$(_processed).md %-epub-metadata.yml | $(require_pubdir)
 	$(PANDOC) \
 		$(PANDOCARGS) \
@@ -1188,7 +1188,7 @@ PHONYSCREENS := $(call pattern_list,$(SOURCES),.$(_screen))
 $(PHONYSCREENS): %.$(_screen): %-$(_screen).pdf %-manifest.yml
 
 MANIFESTS := $(call pattern_list,$(SOURCES),-manifest.yml)
-$(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML) $$(TARGETYAMLS_$$*) | $(require_pubdir)
+$(MANIFESTS): %-manifest.yml: $(CASILEDIR)casile.yml $(METADATA) $(PROJECTYAML) $$(TARGETYAMLS_$$*) | $(require_pubdir)
 	# $(YQ) -M -e -s -y 'reduce .[] as $$item({}; . + $$item)' $(filter %.yml,$^) |
 	$(PERL) -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $(filter %.yml,$^) |
 		$(SED) -e 's/~$$/nil/g;/^--- |/d;$$a...' \
@@ -1233,7 +1233,7 @@ INTERMEDIATES += *-$(_barcode).*
 			--scale=5 \
 			--barcode=69 \
 			--height=30 \
-			--data=$(shell $(CASILEDIR)/bin/isbn_format.py $< paperback) |\
+			--data=$(shell $(CASILEDIR)bin/isbn_format.py $< paperback) |\
 		$(SED) -e 's/Helvetica\( Regular\)\?/TeX Gyre Heros/g' \
 		> $@
 
@@ -1241,11 +1241,11 @@ INTERMEDIATES += *-$(_barcode).*
 	$(MAGICK) $< \
 		-bordercolor white -border 10 \
 		-font Hack-Regular -pointsize 36 \
-		label:"ISBN $(shell $(CASILEDIR)/bin/isbn_format.py $*-manifest.yml paperback mask)" +swap -gravity Center -append \
+		label:"ISBN $(shell $(CASILEDIR)bin/isbn_format.py $*-manifest.yml paperback mask)" +swap -gravity Center -append \
 		-bordercolor white -border 0x10 \
 		-resize $(call scale,1200)x \
 		$@
-	if [[ $(shell $(CASILEDIR)/bin/isbn_format.py $*-manifest.yml paperback) == 9786056644504 ]]; then
+	if [[ $(shell $(CASILEDIR)bin/isbn_format.py $*-manifest.yml paperback) == 9786056644504 ]]; then
 		$(MAGICK) $@ \
 			-stroke red \
 			-strokewidth $(call scale,10) \
@@ -1265,7 +1265,7 @@ $(STATSSOURCES): %-stats:
 repository-lastcommit.ts: $$(newcommits)
 	touch -d $$(git log -n1 --format=%cI) $@
 
-repository-worklog.sqlite: $(CASILEDIR)/bin/worklog.zsh repository-lastcommit.ts
+repository-worklog.sqlite: $(CASILEDIR)bin/worklog.zsh repository-lastcommit.ts
 	sqlite3 $@ 'DROP TABLE IF EXISTS commits; CREATE TABLE commits (sha TEXT, author TEXT, date DATE, file TEXT, added INT, removed INT)'
 	@$< | sqlite3 -batch $@
 
@@ -1335,8 +1335,8 @@ split_chapters:
 	$(if $(MARKDOWNSOURCES),,exit 0)
 	$(foreach SOURCE,$(MARKDOWNSOURCES),$(call split_chapters,$(SOURCE)))
 
-normalize_files: private PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/chapterid.lua
-normalize_files: $(CASILEDIR)/pandoc-filters/chapterid.lua
+normalize_files: private PANDOCFILTERS = --lua-filter=$(CASILEDIR)pandoc-filters/chapterid.lua
+normalize_files: $(CASILEDIR)pandoc-filters/chapterid.lua
 	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
 	$(if $(MARKDOWNSOURCES),,exit 0)
 	echo $(MARKDOWNSOURCES) |

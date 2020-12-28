@@ -18,7 +18,7 @@ $(error Use of CaSILE rule file inclusion outside of the CLI is deprecated!)
 endif
 
 # Run recipies in zsh wrapper, and all in one pass
-SHELL := $(CASILEDIR)/make-shell.zsh
+SHELL := $(CASILEDIR)make-shell.zsh
 .SHELLFLAGS = target=$@
 .ONESHELL:
 .SECONDEXPANSION:
@@ -42,4 +42,4 @@ SED ?= @SED@
 SILE ?= @SILE@
 YQ ?= @YQ@
 
-include $(CASILEDIR)/rules/functions.mk
+include $(CASILEDIR)rules/functions.mk
