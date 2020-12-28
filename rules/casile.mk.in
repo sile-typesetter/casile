@@ -40,5 +40,6 @@ POVRAY ?= @POVRAY@
 PYTHON ?= @PYTHON_BIN@
 SED ?= @SED@
 SILE ?= @SILE@
+YQ ?= @YQ@
 
 include $(CASILEDIR)/rules/functions.mk

@@ -144,8 +144,11 @@ test -n "$ZSH" || AC_MSG_ERROR([zsh is required])
 AC_PATH_PROG(epubcheck, epubcheck)
 test -n "$epubcheck" || AC_MSG_ERROR([epubcheck is required])
 
-AC_PATH_PROG(sqlite3, sqlite3)
-test -n "$sqlite3" || AC_MSG_ERROR([sqlite3 is required])
+AC_PATH_PROG(SQLITE3, sqlite3)
+test -n "$SQLITE3" || AC_MSG_ERROR([sqlite3 is required])
+
+AC_PATH_PROG(YQ, yq)
+test -n "$YQ" || AC_MSG_ERROR([yq is required])
 
 AX_PROG_LUA(5.1, , , AC_MSG_ERROR([lua interpreter is required]))
 AX_LUAROCKS_ROCK(yaml)

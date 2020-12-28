@@ -28,7 +28,7 @@ SOURCES_DEF := $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(no
 SOURCES ?= $(SOURCES_DEF)
 TARGETS ?= $(SOURCES)
 
-ISBNS != $(and $(YAMLSOURCES),yq -M -e -r '.identifier[]? | select(.scheme == "ISBN-13").text' $(YAMLSOURCES))
+ISBNS != $(and $(YAMLSOURCES),$(YQ) -M -e -r '.identifier[]? | select(.scheme == "ISBN-13").text' $(YAMLSOURCES))
 
 # List of targets that don't have content but should be rendered anyway
 MOCKUPSOURCES ?=
@@ -659,7 +659,7 @@ $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call ebookisbn,$$*) $
 
 ISBNMETADATAS := $(call pattern_list,$(ISBNS),_playbooks.json)
 $(ISBNMETADATAS): %_playbooks.json: $$(call pattern_list,$$(call isbntouid,$$*)-,manifest.yml $(firstword $(LAYOUTS)).pdf)
-	yq -M -e '
+	$(YQ) -M -e '
 			([.identifier[] | select(.scheme == "ISBN-13").key] | length) as $$isbncount |
 			(.lang | sub("tr"; "tur") | sub("en"; "eng")) as $$lang |
 			(.date[] | select(."file-as" == "1\\. Basım").text | strptime("%Y-%m") | strftime("D:%Y-%m-01")) as $$date |
@@ -1151,7 +1151,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 
 %-epub-metadata.yml: %-manifest.yml %-epub-$(_poster).jpg
 	echo '---' > $@
-	yq -M -e -y '{title: [ { type: "main", text: .title  }, { type: "subtitle", text: .subtitle } ], creator: .creator, contributor: .contributor, identifier: .identifier, date: .date | last | .text, published: .date | first | .text, lang: .lang, description: .abstract, rights: .rights, publisher: .publisher, source: (if .source then (.source[]? | select(.type == "title").text) else null end), "cover-image": "$(filter %.jpg,$^)" }' < $< >> $@
+	$(YQ) -M -e -y '{title: [ { type: "main", text: .title  }, { type: "subtitle", text: .subtitle } ], creator: .creator, contributor: .contributor, identifier: .identifier, date: .date | last | .text, published: .date | first | .text, lang: .lang, description: .abstract, rights: .rights, publisher: .publisher, source: (if .source then (.source[]? | select(.type == "title").text) else null end), "cover-image": "$(filter %.jpg,$^)" }' < $< >> $@
 	echo '...' >> $@
 
 %.epub: private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/epubclean.lua
@@ -1189,7 +1189,7 @@ $(PHONYSCREENS): %.$(_screen): %-$(_screen).pdf %-manifest.yml
 
 MANIFESTS := $(call pattern_list,$(SOURCES),-manifest.yml)
 $(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML) $$(TARGETYAMLS_$$*) | $(require_pubdir)
-	# yq -M -e -s -y 'reduce .[] as $$item({}; . + $$item)' $(filter %.yml,$^) |
+	# $(YQ) -M -e -s -y 'reduce .[] as $$item({}; . + $$item)' $(filter %.yml,$^) |
 	$(PERL) -MYAML::Merge::Simple=merge_files -MYAML -E 'say Dump merge_files(@ARGV)' $(filter %.yml,$^) |
 		$(SED) -e 's/~$$/nil/g;/^--- |/d;$$a...' \
 			-e '/text: [[:digit:]]\{10,13\}/{p;s/^\([[:space:]]*\)text: \([[:digit:]]\+\)$$/$(PYTHON) -c "import isbnlib; print(\\"\1mask: \\" + isbnlib.mask(\\"\2\\"))"/e}' \
@@ -1200,12 +1200,12 @@ INTERMEDIATES += *.html
 
 BIOHTMLS := $(call pattern_list,$(SOURCES),-bio.html)
 $(BIOHTMLS): %-bio.html: %-manifest.yml
-	yq -r '.creator[0].about' $(filter %-manifest.yml,$^) |
+	$(YQ) -r '.creator[0].about' $(filter %-manifest.yml,$^) |
 		pandoc -f markdown -t html | head -c -1 > $@
 
 DESHTMLS := $(call pattern_list,$(SOURCES),-description.html)
 $(DESHTMLS): %-description.html: %-manifest.yml
-	yq -r '.abstract' $(filter %-manifest.yml,$^) |
+	$(YQ) -r '.abstract' $(filter %-manifest.yml,$^) |
 		pandoc -f markdown -t html | head -c -1 > $@
 
 INTERMEDIATES += *-url.*
@@ -1318,7 +1318,7 @@ repository-worklog.pdf: repository-worklog.md
 	jq -M -e -r 'map_values(.osis) | _nwise(100) | join(";")' $< |
 		xargs -n1 -iX curl -s -L "https://sahneleme.incil.info/api/X" |
 		# Because yq doesn't --slurp JSON, see https://github.com/kislyuk/yq/issues/56
-		jq -s '[.]' | yq -M -e -y ".[0][] | map_values(.scripture)" |
+		jq -s '[.]' | $(YQ) -M -e -y ".[0][] | map_values(.scripture)" |
 		grep -v '^---$$' |
 		# Because lua-yaml has a bug parsing non quoted keys...
 		$(SED) -e '/^[^ ]/s/^\([^:]\+\):/"\1":/' \
