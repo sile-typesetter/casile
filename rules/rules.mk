@@ -9,7 +9,6 @@ endif
 PUBDIR ?= $(PROJECTDIR)/pub
 PUBLISHERDIR ?= $(CASILEDIR)
 
-
 # Set the language if not otherwise set
 LANGUAGE ?= en
 
@@ -630,7 +629,7 @@ $(PHONYPLAYS): %.play: $$(call pattern_list,$$(call printisbn,$$*),_interior.pdf
 
 IGNORES += $(PLAYMETADATAS)
 PLAYMETADATAS := $(call pattern_list,$(PLAYSOURCES),_playbooks.csv)
-$(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call ebookisbn,$$*) $$(call printisbn,$$*),_playbooks.json) %-bio.html %-description.html
+$(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call ebookisbn,$$*) $$(call printisbn,$$*),_playbooks.json) %-bio.html %-description.html | $(require_pubdir)
 	jq -M -e -s -r \
 			--rawfile biohtml $(filter %-bio.html,$^) \
 			--rawfile deshtml $(filter %-description.html,$^) \
@@ -687,27 +686,27 @@ $(ISBNMETADATAS): %_playbooks.json: $$(call pattern_list,$$(call isbntouid,$$*)-
 			]' $(filter %-manifest.yml,$^) > $@
 
 PLAYFRONTS := $(call pattern_list,$(ISBNS),_frontcover.jpg)
-$(PLAYFRONTS): %_frontcover.jpg: $$(call isbntouid,$$*)-epub-$(_poster).jpg
+$(PLAYFRONTS): %_frontcover.jpg: $$(call isbntouid,$$*)-epub-$(_poster).jpg | $(require_pubdir)
 	cp $< $@
 	$(addtopub)
 
 PLAYBACKS := $(call pattern_list,$(ISBNS),_backcover.jpg)
-$(PLAYBACKS): %_backcover.jpg: %_frontcover.jpg
+$(PLAYBACKS): %_backcover.jpg: %_frontcover.jpg | $(require_pubdir)
 	cp $< $@
 	$(addtopub)
 
 PLAYINTS := $(call pattern_list,$(ISBNS),_interior.pdf)
-$(PLAYINTS): %_interior.pdf: $$(call isbntouid,$$*)-$(firstword $(LAYOUTS))-$(_cropped).pdf
+$(PLAYINTS): %_interior.pdf: $$(call isbntouid,$$*)-$(firstword $(LAYOUTS))-$(_cropped).pdf | $(require_pubdir)
 	pdftk $< cat 2-end output $@
 	$(addtopub)
 
 PLAYEPUBS := $(call pattern_list,$(ISBNS),.epub)
-$(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub
+$(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub | $(require_pubdir)
 	epubcheck $<
 	cp $< $@
 	$(addtopub)
 
-%-$(_app).pdf: %-$(_app)-$(_print).pdf
+%-$(_app).pdf: %-$(_app)-$(_print).pdf | $(require_pubdir)
 	cp $< $@
 	$(addtopub)
 	rm -f $(PUBDIR)/$<
@@ -1130,7 +1129,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)/book.pov $(PROJECT)-%
 	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/montage.pov,$^),$@,$(SCENEY),$(SCENEX))
 
 # Combine black / white background renderings into transparent one with shadows
-%.png: %-$(_dark).png %-$(_light).png
+%.png: %-$(_dark).png %-$(_light).png | $(require_pubdir)
 	$(MAGICK) $(filter %.png,$^) -alpha Off \
 		\( -clone 0,1 -compose Difference -composite -negate \) \
 		\( -clone 0,2 +swap -compose Divide -composite \) \
