@@ -7,20 +7,26 @@ cabook:declareOption("crop", "true")
 cabook:declareOption("background", "true")
 cabook:declareOption("verseindex", "false")
 
-cabook.init = function (_)
+function cabook:init ()
   if cabook.options.crop() == "true" then
     cabook:loadPackage("crop", CASILE.casiledir)
   end
   if cabook.options.verseindex() == "true" then
     cabook:loadPackage("verseindex", CASILE.casiledir)
   end
+  -- CaSILE books sometimes have sections, sometimes don't.
+  -- Initialize some sectioning levels to work either way
+  SILE.require("packages/counters")
+  SILE.scratch.counters["sectioning"] = {
+    value =  { 0, 0 },
+    display = { "ORDINAL", "STRING" }
+  }
   return book:init()
 end
 
-cabook.endPage = function (_)
+function cabook:endPage ()
   cabook:moveTocNodes()
   if cabook.moveTovNodes then cabook:moveTovNodes() end
-
   if not SILE.scratch.headers.skipthispage then
     SILE.settings.pushState()
     SILE.settings.reset()
@@ -32,26 +38,18 @@ cabook.endPage = function (_)
     SILE.settings.popState()
   end
   SILE.scratch.headers.skipthispage = false
-
   local ret = plain.endPage(cabook)
   if cabook.options.crop() == "true" then cabook:outputCropMarks() end
   return ret
 end
 
-cabook.finish = function (_)
+function cabook:finish ()
   if cabook.moveTovNodes then
     cabook:writeTov()
     SILE.call("tableofverses")
   end
   return book:finish()
 end
-
--- CaSILE books sometimes have sections, sometimes don't.
--- Initialize some sectioning levels to work either way
-SILE.scratch.counters["sectioning"] = {
-  value =  { 0, 0 },
-  display = { "ORDINAL", "STRING" }
-}
 
 -- I can't figure out how or where, but book.endPage() gets run on the last page
 book.endPage = cabook.endPage
