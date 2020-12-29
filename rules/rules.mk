@@ -951,7 +951,7 @@ IGNORES += $(EMPTYGEOMETRIES)
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES := $(call pattern_list,$(SOURCES),$(ALLLAYOUTS),-$(_geometry).sh)
 $(GEOMETRIES): %-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,$$@)
-	zsh << 'EOF' # inception to break out of CaSILE's make shell wrapper
+	$(ZSH) << 'EOF' # inception to break out of CaSILE's make shell wrapper
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	hidpi=$(HIDPI)
 	lodpi=$(HIDPI)

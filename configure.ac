@@ -171,5 +171,6 @@ AX_FONT(Libertinus Sans)
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([rules/casile.mk])
+AC_CONFIG_FILES([make-shell.zsh], [chmod +x make-shell.zsh])
 
 AC_OUTPUT

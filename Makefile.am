@@ -10,7 +10,7 @@ pkgdatadir = $(datadir)
 lang_key_files = rules/en.mk rules/tr.mk
 reverse_lang_key_files = $(patsubst %.mk,%-reversed.mk,$(lang_key_files))
 
-dist_pkgdata_SCRIPTS = make-shell.zsh
+pkgdata_SCRIPTS = make-shell.zsh
 dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE
 nobase_data_DATA = rules/casile.mk $(reverse_lang_key_files)
