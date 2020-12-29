@@ -295,6 +295,7 @@ define pagetopng ?=
 		-flatten \
 		-colorspace RGB \
 		-crop $${pagewpx}x$${pagehpx}+$${trimpx}+$${trimpx}! \
+		$(MAGICKARGS) \
 		$@
 endef
 
