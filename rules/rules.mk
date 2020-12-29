@@ -331,7 +331,7 @@ force: ;
 
 .PHONY: list
 list:
-	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2> /dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
+	$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2> /dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
 
 .PHONY: $(SOURCES)
 
@@ -764,7 +764,7 @@ $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@)
 COVERIMAGES := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover).png)
 $(COVERIMAGES): %-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_fragment).png $$(geometryfile)
 	$(sourcegeometry)
-	@$(MAGICK) $< \
+	$(MAGICK) $< \
 		-compose SrcOver \
 		\( -background none \
 			-gravity Center \
@@ -777,7 +777,7 @@ $(COVERIMAGES): %-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_f
 			$*-$(_cover)-$(_fragment).png \
 		\) -compose SrcOver -composite \
 		-gravity Center \
-		-size %[fx:u.w]x%[fx:u.h] \
+		-size '%[fx:u.w]x%[fx:u.h]' \
 		$@
 
 # Gitlab projects need a sub 200kb icon image
@@ -884,7 +884,7 @@ publisher_logo-grey.svg: $(PUBLISHERLOGO)
 BINDINGIMAGES := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding).png)
 $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png $$(basename $$@)-$(_fragment)-$(_back).png $$(basename $$@)-$(_fragment)-$(_spine).png $$(call parse_bookid,$$@)-$(_barcode).png publisher_emblum.svg publisher_emblum-grey.svg publisher_logo.svg publisher_logo-grey.svg $$(geometryfile)
 	$(sourcegeometry)
-	@$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
+	$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
 		$(or $(and $(call git_background,$*-$(_cover)-$(_background).png),$(call git_background,$*-$(_cover)-$(_background).png) -resize $${imgwpx}x$${imghpx}!),$(call magick_background_binding)) \
 		$(call magick_border) \
 		-compose SrcOver \( -gravity East -size $${pagewpx}x$${pagehpx} -background none xc: $(call magick_front) -splice $${bleedpx}x \) -composite \
@@ -896,7 +896,7 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 		$(call magick_emblum,publisher_emblum.svg) \
 		$(call magick_barcode,$(filter %-$(_barcode).png,$^)) \
 		$(call magick_logo,publisher_logo.svg) \
-		-gravity Center -size %[fx:u.w]x%[fx:u.h] \
+		-gravity Center -size '%[fx:u.w]x%[fx:u.h]' \
 		-compose SrcOver -composite \
 		$(call magick_binding) \
 		$@
@@ -1269,7 +1269,7 @@ repository-lastcommit.ts: $$(newcommits)
 
 repository-worklog.sqlite: $(CASILEDIR)bin/worklog.zsh repository-lastcommit.ts
 	sqlite3 $@ 'DROP TABLE IF EXISTS commits; CREATE TABLE commits (sha TEXT, author TEXT, date DATE, file TEXT, added INT, removed INT)'
-	@$< | sqlite3 -batch $@
+	$< | sqlite3 -batch $@
 
 WORKLOGFIELDS := sha AS 'Commit', date AS 'Date', file AS 'Filename', added AS 'Added', removed AS 'Removed'
 
