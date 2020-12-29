@@ -818,7 +818,7 @@ $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)binding.xml $$(call
 
 FRONTFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_front).png)
 $(FRONTFRAGMENTS): %-$(_fragment)-$(_front).png: %-$(_text).pdf
-	$(MAGICK) -density $(HIDPI) $<[0] \
+	$(MAGICK) -density $(HIDPI) "$<[0]" \
 		-colorspace sRGB \
 		$(call magick_fragment_front) +repage \
 		-compose Copy -layers Flatten +repage \
@@ -826,7 +826,7 @@ $(FRONTFRAGMENTS): %-$(_fragment)-$(_front).png: %-$(_text).pdf
 
 BACKFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_back).png)
 $(BACKFRAGMENTS): %-$(_fragment)-$(_back).png: %-$(_text).pdf
-	$(MAGICK) -density $(HIDPI) $<[1] \
+	$(MAGICK) -density $(HIDPI) "$<[1]" \
 		-colorspace sRGB \
 		$(call magick_fragment_back) +repage \
 		-compose Copy -layers Flatten +repage \
@@ -835,7 +835,7 @@ $(BACKFRAGMENTS): %-$(_fragment)-$(_back).png: %-$(_text).pdf
 SPINEFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_spine).png)
 $(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfile)
 	$(sourcegeometry)
-	$(MAGICK) -density $(HIDPI) $<[2] \
+	$(MAGICK) -density $(HIDPI) "$<[2]" \
 		-colorspace sRGB \
 		-crop $${spinepx}x+0+0 +repage \
 		$(call magick_fragment_spine) \
@@ -855,7 +855,7 @@ $(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)cover.xml $$(call parse_bookid,$$
 
 FRONTFRAGMENTIMAGES := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_fragment).png)
 $(FRONTFRAGMENTIMAGES): %-$(_fragment).png: %-$(_text).pdf
-	$(MAGICK) -density $(HIDPI) $<[0] \
+	$(MAGICK) -density $(HIDPI) "$<[0]" \
 		-colorspace sRGB \
 		$(call magick_fragment_cover) \
 		-compose Copy -layers Flatten +repage \
@@ -951,6 +951,7 @@ IGNORES += $(EMPTYGEOMETRIES)
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES := $(call pattern_list,$(SOURCES),$(ALLLAYOUTS),-$(_geometry).sh)
 $(GEOMETRIES): %-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,$$@)
+	zsh << 'EOF' # inception to break out of CaSILE's make shell wrapper
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	hidpi=$(HIDPI)
 	lodpi=$(HIDPI)
@@ -974,7 +975,7 @@ $(GEOMETRIES): %-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,
 			pagehpt=%[fx:round(h/$(HIDPI)*72)]
 			pagehpp=%[fx:round(h/$(HIDPI)*$(LODPI))]
 			pageaspect=%[fx:w/h]
-		' $(filter $(_geometry)-%.pdf,$^)[0] || echo false)
+		' "$(filter $(_geometry)-%.pdf,$^)[0]" || echo false)
 	pminpx=$$(($$pagewpx<$$pagehpx?$$pagewpx:$$pagehpx))
 	pmaxpx=$$(($$pagewpx>$$pagehpx?$$pagewpx:$$pagehpx))
 	pagecount=$(call pagecount,$(filter %.pdf,$<))
@@ -1008,6 +1009,7 @@ $(GEOMETRIES): %-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,
 	imghpt=$$(($$pagehpt+$$bleedpt*2))
 	widelayout=$$(($${pagewpx} > $${pagehpx}))
 	$(call geometry_extras)
+	EOF
 
 %-$(_binding)-$(_front).png: %-$(_binding).png $$(geometryfile)
 	$(sourcegeometry)

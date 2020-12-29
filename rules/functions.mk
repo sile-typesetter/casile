@@ -180,15 +180,15 @@ define magick_cover ?=
 		+write mpr:text \
 		\( mpr:text \
 			-channel RGBA \
-			-morphology Dilate:%[fx:w/500] Octagon \
+			-morphology "Dilate:%[fx:w/500]" Octagon \
 			-channel RGB \
 			-negate \
 		\) -compose SrcOver -composite \
 		\( mpr:text \
 			-channel RGBA \
-			-morphology Dilate:%[fx:w/200] Octagon \
+			-morphology "Dilate:%[fx:w/200]" Octagon \
 			-resize 25% \
-			-blur 0x%[fx:w/200] \
+			-blur "0x%[fx:w/200]" \
 			-resize 400% \
 			-channel A \
 			-level 0%,250% \
