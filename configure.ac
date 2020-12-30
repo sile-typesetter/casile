@@ -78,13 +78,15 @@ AM_CONDITIONAL([ENABLE_ZSH_COMPLETION],[test "x$with_zsh_completion_dir" != "xno
 
 AC_SUBST([RUST_TARGET_SUBDIR])
 
-AC_CHECK_PROG(YARN, yarn, yes)
-test "x$YARN" == "xyes" || AC_MSG_ERROR([yarn is required])
+AC_PATH_PROG(YARN, yarn)
+test -n "$YARN" || AC_MSG_ERROR([yarn is required])
 
-AC_CHECK_PROG(SILE, sile, yes)
-test "x$SILE" == "xyes" || AC_MSG_ERROR([sile is required])
+AC_PATH_PROG(SILE, sile)
+test -n "$SILE" || AC_MSG_ERROR([sile is required])
 
+AC_PROG_SED
 AC_PROG_GREP
+
 AC_PATH_PROG(PANDOC, pandoc)
 test "x$PANDOC" != "x" || AC_MSG_ERROR([pandoc is required])
 AC_MSG_CHECKING(whether pandoc has SILE Writer)
@@ -94,56 +96,59 @@ AS_IF([$PANDOC --list-output-formats | $GREP -qx sile],[
     AC_MSG_FAILURE([pandoc must have sile writer support])
 ])
 
-AC_CHECK_PROG(MAGICK, magick, yes)
-test "x$MAGICK" == "xyes" || AC_MSG_ERROR([magick is required])
+AC_PATH_PROG(MAGICK, magick)
+test -n "$MAGICK" || AC_MSG_ERROR([magick is required])
 
-AC_CHECK_PROG(POVRAY, povray, yes)
-test "x$POVRAY" == "xyes" || AC_MSG_ERROR([povray is required])
+AC_PATH_PROG(POVRAY, povray)
+test -n "$POVRAY" || AC_MSG_ERROR([povray is required])
 
-AC_CHECK_PROG(JQ, jq, yes)
-test "x$JQ" == "xyes" || AC_MSG_ERROR([jq is required])
+AC_PATH_PROG(JQ, jq)
+test -n "$JQ" || AC_MSG_ERROR([jq is required])
 
-AC_CHECK_PROG(ZINT, zint, yes)
-test "x$ZINT" == "xyes" || AC_MSG_ERROR([zint is required])
+AC_PATH_PROG(ZINT, zint)
+test -n "$ZINT" || AC_MSG_ERROR([zint is required])
 
-AC_CHECK_PROG(PDFINFO, pdfinfo, yes)
-test "x$PDFINFO" == "xyes" || AC_MSG_ERROR([pdfinfo is required])
+AC_PATH_PROG(PDFINFO, pdfinfo)
+test -n "$PDFINFO" || AC_MSG_ERROR([pdfinfo is required])
 
-AC_CHECK_PROG(PDFTK, pdftk, yes)
-test "x$PDFTK" == "xyes" || AC_MSG_ERROR([pdftk is required])
+AC_PATH_PROG(PDFTK, pdftk)
+test -n "$PDFTK" || AC_MSG_ERROR([pdftk is required])
 
-AC_CHECK_PROG(INKSCAPE, inkscape, yes)
-test "x$INKSCAPE" == "xyes" || AC_MSG_ERROR([inkscape is required])
+AC_PATH_PROG(INKSCAPE, inkscape)
+test -n "$INKSCAPE" || AC_MSG_ERROR([inkscape is required])
 
-AC_CHECK_PROG(PODOFOBOX, podofobox, yes)
-test "x$PODOFOBOX" == "xyes" || AC_MSG_ERROR([podofobox is required])
+AC_PATH_PROG(PODOFOBOX, podofobox)
+test -n "$PODOFOBOX" || AC_MSG_ERROR([podofobox is required])
 
-AC_CHECK_PROG(SPONGE, sponge, yes)
-test "x$SPONGE" == "xyes" || AC_MSG_ERROR([sponge is required])
+AC_PATH_PROG(SPONGE, sponge)
+test -n "$SPONGE" || AC_MSG_ERROR([sponge is required])
 
-AC_CHECK_PROG(M4, m4, yes)
-test "x$M4" == "xyes" || AC_MSG_ERROR([m4 is required])
+AC_PATH_PROG(M4, m4)
+test -n "$M4" || AC_MSG_ERROR([m4 is required])
 
-AC_CHECK_PROG(ENTR, entr, yes)
-test "x$ENTR" == "xyes" || AC_MSG_ERROR([entr is required])
+AC_PATH_PROG(ENTR, entr)
+test -n "$ENTR" || AC_MSG_ERROR([entr is required])
 
-AC_CHECK_PROG(PCREGREP, pcregrep, yes)
-test "x$PCREGREP" == "xyes" || AC_MSG_ERROR([pcregrep is required])
+AC_PATH_PROG(PCREGREP, pcregrep)
+test -n "$PCREGREP" || AC_MSG_ERROR([pcregrep is required])
 
-AC_CHECK_PROG(NODE, node, yes)
-test "x$NODE" == "xyes" || AC_MSG_ERROR([node is required])
+AC_PATH_PROG(NODE, node)
+test -n "$NODE" || AC_MSG_ERROR([node is required])
 
-AC_CHECK_PROG(BC, bc, yes)
-test "x$BC" == "xyes" || AC_MSG_ERROR([bc is required])
+AC_PATH_PROG(BC, bc)
+test -n "$BC" || AC_MSG_ERROR([bc is required])
 
-AC_CHECK_PROG(ZSH, zsh, yes)
-test "x$ZSH" == "xyes" || AC_MSG_ERROR([zsh is required])
+AC_PATH_PROG(ZSH, zsh)
+test -n "$ZSH" || AC_MSG_ERROR([zsh is required])
 
-AC_CHECK_PROG(epubcheck, epubcheck, yes)
-test "x$epubcheck" == "xyes" || AC_MSG_ERROR([epubcheck is required])
+AC_PATH_PROG(epubcheck, epubcheck)
+test -n "$epubcheck" || AC_MSG_ERROR([epubcheck is required])
 
-AC_CHECK_PROG(sqlite3, sqlite3, yes)
-test "x$sqlite3" == "xyes" || AC_MSG_ERROR([sqlite3 is required])
+AC_PATH_PROG(SQLITE3, sqlite3)
+test -n "$SQLITE3" || AC_MSG_ERROR([sqlite3 is required])
+
+AC_PATH_PROG(YQ, yq)
+test -n "$YQ" || AC_MSG_ERROR([yq is required])
 
 AX_PROG_LUA(5.1, , , AC_MSG_ERROR([lua interpreter is required]))
 AX_LUAROCKS_ROCK(yaml)
@@ -165,5 +170,7 @@ AX_FONT(Libertinus Serif Display)
 AX_FONT(Libertinus Sans)
 
 AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([rules/casile.mk])
+AC_CONFIG_FILES([make-shell.zsh], [chmod +x make-shell.zsh])
 
 AC_OUTPUT

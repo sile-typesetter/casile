@@ -18,7 +18,7 @@ $(error Use of CaSILE rule file inclusion outside of the CLI is deprecated!)
 endif
 
 # Run recipies in zsh wrapper, and all in one pass
-SHELL := $(CASILEDIR)/make-shell.zsh
+SHELL := $(CASILEDIR)make-shell.zsh
 .SHELLFLAGS = target=$@
 .ONESHELL:
 .SECONDEXPANSION:
@@ -30,14 +30,17 @@ $(space) := $() $()
 lparen := (
 rparen := )
 
-# Allow overriding executables used
-INKSCAPE ?= inkscape
-MAGICK ?= magick
-PANDOC ?= pandoc
-PERL ?= perl
-POVRAY ?= povray
-PYTHON ?= python
-SED ?= sed
-SILE ?= sile
+# Use paths discovered by autoconf by default, but allow projects to override
+# with paths of their own.
+INKSCAPE ?= @INKSCAPE@
+MAGICK ?= @MAGICK@
+PANDOC ?= @PANDOC@
+PERL ?= @PERL@
+POVRAY ?= @POVRAY@
+PYTHON ?= @PYTHON_BIN@
+SED ?= @SED@
+SILE ?= @SILE@
+YQ ?= @YQ@
+ZSH ?= @ZSH@
 
-include $(CASILEDIR)/rules/functions.mk
+include $(CASILEDIR)rules/functions.mk

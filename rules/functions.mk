@@ -7,9 +7,7 @@ rparen := )
 
 # Utility functions for simplifying per-project makefiles
 depend_font = fc-match "$1" family | grep -qx "$1"
-require_pubdir := $(and $(filter-out true,$(DRAFT)),$(or $(strip $(PUBDIR)),fail))
-require_inputdir := $(or $(strip $(INPUTDIR)),fail)
-require_outputdir := $(or $(strip $(OUTPUTDIR)),fail)
+require_pubdir = $(and $(filter-out true,$(DRAFT)),$(or $(strip $(PUBDIR)),$(error Required PUBDIR not set)))
 
 # Assorted utility functions for juggling information about books
 mockupbase = $(if $(filter $(MOCKUPSOURCES),$(call parse_bookid,$1)),$(subst $(call parse_bookid,$1),$(MOCKUPBASE),$1),$1)
@@ -31,12 +29,12 @@ strip_binding = $(filter-out $1,$(foreach BINDING,$(BINDINGS),$(subst -$(BINDING
 parse_edits = $(foreach WORD,$1,$(subst $(space),-,$(or $(filter $(EDITS),$(subst -, ,$(basename $(WORD)))),)))
 strip_edits = $(foreach WORD,$1,$(filter-out $(WORD),$(foreach EDIT,$(EDITS),$(subst -$(EDIT),,$(WORD)))))
 parse_bookid = $(firstword $(subst -, ,$(basename $1)))
-series_sort = $(shell PROJECT=$(PROJECT) SORTORDER=$(SORTORDER) $(CASILEDIR)/bin/series_sort.lua $1)
-metainfo = $(shell yq -r '$1' < $(PROJECTYAML))
+series_sort = $(shell PROJECT=$(PROJECT) SORTORDER=$(SORTORDER) $(CASILEDIR)bin/series_sort.lua $1)
+metainfo = $(shell $(YQ) -r '$1' < $(PROJECTYAML))
 isbntouid = $(call cachevar,$1,uuid,$(basename $(notdir $(shell grep -l $1 $(YAMLSOURCES)))))
 isbnmask = $(call cachevar,$1,mask,$(shell $(PYTHON) -c "import isbnlib; print(isbnlib.mask('$1'))"))
-ebookisbn = $(call cachevar,$1,ebook,$(or $(shell yq -r '.identifier[]? | select(.key == "ebook"    ).text' $1.yml),$(call printisbn,$1)))
-printisbn = $(call cachevar,$1,print,$(shell yq -r '.identifier[]? | select(.key == "paperback").text' $1.yml))
+ebookisbn = $(call cachevar,$1,ebook,$(or $(shell $(YQ) -r '.identifier[]? | select(.key == "ebook"    ).text' $1.yml),$(call printisbn,$1)))
+printisbn = $(call cachevar,$1,print,$(shell $(YQ) -r '.identifier[]? | select(.key == "paperback").text' $1.yml))
 ebooktoprint = $(call cachevar,$1,ep,$(call printisbn,$(call isbntouid,$1)))
 povtomagick = $(subst 1,255,$(subst >,$(rparen),$(subst <,$(lparen),$(1))))
 
@@ -182,15 +180,15 @@ define magick_cover ?=
 		+write mpr:text \
 		\( mpr:text \
 			-channel RGBA \
-			-morphology Dilate:%[fx:w/500] Octagon \
+			-morphology "Dilate:%[fx:w/500]" Octagon \
 			-channel RGB \
 			-negate \
 		\) -compose SrcOver -composite \
 		\( mpr:text \
 			-channel RGBA \
-			-morphology Dilate:%[fx:w/200] Octagon \
+			-morphology "Dilate:%[fx:w/200]" Octagon \
 			-resize 25% \
-			-blur 0x%[fx:w/200] \
+			-blur "0x%[fx:w/200]" \
 			-resize 400% \
 			-channel A \
 			-level 0%,250% \
@@ -297,6 +295,7 @@ define pagetopng ?=
 		-flatten \
 		-colorspace RGB \
 		-crop $${pagewpx}x$${pagehpx}+$${trimpx}+$${trimpx}! \
+		$(MAGICKARGS) \
 		$@
 endef
 

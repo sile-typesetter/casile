@@ -7,24 +7,30 @@ cabook:declareOption("crop", "true")
 cabook:declareOption("background", "true")
 cabook:declareOption("verseindex", "false")
 
-cabook.init = function (_)
-  if cabook.options.crop() == "true" then
-    cabook:loadPackage("crop", CASILE.casiledir)
+function cabook:init ()
+  if self.options.crop() == "true" then
+    self:loadPackage("crop", CASILE.casiledir)
   end
-  if cabook.options.verseindex() == "true" then
-    cabook:loadPackage("verseindex", CASILE.casiledir)
+  if self.options.verseindex() == "true" then
+    self:loadPackage("verseindex", CASILE.casiledir)
   end
-  return book:init()
+  -- CaSILE books sometimes have sections, sometimes don't.
+  -- Initialize some sectioning levels to work either way
+  SILE.require("packages/counters")
+  SILE.scratch.counters["sectioning"] = {
+    value =  { 0, 0 },
+    display = { "ORDINAL", "STRING" }
+  }
+  return book.init(self)
 end
 
-cabook.endPage = function (_)
-  cabook:moveTocNodes()
-  if cabook.moveTovNodes then cabook:moveTovNodes() end
-
+function cabook:endPage ()
+  self:moveTocNodes()
+  if self.moveTovNodes then self:moveTovNodes() end
   if not SILE.scratch.headers.skipthispage then
     SILE.settings.pushState()
     SILE.settings.reset()
-    if cabook:oddPage() then
+    if self:oddPage() then
       SILE.call("output-right-running-head")
     else
       SILE.call("output-left-running-head")
@@ -32,28 +38,17 @@ cabook.endPage = function (_)
     SILE.settings.popState()
   end
   SILE.scratch.headers.skipthispage = false
-
-  local ret = plain.endPage(cabook)
-  if cabook.options.crop() == "true" then cabook:outputCropMarks() end
+  local ret = plain.endPage(self)
+  if self.options.crop() == "true" then self:outputCropMarks() end
   return ret
 end
 
-cabook.finish = function (_)
-  if cabook.moveTovNodes then
-    cabook:writeTov()
+function cabook:finish ()
+  if self.moveTovNodes then
+    self:writeTov()
     SILE.call("tableofverses")
   end
-  return book:finish()
+  return book.finish(self)
 end
-
--- CaSILE books sometimes have sections, sometimes don't.
--- Initialize some sectioning levels to work either way
-SILE.scratch.counters["sectioning"] = {
-  value =  { 0, 0 },
-  display = { "ORDINAL", "STRING" }
-}
-
--- I can't figure out how or where, but book.endPage() gets run on the last page
-book.endPage = cabook.endPage
 
 return cabook
