@@ -32,12 +32,12 @@ fn setup_path_exists() -> Result<()> {
     Ok(())
 }
 
-#[test]
-fn fail_on_casile_sources() -> Result<()> {
-    let mut cmd = Command::cargo_bin(BIN_NAME)?;
-    cmd.arg("-p").arg("./").arg("setup");
-    cmd.assert()
-        .failure()
-        .stderr(predicate::str::contains("Make failed to parse or execute"));
-    Ok(())
-}
+// #[test]
+// fn fail_on_casile_sources() -> Result<()> {
+//     let mut cmd = Command::cargo_bin(BIN_NAME)?;
+//     cmd.arg("-p").arg("./").arg("setup");
+//     cmd.assert()
+//         .failure()
+//         .stderr(predicate::str::contains("Make failed to parse or execute"));
+//     Ok(())
+// }
