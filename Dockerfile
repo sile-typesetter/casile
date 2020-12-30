@@ -36,6 +36,7 @@ FROM casile-base AS casile-builder
 
 RUN pacman --needed --noconfirm -Syq \
 		base-devel autoconf-archive rust cargo luarocks \
+    node-prune \
 	&& yes | pacman -Sccq
 
 # Set at build time, forces Docker's layer caching to reset at this point
@@ -53,6 +54,7 @@ RUN ./configure
 RUN make
 RUN make check
 RUN make install DESTDIR=/pkgdir
+RUN node-prune /pkgdir/usr/local/share/casile/node_modules
 
 FROM casile-base AS casile
 
