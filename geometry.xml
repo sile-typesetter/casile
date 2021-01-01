@@ -2,6 +2,7 @@
 <define command="output-right-running-head"></define>
 <script>
   SILE.require("layouts/" .. papersize, CASILE.casiledir)
+  SILE.documentState.documentClass.writeToc = function () end
   SILE.typesetter:typeset(".")
 </script>
 </sile>
