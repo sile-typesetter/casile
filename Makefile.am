@@ -27,8 +27,6 @@ EXTRA_casile_SOURCES = Cargo.lock tests/cli.rs
 
 BUILT_SOURCES = .version
 
-CLEANFILES = $(BUILT_SOURCES) $(bin_PROGRAMS)
-
 .version: $(shell test -e .git && awk '{print ".git/" $$2}' .git/HEAD)
 	mv $@{,-prev} 2>/dev/null || touch $@-prev
 	( test -e .git && ./build-aux/git-version-gen .tarball-version || echo $(VERSION) ) > $@
@@ -69,8 +67,10 @@ dist_sed_DATA = upgrade-lua.sed upgrade-make.sed upgrade-markdown.sed upgrade-ya
 vimdir = $(datadir)
 dist_vim_DATA = citation_audit.vim quotation_audit.vim
 
-scriptsdir = $(datadir)/bin
-dist_scripts_DATA = bin/branch2criticmark.zsh bin/cover_title.py bin/diff2marked.zsh bin/extract_references.js bin/figure_dash.pl bin/functions.zsh bin/isbn_format.py bin/italic_reorder.pl bin/lazy_quotes.pl bin/link_verses.js bin/loadchapters.zsh bin/msword_escapes.pl bin/normalize_references.js bin/ordinal_spaces.pl bin/renumber_footnotes.pl bin/reorder_punctuation.pl bin/series_sort.lua bin/smart_quotes.pl bin/split_chapters.zsh bin/stats.zsh bin/toc2breaks.lua bin/unicode_symbols.pl bin/worklog.zsh
+dist_data_DATA = functions.zsh
+
+scriptsdir = $(datadir)/scripts
+dist_scripts_SCRIPTS = scripts/branch2criticmark.zsh scripts/cover_title.py scripts/diff2marked.zsh scripts/extract_references.js scripts/figure_dash.pl scripts/isbn_format.py scripts/italic_reorder.pl scripts/lazy_quotes.pl scripts/link_verses.js scripts/loadchapters.zsh scripts/msword_escapes.pl scripts/normalize_references.js scripts/ordinal_spaces.pl scripts/renumber_footnotes.pl scripts/reorder_punctuation.pl scripts/series_sort.lua scripts/smart_quotes.pl scripts/split_chapters.zsh scripts/stats.zsh scripts/toc2breaks.lua scripts/unicode_symbols.pl scripts/worklog.zsh
 
 fontsdir = $(datadir)/fonts
 dist_fonts_DATA = fonts/Almendra-Bold.otf fonts/Almendra-BoldItalic.otf fonts/Almendra-Italic.otf fonts/Almendra-Regular.otf fonts/AlmendraDisplay-Regular.otf fonts/AlmendraSC-Bold.otf fonts/AlmendraSC-BoldItalic.otf fonts/AlmendraSC-Italic.otf fonts/AlmendraSC-Regular.otf fonts/FeFlow2.otf fonts/NexaRustExtras-Free.otf fonts/NexaRustHandmade-Extended-Free.otf fonts/NexaRustSans-Black-Free.otf fonts/NexaRustScriptL-0-Free.otf fonts/NexaRustSlab-BlackShadow01-Free.otf fonts/Nymphette.ttf fonts/PrintersOrnamentsOne.ttf
@@ -86,6 +86,8 @@ dist_layouts_DATA = layouts/a4.lua layouts/a4ciltli.lua layouts/a5trim.lua layou
 
 assetsdir = $(datadir)/assets
 dist_assets_DATA =
+
+CLEANFILES = $(BUILT_SOURCES) $(bin_PROGRAMS) $(dist_scripts_SCRIPTS)
 
 if ENABLE_BASH_COMPLETION
 bashcompletiondir = $(BASH_COMPLETION_DIR)
@@ -127,7 +129,6 @@ COMPLETIONS_OUT_DIR = target/$(_TARGETDIR)/completions
 
 casile$(EXEEXT): $(CARGO_TARGET)
 	cp -bf $< $@
-	ln -sf ../$@ bin/$@
 
 $(COMPLETIONS_OUT_DIR)/$(_casile): $(CARGO_TARGET)
 	cp -bf $(COMPLETIONS_OUT_DIR)/casile.bash $@

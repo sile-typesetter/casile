@@ -6,7 +6,7 @@ basename="$1"
 : ${2:=2}
 let months=$2-1
 
-. ${CASILEDIR}/bin/functions.zsh
+. ${CASILEDIR}/functions.zsh
 
 function list_sources () {
 	git ls-files | pcregrep "$basename.*(md|yml)"

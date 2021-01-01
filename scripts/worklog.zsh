@@ -2,7 +2,7 @@
 
 CASILEDIR=$(cd "$(dirname $0)/../" && pwd)
 
-. ${CASILEDIR}/bin/functions.zsh
+. ${CASILEDIR}/functions.zsh
 
 function gitcommits () {
 	git rev-list --no-merges --reverse HEAD

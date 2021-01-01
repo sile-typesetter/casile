@@ -181,7 +181,7 @@ WATCHARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 $(eval $(WATCHARGS):;@:)
 endif
 
-export PATH := $(CASILEDIR)bin:$(PATH):$(shell $(PYTHON) -c "import site; print(site.getsitepackages()[0]+'/bin')")
+export PATH := $(CASILEDIR)scripts:$(PATH):$(shell $(PYTHON) -c "import site; print(site.getsitepackages()[0]+'/scripts')")
 export HOSTNAME := $(shell hostname)
 export PROJECT := $(PROJECT)
 
@@ -716,7 +716,7 @@ $(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub | $(require_pubdir)
 	rm -f $(PUBDIR)/$<
 
 %-$(_app).info: %-$(_app)-$(_print).toc %-$(_app)-$(_print).pdf %-manifest.yml | $(require_pubdir)
-	$(CASILEDIR)bin/toc2breaks.lua $* $(filter %-$(_app)-$(_print).toc,$^) $(filter %-manifest.yml,$^) $@ |
+	$(CASILEDIR)scripts/toc2breaks.lua $* $(filter %-$(_app)-$(_print).toc,$^) $(filter %-manifest.yml,$^) $@ |
 		while read range out; do
 			pdftk $(filter %-$(_app)-$(_print).pdf,$^) cat $$range output $$out
 			ln -f $$out $(PUBDIR)/$$out
@@ -1265,7 +1265,7 @@ INTERMEDIATES += *-$(_barcode).*
 			--scale=5 \
 			--barcode=69 \
 			--height=30 \
-			--data=$(shell $(CASILEDIR)bin/isbn_format.py $< paperback) |\
+			--data=$(shell $(CASILEDIR)scripts/isbn_format.py $< paperback) |\
 		$(SED) -e 's/Helvetica\( Regular\)\?/TeX Gyre Heros/g' \
 		> $@
 
@@ -1273,12 +1273,12 @@ INTERMEDIATES += *-$(_barcode).*
 	$(MAGICK) $< \
 		-bordercolor white -border 10 \
 		-font Hack-Regular -pointsize 36 \
-		label:"ISBN $(shell $(CASILEDIR)bin/isbn_format.py $*-manifest.yml paperback mask)" +swap -gravity Center -append \
+		label:"ISBN $(shell $(CASILEDIR)scripts/isbn_format.py $*-manifest.yml paperback mask)" +swap -gravity Center -append \
 		-bordercolor white -border 0x10 \
 		-resize $(call scale,1200)x \
 		$(MAGICKARGS) \
 		$@
-	if [[ $(shell $(CASILEDIR)bin/isbn_format.py $*-manifest.yml paperback) == 9786056644504 ]]; then
+	if [[ $(shell $(CASILEDIR)scripts/isbn_format.py $*-manifest.yml paperback) == 9786056644504 ]]; then
 		$(MAGICK) $@ \
 			-stroke red \
 			-strokewidth $(call scale,10) \
@@ -1299,7 +1299,7 @@ $(STATSSOURCES): %-stats:
 repository-lastcommit.ts: $$(newcommits)
 	touch -d $$(git log -n1 --format=%cI) $@
 
-repository-worklog.sqlite: $(CASILEDIR)bin/worklog.zsh repository-lastcommit.ts
+repository-worklog.sqlite: $(CASILEDIR)scripts/worklog.zsh repository-lastcommit.ts
 	sqlite3 $@ 'DROP TABLE IF EXISTS commits; CREATE TABLE commits (sha TEXT, author TEXT, date DATE, file TEXT, added INT, removed INT)'
 	$< | sqlite3 -batch $@
 
