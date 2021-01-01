@@ -96,6 +96,9 @@ AS_IF([$PANDOC --list-output-formats | $GREP -qx sile],[
 AC_PATH_PROG(MAGICK, magick)
 test -n "$MAGICK" || AC_MSG_ERROR([magick is required])
 
+AC_PATH_PROG(GS, gs)
+test -n "$GS" || AC_MSG_ERROR([gs is required])
+
 AC_PATH_PROG(POVRAY, povray)
 test -n "$POVRAY" || AC_MSG_ERROR([povray is required])
 
