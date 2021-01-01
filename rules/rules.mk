@@ -258,10 +258,11 @@ series_renderings: $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3d)-$(_montage
 
 $(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(SOURCES),%,-$(_poster).png) $(firstword $(SOURCES))-%-$(_geometry).sh
 	$(sourcegeometry)
-	$(MAGICK) montage \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		montage \
 		$(filter %.png,$^) \
 		-geometry $${pagewpm}x$${pagehpm}+0+0 \
-		$(MAGICKARGS) \
 		$@
 
 .PHONY: clean
@@ -746,32 +747,36 @@ COVERBACKGROUNDS := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-
 git_background = $(shell git ls-files -- $(call strip_layout,$1) 2> /dev/null)
 $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@) $$(geometryfile)
 	$(sourcegeometry)
-	$(if $(filter %.png,$(call git_background,$@)),true,false) && $(MAGICK) $(filter %.png,$^) \
+	$(if $(filter %.png,$(call git_background,$@)),true,false) && $(MAGICK) \
+		$(MAGICKARGS) \
+		$(filter %.png,$^) \
 		-gravity $(COVERGRAVITY) \
 		-extent  "%[fx:w/h>=$${pageaspect}?h*$${pageaspect}:w]x" \
 		-extent "x%[fx:w/h<=$${pageaspect}?w/$${pageaspect}:h]" \
 		-resize $${pagewpx}x$${pagehpx} \
 		$(call magick_background_filter) \
-		$(MAGICKARGS) \
 		$@ ||:
 	$(if $(filter %.png,$(call git_background,$@)),false,true) && $(MAGICK) \
-		-size $${pagewpx}x$${pagehpx}^ $(call magick_background_cover) \
 		$(MAGICKARGS) \
+		-size $${pagewpx}x$${pagehpx}^ $(call magick_background_cover) \
 		$@ ||:
 
 # Requires fake geometry file with no binding spec because binding not part of pattern
 %-$(_poster).png: %-$(_print)-$(_cover).png $$(geometryfile)
 	$(sourcegeometry)
-	$(MAGICK) $< \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		$< \
 		-resize $${pagewpp}x$${pagehpp}^ \
 		$(and $(filter epub,$(call parse_papersize,$@)),-resize 1000x1600^) \
-		$(MAGICKARGS) \
 		$@
 
 COVERIMAGES := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover).png)
 $(COVERIMAGES): %-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_fragment).png $$(geometryfile)
 	$(sourcegeometry)
-	$(MAGICK) $< \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		$< \
 		-compose SrcOver \
 		\( -background none \
 			-gravity Center \
@@ -785,16 +790,16 @@ $(COVERIMAGES): %-$(_cover).png: %-$(_cover)-$(_background).png %-$(_cover)-$(_f
 		\) -compose SrcOver -composite \
 		-gravity Center \
 		-size '%[fx:u.w]x%[fx:u.h]' \
-		$(MAGICKARGS) \
 		$@
 
 # Gitlab projects need a sub 200kb icon image
 %-icon.png: %-$(_square)-$(_poster).png | $(require_pubdir)
-	$(MAGICK) $< \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		$< \
 		-define png:extent=200kb \
 		-resize 196x196 \
 		-quality 9 \
-		$(MAGICKARGS) \
 		$@
 	$(addtopub)
 
@@ -803,12 +808,13 @@ $(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf
 	$(COVERS) || exit 0
 	text=$$(mktemp kapakXXXXXX.pdf)
 	bg=$$(mktemp kapakXXXXXX.pdf)
-	$(MAGICK) $< \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		$< \
 		-density $(LODPI) \
 		-compress jpeg \
 		-quality 50 \
 		+repage \
-		$(MAGICKARGS) \
 		$${bg}
 	pdftk $(filter %.pdf,$^) cat 1 output $${text}
 	pdftk $${text} background $${bg} output $@
@@ -828,31 +834,37 @@ $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)binding.xml $$(call
 
 FRONTFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_front).png)
 $(FRONTFRAGMENTS): %-$(_fragment)-$(_front).png: %-$(_text).pdf
-	$(MAGICK) -density $(HIDPI) "$<[0]" \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		-density $(HIDPI) \
+		"$<[0]" \
 		-colorspace sRGB \
 		$(call magick_fragment_front) +repage \
 		-compose Copy -layers Flatten +repage \
-		$(MAGICKARGS) \
 		$@
 
 BACKFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_back).png)
 $(BACKFRAGMENTS): %-$(_fragment)-$(_back).png: %-$(_text).pdf
-	$(MAGICK) -density $(HIDPI) "$<[1]" \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		-density $(HIDPI) \
+		"$<[1]" \
 		-colorspace sRGB \
 		$(call magick_fragment_back) +repage \
 		-compose Copy -layers Flatten +repage \
-		$(MAGICKARGS) \
 		$@
 
 SPINEFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_spine).png)
 $(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfile)
 	$(sourcegeometry)
-	$(MAGICK) -density $(HIDPI) "$<[2]" \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		-density $(HIDPI) \
+		"$<[2]" \
 		-colorspace sRGB \
 		-crop $${spinepx}x+0+0 +repage \
 		$(call magick_fragment_spine) \
 		-compose Copy -layers Flatten +repage \
-		$(MAGICKARGS) \
 		$@
 
 COVERFRAGMENTS := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_text).pdf)
@@ -868,11 +880,13 @@ $(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)cover.xml $$(call parse_bookid,$$
 
 FRONTFRAGMENTIMAGES := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_fragment).png)
 $(FRONTFRAGMENTIMAGES): %-$(_fragment).png: %-$(_text).pdf
-	$(MAGICK) -density $(HIDPI) "$<[0]" \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		-density $(HIDPI) \
+		"$<[0]" \
 		-colorspace sRGB \
 		$(call magick_fragment_cover) \
 		-compose Copy -layers Flatten +repage \
-		$(MAGICKARGS) \
 		$@
 
 INTERMEDIATES += publisher_emblum.svg publisher_emblum-grey.svg publisher_logo.svg publisher_logo-grey.svg
@@ -898,7 +912,9 @@ publisher_logo-grey.svg: $(PUBLISHERLOGO)
 BINDINGIMAGES := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding).png)
 $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png $$(basename $$@)-$(_fragment)-$(_back).png $$(basename $$@)-$(_fragment)-$(_spine).png $$(call parse_bookid,$$@)-$(_barcode).png publisher_emblum.svg publisher_emblum-grey.svg publisher_logo.svg publisher_logo-grey.svg $$(geometryfile)
 	$(sourcegeometry)
-	$(MAGICK) -size $${imgwpx}x$${imghpx} -density $(HIDPI) \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		-size $${imgwpx}x$${imghpx} -density $(HIDPI) \
 		$(or $(and $(call git_background,$*-$(_cover)-$(_background).png),$(call git_background,$*-$(_cover)-$(_background).png) -resize $${imgwpx}x$${imghpx}!),$(call magick_background_binding)) \
 		$(call magick_border) \
 		-compose SrcOver \( -gravity East -size $${pagewpx}x$${pagehpx} -background none xc: $(call magick_front) -splice $${bleedpx}x \) -composite \
@@ -913,12 +929,12 @@ $(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png
 		-gravity Center -size '%[fx:u.w]x%[fx:u.h]' \
 		-compose SrcOver -composite \
 		$(call magick_binding) \
-		$(MAGICKARGS) \
 		$@
 
 %-printcolor.png: %.png
-	$(MAGICK) $< $(call magick_printcolor) \
+	$(MAGICK) \
 		$(MAGICKARGS) \
+		$< $(call magick_printcolor) \
 		$@
 
 %-$(_binding).svg: $(CASILEDIR)binding.svg $$(basename $$@)-printcolor.png $$(geometryfile)
@@ -1030,20 +1046,29 @@ $(GEOMETRIES): %-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,
 
 %-$(_binding)-$(_front).png: %-$(_binding).png $$(geometryfile)
 	$(sourcegeometry)
-	$(MAGICK) $< -gravity East -crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! \
+	$(MAGICK) \
 		$(MAGICKARGS) \
+		$< \
+		-gravity East \
+		-crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! \
 		$@
 
 %-$(_binding)-$(_back).png: %-$(_binding).png $$(geometryfile)
 	$(sourcegeometry)
-	$(MAGICK) $< -gravity West -crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! \
+	$(MAGICK) \
 		$(MAGICKARGS) \
+		$< \
+		-gravity West \
+		-crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! \
 		$@
 
 %-$(_binding)-$(_spine).png: %-$(_binding).png $$(geometryfile)
 	$(sourcegeometry)
-	$(MAGICK) $< -gravity Center -crop $${spinepx}x$${pagehpx}+0+0! \
+	$(MAGICK) \
 		$(MAGICKARGS) \
+		$< \
+		-gravity Center \
+		-crop $${spinepx}x$${pagehpx}+0+0! \
 		$@
 
 %-$(_print)-pov-$(_front).png: %-$(_print).pdf $$(geometryfile)
@@ -1056,23 +1081,29 @@ $(GEOMETRIES): %-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,
 
 %-$(_print)-pov-$(_spine).png: $$(geometryfile)
 	$(sourcegeometry)
-	$(MAGICK) -size $${pagewpx}x$${pagehpx} xc:none \
+	$(MAGICK) \
 		$(MAGICKARGS) \
+		-size $${pagewpx}x$${pagehpx} \
+		xc:none \
 		$@
 
 %-pov-$(_front).png: %-$(_binding)-printcolor.png $$(geometryfile)
 	$(sourcegeometry)
-	$(MAGICK) $< \
-		-gravity East -crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		$< \
+		-gravity East \
+		-crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! \
 		$(call magick_emulateprint) \
 		$(and $(filter $(_paperback),$(call parse_binding,$@)),$(call magick_crease,0+)) \
 		$(call magick_fray) \
-		$(MAGICKARGS) \
 		$@
 
 %-pov-$(_back).png: %-$(_binding)-printcolor.png $$(geometryfile)
 	$(sourcegeometry)
-	$(MAGICK) $< \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		$< \
 		-gravity West -crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! \
 		$(call magick_emulateprint) \
 		$(and $(filter $(_paperback),$(call parse_binding,$@)),$(call magick_crease,w-)) \
@@ -1081,12 +1112,13 @@ $(GEOMETRIES): %-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,
 
 %-pov-$(_spine).png: %-$(_binding)-printcolor.png $$(geometryfile)
 	$(sourcegeometry)
-	$(MAGICK) $< \
-		-gravity Center -crop $${spinepx}x$${pagehpx}+0+0! \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		$< \
 		-gravity Center \
+		-crop $${spinepx}x$${pagehpx}+0+0! \
 		-extent 200%x100% \
 		$(call magick_emulateprint) \
-		$(MAGICKARGS) \
 		$@
 
 BOOKSCENESINC := $(call pattern_list,$(SOURCES),$(RENDERED),.inc)
@@ -1159,24 +1191,27 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)book.pov $(PROJECT)-%-
 
 # Combine black / white background renderings into transparent one with shadows
 %.png: %-$(_dark).png %-$(_light).png | $(require_pubdir)
-	$(MAGICK) $(filter %.png,$^) -alpha Off \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		$(filter %.png,$^) \
+		-alpha Off \
 		\( -clone 0,1 -compose Difference -composite -negate \) \
 		\( -clone 0,2 +swap -compose Divide -composite \) \
 		-delete 0,1 +swap -compose CopyOpacity -composite \
 		-compose Copy -alpha On -layers Flatten +repage \
 		-channel Alpha -fx 'a > 0.5 ? 1 : a' -channel All \
 		$(call pov_crop,$(if $(findstring $(_pile),$*),$(SCENEY)x$(SCENEX),$(SCENEX)x$(SCENEY))) \
-		$(MAGICKARGS) \
 		$@
 	$(addtopub)
 
 %.jpg: %.png | $(require_pubdir)
-	$(MAGICK) $< \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		$< \
 		-background '$(call povtomagick,$(SCENELIGHT))' \
 		-alpha Remove \
 		-alpha Off \
 		-quality 85 \
-		$(MAGICKARGS) \
 		$@
 	$(addtopub)
 
@@ -1242,10 +1277,11 @@ $(DESHTMLS): %-description.html: %-manifest.yml
 INTERMEDIATES += *-url.*
 
 %-url.png: %-url.svg
-	$(MAGICK) $< \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		$< \
 		-bordercolor white -border 10x10 \
 		-bordercolor black -border 4x4 \
-		$(MAGICKARGS) \
 		$@
 
 %-url.svg:
@@ -1270,20 +1306,22 @@ INTERMEDIATES += *-$(_barcode).*
 		> $@
 
 %-$(_barcode).png: %-$(_barcode).svg
-	$(MAGICK) $< \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		$< \
 		-bordercolor white -border 10 \
 		-font Hack-Regular -pointsize 36 \
 		label:"ISBN $(shell $(CASILEDIR)scripts/isbn_format.py $*-manifest.yml paperback mask)" +swap -gravity Center -append \
 		-bordercolor white -border 0x10 \
 		-resize $(call scale,1200)x \
-		$(MAGICKARGS) \
 		$@
 	if [[ $(shell $(CASILEDIR)scripts/isbn_format.py $*-manifest.yml paperback) == 9786056644504 ]]; then
-		$(MAGICK) $@ \
+		$(MAGICK) \
+			$(MAGICKARGS) \
+			$@ \
 			-stroke red \
 			-strokewidth $(call scale,10) \
 			-draw 'line 0,0,%[fx:w],%[fx:h]' \
-			$(MAGICKARGS) \
 			$@
 	fi
 
