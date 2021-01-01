@@ -213,6 +213,9 @@ $(foreach SOURCE,$(SOURCES),$(eval TARGETMACROS_$(SOURCE) := $(wildcard $(SOURCE
 $(foreach SOURCE,$(SOURCES),$(eval TARGETYAMLS_$(SOURCE) := $(wildcard $(SOURCE).yml)))
 $(foreach SOURCE,$(SOURCES),$(eval TARGETLUAS_$(SOURCE) := $(wildcard $(SOURCE).lua)))
 
+.PHONY: all
+all: $(FORMATS)
+
 define format_template =
 .PHONY: $(1)
 $(1): $(call pattern_list,$(2),.$(1))
