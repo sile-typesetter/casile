@@ -1,6 +1,4 @@
-AC_INIT([casile],
-        m4_esyscmd([build-aux/git-version-gen .tarball-version]),
-        [caleb@alerque.com])
+AC_INIT([casile],[m4_esyscmd(build-aux/git-version-gen .tarball-version)],[caleb@alerque.com])
 AM_INIT_AUTOMAKE([foreign tar-pax dist-xz dist-zip no-dist-gzip subdir-objects color-tests])
 AM_SILENT_RULES([yes])
 
@@ -18,8 +16,7 @@ AS_IF(test x$RUSTC = xno,
 
 # Add --enable-debug flag to change Rust build mode
 AC_ARG_ENABLE(debug,
-              AC_HELP_STRING([--enable-debug],
-                             [Build Rust code with debugging information [default=no]]),
+              AS_HELP_STRING([--enable-debug],[Build Rust code with debugging information [default=no]]),
               [debug_release=$enableval],
               [debug_release=no])
 
