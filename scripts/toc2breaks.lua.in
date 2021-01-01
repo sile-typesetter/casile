@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+#!@LUA@
 
 -- luacheck: ignore loadstring
 local loadstring = loadstring or load

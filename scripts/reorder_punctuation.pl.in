@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!@PERL@
 
 use utf8;
 use open ':std', ':encoding(UTF-8)';

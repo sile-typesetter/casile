@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!@PERL@
 
 # Convert ASCII to correct Unicode quotes based on context
 while (<>) {

@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!@PERL@
 
 # Convert hyphens between numbers to figure dashes
 while (<>) {

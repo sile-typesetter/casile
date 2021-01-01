@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!@PERL@
 
 # WARNING: This can screw up valid Markdown if there are code snippets. Only
 # run on prose that is actually broken and check the results.

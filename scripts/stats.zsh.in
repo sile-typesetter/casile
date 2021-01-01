@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!@ZSH@
 
 CASILEDIR=$(cd "$(dirname $0)/../" && pwd)
 

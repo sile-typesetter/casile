@@ -1,11 +1,9 @@
-#!/usr/bin/env node
+#!@NODE@
 
 var readline = require('readline')
 var BcvParser = require('bible-passage-reference-parser/js/tr_bcv_parser').bcv_parser
 var bcv = new BcvParser()
 var formatter = require('bible-reference-formatter/es6/tr')
-
-var mergechains = false
 
 bcv.set_options({
   sequence_combination_strategy: 'separate'
@@ -46,18 +44,16 @@ function processLine (line) {
   var context = null
   var refs = bcv.parse(line).osis_and_indices()
   refs.forEach(function (ref) {
-    if (context && isChained(context, ref, line, offset) && mergechains) {
+    if (context && isChained(context, ref, line, offset)) {
       var mref = mergeRefs(context, ref)
       ref = mref
       offset -= previousOffset
     } else {
       previousOffset = 0
     }
-    var pretty = formatter('yc-long', ref.osis)
-    var plain = line.substr(ref.indices[0] + offset, ref.indices[1] - ref.indices[0])
-    var markdown = '[' + plain + '](https://sahneleme.incil.info/referans/' + ref.osis + ' "' + pretty + '"){osis=' + ref.osis + '}'
-    line = line.replaceSplice(ref.indices[0] + offset, ref.indices[1] + offset + previousOffset, markdown)
-    previousOffset = ref.indices[0] - ref.indices[1] + markdown.length
+    var pretty = formatter('yc-long', ref.osis).replace(/—/g, '---').replace(/–/g, '--').replace(/’/g, "'")
+    line = line.replaceSplice(ref.indices[0] + offset, ref.indices[1] + offset + previousOffset, pretty)
+    previousOffset = ref.indices[0] - ref.indices[1] + pretty.length
     offset += previousOffset
     context = ref
   })
