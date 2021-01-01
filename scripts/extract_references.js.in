@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!@NODE@
 
 var readline = require('readline')
 var BcvParser = require('bible-passage-reference-parser/js/tr_bcv_parser').bcv_parser

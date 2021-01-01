@@ -1,6 +1,4 @@
-AC_INIT([casile],
-        m4_esyscmd([build-aux/git-version-gen .tarball-version]),
-        [caleb@alerque.com])
+AC_INIT([casile],[m4_esyscmd(build-aux/git-version-gen .tarball-version)],[caleb@alerque.com])
 AM_INIT_AUTOMAKE([foreign tar-pax dist-xz dist-zip no-dist-gzip subdir-objects color-tests])
 AM_SILENT_RULES([yes])
 
@@ -18,8 +16,7 @@ AS_IF(test x$RUSTC = xno,
 
 # Add --enable-debug flag to change Rust build mode
 AC_ARG_ENABLE(debug,
-              AC_HELP_STRING([--enable-debug],
-                             [Build Rust code with debugging information [default=no]]),
+              AS_HELP_STRING([--enable-debug],[Build Rust code with debugging information [default=no]]),
               [debug_release=$enableval],
               [debug_release=no])
 
@@ -99,6 +96,9 @@ AS_IF([$PANDOC --list-output-formats | $GREP -qx sile],[
 AC_PATH_PROG(MAGICK, magick)
 test -n "$MAGICK" || AC_MSG_ERROR([magick is required])
 
+AC_PATH_PROG(GS, gs)
+test -n "$GS" || AC_MSG_ERROR([gs is required])
+
 AC_PATH_PROG(POVRAY, povray)
 test -n "$POVRAY" || AC_MSG_ERROR([povray is required])
 
@@ -172,5 +172,31 @@ AX_FONT(Libertinus Sans)
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([rules/casile.mk])
 AC_CONFIG_FILES([make-shell.zsh], [chmod +x make-shell.zsh])
+
+AC_DEFUN([AX_SCRIPT], [AC_CONFIG_FILES([scripts/$1], [chmod +x scripts/$1])])
+
+# cd scripts; git ls-files '*.in' | sed -e 's/\.in$//'
+AX_SCRIPT([branch2criticmark.zsh])
+AX_SCRIPT([cover_title.py])
+AX_SCRIPT([diff2marked.zsh])
+AX_SCRIPT([extract_references.js])
+AX_SCRIPT([figure_dash.pl])
+AX_SCRIPT([isbn_format.py])
+AX_SCRIPT([italic_reorder.pl])
+AX_SCRIPT([lazy_quotes.pl])
+AX_SCRIPT([link_verses.js])
+AX_SCRIPT([loadchapters.zsh])
+AX_SCRIPT([msword_escapes.pl])
+AX_SCRIPT([normalize_references.js])
+AX_SCRIPT([ordinal_spaces.pl])
+AX_SCRIPT([renumber_footnotes.pl])
+AX_SCRIPT([reorder_punctuation.pl])
+AX_SCRIPT([series_sort.lua])
+AX_SCRIPT([smart_quotes.pl])
+AX_SCRIPT([split_chapters.zsh])
+AX_SCRIPT([stats.zsh])
+AX_SCRIPT([toc2breaks.lua])
+AX_SCRIPT([unicode_symbols.pl])
+AX_SCRIPT([worklog.zsh])
 
 AC_OUTPUT

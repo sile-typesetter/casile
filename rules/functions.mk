@@ -289,13 +289,14 @@ define magick_printcolor ?=
 endef
 
 define pagetopng ?=
-	$(MAGICK) -density $(HIDPI) \
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		-density $(HIDPI) \
 		-background white \
 		$<[$$(($1-1))] \
 		-flatten \
 		-colorspace RGB \
 		-crop $${pagewpx}x$${pagehpx}+$${trimpx}+$${trimpx}! \
-		$(MAGICKARGS) \
 		$@
 endef
 

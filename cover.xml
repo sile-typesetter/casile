@@ -1,6 +1,7 @@
 <sile class="cabook" crop="false" background="false">
   <script>
     SILE.require(CASILE.include)
+    SILE.documentState.documentClass.writeToc = function () end
     SILE.registerCommand("meta:surum", function()
       SILE.typesetter:typeset(versioninfo)
     end)
