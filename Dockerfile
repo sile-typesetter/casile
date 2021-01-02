@@ -20,10 +20,10 @@ RUN pacman --needed --noconfirm -Syuq && yes | pacman -Sccq
 
 # Install CaSILE run-time dependecies (increment cache var above)
 RUN pacman --needed --noconfirm -Syq \
-		bc bcprov cpdf entr epubcheck ghostscript git imagemagick inetutils inkscape \
+		bc bcprov entr epubcheck ghostscript git imagemagick inetutils inkscape \
 		java-commons-lang jq kindlegen m4 make moreutils nodejs otf-libertinus \
-		pandoc-sile-git pcre pdftk podofo poppler povray rsync sile sqlite \
-		tex-gyre-fonts texlive-core ttf-hack xcftools yarn yq zint zsh \
+		pandoc-sile-git pcre pdftk podofo poppler povray sile sqlite \
+		tex-gyre-fonts texlive-core ttf-hack yarn yq zint zsh \
 		lua-{colors,filesystem,yaml} \
 		perl-{yaml,yaml-merge-simple} \
 		python-{isbnlib,pandocfilters,pantable,ruamel-yaml,usfm2osis-cw-git} \

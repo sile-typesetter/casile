@@ -155,7 +155,7 @@ PERLARGS ?= -Mutf8 -CS
 MAGICKARGS ?= -define profile:skip="*"
 
 # Figure out if we're being run from
-ATOM != env | grep -l ATOM_
+ATOM != env | $(GREP) -l ATOM_
 ifneq ($(ATOM),)
 DRAFT = true
 endif
@@ -199,9 +199,9 @@ SILEFLAGS += -d $(subst $( ),$(,),$(strip $(DEBUGTAGS)))
 endif
 
 # Most CI runners need help getting the branch name because of sparse checkouts
-BRANCH := $(or $(CI_COMMIT_REF_NAME),$(shell git rev-parse --abbrev-ref HEAD))
-TAG := $(or $(CI_COMMIT_TAG),$(shell git describe --tags --exact-match 2>/dev/null))
-ALLTAGS := $(strip $(CI_COMMIT_TAG) $(shell git tag --points-at HEAD | xargs echo))
+BRANCH := $(or $(CI_COMMIT_REF_NAME),$(shell $(GIT) rev-parse --abbrev-ref HEAD))
+TAG := $(or $(CI_COMMIT_TAG),$(shell $(GIT) describe --tags --exact-match 2>/dev/null))
+ALLTAGS := $(strip $(CI_COMMIT_TAG) $(shell $(GIT) tag --points-at HEAD | $(XARGS) echo))
 
 # Add mock-ups to sources
 ifeq ($(strip $(MOCKUPS)),true)
@@ -274,7 +274,7 @@ $(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(SOURCES),%,-$(_p
 
 .PHONY: clean
 clean: emptypub
-	git clean -xf $(foreach CONFIG,$(PROJECTCONFIGS),-e $(CONFIG))
+	$(GIT) clean -xf $(foreach CONFIG,$(PROJECTCONFIGS),-e $(CONFIG))
 
 emptypub: | $(require_pubdir)
 	rm -f $(PUBDIR)/*
@@ -343,7 +343,11 @@ force: ;
 
 .PHONY: list
 list:
-	$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2> /dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
+	$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2> /dev/null |
+		$(AWK) -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' |
+		$(SORT) |
+		$(EGREP) -v -e '^[^[:alnum:]]' -e '^$@$$' |
+		$(XARGS)
 
 .PHONY: $(SOURCES)
 
@@ -386,29 +390,29 @@ PROJECTCONFIGS += .gitignore
 	$(foreach IGNORE,$(IGNORES),echo '$(IGNORE)' >> $@;)
 
 .gitattributes: $(MAKEFILE_LIST)
-	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
-	git diff-files --quiet -- $@ || exit 1 # die if this file has uncommitted changes
+	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
+	$(GIT) diff-files --quiet -- $@ || exit 1 # die if this file has uncommitted changes
 	for ft in md yml; do
 		line="*.$${ft} linguist-detectabale=true"
-		grep -qxF "$${line}" $@ || echo $${line} >> $@
-		git add -- $@
+		$(GREP) -qxF "$${line}" $@ || echo $${line} >> $@
+		$(GIT) add -- $@
 	done
-	git diff-index --quiet --cached HEAD || git commit -m "[auto] Configure linguist file types for statistics"
+	$(GIT) diff-index --quiet --cached HEAD || $(GIT) commit -m "[auto] Configure linguist file types for statistics"
 
 $(CICONFIG): $(CITEMPLATE)
-	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
-	git diff-files --quiet -- $@ || exit 1 # die if this file has uncommitted changes
+	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
+	$(GIT) diff-files --quiet -- $@ || exit 1 # die if this file has uncommitted changes
 	cat $< | \
 		$(call ci_setup) | \
-		sponge $@
-	git add -- $@
-	git diff-index --quiet --cached HEAD || git commit -m "[auto] Rebuild CI config file"
+		$(SPONGE) $@
+	$(GIT) add -- $@
+	$(GIT) diff-index --quiet --cached HEAD || $(GIT) commit -m "[auto] Rebuild CI config file"
 
 # Pass or fail target showing whether the CI config is up to date
 .PHONY: $(CICONFIG)_current
 $(CICONFIG)_current: $(CICONFIG)
-	git update-index --refresh --ignore-submodules ||:
-	git diff-files --quiet -- $<
+	$(GIT) update-index --refresh --ignore-submodules ||:
+	$(GIT) diff-files --quiet -- $<
 
 # Reset file timestamps to git history to avoid unnecessary builds
 .PHONY: time_warp
@@ -431,7 +435,7 @@ onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(CASILEDIR)la
 
 MOCKUPPDFS := $(call pattern_list,$(MOCKUPSOURCES),$(REALLAYOUTS),.pdf)
 $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
-	pdftk A=$(filter %.pdf,$^) cat $(foreach P,$(shell seq 1 $(call pagecount,$@)),A2-2) output $@
+	$(PDFTK) A=$(filter %.pdf,$^) cat $(foreach P,$(shell seq 1 $(call pagecount,$@)),A2-2) output $@
 
 FULLPDFS := $(call pattern_list,$(REALSOURCES),$(REALLAYOUTS),.pdf)
 FULLPDFS += $(call pattern_list,$(REALSOURCES),$(EDITS),$(REALLAYOUTS),.pdf)
@@ -447,17 +451,17 @@ $(FULLPDFS): %.pdf: %.sil $$(call coverpreq,$$@) .casile.lua $$(call onpaperlibs
 		export pg0=$(call pagecount,$@)
 		$(SILE) $(SILEFLAGS) $< -o $@
 		# Note this page count can't be in Make because of expansion order
-		export pg1=$$(pdfinfo $@ | awk '$$1 == "Pages:" {print $$2}' || echo 0)
+		export pg1=$$($(PDFINFO) $@ | $(AWK) '$$1 == "Pages:" {print $$2}' || echo 0)
 		[[ $${pg0} -ne $${pg1} ]] && $(SILE) $(SILEFLAGS) $< -o $@ ||:
-		export pg2=$$(pdfinfo $@ | awk '$$1 == "Pages:" {print $$2}' || echo 0)
+		export pg2=$$($(PDFINFO) $@ | $(AWK) '$$1 == "Pages:" {print $$2}' || echo 0)
 		[[ $${pg1} -ne $${pg2} ]] && $(SILE) $(SILEFLAGS) $< -o $@ ||:
 	fi
 	# If we have a special cover page for this format, swap it out for the half title page
 	coverfile=$(filter %-$(_cover).pdf,$^)
 	if $(COVERS) && [[ -f $${coverfile} ]]; then
-		pdftk $@ dump_data_utf8 output $*.dat
-		pdftk C=$${coverfile} B=$@ cat C1 B2-end output $*.tmp.pdf
-		pdftk $*.tmp.pdf update_info_utf8 $*.dat output $@
+		$(PDFTK) $@ dump_data_utf8 output $*.dat
+		$(PDFTK) C=$${coverfile} B=$@ cat C1 B2-end output $*.tmp.pdf
+		$(PDFTK) $*.tmp.pdf update_info_utf8 $*.dat output $@
 		rm $*.tmp.pdf
 	fi
 	$(addtopub)
@@ -530,7 +534,7 @@ INTERMEDIATES += *-$(_processed).md
 	if $(DIFF) && $(if $(PARENT),true,false); then
 		branch2criticmark.zsh $(PARENT) $<
 	else
-		m4 $(filter %.m4,$^) $<
+		$(M4) $(filter %.m4,$^) $<
 	fi |
 		renumber_footnotes.pl |
 		$(and $(HEAD),head -n$(HEAD) |) \
@@ -541,60 +545,61 @@ INTERMEDIATES += *-$(_processed).md
 		$(call markdown_hook) > $@
 
 %-$(_booklet).pdf: %-$(_spineless).pdf | $(require_pubdir)
-	pdfbook --short-edge --noautoscale true --papersize "{$(call pageh,$<)pt,$$(($(call pagew,$<)*2))pt}" --outfile $@ -- $<
+	$(PDFBOOK2) --short-edge --paper="{$(call pageh,$<)pt,$$(($(call pagew,$<)*2))pt}" -- $<
+	mv $*-book.pdf $@
 	$(addtopub)
 
 %-2end.pdf: %.pdf
-	pdftk $< cat 2-end output $@
+	$(PDFTK) $< cat 2-end output $@
 
 %-2up.pdf: %-$(_cropped)-2end.pdf
-	pdfjam --nup 2x1 --noautoscale true --paper a4paper --landscape --outfile $@ -- $<
+	$(PDFJAM) --nup 2x1 --noautoscale true --paper a4paper --landscape --outfile $@ -- $<
 
 %-topbottom.pdf: %-set1.pdf %-set2.pdf
-	pdftk A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
+	$(PDFTK) A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
 
 %-a4proof.pdf: %-topbottom.pdf | $(require_pubdir)
-	pdfjam --nup 1x2 --noautoscale true --paper a4paper --outfile $@ -- $<
+	$(PDFJAM) --nup 1x2 --noautoscale true --paper a4paper --outfile $@ -- $<
 	$(addtopub)
 
 %-cropleft.pdf: %.pdf | $$(geometryfile)
 	$(sourcegeometry)
-	t=$$(echo "$${trimpt} * 100" | bc)
-	s=$$(echo "$${spinept} * 100 / 4" | bc)
-	w=$$(echo "$(call pagew,$<) * 100 - $${t} + $${s}" | bc)
-	h=$$(echo "$(call pageh,$<) * 100" | bc)
-	podofobox $< $@ media 0 0 $${w} $${h}
+	t=$$(echo "$${trimpt} * 100" | $(BC))
+	s=$$(echo "$${spinept} * 100 / 4" | $(BC))
+	w=$$(echo "$(call pagew,$<) * 100 - $${t} + $${s}" | $(BC))
+	h=$$(echo "$(call pageh,$<) * 100" | $(BC))
+	$(PODOFOBOX) $< $@ media 0 0 $${w} $${h}
 
 %-cropright.pdf: %.pdf | $$(geometryfile)
 	$(sourcegeometry)
-	t=$$(echo "$${trimpt} * 100" | bc)
-	s=$$(echo "$${spinept} * 100 / 4" | bc)
-	w=$$(echo "$(call pagew,$<) * 100 - $$t + $$s" | bc)
-	h=$$(echo "$(call pageh,$<) * 100" | bc)
-	podofobox $< $@ media $$(($$t-$$s)) 0 $$w $$h
+	t=$$(echo "$${trimpt} * 100" | $(BC))
+	s=$$(echo "$${spinept} * 100 / 4" | $(BC))
+	w=$$(echo "$(call pagew,$<) * 100 - $$t + $$s" | $(BC))
+	h=$$(echo "$(call pageh,$<) * 100" | $(BC))
+	$(PODOFOBOX) $< $@ media $$(($$t-$$s)) 0 $$w $$h
 
 %-$(_spineless).pdf: %-$(_odd)-cropright.pdf %-$(_even)-cropleft.pdf
-	pdftk A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
+	$(PDFTK) A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
 
 %-$(_cropped).pdf: %.pdf | $$(geometryfile) $(require_pubdir)
 	$(sourcegeometry)
-	t=$$(echo "$${trimpt} * 100" | bc)
-	w=$$(echo "$(call pagew,$<) * 100 - $${t} * 2" | bc)
-	h=$$(echo "$(call pageh,$<) * 100 - $${t} * 2" | bc)
-	podofobox $< $@ media $${t} $${t} $${w} $${h}
+	t=$$(echo "$${trimpt} * 100" | $(BC))
+	w=$$(echo "$(call pagew,$<) * 100 - $${t} * 2" | $(BC))
+	h=$$(echo "$(call pageh,$<) * 100 - $${t} * 2" | $(BC))
+	$(PODOFOBOX) $< $@ media $${t} $${t} $${w} $${h}
 	$(addtopub)
 
 %-set1.pdf: %.pdf
-	pdftk $< cat 1-$$(($(call pagecount,$<)/2)) output $@
+	$(PDFTK) $< cat 1-$$(($(call pagecount,$<)/2)) output $@
 
 %-set2.pdf: %.pdf
-	pdftk $< cat $$(($(call pagecount,$<)/2+1))-end output $@
+	$(PDFTK) $< cat $$(($(call pagecount,$<)/2+1))-end output $@
 
 %-$(_even).pdf: %.pdf
-	pdftk $< cat even output $@
+	$(PDFTK) $< cat even output $@
 
 %-$(_odd).pdf: %.pdf
-	pdftk $< cat odd output $@
+	$(PDFTK) $< cat odd output $@
 
 .PHONY: normalize_lua
 normalize_lua: $(LUASOURCES)
@@ -642,7 +647,7 @@ $(PHONYPLAYS): %.play: $$(call pattern_list,$$(call printisbn,$$*),_interior.pdf
 IGNORES += $(PLAYMETADATAS)
 PLAYMETADATAS := $(call pattern_list,$(PLAYSOURCES),_playbooks.csv)
 $(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call ebookisbn,$$*) $$(call printisbn,$$*),_playbooks.json) %-bio.html %-description.html | $(require_pubdir)
-	jq -M -e -s -r \
+	$(JQ) -M -e -s -r \
 			--rawfile biohtml $(filter %-bio.html,$^) \
 			--rawfile deshtml $(filter %-description.html,$^) \
 			'[	"Identifier",
@@ -709,12 +714,12 @@ $(PLAYBACKS): %_backcover.jpg: %_frontcover.jpg | $(require_pubdir)
 
 PLAYINTS := $(call pattern_list,$(ISBNS),_interior.pdf)
 $(PLAYINTS): %_interior.pdf: $$(call isbntouid,$$*)-$(firstword $(LAYOUTS))-$(_cropped).pdf | $(require_pubdir)
-	pdftk $< cat 2-end output $@
+	$(PDFTK) $< cat 2-end output $@
 	$(addtopub)
 
 PLAYEPUBS := $(call pattern_list,$(ISBNS),.epub)
 $(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub | $(require_pubdir)
-	epubcheck $<
+	$(EPUBCHECK) $<
 	cp $< $@
 	$(addtopub)
 
@@ -724,9 +729,9 @@ $(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub | $(require_pubdir)
 	rm -f $(PUBDIR)/$<
 
 %-$(_app).info: %-$(_app)-$(_print).toc %-$(_app)-$(_print).pdf %-manifest.yml | $(require_pubdir)
-	$(CASILEDIR)scripts/toc2breaks.lua $* $(filter %-$(_app)-$(_print).toc,$^) $(filter %-manifest.yml,$^) $@ |
+	toc2breaks.lua $* $(filter %-$(_app)-$(_print).toc,$^) $(filter %-manifest.yml,$^) $@ |
 		while read range out; do
-			pdftk $(filter %-$(_app)-$(_print).pdf,$^) cat $$range output $$out
+			$(PDFTK) $(filter %-$(_app)-$(_print).pdf,$^) cat $$range output $$out
 			ln -f $$out $(PUBDIR)/$$out
 		done
 	$(addtopub)
@@ -735,13 +740,13 @@ $(_issue).info: | $(require_pubdir)
 	for source in $(SOURCES); do
 		echo -e "# $$source\n"
 		if test -d $${source}-bolumler; then
-			find $${source}-bolumler -name '*.md' -print |
-				sort -n |
+			$(FIND) $${source}-bolumler -name '*.md' -print |
+				$(SORT) -n |
 				while read chapter; do
 					number=$${chapter%-*}; number=$${number#*/}
 					$(SED) -ne "/^# /{s/ {.*}$$//;s!^# *\(.*\)! - [ ] $$number — [\1]($$chapter)!g;p}" $$chapter
 				done
-		elif grep -q '^# ' $$source.md; then
+		elif $(GREP) -q '^# ' $$source.md; then
 			$(SED) -ne "/^# /{s/^# *\(.*\)/ - [ ] [\1]($${source}.md)/g;p}" $$source.md
 		else
 			echo -e " - [ ] [$${source}]($${source}.md)"
@@ -751,7 +756,7 @@ $(_issue).info: | $(require_pubdir)
 	$(addtopub)
 
 COVERBACKGROUNDS := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_background).png)
-git_background = $(shell git ls-files -- $(call strip_layout,$1) 2> /dev/null)
+git_background = $(shell $(GIT) ls-files -- $(call strip_layout,$1) 2> /dev/null)
 $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@) $$(geometryfile)
 	$(sourcegeometry)
 	$(if $(filter %.png,$(call git_background,$@)),true,false) && $(MAGICK) \
@@ -823,8 +828,8 @@ $(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf
 		-quality 50 \
 		+repage \
 		$${bg}
-	pdftk $(filter %.pdf,$^) cat 1 output $${text}
-	pdftk $${text} background $${bg} output $@
+	$(PDFTK) $(filter %.pdf,$^) cat 1 output $${text}
+	$(PDFTK) $${text} background $${bg} output $@
 	rm $${text} $${bg}
 
 BINDINGFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_text).pdf)
@@ -1253,7 +1258,7 @@ $(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)book.pov $(PROJECT)-%-
 	$(addtopub)
 
 %.mobi: %.epub | $(require_pubdir)
-	kindlegen $< ||:
+	$(KINDLEGEN) $< ||:
 	$(addtopub)
 
 PHONYSCREENS := $(call pattern_list,$(SOURCES),.$(_screen))
@@ -1274,12 +1279,12 @@ INTERMEDIATES += *.html
 BIOHTMLS := $(call pattern_list,$(SOURCES),-bio.html)
 $(BIOHTMLS): %-bio.html: %-manifest.yml
 	$(YQ) -r '.creator[0].about' $(filter %-manifest.yml,$^) |
-		pandoc -f markdown -t html | head -c -1 > $@
+		$(PANDOC) -f markdown -t html | head -c -1 > $@
 
 DESHTMLS := $(call pattern_list,$(SOURCES),-description.html)
 $(DESHTMLS): %-description.html: %-manifest.yml
 	$(YQ) -r '.abstract' $(filter %-manifest.yml,$^) |
-		pandoc -f markdown -t html | head -c -1 > $@
+		$(PANDOC) -f markdown -t html | head -c -1 > $@
 
 INTERMEDIATES += *-url.*
 
@@ -1292,7 +1297,7 @@ INTERMEDIATES += *-url.*
 		$@
 
 %-url.svg:
-	zint \
+	$(ZINT) \
 			--direct \
 			--filetype=svg \
 			--scale=10 \
@@ -1303,12 +1308,12 @@ INTERMEDIATES += *-url.*
 INTERMEDIATES += *-$(_barcode).*
 
 %-$(_barcode).svg: %-manifest.yml
-	zint --direct \
+	$(ZINT) --direct \
 			--filetype=svg \
 			--scale=5 \
 			--barcode=69 \
 			--height=30 \
-			--data=$(shell $(CASILEDIR)scripts/isbn_format.py $< paperback) |\
+			--data=$(shell isbn_format.py $< paperback) |\
 		$(SED) -e 's/Helvetica\( Regular\)\?/TeX Gyre Heros/g' \
 		> $@
 
@@ -1318,11 +1323,11 @@ INTERMEDIATES += *-$(_barcode).*
 		$< \
 		-bordercolor white -border 10 \
 		-font Hack-Regular -pointsize 36 \
-		label:"ISBN $(shell $(CASILEDIR)scripts/isbn_format.py $*-manifest.yml paperback mask)" +swap -gravity Center -append \
+		label:"ISBN $(shell isbn_format.py $*-manifest.yml paperback mask)" +swap -gravity Center -append \
 		-bordercolor white -border 0x10 \
 		-resize $(call scale,1200)x \
 		$@
-	if [[ $(shell $(CASILEDIR)scripts/isbn_format.py $*-manifest.yml paperback) == 9786056644504 ]]; then
+	if [[ $(shell isbn_format.py $*-manifest.yml paperback) == 9786056644504 ]]; then
 		$(MAGICK) \
 			$(MAGICKARGS) \
 			$@ \
@@ -1342,11 +1347,11 @@ $(STATSSOURCES): %-stats:
 	stats.zsh $* $(STATSMONTHS)
 
 repository-lastcommit.ts: $$(newcommits)
-	touch -d $$(git log -n1 --format=%cI) $@
+	touch -d $$($(GIT) log -n1 --format=%cI) $@
 
-repository-worklog.sqlite: $(CASILEDIR)scripts/worklog.zsh repository-lastcommit.ts
-	sqlite3 $@ 'DROP TABLE IF EXISTS commits; CREATE TABLE commits (sha TEXT, author TEXT, date DATE, file TEXT, added INT, removed INT)'
-	$< | sqlite3 -batch $@
+repository-worklog.sqlite: repository-lastcommit.ts
+	$(SQLITE3) $@ 'DROP TABLE IF EXISTS commits; CREATE TABLE commits (sha TEXT, author TEXT, date DATE, file TEXT, added INT, removed INT)'
+	worklog.zsh | $(SQLITE3) -batch $@
 
 WORKLOGFIELDS := sha AS 'Commit', date AS 'Date', file AS 'Filename', added AS 'Added', removed AS 'Removed'
 
@@ -1354,11 +1359,11 @@ repository-worklog.md: repository-worklog.sqlite force
 	now=$$(LANG=en_US date +%c)
 	ver=$(call versioninfo,$(PROJECT))
 	export IFS='|'
-	sqlite3 $< "SELECT DISTINCT(author) FROM commits" |
+	$(SQLITE3) $< "SELECT DISTINCT(author) FROM commits" |
 		while read author; do
-			sqlite3 $< "SELECT DISTINCT strftime('%Y-%m', date) FROM commits WHERE author='$${author}'" |
+			$(SQLITE3) $< "SELECT DISTINCT strftime('%Y-%m', date) FROM commits WHERE author='$${author}'" |
 				while read month; do
-					sqlite3 repository-worklog.sqlite "SELECT SUM(added+ -removed) FROM commits WHERE author='$${author}' and strftime('%Y-%m', date)='$${month}'" | read netadded
+					$(SQLITE3) repository-worklog.sqlite "SELECT SUM(added+ -removed) FROM commits WHERE author='$${author}' and strftime('%Y-%m', date)='$${month}'" | read netadded
 					[[ $${netadded} -ge 1 ]] || continue
 					echo "# Worklog for $${author}"
 					echo "## $$(LANG=en_US date +'%B %Y' -d $${month}-01)"
@@ -1371,7 +1376,7 @@ repository-worklog.md: repository-worklog.sqlite force
 					echo
 					echo '``` table'
 					echo '---\nheader: True\n---'
-					sqlite3 --header -csv repository-worklog.sqlite "SELECT $(WORKLOGFIELDS) FROM commits WHERE author='$${author}' AND strftime('%Y-%m', date)='$${month}'"
+					$(SQLITE3) --header -csv repository-worklog.sqlite "SELECT $(WORKLOGFIELDS) FROM commits WHERE author='$${author}' AND strftime('%Y-%m', date)='$${month}'"
 					echo '```'
 					echo
 				done
@@ -1391,14 +1396,14 @@ repository-worklog.pdf: repository-worklog.md
 		extract_references.js > $@
 
 %-$(_verses)-$(_sorted).json: %-$(_verses).json
-	jq -M -e 'unique_by(.osis) | sort_by(.seq)' $< > $@
+	$(JQ) -M -e 'unique_by(.osis) | sort_by(.seq)' $< > $@
 
 %-$(_verses)-$(_text).yml: %-$(_verses)-$(_sorted).json
-	jq -M -e -r 'map_values(.osis) | _nwise(100) | join(";")' $< |
-		xargs -n1 -iX curl -s -L "https://sahneleme.incil.info/api/X" |
+	$(JQ) -M -e -r 'map_values(.osis) | _nwise(100) | join(";")' $< |
+		$(XARGS) -n1 -iX curl -s -L "https://sahneleme.incil.info/api/X" |
 		# Because yq doesn't --slurp JSON, see https://github.com/kislyuk/yq/issues/56
-		jq -s '[.]' | $(YQ) -M -e -y ".[0][] | map_values(.scripture)" |
-		grep -v '^---$$' |
+		$(JQ) -s '[.]' | $(YQ) -M -e -y ".[0][] | map_values(.scripture)" |
+		$(GREP) -v '^---$$' |
 		# Because lua-yaml has a bug parsing non quoted keys...
 		$(SED) -e '/^[^ ]/s/^\([^:]\+\):/"\1":/' \
 			> $@
@@ -1416,28 +1421,28 @@ split_chapters:
 
 normalize_files: private PANDOCFILTERS = --lua-filter=$(CASILEDIR)pandoc-filters/chapterid.lua
 normalize_files: $(CASILEDIR)pandoc-filters/chapterid.lua
-	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
+	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
 	$(if $(MARKDOWNSOURCES),,exit 0)
 	echo $(MARKDOWNSOURCES) |
-		perl -pne 's/ /\n/g' |
-		pcregrep "$(PROJECTDIR)/($(subst $(space),|,$(strip $(SOURCES))))-.*/" |
+		$(PERL) -pne 's/ /\n/g' |
+		$(PCREGREP) "$(PROJECTDIR)/($(subst $(space),|,$(strip $(SOURCES))))-.*/" |
 		while read src; do
-			git diff-files --quiet -- $${src} || exit 1 # die if this file has uncommitted changes
-			basename $${src} | perl -pne 's/-.*$$//' | read chapno
+			$(GIT) diff-files --quiet -- $${src} || exit 1 # die if this file has uncommitted changes
+			basename $${src} | $(PERL) -pne 's/-.*$$//' | read chapno
 			dirname $${src} | read dir
 			$(SED) -n '/^#/{s/ı/i/g;p}' $${src} |
-				pandoc $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) | read identifier
+				$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) | read identifier
 				target="$${dir}/$${chapno}-$${identifier}.md"
-				[[ $${src} == $${target} ]] || git mv "$${src}" "$${target}"
+				[[ $${src} == $${target} ]] || $(GIT) mv "$${src}" "$${target}"
 		done
-	git diff-index --quiet --cached HEAD || git commit -m "[auto] Normalize filenames based on chapter ids"
+	$(GIT) diff-index --quiet --cached HEAD || $(GIT) commit -m "[auto] Normalize filenames based on chapter ids"
 
 watch:
-	git ls-files --recurse-submodules |
-		entr $(ENTRFLAGS) make DRAFT=true LAZY=true $(WATCHARGS)
+	$(GIT) ls-files --recurse-submodules |
+		$(ENTR) $(ENTRFLAGS) make DRAFT=true LAZY=true $(WATCHARGS)
 
 diff:
-	git diff --color=always --ignore-submodules --no-ext-diff
-	git submodule foreach git diff --color=always --no-ext-diff
+	$(GIT) diff --color=always --ignore-submodules --no-ext-diff
+	$(GIT) submodule foreach $(GIT) diff --color=always --no-ext-diff
 
 -include $(POSTCASILEINCLUDE)

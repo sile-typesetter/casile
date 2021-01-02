@@ -5,38 +5,38 @@ CASILEDIR=$(cd "$(dirname $0)/../" && pwd)
 . ${CASILEDIR}/functions.zsh
 
 function gitcommits () {
-	git rev-list --no-merges --reverse HEAD
+	@GIT@ rev-list --no-merges --reverse HEAD
 }
 
 function gitmodified () {
-	git diff-tree --root --no-commit-id -r $@ |
-		grep -E '100755|100644|100664' |
-		awk '{print $6}' |
-		grep -vE '^\.|makefile'
+	@GIT@ diff-tree --root --no-commit-id -r $@ |
+		@GREP@ -E '100755|100644|100664' |
+		@AWK@ '{print $6}' |
+		@GREP@ -vE '^\.|makefile'
 }
 
 function gitadded () {
-	git diff --word-diff-regex=. $@ | addedchars | countchars
+	@GIT@ diff --word-diff-regex=. $@ | addedchars | countchars
 }
 
 function gitremoved () {
-	git diff --word-diff-regex=. $@ | removedchars | countchars
+	@GIT@ diff --word-diff-regex=. $@ | removedchars | countchars
 }
 
 function addedchars () {
-	perl -ne 'print $1 while /((?<=\{\+).+?(?=\+\}))/g'
+	@PERL@ -ne 'print $1 while /((?<=\{\+).+?(?=\+\}))/g'
 }
 
 function removedchars () {
-	perl -ne 'print $1 while /((?<=\[\-).+?(?=\-\]))/g'
+	@PERL@ -ne 'print $1 while /((?<=\[\-).+?(?=\-\]))/g'
 }
 
 function gitattr () {
-	git log --no-walk --format=$@
+	@GIT@ log --no-walk --format=$@
 }
 
 function gitparent () {
-	git rev-parse --revs-only $1^ | read newparent
+	@GIT@ rev-parse --revs-only $1^ | read newparent
 	test -z $newparent && echo 4b825dc642cb6eb9a060e54bf8d69288fbee4904 || echo $newparent
 }
 

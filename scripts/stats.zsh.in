@@ -9,13 +9,14 @@ let months=$2-1
 . ${CASILEDIR}/functions.zsh
 
 function list_sources () {
-	git ls-files | pcregrep "$basename.*(md|yml)"
+	@GIT@ ls-files |
+    @PCREGREP@ "$basename.*(md|yml)"
 }
 
 function list_authors () {
 	list_sources $1 |
-		xargs -n1 git log --format=%aN --follow -- |
-		sort -u
+		@XARGS@ -n1 @GIT@ log --format=%aN --follow -- |
+		@SORT@ -u
 }
 
 function list_commits () {
@@ -23,13 +24,13 @@ function list_commits () {
 	month=$2
 	author=$3
 	list_sources $basename |
-		xargs -n1 git log --format='%at|%h|%s|%an'  --follow --find-renames -- |
+		@XARGS@ -n1 @GIT@ log --format='%at|%h|%s|%an'  --follow --find-renames -- |
 		while IFS='|' read at sha1 msg aut; do
 			inrange $month $at || continue
 			[[ $aut == $author ]] || continue
 			echo $at $sha1
 		done |
-		sort -u |
+		@SORT@ -u |
 		cut -d\  -f2
 }
 
@@ -38,11 +39,11 @@ function calculate_affected () {
 	basename=$2
 	before=0 beforew=0
 	after=0 afterw=0
-	git diff-tree --no-commit-id --name-only -r $sha1 |
-		pcregrep "$basename.*(md|yml)" |
+	@GIT@ diff-tree --no-commit-id --name-only -r $sha1 |
+		@PCREGREP@ "$basename.*(md|yml)" |
 		while read file; do
-			let after="$after + $(git show "$sha1:$file" 2>&- | countchars)"
-			let before="$before + $(git show "$sha1^:$file" 2>&- | countchars)"
+			let after="$after + $(@GIT@ show "$sha1:$file" 2>&- | countchars)"
+			let before="$before + $(@GIT@ show "$sha1^:$file" 2>&- | countchars)"
 		done
 	change=$(($after-$before))
 	echo $after $change
@@ -70,7 +71,7 @@ echo "ÇEVİRİ VE EDİTÖRLÜK RAPÖRÜ: $basename"
 echo "(Son hali $(itemwords $basename) kelime)"
 
 cyclestart=$(date "+%Y-%m-1")
-rootstart=$(git log --format=%at | sort -n | head -n1)
+rootstart=$(@GIT@ log --format=%at | @SORT@ -n | head -n1)
 list_authors $basename |
 	while read author; do
         let usertotal=0
@@ -90,7 +91,8 @@ list_authors $basename |
 				[[ $change -ge 0 ]] || continue
 				let monthtotal=$monthtotal+$change
 				# git log -1 --date="format:%m-%d %H:%M" --format="%ad (%h) %s" $sha1
-				echo "Karakter: $(printf %8d $after) [$(printf %+8d $change)]" “$(git log -1 --format="%s" $sha1 | perl -pe 's/(?<=.{39}).{1,}$/…/')”
+				echo "Karakter: $(printf %8d $after) [$(printf %+8d $change)]" “$(@GIT@ log -1 --format="%s" $sha1 |
+          @PERL@ -pe 's/(?<=.{39}).{1,}$/…/')”
 			done
 			let usertotal=$usertotal+$monthtotal
 		done

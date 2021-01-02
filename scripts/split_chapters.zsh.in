@@ -27,16 +27,16 @@ while read line; do
 done < $src
 
 # Truncate source to just footnotes
-sed -i -n -e '/^\[\^1\]: /,$p' $src
+@SED@ -i -n -e '/^\[\^1\]: /,$p' $src
 
 # Put footnotes in all files, renumber, and generally cleanup
 for chapter in $chapters; do
 	>> $chapter < $src
-	pandoc $chapter --atx-headers --wrap=none --to=markdown |
-		sponge $chapter
-	git add $chapter
+	@PANDOC@ $chapter --atx-headers --wrap=none --to=markdown |
+		@SPONGE@ $chapter
+	@GIT@ add $chapter
 done
 
 # Make source an index to the chapters
 > $src <<< "esyscmd([[loadchapters.zsh $dir/<0->-*.md]])"
-git add $src
+@GIT@ add $src
