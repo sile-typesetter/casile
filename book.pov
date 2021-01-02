@@ -86,7 +86,7 @@ light_source {
 }
 
 light_source {
-	<-3,0,-HalfThick>
+	<-8,3,-HalfThick>
 	color rgb<0.5,0.5,0.5>
 }
 
