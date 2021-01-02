@@ -18,8 +18,8 @@ spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | $(B
 mmtopx = $(shell echo "$1 * $(HIDPI) * 0.0393701 / 1" | $(BC))
 mmtopm = $(shell echo "$1 * 96 * .0393701 / 1" | $(BC))
 mmtopt = $(shell echo "$1 * 2.83465 / 1" | $(BC))
-width = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:w] $1)
-height = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:h] $1)
+width = $(shell $(IDENTIFY) -density $(HIDPI) -format "%[fx:w]" $1)
+height = $(shell $(IDENTIFY) -density $(HIDPI) -format "%[fx:h]" $1)
 parse_layout = $(foreach WORD,$1,$(call parse_papersize,$(WORD))-$(call parse_binding,$(WORD)))
 strip_layout = $(filter-out $1,$(foreach PAPERORBINDING,$(PAPERSIZES) $(BINDINGS),$(subst -$(PAPERORBINDING),,$1)))
 parse_papersize = $(or $(filter $(PAPERSIZES),$(subst -, ,$(basename $1))),)
@@ -228,7 +228,7 @@ define magick_emblum ?=
 		$1 \
 		-resize "%[fx:min($$spinepx/100*(100-$$spinemm),$(call mmtopx,12))]"x \
 		$(call magick_sembol_filter) \
-		-splice x%[fx:$(call mmtopx,5)+$$bleedpx] \
+		-splice "x%[fx:$(call mmtopx,5)+$$bleedpx]" \
 	\) -compose SrcOver -composite
 endef
 
@@ -241,7 +241,7 @@ define magick_logo ?=
 		$1 \
 		$(call magick_logo_filter) \
 		-resize $(call mmtopx,30)x \
-		-splice %[fx:$$bleedpx+$$pagewpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
+		-splice "%[fx:$$bleedpx+$$pagewpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)]" \
 	\) -compose SrcOver -composite
 endef
 
@@ -256,13 +256,13 @@ define magick_barcode ?=
 		-bordercolor white \
 		-border $(call mmtopx,2) \
 		-background none \
-		-splice %[fx:$$bleedpx+$$pagewpx+$$spinepx+$$pagewpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)] \
+		-splice "%[fx:$$bleedpx+$$pagewpx+$$spinepx+$$pagewpx*15/100]x%[fx:$$bleedpx+$(call mmtopx,10)]" \
 	\) -compose SrcOver -composite
 endef
 
 define magick_crease ?=
 	-stroke gray95 -strokewidth $(call mmtopx,0.5) \
-	\( -size $${pagewpx}x$${pagehpx} -background none xc: -draw "line %[fx:$1$(call mmtopx,8)],0 %[fx:$1$(call mmtopx,8)],$${pagehpx}" -blur 0x$(call scale,$(call mmtopx,0.2)) -level 0x40%! \) \
+	\( -size $${pagewpx}x$${pagehpx} -background none xc: -draw "line %[fx:$1$(call mmtopx,8)],0 %[fx:$1$(call mmtopx,8)],$${pagehpx}" -blur 0x$(call scale,$(call mmtopx,0.2)) -level "0x40%!" \) \
 	-compose ModulusAdd -composite
 endef
 
@@ -293,7 +293,7 @@ define pagetopng ?=
 		$(MAGICKARGS) \
 		-density $(HIDPI) \
 		-background white \
-		$<[$$(($1-1))] \
+		"$<[$$(($1-1))]" \
 		-flatten \
 		-colorspace RGB \
 		-crop $${pagewpx}x$${pagehpx}+$${trimpx}+$${trimpx}! \
@@ -318,7 +318,7 @@ define pov_crop ?=
 		-set option:fuzzy_trim "%[fx:w]x%[fx:h]+%[fx:page.x]+%[fx:page.y]" \
 		+delete \
 	\) \
-	-crop %[fuzzy_trim] +repage \
+	-crop "%[fuzzy_trim]" +repage \
 	-background transparent \
 	-gravity Center \
 	-extent  "%[fx:asp = (w/h <= 3/4 ? 3/4 : 4/3); w/h <= asp ? h*asp : w]x" \
