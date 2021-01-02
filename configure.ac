@@ -75,80 +75,40 @@ AM_CONDITIONAL([ENABLE_ZSH_COMPLETION],[test "x$with_zsh_completion_dir" != "xno
 
 AC_SUBST([RUST_TARGET_SUBDIR])
 
-AC_PATH_PROG(YARN, yarn)
-test -n "$YARN" || AC_MSG_ERROR([yarn is required])
-
-AC_PATH_PROG(SILE, sile)
-test -n "$SILE" || AC_MSG_ERROR([sile is required])
-
 AC_PROG_SED
 AC_PROG_GREP
 
-AC_PATH_PROG(PANDOC, pandoc)
-test "x$PANDOC" != "x" || AC_MSG_ERROR([pandoc is required])
+AC_DEFUN([AX_PROGVAR], [AC_PATH_PROG(m4_toupper($1), $1)test -n "$m4_toupper($1)" || AC_MSG_ERROR([$1 is required])])
+
+AX_PROGVAR([yarn])
+AX_PROGVAR([sile])
+AX_PROGVAR([pandoc])
+AX_PROGVAR([bc])
+AX_PROGVAR([entr])
+AX_PROGVAR([epubcheck])
+AX_PROGVAR([gs])
+AX_PROGVAR([inkscape])
+AX_PROGVAR([jq])
+AX_PROGVAR([m4])
+AX_PROGVAR([magick])
+AX_PROGVAR([node])
+AX_PROGVAR([pcregrep])
+AX_PROGVAR([pdfinfo])
+AX_PROGVAR([pdftk])
+AX_PROGVAR([podofobox])
+AX_PROGVAR([povray])
+AX_PROGVAR([sponge])
+AX_PROGVAR([sqlite3])
+AX_PROGVAR([yq])
+AX_PROGVAR([zint])
+AX_PROGVAR([zsh])
+
 AC_MSG_CHECKING(whether pandoc has SILE Writer)
 AS_IF([$PANDOC --list-output-formats | $GREP -qx sile],[
     AC_MSG_RESULT(yes)
 ],[
     AC_MSG_FAILURE([pandoc must have sile writer support])
 ])
-
-AC_PATH_PROG(MAGICK, magick)
-test -n "$MAGICK" || AC_MSG_ERROR([magick is required])
-
-AC_PATH_PROG(GS, gs)
-test -n "$GS" || AC_MSG_ERROR([gs is required])
-
-AC_PATH_PROG(POVRAY, povray)
-test -n "$POVRAY" || AC_MSG_ERROR([povray is required])
-
-AC_PATH_PROG(JQ, jq)
-test -n "$JQ" || AC_MSG_ERROR([jq is required])
-
-AC_PATH_PROG(ZINT, zint)
-test -n "$ZINT" || AC_MSG_ERROR([zint is required])
-
-AC_PATH_PROG(PDFINFO, pdfinfo)
-test -n "$PDFINFO" || AC_MSG_ERROR([pdfinfo is required])
-
-AC_PATH_PROG(PDFTK, pdftk)
-test -n "$PDFTK" || AC_MSG_ERROR([pdftk is required])
-
-AC_PATH_PROG(INKSCAPE, inkscape)
-test -n "$INKSCAPE" || AC_MSG_ERROR([inkscape is required])
-
-AC_PATH_PROG(PODOFOBOX, podofobox)
-test -n "$PODOFOBOX" || AC_MSG_ERROR([podofobox is required])
-
-AC_PATH_PROG(SPONGE, sponge)
-test -n "$SPONGE" || AC_MSG_ERROR([sponge is required])
-
-AC_PATH_PROG(M4, m4)
-test -n "$M4" || AC_MSG_ERROR([m4 is required])
-
-AC_PATH_PROG(ENTR, entr)
-test -n "$ENTR" || AC_MSG_ERROR([entr is required])
-
-AC_PATH_PROG(PCREGREP, pcregrep)
-test -n "$PCREGREP" || AC_MSG_ERROR([pcregrep is required])
-
-AC_PATH_PROG(NODE, node)
-test -n "$NODE" || AC_MSG_ERROR([node is required])
-
-AC_PATH_PROG(BC, bc)
-test -n "$BC" || AC_MSG_ERROR([bc is required])
-
-AC_PATH_PROG(ZSH, zsh)
-test -n "$ZSH" || AC_MSG_ERROR([zsh is required])
-
-AC_PATH_PROG(epubcheck, epubcheck)
-test -n "$epubcheck" || AC_MSG_ERROR([epubcheck is required])
-
-AC_PATH_PROG(SQLITE3, sqlite3)
-test -n "$SQLITE3" || AC_MSG_ERROR([sqlite3 is required])
-
-AC_PATH_PROG(YQ, yq)
-test -n "$YQ" || AC_MSG_ERROR([yq is required])
 
 AX_PROG_LUA(5.1, , , AC_MSG_ERROR([lua interpreter is required]))
 AX_LUAROCKS_ROCK(yaml)

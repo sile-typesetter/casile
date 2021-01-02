@@ -32,15 +32,29 @@ rparen := )
 
 # Use paths discovered by autoconf by default, but allow projects to override
 # with paths of their own.
+BC ?= @BC@
+ENTR ?= @ENTR@
+EPUBCHECK ?= @EPUBCHECK@
+GS ?= @GS@
 INKSCAPE ?= @INKSCAPE@
+JQ ?= @JQ@
+M4 ?= @M4@
 MAGICK ?= @MAGICK@
+NODE ?= @NODE@
 PANDOC ?= @PANDOC@
+PCREGREP ?= @PCREGREP@
+PDFINFO ?= @PDFINFO@
+PDFTK ?= @PDFTK@
 PERL ?= @PERL@
+PODOFOBOX ?= @PODOFOBOX@
 POVRAY ?= @POVRAY@
 PYTHON ?= @PYTHON_BIN@
 SED ?= @SED@
 SILE ?= @SILE@
+SPONGE ?= @SPONGE@
+SQLITE3 ?= @SQLITE3@
 YQ ?= @YQ@
+ZINT ?= @ZINT@
 ZSH ?= @ZSH@
 
 .PHONY: default
