@@ -182,7 +182,7 @@ $(eval $(WATCHARGS):;@:)
 endif
 
 export PATH := $(CASILEDIR)scripts:$(PATH):$(shell $(PYTHON) -c "import site; print(site.getsitepackages()[0]+'/scripts')")
-export HOSTNAME := $(shell hostname)
+export HOSTNAME := $(shell $(HOSTNAME_BIN))
 export PROJECT := $(PROJECT)
 
 LOCALSILE ?= $(HOME)/projects/sile-typesetter/sile

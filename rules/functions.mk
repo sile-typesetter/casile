@@ -129,17 +129,7 @@ define munge ?=
 endef
 
 define find_and_munge ?=
-	$(warning Using obsolete combined find_and_munge command, please migrate to separate commands)
-	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
-	$(FIND) $(PROJECTDIR) -maxdepth 2 -name '$1' $(foreach PATH,$(shell $(GIT) submodule | $(AWK) '{print $$2}'),-not -path '*/$(PATH)/*') |
-		$(GREP) -f <($(GIT) ls-files | $(SED) -e 's/$$/$$/;s#^#./#') |
-		while read f; do
-			$(GREP) -q "esyscmd.*loadchapters.zsh" $$f && continue # skip compilations that are mostly M4
-			$(GIT) diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
-			$2 < $$f | sponge $$f
-			$(GIT) add -- $$f
-		done
-	$(GIT) diff-index --quiet --cached HEAD || $(GIT) commit -m "[auto] $3"
+	$(error Using obsolete combined find_and_munge command, please migrate to separate commands)
 endef
 
 define link_verses ?=
@@ -306,7 +296,8 @@ define povray ?=
 		#version 3.7;
 		#declare SceneLight = $(SCENELIGHT);
 	EOF
-	while pgrep povray > /dev/null; do sleep 2.5; done
+	sleep 1.$${RANDOM} # block parallel execution
+	while $(PGREP) povray > /dev/null; do sleep 2.$${RANDOM}; done
 	$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$5 -H$6 -Q$(call scale,11,4) -O$4
 	rm $$headers
 endef

@@ -81,13 +81,21 @@ sky_sphere {
 light_source {
 	<-0.2,8,3.0*ViewZ>
 	color rgb<1, 1, 1>
+	// spotlight
+	// radius 10
+	// falloff 14
+	// point_at <BX/4,0,0>
 	area_light <0.4, 0, 0>, <0, 0, 0.4>, Lights, Lights
 	circular
 }
 
 light_source {
-	<-3,0,-HalfThick>
+	<-8,3,-HalfThick>
 	color rgb<0.5,0.5,0.5>
+	// spotlight
+	// radius 6
+	// falloff 8
+	// point_at <0,BX/2,0>
 }
 
 #macro Book (ThisBook)
