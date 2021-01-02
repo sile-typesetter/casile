@@ -306,7 +306,8 @@ define povray ?=
 		#version 3.7;
 		#declare SceneLight = $(SCENELIGHT);
 	EOF
-	while pgrep povray > /dev/null; do sleep 2.5; done
+	sleep 1.$${RANDOM} # block parallel execution
+	while pgrep povray > /dev/null; do sleep 2.$${RANDOM}; done
 	$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$5 -H$6 -Q$(call scale,11,4) -O$4
 	rm $$headers
 endef
