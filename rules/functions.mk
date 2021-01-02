@@ -6,18 +6,18 @@ lparen := (
 rparen := )
 
 # Utility functions for simplifying per-project makefiles
-depend_font = fc-match "$1" family | grep -qx "$1"
+depend_font = fc-match "$1" family | $(GREP) -qx "$1"
 require_pubdir = $(and $(filter-out true,$(DRAFT)),$(or $(strip $(PUBDIR)),$(error Required PUBDIR not set)))
 
 # Assorted utility functions for juggling information about books
 mockupbase = $(if $(filter $(MOCKUPSOURCES),$(call parse_bookid,$1)),$(subst $(call parse_bookid,$1),$(MOCKUPBASE),$1),$1)
-pagecount = $(shell pdfinfo $(call mockupbase,$1) | awk '$$1 == "Pages:" {printf "%.0f", $$2 * $(MOCKUPFACTOR)}' || echo 0)
-pagew = $(shell pdfinfo $(call mockupbase,$1) | awk '$$1$$2 == "Pagesize:" {print $$3}' || echo 0)
-pageh = $(shell pdfinfo $(call mockupbase,$1) | awk '$$1$$2 == "Pagesize:" {print $$5}' || echo 0)
-spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | bc)
-mmtopx = $(shell echo "$1 * $(HIDPI) * 0.0393701 / 1" | bc)
-mmtopm = $(shell echo "$1 * 96 * .0393701 / 1" | bc)
-mmtopt = $(shell echo "$1 * 2.83465 / 1" | bc)
+pagecount = $(shell $(PDFINFO) $(call mockupbase,$1) | $(AWK) '$$1 == "Pages:" {printf "%.0f", $$2 * $(MOCKUPFACTOR)}' || echo 0)
+pagew = $(shell $(PDFINFO) $(call mockupbase,$1) | $(AWK) '$$1$$2 == "Pagesize:" {print $$3}' || echo 0)
+pageh = $(shell $(PDFINFO) $(call mockupbase,$1) | $(AWK) '$$1$$2 == "Pagesize:" {print $$5}' || echo 0)
+spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | $(BC))
+mmtopx = $(shell echo "$1 * $(HIDPI) * 0.0393701 / 1" | $(BC))
+mmtopm = $(shell echo "$1 * 96 * .0393701 / 1" | $(BC))
+mmtopt = $(shell echo "$1 * 2.83465 / 1" | $(BC))
 width = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:w] $1)
 height = $(shell $(IDENTIFY) -density $(HIDPI) -format %[fx:h] $1)
 parse_layout = $(foreach WORD,$1,$(call parse_papersize,$(WORD))-$(call parse_binding,$(WORD)))
@@ -31,7 +31,7 @@ strip_edits = $(foreach WORD,$1,$(filter-out $(WORD),$(foreach EDIT,$(EDITS),$(s
 parse_bookid = $(firstword $(subst -, ,$(basename $1)))
 series_sort = $(shell PROJECT=$(PROJECT) SORTORDER=$(SORTORDER) $(CASILEDIR)bin/series_sort.lua $1)
 metainfo = $(shell $(YQ) -r '$1' < $(PROJECTYAML))
-isbntouid = $(call cachevar,$1,uuid,$(basename $(notdir $(shell grep -l $1 $(YAMLSOURCES)))))
+isbntouid = $(call cachevar,$1,uuid,$(basename $(notdir $(shell $(GREP) -l $1 $(YAMLSOURCES)))))
 isbnmask = $(call cachevar,$1,mask,$(shell $(PYTHON) -c "import isbnlib; print(isbnlib.mask('$1'))"))
 ebookisbn = $(call cachevar,$1,ebook,$(or $(shell $(YQ) -r '.identifier[]? | select(.key == "ebook"    ).text' $1.yml),$(call printisbn,$1)))
 printisbn = $(call cachevar,$1,print,$(shell $(YQ) -r '.identifier[]? | select(.key == "paperback").text' $1.yml))
@@ -60,8 +60,8 @@ localize = $(foreach WORD,$1,$(or $(_$(WORD)),$(WORD)))
 unlocalize = $(foreach WORD,$1,$(or $(__$(WORD)),$(WORD)))
 
 # Geometry file dependency functions
-newgeometry = $(shell grep -sq hidpi=$(HIDPI) $1 || echo force)
-newcommits = $(shell test $$(git log -n1 --format=%ct)0 -gt $$(stat -c %Y $@ 2>/dev/null)0 && echo force)
+newgeometry = $(shell $(GREP) -sq hidpi=$(HIDPI) $1 || echo force)
+newcommits = $(shell test $$($(GIT) log -n1 --format=%ct)0 -gt $$(stat -c %Y $@ 2>/dev/null)0 && echo force)
 geometrybase = $(and $(filter-out $(FAKEPAPERSIZES),$(call parse_papersize,$1)),$(filter-out $(UNBOUNDLAYOUTS),$(call parse_layout,$1)),$*.pdf) $(_geometry)-$(call parse_papersize,$1).pdf
 geometryfile = $(call parse_bookid,$@)-$(call parse_papersize,$@)-$(or $(call parse_binding,$@),$(_print))-$(_geometry).sh
 sourcegeometry = source $(filter %-$(_geometry).sh,$^ $|)
@@ -77,17 +77,17 @@ endef
 
 # If building in draft mode, scale resolutions down for quick builds
 define scale ?=
-$(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | bc) || echo $1))
+$(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | $(BC)) || echo $1))
 endef
 
 define time_warp ?=
 	cd $1
-	git update-index --refresh --ignore-submodules ||:
-	git diff-index --quiet --cached HEAD
-	git ls-files |
+	$(GIT) update-index --refresh --ignore-submodules ||:
+	$(GIT) diff-index --quiet --cached HEAD
+	$(GIT) ls-files |
 		while read file; do
-			ts=$$(git log -n1 --pretty=format:%cI -- $$file)
-			git diff-files --quiet -- $$file || continue
+			ts=$$($(GIT) log -n1 --pretty=format:%cI -- $$file)
+			$(GIT) diff-files --quiet -- $$file || continue
 			touch -d "$$ts" -- $$file
 		done
 endef
@@ -96,50 +96,50 @@ define versioninfo ?=
 $(shell
 	echo -en "$(call parse_bookid,$1)@$(subst $(call parse_bookid,$1)/,,$(or $(TAG),$(BRANCH)))-"
 	if [[ -n "$(TAG)" ]]; then
-		git describe --always --dirty=* | cut -d/ -f2 | xargs echo -en
+		$(GIT) describe --always --dirty=* | cut -d/ -f2 | xargs echo -en
 	elif [[ "$(BRANCH)" == master ]]; then
-		git describe --always --tags --dirty=* | cut -d/ -f2 | xargs echo -en
+		$(GIT) describe --always --tags --dirty=* | cut -d/ -f2 | xargs echo -en
 	else
-		git rev-list --boundary $(PARENT)..HEAD | grep -v - | wc -l | xargs -iX echo -en "X-"
-		$(DIFF) && echo -en "$$(git rev-parse --short $(PARENT))→"
-		git describe --always --dirty=* | cut -d/ -f2 | xargs echo -en
+		$(GIT) rev-list --boundary $(PARENT)..HEAD | $(GREP) -v - | wc -l | xargs -iX echo -en "X-"
+		$(DIFF) && echo -en "$$($(GIT) rev-parse --short $(PARENT))→"
+		$(GIT) describe --always --dirty=* | cut -d/ -f2 | xargs echo -en
 	fi)
 endef
 
 define find ?=
 $(shell
-	find $(PROJECTDIR) \
+	$(FIND) $(PROJECTDIR) \
 			-maxdepth 2 \
 			-name '$1' \
-			$(foreach PATH,$(shell git submodule | awk '{print $$2}'),-not -path '*/$(PATH)/*') |
-			grep -f <(git ls-files | $(SED) -e 's/$$/$$/;s#^#./#') |
+			$(foreach PATH,$(shell $(GIT) submodule | $(AWK) '{print $$2}'),-not -path '*/$(PATH)/*') |
+			$(GREP) -f <($(GIT) ls-files | $(SED) -e 's/$$/$$/;s#^#./#') |
 		xargs echo)
 endef
 
 define munge ?=
 	: $${SKIPM4:=true}
-	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
+	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
 	for f in $1; do
-		$${SKIPM4} && grep -q "esyscmd" $$f && continue # skip anything with m4 macros
-		git diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
+		$${SKIPM4} && $(GREP) -q "esyscmd" $$f && continue # skip anything with m4 macros
+		$(GIT) diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
 		$2 < $$f | sponge $$f
-		git add -- $$f
+		$(GIT) add -- $$f
 	done
-	git diff-index --quiet --cached HEAD || git commit -m "[auto] $3"
+	$(GIT) diff-index --quiet --cached HEAD || $(GIT) commit -m "[auto] $3"
 endef
 
 define find_and_munge ?=
 	$(warning Using obsolete combined find_and_munge command, please migrate to separate commands)
-	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
-	find $(PROJECTDIR) -maxdepth 2 -name '$1' $(foreach PATH,$(shell git submodule | awk '{print $$2}'),-not -path '*/$(PATH)/*') |
-		grep -f <(git ls-files | $(SED) -e 's/$$/$$/;s#^#./#') |
+	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
+	$(FIND) $(PROJECTDIR) -maxdepth 2 -name '$1' $(foreach PATH,$(shell $(GIT) submodule | $(AWK) '{print $$2}'),-not -path '*/$(PATH)/*') |
+		$(GREP) -f <($(GIT) ls-files | $(SED) -e 's/$$/$$/;s#^#./#') |
 		while read f; do
-			grep -q "esyscmd.*loadchapters.zsh" $$f && continue # skip compilations that are mostly M4
-			git diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
+			$(GREP) -q "esyscmd.*loadchapters.zsh" $$f && continue # skip compilations that are mostly M4
+			$(GIT) diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
 			$2 < $$f | sponge $$f
-			git add -- $$f
+			$(GIT) add -- $$f
 		done
-	git diff-index --quiet --cached HEAD || git commit -m "[auto] $3"
+	$(GIT) diff-index --quiet --cached HEAD || $(GIT) commit -m "[auto] $3"
 endef
 
 define link_verses ?=
@@ -166,7 +166,7 @@ define sile_hook ?=
 endef
 
 define skip_if_tracked ?=
-	git ls-files --error-unmatch -- $1 2>/dev/null && exit 0 ||:
+	$(GIT) ls-files --error-unmatch -- $1 2>/dev/null && exit 0 ||:
 endef
 
 define skip_if_lazy ?=
@@ -327,11 +327,11 @@ define pov_crop ?=
 endef
 
 define split_chapters ?=
-	git diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
-	git diff-files --quiet -- $1 || exit 1 # die if this file has uncommitted changes
-	grep -q 'esyscmd.*cat' $1 && exit 1 # skip if the source is aready a compilation
+	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
+	$(GIT) diff-files --quiet -- $1 || exit 1 # die if this file has uncommitted changes
+	$(GREP) -q 'esyscmd.*cat' $1 && exit 1 # skip if the source is aready a compilation
 	split_chapters.zsh $1
-	git diff-index --quiet --cached HEAD || git commit -m "[auto] Split $1 into one file per chapter"
+	$(GIT) diff-index --quiet --cached HEAD || $(GIT) commit -m "[auto] Split $1 into one file per chapter"
 endef
 
 define magick_fragment_cover ?=

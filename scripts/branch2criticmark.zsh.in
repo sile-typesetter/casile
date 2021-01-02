@@ -10,20 +10,20 @@ trap 'rm -rf ${WT}' EXIT SIGHUP SIGTERM
 
 macros=${CASILEDIR}/viachristus.m4
 
-git worktree prune > /dev/null
-git worktree add --detach ${WT} ${BRANCH} > /dev/null
+@GIT@ worktree prune > /dev/null
+@GIT@ worktree add --detach ${WT} ${BRANCH} > /dev/null
 
-m4 ${macros} ${WT}/${FILE} | git hash-object --stdin -w | read A
-m4 ${macros} ${FILE} | git hash-object --stdin -w | read B
+@M4@ ${macros} ${WT}/${FILE} | @GIT@ hash-object --stdin -w | read A
+@M4@ ${macros} ${FILE} | @GIT@ hash-object --stdin -w | read B
 
-if git diff ${A}..${B} --quiet; then
-    git show ${B}
+if @GIT@ diff ${A}..${B} --quiet; then
+    @GIT@ show ${B}
 else
-    git diff --no-color --word-diff -U99999 ${A}..${B} |
-        sed -e '1,5d' |
-            perl -pn \
+    @GIT@ diff --no-color --word-diff -U99999 ${A}..${B} |
+        @SED@ -e '1,5d' |
+            @PERL@ -pn \
                 -e 's/\[-[^\]]*?-\]\{\+([^\}]*?==.*?)\+\}/\1/g' |
-            sed \
+            @SED@ \
                 -e 's/\[-/{--/g' -e 's/-\]/--}/g' \
                 -e 's/{+/{++/g' -e 's/+}/++}/g'
 fi
