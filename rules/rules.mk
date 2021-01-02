@@ -545,7 +545,8 @@ INTERMEDIATES += *-$(_processed).md
 		$(call markdown_hook) > $@
 
 %-$(_booklet).pdf: %-$(_spineless).pdf | $(require_pubdir)
-	$(PDFBOOK) --short-edge --noautoscale true --papersize "{$(call pageh,$<)pt,$$(($(call pagew,$<)*2))pt}" --outfile $@ -- $<
+	$(PDFBOOK2) --short-edge --paper="{$(call pageh,$<)pt,$$(($(call pagew,$<)*2))pt}" -- $<
+	mv $*-book.pdf $@
 	$(addtopub)
 
 %-2end.pdf: %.pdf
