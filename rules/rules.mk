@@ -213,8 +213,15 @@ $(foreach SOURCE,$(SOURCES),$(eval TARGETMACROS_$(SOURCE) := $(wildcard $(SOURCE
 $(foreach SOURCE,$(SOURCES),$(eval TARGETYAMLS_$(SOURCE) := $(wildcard $(SOURCE).yml)))
 $(foreach SOURCE,$(SOURCES),$(eval TARGETLUAS_$(SOURCE) := $(wildcard $(SOURCE).lua)))
 
-.PHONY: pdfs
-pdfs: $(call pattern_list,$(TARGETS),.pdfs)
+.PHONY: all
+all: $(FORMATS)
+
+define format_template =
+.PHONY: $(1)
+$(1): $(call pattern_list,$(2),.$(1))
+endef
+
+$(foreach FORMAT,$(FORMATS),$(eval $(call format_template,$(FORMAT),$(TARGETS))))
 
 PERSOURCEPDFS := $(call pattern_list,$(SOURCES),.pdfs)
 .PHONY: $(PERSOURCEPDFS)

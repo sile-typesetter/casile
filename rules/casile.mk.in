@@ -43,4 +43,7 @@ SILE ?= @SILE@
 YQ ?= @YQ@
 ZSH ?= @ZSH@
 
+.PHONY: default
+default: all
+
 include $(CASILEDIR)rules/functions.mk
