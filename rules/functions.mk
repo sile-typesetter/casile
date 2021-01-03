@@ -295,6 +295,9 @@ define povray ?=
 	cat <<- EOF < $2 < $3 > $$headers
 		#version 3.7;
 		#declare SceneLight = $(SCENELIGHT);
+		#declare Rand1 = seed(1234);
+		#declare Rand2 = seed(4123);
+		#declare Rand3 = seed(2134);
 	EOF
 	sleep 1.$${RANDOM} # block parallel execution
 	while $(PGREP) povray > /dev/null; do sleep 2.$${RANDOM}; done
