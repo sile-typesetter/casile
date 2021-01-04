@@ -185,6 +185,10 @@ export PATH := $(CASILEDIR)scripts:$(PATH):$(shell $(PYTHON) -c "import site; pr
 export HOSTNAME := $(shell $(HOSTNAME_BIN))
 export PROJECT := $(PROJECT)
 
+# Make's shell function doesn't pass envirenment variables
+# See https://stackoverflow.com/q/65553367/313192
+_ENV := PATH=$(PATH) HOSTNAME=$(HOSTNAME) PROJECT=$(PROJECT)
+
 LOCALSILE ?= $(HOME)/projects/sile-typesetter/sile
 ifeq ($(DEBUG),true)
 SILE = $(LOCALSILE)/sile
@@ -199,9 +203,9 @@ SILEFLAGS += -d $(subst $( ),$(,),$(strip $(DEBUGTAGS)))
 endif
 
 # Most CI runners need help getting the branch name because of sparse checkouts
-BRANCH := $(or $(CI_COMMIT_REF_NAME),$(shell $(GIT) rev-parse --abbrev-ref HEAD))
-TAG := $(or $(CI_COMMIT_TAG),$(shell $(GIT) describe --tags --exact-match 2>/dev/null))
-ALLTAGS := $(strip $(CI_COMMIT_TAG) $(shell $(GIT) tag --points-at HEAD | $(XARGS) echo))
+BRANCH := $(or $(CI_COMMIT_REF_NAME),$(shell $(_ENV) $(GIT) rev-parse --abbrev-ref HEAD))
+TAG := $(or $(CI_COMMIT_TAG),$(shell $(_ENV) $(GIT) describe --tags --exact-match 2>/dev/null))
+ALLTAGS := $(strip $(CI_COMMIT_TAG) $(shell $(_ENV) $(GIT) tag --points-at HEAD | $(XARGS) echo))
 
 # Add mock-ups to sources
 ifeq ($(strip $(MOCKUPS)),true)
@@ -435,7 +439,7 @@ onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(CASILEDIR)la
 
 MOCKUPPDFS := $(call pattern_list,$(MOCKUPSOURCES),$(REALLAYOUTS),.pdf)
 $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
-	$(PDFTK) A=$(filter %.pdf,$^) cat $(foreach P,$(shell seq 1 $(call pagecount,$@)),A2-2) output $@
+	$(PDFTK) A=$(filter %.pdf,$^) cat $(foreach P,$(shell $(_ENV) seq 1 $(call pagecount,$@)),A2-2) output $@
 
 FULLPDFS := $(call pattern_list,$(REALSOURCES),$(REALLAYOUTS),.pdf)
 FULLPDFS += $(call pattern_list,$(REALSOURCES),$(EDITS),$(REALLAYOUTS),.pdf)
@@ -756,7 +760,7 @@ $(_issue).info: | $(require_pubdir)
 	$(addtopub)
 
 COVERBACKGROUNDS := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_background).png)
-git_background = $(shell $(GIT) ls-files -- $(call strip_layout,$1) 2> /dev/null)
+git_background = $(shell $(_ENV) $(GIT) ls-files -- $(call strip_layout,$1) 2> /dev/null)
 $(COVERBACKGROUNDS): %-$(_cover)-$(_background).png: $$(call git_background,$$@) $$(geometryfile)
 	$(sourcegeometry)
 	$(if $(filter %.png,$(call git_background,$@)),true,false) && $(MAGICK) \
@@ -1008,7 +1012,7 @@ $(GEOMETRIES): %-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,
 	trimpx=$(call mmtopx,$(TRIM))
 	trimpm=$(call mmtopm,$(TRIM))
 	trimpt=$(call mmtopt,$(TRIM))
-	$(shell $(MAGICK) identify -density $(HIDPI) -format '
+	$(shell $(_ENV) $(MAGICK) identify -density $(HIDPI) -format '
 			pagewmm=%[fx:round(w/$(HIDPI)*25.399986)]
 			pagewpx=%[fx:w]
 			pagewpm=%[fx:round(w/$(HIDPI)*90)]
@@ -1313,7 +1317,7 @@ INTERMEDIATES += *-$(_barcode).*
 			--scale=5 \
 			--barcode=69 \
 			--height=30 \
-			--data=$(shell isbn_format.py $< paperback) |\
+			--data=$(shell $(_ENV) isbn_format.py $< paperback) |\
 		$(SED) -e 's/Helvetica\( Regular\)\?/TeX Gyre Heros/g' \
 		> $@
 
@@ -1323,11 +1327,11 @@ INTERMEDIATES += *-$(_barcode).*
 		$< \
 		-bordercolor white -border 10 \
 		-font Hack-Regular -pointsize 36 \
-		label:"ISBN $(shell isbn_format.py $*-manifest.yml paperback mask)" +swap -gravity Center -append \
+		label:"ISBN $(shell $(_ENV) isbn_format.py $*-manifest.yml paperback mask)" +swap -gravity Center -append \
 		-bordercolor white -border 0x10 \
 		-resize $(call scale,1200)x \
 		$@
-	if [[ $(shell isbn_format.py $*-manifest.yml paperback) == 9786056644504 ]]; then
+	if [[ $(shell $(_ENV) isbn_format.py $*-manifest.yml paperback) == 9786056644504 ]]; then
 		$(MAGICK) \
 			$(MAGICKARGS) \
 			$@ \
