@@ -11,15 +11,15 @@ require_pubdir = $(and $(filter-out true,$(DRAFT)),$(or $(strip $(PUBDIR)),$(err
 
 # Assorted utility functions for juggling information about books
 mockupbase = $(if $(filter $(MOCKUPSOURCES),$(call parse_bookid,$1)),$(subst $(call parse_bookid,$1),$(MOCKUPBASE),$1),$1)
-pagecount = $(shell $(PDFINFO) $(call mockupbase,$1) | $(AWK) '$$1 == "Pages:" {printf "%.0f", $$2 * $(MOCKUPFACTOR)}' || echo 0)
-pagew = $(shell $(PDFINFO) $(call mockupbase,$1) | $(AWK) '$$1$$2 == "Pagesize:" {print $$3}' || echo 0)
-pageh = $(shell $(PDFINFO) $(call mockupbase,$1) | $(AWK) '$$1$$2 == "Pagesize:" {print $$5}' || echo 0)
-spinemm = $(shell echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | $(BC))
-mmtopx = $(shell echo "$1 * $(HIDPI) * 0.0393701 / 1" | $(BC))
-mmtopm = $(shell echo "$1 * 96 * .0393701 / 1" | $(BC))
-mmtopt = $(shell echo "$1 * 2.83465 / 1" | $(BC))
-width = $(shell $(IDENTIFY) -density $(HIDPI) -format "%[fx:w]" $1)
-height = $(shell $(IDENTIFY) -density $(HIDPI) -format "%[fx:h]" $1)
+pagecount = $(shell $(_ENV) $(PDFINFO) $(call mockupbase,$1) | $(AWK) '$$1 == "Pages:" {printf "%.0f", $$2 * $(MOCKUPFACTOR)}' || echo 0)
+pagew = $(shell $(_ENV) $(PDFINFO) $(call mockupbase,$1) | $(AWK) '$$1$$2 == "Pagesize:" {print $$3}' || echo 0)
+pageh = $(shell $(_ENV) $(PDFINFO) $(call mockupbase,$1) | $(AWK) '$$1$$2 == "Pagesize:" {print $$5}' || echo 0)
+spinemm = $(shell $(_ENV) echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | $(BC))
+mmtopx = $(shell $(_ENV) echo "$1 * $(HIDPI) * 0.0393701 / 1" | $(BC))
+mmtopm = $(shell $(_ENV) echo "$1 * 96 * .0393701 / 1" | $(BC))
+mmtopt = $(shell $(_ENV) echo "$1 * 2.83465 / 1" | $(BC))
+width = $(shell $(_ENV) $(IDENTIFY) -density $(HIDPI) -format "%[fx:w]" $1)
+height = $(shell $(_ENV) $(IDENTIFY) -density $(HIDPI) -format "%[fx:h]" $1)
 parse_layout = $(foreach WORD,$1,$(call parse_papersize,$(WORD))-$(call parse_binding,$(WORD)))
 strip_layout = $(filter-out $1,$(foreach PAPERORBINDING,$(PAPERSIZES) $(BINDINGS),$(subst -$(PAPERORBINDING),,$1)))
 parse_papersize = $(or $(filter $(PAPERSIZES),$(subst -, ,$(basename $1))),)
@@ -29,12 +29,12 @@ strip_binding = $(filter-out $1,$(foreach BINDING,$(BINDINGS),$(subst -$(BINDING
 parse_edits = $(foreach WORD,$1,$(subst $(space),-,$(or $(filter $(EDITS),$(subst -, ,$(basename $(WORD)))),)))
 strip_edits = $(foreach WORD,$1,$(filter-out $(WORD),$(foreach EDIT,$(EDITS),$(subst -$(EDIT),,$(WORD)))))
 parse_bookid = $(firstword $(subst -, ,$(basename $1)))
-series_sort = $(shell PROJECT=$(PROJECT) SORTORDER=$(SORTORDER) series_sort.lua $1)
-metainfo = $(shell $(YQ) -r '$1' < $(PROJECTYAML))
-isbntouid = $(call cachevar,$1,uuid,$(basename $(notdir $(shell $(GREP) -l $1 $(YAMLSOURCES)))))
-isbnmask = $(call cachevar,$1,mask,$(shell $(PYTHON) -c "import isbnlib; print(isbnlib.mask('$1'))"))
-ebookisbn = $(call cachevar,$1,ebook,$(or $(shell $(YQ) -r '.identifier[]? | select(.key == "ebook"    ).text' $1.yml),$(call printisbn,$1)))
-printisbn = $(call cachevar,$1,print,$(shell $(YQ) -r '.identifier[]? | select(.key == "paperback").text' $1.yml))
+series_sort = $(shell $(_ENV) PROJECT=$(PROJECT) SORTORDER=$(SORTORDER) series_sort.lua $1)
+metainfo = $(shell $(_ENV) $(YQ) -r '$1' < $(PROJECTYAML))
+isbntouid = $(call cachevar,$1,uuid,$(basename $(notdir $(shell $(_ENV) $(GREP) -l $1 $(YAMLSOURCES)))))
+isbnmask = $(call cachevar,$1,mask,$(shell $(_ENV) $(PYTHON) -c "import isbnlib; print(isbnlib.mask('$1'))"))
+ebookisbn = $(call cachevar,$1,ebook,$(or $(shell $(_ENV) $(YQ) -r '.identifier[]? | select(.key == "ebook"    ).text' $1.yml),$(call printisbn,$1)))
+printisbn = $(call cachevar,$1,print,$(shell $(_ENV) $(YQ) -r '.identifier[]? | select(.key == "paperback").text' $1.yml))
 ebooktoprint = $(call cachevar,$1,ep,$(call printisbn,$(call isbntouid,$1)))
 povtomagick = $(subst 1,255,$(subst >,$(rparen),$(subst <,$(lparen),$(1))))
 
@@ -60,8 +60,8 @@ localize = $(foreach WORD,$1,$(or $(_$(WORD)),$(WORD)))
 unlocalize = $(foreach WORD,$1,$(or $(__$(WORD)),$(WORD)))
 
 # Geometry file dependency functions
-newgeometry = $(shell $(GREP) -sq hidpi=$(HIDPI) $1 || echo force)
-newcommits = $(shell test $$($(GIT) log -n1 --format=%ct)0 -gt $$(stat -c %Y $@ 2>/dev/null)0 && echo force)
+newgeometry = $(shell $(_ENV) $(GREP) -sq hidpi=$(HIDPI) $1 || echo force)
+newcommits = $(shell $(_ENV) test $$($(GIT) log -n1 --format=%ct)0 -gt $$(stat -c %Y $@ 2>/dev/null)0 && echo force)
 geometrybase = $(and $(filter-out $(FAKEPAPERSIZES),$(call parse_papersize,$1)),$(filter-out $(UNBOUNDLAYOUTS),$(call parse_layout,$1)),$*.pdf) $(_geometry)-$(call parse_papersize,$1).pdf
 geometryfile = $(call parse_bookid,$@)-$(call parse_papersize,$@)-$(or $(call parse_binding,$@),$(_print))-$(_geometry).sh
 sourcegeometry = source $(filter %-$(_geometry).sh,$^ $|)
@@ -77,7 +77,7 @@ endef
 
 # If building in draft mode, scale resolutions down for quick builds
 define scale ?=
-$(strip $(shell $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | $(BC)) || echo $1))
+$(strip $(shell $(_ENV) $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | $(BC)) || echo $1))
 endef
 
 define time_warp ?=
@@ -93,7 +93,7 @@ define time_warp ?=
 endef
 
 define versioninfo ?=
-$(shell
+$(shell $(_ENV)
 	echo -en "$(call parse_bookid,$1)@$(subst $(call parse_bookid,$1)/,,$(or $(TAG),$(BRANCH)))-"
 	if [[ -n "$(TAG)" ]]; then
 		$(GIT) describe --always --dirty=* | cut -d/ -f2 | xargs echo -en
@@ -107,11 +107,11 @@ $(shell
 endef
 
 define find ?=
-$(shell
+$(shell $(_ENV)
 	$(FIND) $(PROJECTDIR) \
 			-maxdepth 2 \
 			-name '$1' \
-			$(foreach PATH,$(shell $(GIT) submodule | $(AWK) '{print $$2}'),-not -path '*/$(PATH)/*') |
+			$(foreach PATH,$(shell $(_ENV) $(GIT) submodule | $(AWK) '{print $$2}'),-not -path '*/$(PATH)/*') |
 			$(GREP) -f <($(GIT) ls-files | $(SED) -e 's/$$/$$/;s#^#./#') |
 		xargs echo)
 endef
@@ -207,7 +207,7 @@ endef
 
 define magick_border ?=
 	-fill none -strokewidth 1 \
-	$(shell $(DRAFT) && echo -n '-stroke gray50' || echo -n '-stroke transparent') \
+	$(shell $(_ENV) $(DRAFT) && echo -n '-stroke gray50' || echo -n '-stroke transparent') \
 	-draw "rectangle $$bleedpx,$$bleedpx %[fx:w-$$bleedpx],%[fx:h-$$bleedpx]" \
 	-draw "rectangle %[fx:$$bleedpx+$$pagewpx],$$bleedpx %[fx:w-$$bleedpx-$$pagewpx],%[fx:h-$$bleedpx]"
 endef
@@ -295,6 +295,9 @@ define povray ?=
 	cat <<- EOF < $2 < $3 > $$headers
 		#version 3.7;
 		#declare SceneLight = $(SCENELIGHT);
+		#declare Rand1 = seed(1234);
+		#declare Rand2 = seed(4123);
+		#declare Rand3 = seed(2134);
 	EOF
 	sleep 1.$${RANDOM} # block parallel execution
 	while $(PGREP) povray > /dev/null; do sleep 2.$${RANDOM}; done
