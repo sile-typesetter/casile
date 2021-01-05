@@ -298,6 +298,7 @@ define povray ?=
 		#declare Rand1 = seed(1234);
 		#declare Rand2 = seed(4123);
 		#declare Rand3 = seed(2134);
+		#declare MinThickness = 0.005;
 	EOF
 	sleep 1.$${RANDOM} # block parallel execution
 	while $(PGREP) povray > /dev/null; do sleep 2.$${RANDOM}; done

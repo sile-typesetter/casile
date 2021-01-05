@@ -1149,7 +1149,7 @@ $(BOOKSCENESINC): %.inc: $$(geometryfile) %-pov-$(_front).png %-pov-$(_back).png
 		#declare CoilWidth = $(COILWIDTH);
 		#declare CoilColor = $(COILCOLOR);
 		#declare PaperWeight = $(PAPERWEIGHT);
-		#declare BookThickness = $${spinemm} / $${pagewmm} / 2;
+		#declare BookThickness = max($${spinemm} / $${pagewmm} / 2, MinThickness);
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
@@ -1160,7 +1160,7 @@ $(BOOKSCENES): %-$(_3d).pov: $$(geometryfile) %.inc
 		#declare DefaultBook = "$(filter %.inc,$^)";
 		#declare Lights = $(call scale,8,2);
 		#declare BookAspect = $${pagewmm} / $${pagehmm};
-		#declare BookThickness = $${spinemm} / $${pagewmm} / 2;
+		#declare BookThickness = max($${spinemm} / $${pagewmm} / 2, MinThickness);
 		#declare HalfThick = BookThickness / 2;
 		#declare toMM = 1 / $${pagehmm};
 	EOF
