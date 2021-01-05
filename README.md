@@ -8,18 +8,22 @@
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-blue.svg)](https://conventionalcommits.org)
 [![Commitizen Friendly](https://img.shields.io/badge/Commitizen-friendly-blue.svg)](http://commitizen.github.io/cz-cli/)
 
-The CaSILE toolkit is a collection of tools designed to automate book publishing from start to finish.
-The concept is to take very simple input and turn it into a finished product with as little manual intervention as possible.
+The CaSILE toolkit is a build system that glues together a large collection of tools into a cohesive system to automate book publishing from start to finish.
+The concept is to take very simple easily edited input and turn it into a finished product with as little manual intervention as possible.
 It transforms plain text document formats and meta data into press ready PDFs, E-Books, and rendered promotional materials.
 
+In traditional publishing workflows the closer a book is to production the harder becomes to work with.
+The pipeline ‘narrows’ to more and more advanced (complex/expensive) software and more and more restricted access.
+CaSILE turns this around by completely automating all the ‘later’ production stages and putting the content font and center in an easily edited format.
+
 CaSILE (pronounced like 'castle') started out life as a submodule called `avadanlik` included inside my book project repositories (avadanlık being a Turkish word for toolkit).
-AS most of the parts revolve around SILE, in my head at least CaSILE became **Caleb’in Avadanlığı ile Simon’s Improved Layout Engine**, roughly translating to “Caleb's SILE Toolkit”.
+AS most of the parts revolve around SILE, in my head at least CaSILE became **Caleb’in Avadanlığı ile SILE**, roughly translating to “Caleb's Toolkit for SILE”.
 Come to think of it that would have been a simpler way to arrive at the name, but the project has deep Turkish roots so I'm keeping the "a" in the name name as a nod to its origin.
 
 ## Dependencies
 
-CaSILE glues together *a lot* of different tools to build a complete publishing tool chain.
-Behind the scenes this is messy business.
+CaSILE glues together *a lot* of different open source tools to assemble a complete publishing tool chain.
+Behind the scenes this is very messy business.
 In order to make everything work I've had to use an eclectic variety of software.
 All of these are open source and available across platforms, but I only personally test on Linux.
 Arch Linux packages are available (AUR recipes at [casile][aur-casile] or [casile-git][aur-casile-git], precompiled packages in [this repo][arch-alerque]) for easy setup.
@@ -35,68 +39,56 @@ Currently the toolkit assumes all the following are present, but as not all of t
 For example not having the ray tracing engine would just mean no fancy 3D previews of book covers, but you could still build PDFs and other digital formats.
 Not having Node would mean no Bible verse format normalization, but you should still be able to build books.
 Not having ImageMagick would mean no covers, but you could still process the interior of books.
-On the other hand not having Pandoc would be fatal.
+On the other hand not having GNU Make, Pandoc, or SILE would of course be fatal.
 
 * The [SILE][sile] Typesetter is the workhorse behind most of the text layout.
   Tagged releases of CaSILE should work with latest released version of SILE, git versions may assume the latest Git HEAD versions of SILE.
 * [Pandoc][pandoc] (specifically with [my branch with SILE support][pandocsile]) converts between document types.
 * [ImageMagick][im] handles raster image processing (v7+ required).
 * [POVRay][pov] is used to render 3 dimensional visualizations.
-* [Inkscape][inkscape] is used to for some cover layouts and to convert SVG resources into other formats.
-* [PDFTk][pdftk] is used for manipulating PDFs.
+* [Inkscape][inkscape] is used to layout some cover resources and to convert SVG resources into other formats.
+* [PDFTk][pdftk] is used to manipulate PDFs.
 * [Podofo][podofo] is used to do more stuff with PDFs.
-* [Kindlegen][kindlegen] is needed to generate Amazon's E-Book formats.
+* [Kindlegen][kindlegen] is needed to generate Amazon’s E-Book formats.
 * [Poppler][poppler] is used to do even more stuff with PDFs.
 * [Zint][zint] generates ISBN barcodes, QR codes, etc.
 * Perl, Python, Lua, Node, Zsh, and a few other language interpreters!
 * Various modules for those languages like `lua-yaml`, `python-ruamel`, `python-isblib`, and `python-pandocfilters`.
 * Up to date versions of assorted shell tools like `jq`, `yq`, `entr`, `bc`, and `sqlite`.
+* GNU Make (and assorted other GNU tools) glue everything together.
 * The default book templates assume system installed versions of **Hack**, **Libertinus**, and **TeX Gyre** font sets.
-* Some other stuff (run `make dependencies` to check on them)
+* Some other stuff (`./confiruge` will warn you if your system doesn't have something that’s required).
 
 In addition to run-time dependencies, compiling the CLI interface (optional) requires a Rust build toolchain.
 Once built the CLI requires no dependencies to run.
 
-You'll probably want some other things like a PDF viewer that auto updates on file changes (I recommend [zathura][zathura]), and E-Book reader like [Calibre][calibre] but these would be run yourself and are not directly executed by the toolkit.
+You'll probably want some other things not provided by CaSILE as well.
+CaSILE takes care of transforming sources to finished outputs, but leaves you to edit the sources and view the outputs yourself.
+For starters a text editor for working with Markdown & YAML sources will be a must-have.
+Options abound here and are mostly out of scope, but think Marktext, Zettlr, Atom, VSCode, Sublime, Vim, etc.
+CaSILE also assumes your book project is tracked in Git, so a client such as the CLI tools or a GUI like GitAhead, Fork, Sourcetree, GitKraken, Tower, or a plugin specific to your editor of choice is a must-have.
+Of course you'll want a way to view generated PDFs.
+I recommend one that auto updates on file changes; I use [zathura][zathura]), but Okular and quite a few others also support this.
+An image viewer and an E-Book reader like [Calibre][calibre] are also useful.
 
 ## Status
 
 I've published dozens of books and other projects this way and have more in progress.
+It's now used by at least 3 publishing companies.
 In other words it *Works for Me*™ but your millage may vary.
 This tool started out as just some tooling built into one book project.
 Then I worked on another book and copied the scripts over to get started.
-When I hit book number 3 I realized I should make this more modular and just include it in each of my book projects.
+When I hit book number 3 I realized I should make my tools more modular and just include them in each of my book projects.
 About this time I knew I wanted to open source it if it proved useful for more than one _type_ of book.
 That day came and went.
 One day I just decided to throw it out there so that it would be easier to explain what I was doing.
 As such in many ways it is hard coded to my publishing needs any adaption to be more flexible only happens as people request or contribute the changes.
 
-Major TODO items include:
-
-- [x] Remove hard coded resources specific to [Via Christus Publishers][viachristus] such as logos, default copyright notices, etc.
-- [ ] Contribute the changes from my fork of Pandoc upstream.
-- [x] Make it usable in English (or any language?) instead of having all the options hard coded in Turkish.
-- [ ] Integrate code from my _other_ toolkit that has Bible specific publishing tools.
-- [x] Add installation packages to resolve package dependencies major distro(s).
-- [x] Setup a demo book repository
-- [ ] Add CI tests to make sure each make target functions as expected
-
 ### Setup
 
 There are several different ways to use CaSILE, with or without installation.
-
-* As a Git submodule in your project.
-
-  - Pros: Versioned with your project so as things change in your project each commit will have the matching version of CaSILE.
-    Each project can potentially have it's own version of CaSILE allowing tweaks and overrides as necessary.
-  - Cons: Installing dependencies is up to you.
-    Git submodules are just a bit fiddly and not well supported by all Git clients.
-    Requires initialization per project and the extra disk space usage of having a separate checkout for every project.
-
-* From any directory.
-
-  - Pros: No installation required, can have one or several versions.
-  - Cons: Installing dependencies and maintaining a link to the directory with the correct version for each project is up to you.
+Originally (through v0.2.0) CaSILE focused on use as a submodule to Git projects.
+Beginning with v0.3.0 the primary focus will be on use as CLI tool completely separate from any project.
 
 * Installed to your system.
 
@@ -109,63 +101,17 @@ There are several different ways to use CaSILE, with or without installation.
   - Cons: Tricky to setup access to fonts or other resources available outside your project.
     Some overhead in startup time and reduced CPU and memory resources.
 
+* From any directory.
+
+  - Pros: No installation required, can have one or several versions.
+  - Cons: Installing dependencies and maintaining a link to the directory with the correct version for each project is up to you.
+
 * From a CI runner.
 
   - Pros: Nothing to download or install locally.
   - Cons: Long turn around time, must push repository to a supported remote host.
 
 It is also possible to mix and match, notably you can use both local options and setup a CI runner.
-
-### Submodule Setup
-
-1. (Optionally, see [setup](#setup) notes) Add CaSILE as a submodule to your book project's git repository:
-
-    ```bash
-    $ git submodule add -b master https://github.com/sile-typesetter/casile.git
-    $ git submodule update --init --remote
-    ```
-
-    Note the `-b master` here tells git you want to track the master branch and update to that whenever it changes.
-    This is what I use for my books while I'm working on them.
-    When I publish (and want to be able to regenerate the same output again even if the toolkit changes) I commit the current version SHA to the book repo and stop tracking the master branch.
-
-2. Include the rules.mk file from your project's Makefile:
-
-    ```makefile
-    include casile/rules.mk
-    ```
-
-3. Initialize the toolkit before first use:
-
-    ```bash
-    $ make init
-    ```
-
-## External Directory Setup
-
-1. Clone the Git repository or download and extract a source tarball.
-
-2. Optionally create a symlink to the external directory so the location can be changed without editing your makefile:
-
-    ```bash
-    $ ln -s /path/to/casile
-    ```
-
-2. Include the rules.mk file from your project's Makefile:
-
-    ```makefile
-    # Direct approach
-    include /path/to/casile/rules.mk
-
-    # Optional symlinked approach
-    include casile/rules.mk
-    ```
-
-3. Initialize the toolkit before first use:
-
-    ```bash
-    $ make init
-    ```
 
 ## Installed Setup
 
@@ -232,6 +178,33 @@ alias casile-docker='docker run -it --volume "$(pwd):/data" --user "$(id -u):$(i
 
 Now instead of running `make my_book-a4-print.pdf` you would run `casile-docker make my_book-a4-print.pdf`.
 This substitution should work anywhere you would have run `make` in a submodule or linked directory usage.
+
+## External Directory Setup
+
+1. Clone the Git repository or download and extract a source tarball.
+
+2. Optionally create a symlink to the external directory so the location can be changed without editing your makefile:
+
+    ```bash
+    $ ln -s /path/to/casile
+    ```
+
+2. Include the rules.mk file from your project's Makefile:
+
+    ```makefile
+    # Direct approach
+    include /path/to/casile/rules.mk
+
+    # Optional symlinked approach
+    include casile/rules.mk
+    ```
+
+3. Initialize the toolkit before first use:
+
+    ```bash
+    $ make init
+    ```
+
 
 ### CI Setup
 
