@@ -23,13 +23,6 @@ SHELL := $(CASILEDIR)make-shell.zsh
 .ONESHELL:
 .SECONDEXPANSION:
 
-# Utility variables for later, http://blog.jgc.org/2007/06/escaping-comma-and-space-in-gnu-make.html
-, := ,
-space := $() $()
-$(space) := $() $()
-lparen := (
-rparen := )
-
 # Use paths discovered by autoconf by default, but allow projects to override
 # with paths of their own.
 AWK ?= @AWK@
