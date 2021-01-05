@@ -9,7 +9,7 @@ MAKEFLAGS += --no-builtin-rules
 
 # Don't drop intermediate artifacts (saves rebulid time and aids debugging)
 .SECONDARY:
-.PRECIOUS: %.pdf %.sil %.toc %.dat %.inc
+.PRECIOUS: %
 .DELETE_ON_ERROR:
 
 # Deprecate direct usage under `make` without the CLI
