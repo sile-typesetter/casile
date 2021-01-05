@@ -332,6 +332,7 @@ debug:
 	echo "SILE = $(SILE)"
 	echo "SILEFLAGS = $(SILEFLAGS)"
 	echo "SILEPATH = $(SILEPATH)"
+	echo "SERIESSCENES = $(SERIESSCENES)"
 	echo "SOURCES = $(SOURCES)"
 	echo "TAG = $(TAG)"
 	echo "TARGETS = $(TARGETS)"
