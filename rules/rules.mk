@@ -375,12 +375,12 @@ upgrade_toolkits: upgrade_casile
 upgrade_repository: upgrade_toolkits $(CICONFIG)_current .gitattributes
 
 .PHONY: upgrade_casile
-upgrade_casile: $(CASILEDIR)upgrade-lua.sed $(CASILEDIR)upgrade-make.sed $(CASILEDIR)upgrade-yaml.sed $(CASILEDIR)upgrade-markdown.sed
-	$(call munge,$(LUASOURCES),$(SED) -f $(filter %-lua.sed,$^),Replace old Lua variables and functions with new namespaces)
-	$(call munge,$(MAKESOURCES),$(SED) -f $(filter %-make.sed,$^),Replace old Makefile variables and functions with new namespaces)
-	$(call munge,$(YAMLSOURCES),$(SED) -f $(filter %-yaml.sed,$^),Replace old YAML key names and data formats)
+upgrade_casile:
+	$(call munge,$(LUASOURCES),$(SED) -f $(CASILEDIR)upgrade-lua.sed,Replace old Lua variables and functions with new namespaces)
+	$(call munge,$(MAKESOURCES),$(SED) -f $(CASILEDIR)upgrade-make.sed,Replace old Makefile variables and functions with new namespaces)
+	$(call munge,$(YAMLSOURCES),$(SED) -f $(CASILEDIR)upgrade-yaml.sed,Replace old YAML key names and data formats)
 	export SKIPM4=false
-	$(call munge,$(MARKDOWNSOURCES),$(SED) -f $(filter %-markdown.sed,$^),Replace obsolete Markdown syntax)
+	$(call munge,$(MARKDOWNSOURCES),$(SED) -f $(CASILEDIR)upgrade-markdown.sed,Replace obsolete Markdown syntax)
 
 PROJECTCONFIGS += .editorconfig
 .editorconfig: $(CASILEDIR)editorconfig
@@ -1422,8 +1422,9 @@ split_chapters:
 	$(if $(MARKDOWNSOURCES),,exit 0)
 	$(foreach SOURCE,$(MARKDOWNSOURCES),$(call split_chapters,$(SOURCE)))
 
+.PHONY: normalize_files
 normalize_files: private PANDOCFILTERS = --lua-filter=$(CASILEDIR)pandoc-filters/chapterid.lua
-normalize_files: $(CASILEDIR)pandoc-filters/chapterid.lua
+normalize_files:
 	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
 	$(if $(MARKDOWNSOURCES),,exit 0)
 	echo $(MARKDOWNSOURCES) |
