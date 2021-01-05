@@ -1,7 +1,7 @@
 # If called using the CaSILE CLI the init rules will be sourced before any
 # project specific ones, then everything will be sourced in order. If people do
 # a manual include to rules they may or may not know to source the
-# initilazation rules first. this is to warn them.
+# initialization rules first. This is to warn them.
 ifeq ($(CASILEDIR),)
 $(error Please initialize CaSILE by sourcing casile.mk first, then include your project rules, then source this rules.mk file)
 endif
@@ -15,7 +15,7 @@ LANGUAGE ?= en
 # Localization functions (source is a key => val file _and_ its inverse)
 -include $(CASILEDIR)rules/$(LANGUAGE).mk $(CASILEDIR)rules/$(LANGUAGE)-reversed.mk
 
-# Empty recipies for anything we _don't_ want to bother rebuilding:
+# Empty recipes for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;
 
 MARKDOWNSOURCES := $(call find,*.md)
@@ -23,7 +23,7 @@ LUASOURCES := $(call find,*.lua)
 MAKESOURCES := $(call find,[Mm]akefile*)
 YAMLSOURCES := $(call find,*.yml)
 
-# # Find stuff that could be built based on what has matching YML and a MD components
+# Find stuff that could be built based on what has matching YAML and a MD components
 SOURCES_DEF := $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(notdir $(YAMLSOURCES))))
 SOURCES ?= $(SOURCES_DEF)
 TARGETS ?= $(SOURCES)
@@ -54,7 +54,7 @@ SCENELIGHT ?= rgb<1,1,1>
 SCENEX ?= $(call scale,2400)
 SCENEY ?= $(call scale,3200)
 
-# Because sometimes the same base content can be postprocessed multiple ways
+# Because sometimes the same base content can be post processed multiple ways
 EDITS ?= $(_withverses) $(_withoutfootnotes) $(_withoutlinks)
 
 # Build mode flags
@@ -65,7 +65,7 @@ STATSMONTHS ?= 1 # How far back to look for commits when building stats
 DEBUG ?= false # Use SILE debug flags, set -x, and the like
 DEBUGTAGS ?= casile # Specific debug flags to set
 COVERS ?= true # Build covers?
-MOCKUPS ?= true # Render mockup books in project
+MOCKUPS ?= true # Render mock-up books in project
 SCALE ?= 17 # Reduction factor for draft builds
 HIDPI_DEF := $(call scale,1200) # Default DPI for generated press resources
 HIDPI ?= $(HIDPI_DEF)
@@ -109,7 +109,7 @@ RENDERED += $(GOALLAYOUTS)
 # And -p to wait for activity on first invocation
 ENTRFLAGS := -c -r
 
-# POVray's progress status output doesn't play nice with Gitlab's CI logging
+# POV-Ray’s progress status output doesn't play nice with Gitlab’s CI logging
 ifneq ($(CI),)
 POVFLAGS += -V
 endif
@@ -123,7 +123,7 @@ METADATA ?=
 PROJECTYAML_DEF := $(wildcard $(PROJECT).yml)
 PROJECTYAML ?= $(PROJECTYAML_DEF)
 
-# Extra lua files to include before processing documents
+# Extra Lua files to include before processing documents
 LUAINCLUDES += .casile.lua
 PROJECTLUA := $(wildcard $(PROJECT).lua)
 
@@ -140,7 +140,7 @@ IGNORES += $(call pattern_list,$(SOURCES),$(foreach FORMAT,$(FORMATS),.$(FORMAT)
 IGNORES += $(call pattern_list,$(ISBNS),_* .epub)
 IGNORES += $(INTERMEDIATES)
 
-# Tell sile to look here for stuff before its internal stuff
+# Tell SILE to look here for stuff before its internal stuff
 SILEPATH += $(CASILEDIR)
 
 # Extra arguments to pass to Pandoc
@@ -185,7 +185,7 @@ export PATH := $(CASILEDIR)scripts:$(PATH):$(shell $(PYTHON) -c "import site; pr
 export HOSTNAME := $(shell $(HOSTNAME_BIN))
 export PROJECT := $(PROJECT)
 
-# Make's shell function doesn't pass envirenment variables
+# Make’s shell function doesn't pass environment variables
 # See https://stackoverflow.com/q/65553367/313192
 _ENV := PATH=$(PATH) HOSTNAME=$(HOSTNAME) PROJECT=$(PROJECT)
 
@@ -267,11 +267,10 @@ series_promotionals: $(PROJECT)-epub-$(_poster)-$(_montage).jpg $(PROJECT)-$(_sq
 .PHONY: series_renderings
 series_renderings: $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3d)-$(_montage).jpg)
 
-$(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(SOURCES),%,-$(_poster).png) $(firstword $(SOURCES))-%-$(_geometry).sh
+$(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(SOURCES),%,-$(_poster).png) $(firstword $(SOURCES))-%-$(_print)-$(_geometry).sh
 	$(sourcegeometry)
-	$(MAGICK) \
+	$(MAGICK) montage \
 		$(MAGICKARGS) \
-		montage \
 		$(filter %.png,$^) \
 		-geometry $${pagewpm}x$${pagehpm}+0+0 \
 		$@
@@ -332,6 +331,7 @@ debug:
 	echo "SILE = $(SILE)"
 	echo "SILEFLAGS = $(SILEFLAGS)"
 	echo "SILEPATH = $(SILEPATH)"
+	echo "SERIESSCENES = $(SERIESSCENES)"
 	echo "SOURCES = $(SOURCES)"
 	echo "TAG = $(TAG)"
 	echo "TARGETS = $(TARGETS)"
@@ -375,12 +375,12 @@ upgrade_toolkits: upgrade_casile
 upgrade_repository: upgrade_toolkits $(CICONFIG)_current .gitattributes
 
 .PHONY: upgrade_casile
-upgrade_casile: $(CASILEDIR)upgrade-lua.sed $(CASILEDIR)upgrade-make.sed $(CASILEDIR)upgrade-yaml.sed $(CASILEDIR)upgrade-markdown.sed
-	$(call munge,$(LUASOURCES),$(SED) -f $(filter %-lua.sed,$^),Replace old Lua variables and functions with new namespaces)
-	$(call munge,$(MAKESOURCES),$(SED) -f $(filter %-make.sed,$^),Replace old Makefile variables and functions with new namespaces)
-	$(call munge,$(YAMLSOURCES),$(SED) -f $(filter %-yaml.sed,$^),Replace old YAML key names and data formats)
+upgrade_casile:
+	$(call munge,$(LUASOURCES),$(SED) -f $(CASILEDIR)upgrade-lua.sed,Replace old Lua variables and functions with new namespaces)
+	$(call munge,$(MAKESOURCES),$(SED) -f $(CASILEDIR)upgrade-make.sed,Replace old Makefile variables and functions with new namespaces)
+	$(call munge,$(YAMLSOURCES),$(SED) -f $(CASILEDIR)upgrade-yaml.sed,Replace old YAML key names and data formats)
 	export SKIPM4=false
-	$(call munge,$(MARKDOWNSOURCES),$(SED) -f $(filter %-markdown.sed,$^),Replace obsolete Markdown syntax)
+	$(call munge,$(MARKDOWNSOURCES),$(SED) -f $(CASILEDIR)upgrade-markdown.sed,Replace obsolete Markdown syntax)
 
 PROJECTCONFIGS += .editorconfig
 .editorconfig: $(CASILEDIR)editorconfig
@@ -999,7 +999,7 @@ IGNORES += $(EMPTYGEOMETRIES)
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES := $(call pattern_list,$(SOURCES),$(ALLLAYOUTS),-$(_geometry).sh)
 $(GEOMETRIES): %-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,$$@)
-	$(ZSH) << 'EOF' # inception to break out of CaSILE's make shell wrapper
+	$(ZSH) << 'EOF' # inception to break out of CaSILE’s make shell wrapper
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
 	hidpi=$(HIDPI)
 	lodpi=$(HIDPI)
@@ -1149,7 +1149,7 @@ $(BOOKSCENESINC): %.inc: $$(geometryfile) %-pov-$(_front).png %-pov-$(_back).png
 		#declare CoilWidth = $(COILWIDTH);
 		#declare CoilColor = $(COILCOLOR);
 		#declare PaperWeight = $(PAPERWEIGHT);
-		#declare BookThickness = $${spinemm} / $${pagewmm} / 2;
+		#declare BookThickness = max($${spinemm} / $${pagewmm} / 2, MinThickness);
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
@@ -1160,7 +1160,7 @@ $(BOOKSCENES): %-$(_3d).pov: $$(geometryfile) %.inc
 		#declare DefaultBook = "$(filter %.inc,$^)";
 		#declare Lights = $(call scale,8,2);
 		#declare BookAspect = $${pagewmm} / $${pagehmm};
-		#declare BookThickness = $${spinemm} / $${pagewmm} / 2;
+		#declare BookThickness = max($${spinemm} / $${pagewmm} / 2, MinThickness);
 		#declare HalfThick = BookThickness / 2;
 		#declare toMM = 1 / $${pagehmm};
 	EOF
@@ -1422,8 +1422,9 @@ split_chapters:
 	$(if $(MARKDOWNSOURCES),,exit 0)
 	$(foreach SOURCE,$(MARKDOWNSOURCES),$(call split_chapters,$(SOURCE)))
 
+.PHONY: normalize_files
 normalize_files: private PANDOCFILTERS = --lua-filter=$(CASILEDIR)pandoc-filters/chapterid.lua
-normalize_files: $(CASILEDIR)pandoc-filters/chapterid.lua
+normalize_files:
 	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
 	$(if $(MARKDOWNSOURCES),,exit 0)
 	echo $(MARKDOWNSOURCES) |

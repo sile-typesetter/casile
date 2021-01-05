@@ -4,6 +4,7 @@ local yaml = require("yaml")
 
 local PROJECT = os.getenv("PROJECT")
 local SORTORDER = os.getenv("SORTORDER")
+local TARGETS = os.getenv("TARGETS")
 
 -- luacheck: ignore dump
 local function dump(...)
@@ -14,13 +15,20 @@ end
 local booktitles = {}
 local books = { ... } -- arg has 0 and -1 keys that aren't the passed arguments
 
-local seriesmeta = yaml.loadpath(PROJECT .. '.yml')
+local seriesmeta = pcall(yaml.loadpath, PROJECT .. '.yml')
 
 local seriestitles = {}
 local seriesorders = {}
-for _, title in ipairs(seriesmeta.seriestitles) do
-  table.insert(seriestitles, title.title)
-  seriesorders[title.title] = title.order
+if seriesmeta then
+  for _, title in ipairs(seriesmeta.seriestitles) do
+    table.insert(seriestitles, title.title)
+    seriesorders[title.title] = title.order
+  end
+else
+  for title in TARGETS:gmatch("%S+") do
+    table.insert(seriestitles, title)
+    seriesorders[title] = #seriesorders+1
+  end
 end
 
 local fetchtitle = function (bookid)

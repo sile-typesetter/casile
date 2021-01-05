@@ -29,7 +29,7 @@ strip_binding = $(filter-out $1,$(foreach BINDING,$(BINDINGS),$(subst -$(BINDING
 parse_edits = $(foreach WORD,$1,$(subst $(space),-,$(or $(filter $(EDITS),$(subst -, ,$(basename $(WORD)))),)))
 strip_edits = $(foreach WORD,$1,$(filter-out $(WORD),$(foreach EDIT,$(EDITS),$(subst -$(EDIT),,$(WORD)))))
 parse_bookid = $(firstword $(subst -, ,$(basename $1)))
-series_sort = $(shell $(_ENV) PROJECT=$(PROJECT) SORTORDER=$(SORTORDER) series_sort.lua $1)
+series_sort = $(shell $(_ENV) SORTORDER=$(SORTORDER) TARGETS="$(TARGETS)" series_sort.lua $1)
 metainfo = $(shell $(_ENV) $(YQ) -r '$1' < $(PROJECTYAML))
 isbntouid = $(call cachevar,$1,uuid,$(basename $(notdir $(shell $(_ENV) $(GREP) -l $1 $(YAMLSOURCES)))))
 isbnmask = $(call cachevar,$1,mask,$(shell $(_ENV) $(PYTHON) -c "import isbnlib; print(isbnlib.mask('$1'))"))
@@ -298,6 +298,7 @@ define povray ?=
 		#declare Rand1 = seed(1234);
 		#declare Rand2 = seed(4123);
 		#declare Rand3 = seed(2134);
+		#declare MinThickness = 0.005;
 	EOF
 	sleep 1.$${RANDOM} # block parallel execution
 	while $(PGREP) povray > /dev/null; do sleep 2.$${RANDOM}; done
