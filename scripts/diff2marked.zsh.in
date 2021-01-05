@@ -1,4 +1,4 @@
-#!@zsh@
+#!@ZSH@
 
 cd $MARKED_ORIGIN
 if @GIT@ diff --quiet -- $MARKED_PATH; then
