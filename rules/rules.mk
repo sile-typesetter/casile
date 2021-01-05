@@ -267,11 +267,10 @@ series_promotionals: $(PROJECT)-epub-$(_poster)-$(_montage).jpg $(PROJECT)-$(_sq
 .PHONY: series_renderings
 series_renderings: $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3d)-$(_montage).jpg)
 
-$(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(SOURCES),%,-$(_poster).png) $(firstword $(SOURCES))-%-$(_geometry).sh
+$(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(SOURCES),%,-$(_poster).png) $(firstword $(SOURCES))-%-$(_print)-$(_geometry).sh
 	$(sourcegeometry)
-	$(MAGICK) \
+	$(MAGICK) montage \
 		$(MAGICKARGS) \
-		montage \
 		$(filter %.png,$^) \
 		-geometry $${pagewpm}x$${pagehpm}+0+0 \
 		$@
