@@ -25,13 +25,6 @@ _casile_assets = assets/en-US/cli.ftl assets/tr-TR/cli.ftl
 casile_SOURCES = Cargo.toml build.rs src/main.rs $(_casile_libs) $(_casile_modules) $(_casile_assets)
 EXTRA_casile_SOURCES = Cargo.lock tests/cli.rs
 
-BUILT_SOURCES = .version
-
-.version: $(shell test -e .git && awk '{print ".git/" $$2}' .git/HEAD)
-	mv $@{,-prev} 2>/dev/null || touch $@-prev
-	( test -e .git && ./build-aux/git-version-gen .tarball-version || echo $(VERSION) ) > $@
-	cmp -s $@{,-prev} || autoreconf configure.ac --force -W none
-
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
 luadir = $(datadir)
@@ -87,6 +80,7 @@ dist_layouts_DATA = layouts/a4.lua layouts/a4ciltli.lua layouts/a5trim.lua layou
 assetsdir = $(datadir)/assets
 dist_assets_DATA =
 
+BUILT_SOURCES = .version
 CLEANFILES = $(BUILT_SOURCES) $(bin_PROGRAMS) $(dist_scripts_SCRIPTS)
 
 if ENABLE_BASH_COMPLETION
@@ -148,9 +142,40 @@ $(COMPLETIONS_OUT_DIR)/_$(_casile): $(CARGO_TARGET)
 $(CARGO_TARGET): $(casile_SOURCES) clean-embedded-assets
 	cargo build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
 
+.version: $(shell test -e .git && awk '{print ".git/" $$2}' .git/HEAD)
+	mv $@{,-prev} 2>/dev/null || touch $@-prev
+	( test -e .git && ./build-aux/git-version-gen .tarball-version || echo $(VERSION) ) > $@
+	cmp -s $@{,-prev} || autoreconf configure.ac --force -W none
+
+%-reversed.mk: %.mk
+	awk -F' := ' '/^_/ { gsub(/_/, "", $$1); print "__" $$2 " := " $$1 }' < $< > $@
+
 .PHONY: clean-embedded-assets
 clean-embedded-assets:
 	[[ ! -e .git  ]] || git clean -dxf assets
+
+dist: casile-$(VERSION).md
+
+dist-hook:
+	echo $(VERSION) > $(distdir)/.tarball-version
+	yarn install --production --frozen-lockfile --modules-folder "$(distdir)/node_modules"
+
+install-data-hook:
+	yarn install --production --frozen-lockfile --modules-folder "$(DESTDIR)$(datadir)/node_modules"
+
+uninstall-hook:
+	rm -rf "$(DESTDIR)$(datadir)/node_modules"
+
+clean-local:
+	cargo clean
+
+check-local: cargo-test check-version
+
+cargo-test: $(_casile)
+	cargo test --locked
+
+check-version: $(_casile) | .version
+	./$< --version | grep -Ff $|
 
 all: init
 
@@ -163,41 +188,26 @@ node_modules: yarn.lock
 yarn.lock: package.json
 	yarn install
 
-%-reversed.mk: %.mk
-	awk -F' := ' '/^_/ { gsub(/_/, "", $$1); print "__" $$2 " := " $$1 }' < $< > $@
-
-dist-hook:
-	yarn install --production --frozen-lockfile --modules-folder "$(distdir)/node_modules"
-
-install-data-hook:
-	yarn install --production --frozen-lockfile --modules-folder "$(DESTDIR)$(datadir)/node_modules"
-
-uninstall-hook:
-	rm -rf "$(DESTDIR)$(datadir)/node_modules"
-
 RELTYPE ?=
 
 .PHONY: tagrelease
 tagrelease:
-	test -z $$(git tag --points-at HEAD) || exit 0 # end if we are already on a release tag
-	git diff-index --quiet --cached HEAD || exit 1 # die if anything staged but not committed
-	git diff-files --quiet || exit 1 # die if any tracked files have unstagged changes
+	test -z $$(git tag --points-at HEAD) || \
+	git diff-index --quiet --cached HEAD && \
+	git diff-files --quiet && \
 	yarn run release $(and $(RELTYPE),--release-as $(RELTYPE))
+
+.PHONY: release-preview
+release-preview:
+	yarn run release -- --dry-run $(and $(RELTYPE),--release-as $(RELTYPE))
 
 .PHONY: release
 release: tagrelease
 
+casile-%.md: CHANGELOG.md
+	sed -e '/\.\.\.v$*/,/\.\.\.v/!d' $< | \
+		sed -e '1,3d;N;$$!P;$$!D;$$d' > $@
+
 .PHONY: docker
 docker: Dockerfile hooks/build .version
 	IMAGE_NAME=siletypesetter/casile:HEAD ./hooks/build $(VERSION)
-
-check-local: cargo-test check-version
-
-cargo-test: $(_casile)
-	cargo test --locked
-
-check-version: $(_casile) | .version
-	./$< --version | grep -Ff $|
-
-clean-local:
-	cargo clean
