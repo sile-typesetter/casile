@@ -157,6 +157,7 @@ clean-embedded-assets:
 dist: casile-$(VERSION).md
 
 dist-hook:
+	echo $(VERSION) > $(distdir)/.tarball-version
 	yarn install --production --frozen-lockfile --modules-folder "$(distdir)/node_modules"
 
 install-data-hook:
