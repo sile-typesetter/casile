@@ -179,9 +179,9 @@ RELTYPE ?=
 
 .PHONY: tagrelease
 tagrelease:
-	test -z $$(git tag --points-at HEAD) || exit 0 # end if we are already on a release tag
-	git diff-index --quiet --cached HEAD || exit 1 # die if anything staged but not committed
-	git diff-files --quiet || exit 1 # die if any tracked files have unstagged changes
+	test -z $$(git tag --points-at HEAD) || \
+	git diff-index --quiet --cached HEAD && \
+	git diff-files --quiet && \
 	yarn run release $(and $(RELTYPE),--release-as $(RELTYPE))
 
 .PHONY: release
