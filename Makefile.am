@@ -152,6 +152,8 @@ $(CARGO_TARGET): $(casile_SOURCES) clean-embedded-assets
 clean-embedded-assets:
 	[[ ! -e .git  ]] || git clean -dxf assets
 
+dist: casile-$(VERSION).md
+
 all: init
 
 .PHONY:
@@ -184,8 +186,16 @@ tagrelease:
 	git diff-files --quiet && \
 	yarn run release $(and $(RELTYPE),--release-as $(RELTYPE))
 
+.PHONY: release-preview
+release-preview:
+	yarn run release -- --dry-run $(and $(RELTYPE),--release-as $(RELTYPE))
+
 .PHONY: release
 release: tagrelease
+
+casile-%.md: CHANGELOG.md
+	sed -e '/\.\.\.v$*/,/\.\.\.v/!d' $< | \
+		sed -e '1,3d;N;$$!P;$$!D;$$d' > $@
 
 .PHONY: docker
 docker: Dockerfile hooks/build .version
