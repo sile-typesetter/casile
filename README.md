@@ -8,65 +8,87 @@
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-blue.svg)](https://conventionalcommits.org)
 [![Commitizen Friendly](https://img.shields.io/badge/Commitizen-friendly-blue.svg)](http://commitizen.github.io/cz-cli/)
 
-The CaSILE toolkit is a collection of tools designed to automate book publishing from start to finish. The concept is to take very simple input and turn it into a finished product with as little manual intervention as possible. It transforms plain text document formats and meta data into press ready PDFs, E-Books, and rendered promotional materials.
+The CaSILE toolkit is a build system that glues together a large collection of tools into a cohesive system to automate book publishing from start to finish.
+The concept is to take very simple easily edited input and turn it into a finished product with as little manual intervention as possible.
+It transforms plain text document formats and meta data into press ready PDFs, E-Books, and rendered promotional materials.
 
-CaSILE (pronounced like 'castle') started out life as a submodule called `avadanlik` included inside my book project repositories (avadanlık being a Turkish word for toolkit). AS most of the parts revolve around SILE, in my head at least CaSILE became **Caleb’in Avadanlığı ile Simon’s Improved Layout Engine**, roughly translating to “Caleb's SILE Toolkit”. Come to think of it that would have been a simpler way to arrive at the name, but the project has deep Turkish roots so I'm keeping the "a" in the name name as a nod to its origin.
+In traditional publishing workflows the closer a book is to production the harder becomes to work with.
+The pipeline ‘narrows’ to more and more advanced (complex/expensive) software and more and more restricted access.
+CaSILE turns this around by completely automating all the ‘later’ production stages and putting the content font and center in an easily edited format.
+
+CaSILE (pronounced like 'castle') started out life as a submodule called `avadanlik` included inside my book project repositories (avadanlık being a Turkish word for toolkit).
+AS most of the parts revolve around SILE, in my head at least CaSILE became **Caleb’in Avadanlığı ile SILE**, roughly translating to “Caleb's Toolkit for SILE”.
+Come to think of it that would have been a simpler way to arrive at the name, but the project has deep Turkish roots so I'm keeping the "a" in the name name as a nod to its origin.
 
 ## Dependencies
 
-CaSILE glues together *a lot* of different tools to build a complete publishing tool chain. Behind the scenes this is messy business. In order to make everything work I've had to use an eclectic variety of software. All of these are open source and available across platforms, but I only personally test on Linux. Arch Linux packages are available (AUR recipes at [casile][aur-casile] or [casile-git][aur-casile-git], precompiled packages in [this repo][arch-alerque]) for easy setup. It is possible to run on macOS if you spend some time pulling in dependencies from Homebrew and elsewhere. Windows support will almost certainly require considerable monkey business. [Not my circus, not my monkeys][nmcnmm].
+CaSILE glues together *a lot* of different open source tools to assemble a complete publishing tool chain.
+Behind the scenes this is very messy business.
+In order to make everything work I've had to use an eclectic variety of software.
+All of these are open source and available across platforms, but I only personally test on Linux.
+Arch Linux packages are available (AUR recipes at [casile][aur-casile] or [casile-git][aur-casile-git], precompiled packages in [this repo][arch-alerque]) for easy setup.
+It is possible to run on macOS if you spend some time pulling in dependencies from Homebrew and elsewhere.
+Windows support will almost certainly require considerable monkey business.
+[Not my circus, not my monkeys][nmcnmm].
 
-If you aren't on a natively supported platform, there is a [Docker image][dockerhub] with all the dependencies self contained that can be run on almost any platform. See [Docker Usage](#docker-usage) for more information.
+If you aren't on a natively supported platform, there is a [Docker image][dockerhub] with all the dependencies self contained that can be run on almost any platform.
+See [Docker Usage](#docker-usage) for more information.
 
-All of the following are utilized in one way or another. Currently the toolkit assumes all the following are present, but as not all of them are used to build all resources it could be possible to make this more selective. For example not having the ray tracing engine would just mean no fancy 3D previews of book covers, but you could still build PDFs and other digital formats. Not having Node would mean no Bible verse format normalization, but you should still be able to build books. Not having ImageMagick would mean no covers, but you could still process the interior of books. On the other hand not having Pandoc would be fatal.
+All of the following are utilized in one way or another.
+Currently the toolkit assumes all the following are present, but as not all of them are used to build all resources it could be possible to make this more selective.
+For example not having the ray tracing engine would just mean no fancy 3D previews of book covers, but you could still build PDFs and other digital formats.
+Not having Node would mean no Bible verse format normalization, but you should still be able to build books.
+Not having ImageMagick would mean no covers, but you could still process the interior of books.
+On the other hand not having GNU Make, Pandoc, or SILE would of course be fatal.
 
-* The [SILE][sile] Typesetter is the workhorse behind most of the text layout. Tagged releases of CaSILE should work with latest released version of SILE, git versions may assume the latest Git HEAD versions of SILE.
+* The [SILE][sile] Typesetter is the workhorse behind most of the text layout.
+  Tagged releases of CaSILE should work with latest released version of SILE, git versions may assume the latest Git HEAD versions of SILE.
 * [Pandoc][pandoc] (specifically with [my branch with SILE support][pandocsile]) converts between document types.
 * [ImageMagick][im] handles raster image processing (v7+ required).
 * [POVRay][pov] is used to render 3 dimensional visualizations.
-* [Inkscape][inkscape] is used to for some cover layouts and to convert SVG resources into other formats.
-* [PDFTk][pdftk] is used for manipulating PDFs.
+* [Inkscape][inkscape] is used to layout some cover resources and to convert SVG resources into other formats.
+* [PDFTk][pdftk] is used to manipulate PDFs.
 * [Podofo][podofo] is used to do more stuff with PDFs.
-* [Kindlegen][kindlegen] is needed to generate Amazon's E-Book formats.
+* [Kindlegen][kindlegen] is needed to generate Amazon’s E-Book formats.
 * [Poppler][poppler] is used to do even more stuff with PDFs.
 * [Zint][zint] generates ISBN barcodes, QR codes, etc.
 * Perl, Python, Lua, Node, Zsh, and a few other language interpreters!
 * Various modules for those languages like `lua-yaml`, `python-ruamel`, `python-isblib`, and `python-pandocfilters`.
 * Up to date versions of assorted shell tools like `jq`, `yq`, `entr`, `bc`, and `sqlite`.
+* GNU Make (and assorted other GNU tools) glue everything together.
 * The default book templates assume system installed versions of **Hack**, **Libertinus**, and **TeX Gyre** font sets.
-* Some other stuff (run `make dependencies` to check on them)
+* Some other stuff (`./confiruge` will warn you if your system doesn't have something that’s required).
 
-In addition to run-time dependencies, compiling the CLI interface (optional) requires a Rust build toolchain. Once built the CLI requires no dependencies to run.
+In addition to run-time dependencies, compiling the CLI interface (optional) requires a Rust build toolchain.
+Once built the CLI requires no dependencies to run.
 
-You'll probably want some other things like a PDF viewer that auto updates on file changes (I recommend [zathura][zathura]), and E-Book reader like [Calibre][calibre] but these would be run yourself and are not directly executed by the toolkit.
+You'll probably want some other things not provided by CaSILE as well.
+CaSILE takes care of transforming sources to finished outputs, but leaves you to edit the sources and view the outputs yourself.
+For starters a text editor for working with Markdown & YAML sources will be a must-have.
+Options abound here and are mostly out of scope, but think Marktext, Zettlr, Atom, VSCode, Sublime, Vim, etc.
+CaSILE also assumes your book project is tracked in Git, so a client such as the CLI tools or a GUI like GitAhead, Fork, Sourcetree, GitKraken, Tower, or a plugin specific to your editor of choice is a must-have.
+Of course you'll want a way to view generated PDFs.
+I recommend one that auto updates on file changes; I use [zathura][zathura]), but Okular and quite a few others also support this.
+An image viewer and an E-Book reader like [Calibre][calibre] are also useful.
 
 ## Status
 
-I've published dozens of books and other projects this way and have more in progress. In other words it *Works for Me*™ but your millage may vary. This tool started out as just some tooling built into one book project. Then I worked on another book and copied the scripts over to get started. When I hit book number 3 I realized I should make this more modular and just include it in each of my book projects. About this time I knew I wanted to open source it if it proved useful for more than one _type_ of book. That day came and went. One day I just decided to throw it out there so that it would be easier to explain what I was doing. As such in many ways it is hard coded to my publishing needs any adaption to be more flexible only happens as people request or contribute the changes.
-
-Major TODO items include:
-
-- [x] Remove hard coded resources specific to [Via Christus Publishers][viachristus] such as logos, default copyright notices, etc.
-- [ ] Contribute the changes from my fork of Pandoc upstream.
-- [x] Make it usable in English (or any language?) instead of having all the options hard coded in Turkish.
-- [ ] Integrate code from my _other_ toolkit that has Bible specific publishing tools.
-- [x] Add installation packages to resolve package dependencies major distro(s).
-- [x] Setup a demo book repository
-- [ ] Add CI tests to make sure each make target functions as expected
+I've published dozens of books and other projects this way and have more in progress.
+It's now used by at least 3 publishing companies.
+In other words it *Works for Me*™ but your millage may vary.
+This tool started out as just some tooling built into one book project.
+Then I worked on another book and copied the scripts over to get started.
+When I hit book number 3 I realized I should make my tools more modular and just include them in each of my book projects.
+About this time I knew I wanted to open source it if it proved useful for more than one _type_ of book.
+That day came and went.
+One day I just decided to throw it out there so that it would be easier to explain what I was doing.
+As such in many ways it is hard coded to my publishing needs any adaption to be more flexible only happens as people request or contribute the changes.
 
 ### Setup
 
 There are several different ways to use CaSILE, with or without installation.
-
-* As a Git submodule in your project.
-
-  - Pros: Versioned with your project so as things change in your project each commit will have the matching version of CaSILE. Each project can potentially have it's own version of CaSILE allowing tweaks and overrides as necessary.
-  - Cons: Installing dependencies is up to you. Git submodules are just a bit fiddly and not well supported by all Git clients. Requires initialization per project and the extra disk space usage of having a separate checkout for every project.
-
-* From any directory.
-
-  - Pros: No installation required, can have one or several versions.
-  - Cons: Installing dependencies and maintaining a link to the directory with the correct version for each project is up to you.
+Originally (through v0.2.0) CaSILE focused on use as a submodule to Git projects.
+Beginning with v0.3.0 the primary focus will be on use as CLI tool completely separate from any project.
 
 * Installed to your system.
 
@@ -76,7 +98,13 @@ There are several different ways to use CaSILE, with or without installation.
 * Using Docker.
 
   - Pros: No dependencies to run and hence very easy to get started, easy to switch between versions including full matching dependency stack.
-  - Cons: Tricky to setup access to fonts or other resources available outside your project. Some overhead in startup time and reduced CPU and memory resources.
+  - Cons: Tricky to setup access to fonts or other resources available outside your project.
+    Some overhead in startup time and reduced CPU and memory resources.
+
+* From any directory.
+
+  - Pros: No installation required, can have one or several versions.
+  - Cons: Installing dependencies and maintaining a link to the directory with the correct version for each project is up to you.
 
 * From a CI runner.
 
@@ -84,55 +112,6 @@ There are several different ways to use CaSILE, with or without installation.
   - Cons: Long turn around time, must push repository to a supported remote host.
 
 It is also possible to mix and match, notably you can use both local options and setup a CI runner.
-
-### Submodule Setup
-
-1. (Optionally, see [setup](#setup) notes) Add CaSILE as a submodule to your book project's git repository:
-
-    ```bash
-    $ git submodule add -b master https://github.com/sile-typesetter/casile.git
-    $ git submodule update --init --remote
-    ```
-
-    Note the `-b master` here tells git you want to track the master branch and update to that whenever it changes. This is what I use for my books while I'm working on them. When I publish (and want to be able to regenerate the same output again even if the toolkit changes) I commit the current version SHA to the book repo and stop tracking the master branch.
-
-2. Include the rules.mk file from your project's Makefile:
-
-    ```makefile
-    include casile/rules.mk
-    ```
-
-3. Initialize the toolkit before first use:
-
-    ```bash
-    $ make init
-    ```
-
-## External Directory Setup
-
-1. Clone the Git repository or download and extract a source tarball.
-
-2. Optionally create a symlink to the external directory so the location can be changed without editing your makefile:
-
-    ```bash
-    $ ln -s /path/to/casile
-    ```
-
-2. Include the rules.mk file from your project's Makefile:
-
-    ```makefile
-    # Direct approach
-    include /path/to/casile/rules.mk
-
-    # Optional symlinked approach
-    include casile/rules.mk
-    ```
-
-3. Initialize the toolkit before first use:
-
-    ```bash
-    $ make init
-    ```
 
 ## Installed Setup
 
@@ -182,17 +161,50 @@ If you are using Arch Linux, take your pick of AUR recipes at [casile][aur-casil
 
 ### Docker Setup
 
-Use of the [Docker container][dockerhub] can make it a lot easier to get up and running because you won't need to have a huge collection of dependencies installed. Download (or update) the image using  `docker pull siletypesetter/casile:latest`. Note *latest* will be the most recent stable tagged release, or you may substitude a specific tag (e.g. *v0.2.0*) or *master* for the more recent Git commit build.
+Use of the [Docker container][dockerhub] can make it a lot easier to get up and running because you won't need to have a huge collection of dependencies installed.
+Download (or update) the image using  `docker pull siletypesetter/casile:latest`.
+Note *latest* will be the most recent stable tagged release, or you may substitude a specific tag (e.g. *v0.2.0*) or *master* for the more recent Git commit build.
 
-Optionally you may build a docker image yourself. From any CasILE source directory (Git clone, source archive, release archive) run `make docker`. The resulting image will be available on your system as `siletypesetter/casile:HEAD`.
+Optionally you may build a docker image yourself.
+From any CasILE source directory (Git clone, source archive, release archive) run `make docker`.
+The resulting image will be available on your system as `siletypesetter/casile:HEAD`.
 
-Once installed, the docker image run command can be substituted anywhere you would invoke CaSILE. For convenience you'll probably want to give yourself an alias:
+Once installed, the docker image run command can be substituted anywhere you would invoke CaSILE.
+For convenience you'll probably want to give yourself an alias:
 
 ```bash
 alias casile-docker='docker run -it --volume "$(pwd):/data" --user "$(id -u):$(id -g)" siletypesetter/casile:latest'
 ```
 
-Now instead of running `make my_book-a4-print.pdf` you would run `casile-docker make my_book-a4-print.pdf`. This substitution should work anywhere you would have run `make` in a submodule or linked directory usage.
+Now instead of running `make my_book-a4-print.pdf` you would run `casile-docker make my_book-a4-print.pdf`.
+This substitution should work anywhere you would have run `make` in a submodule or linked directory usage.
+
+## External Directory Setup
+
+1. Clone the Git repository or download and extract a source tarball.
+
+2. Optionally create a symlink to the external directory so the location can be changed without editing your makefile:
+
+    ```bash
+    $ ln -s /path/to/casile
+    ```
+
+2. Include the rules.mk file from your project's Makefile:
+
+    ```makefile
+    # Direct approach
+    include /path/to/casile/rules.mk
+
+    # Optional symlinked approach
+    include casile/rules.mk
+    ```
+
+3. Initialize the toolkit before first use:
+
+    ```bash
+    $ make init
+    ```
+
 
 ### CI Setup
 
@@ -204,7 +216,11 @@ $ make .gitlab-conf.yml
 
 ## Input
 
-CaSILE makes a number of assumptions about the content of your project repository, but how exactly you organize your git repos is still flexible. For example I have some single books in their own repositories, some series of books where the repository holds the whole series, others with different books with the same publisher/copyright status lumped together (and worked on in branches), a set of tracts by assorted authors but published together in another repository, etc. CaSILE assumes there is some relation between sources in each repository so granular repositores give more complete control, but each resource in a single repository can also be customized. You'll have to consider your own workflow and how projects share resources. Note that common resources, say defaults for a publisher, can be shared in another submodule(s).
+CaSILE makes a number of assumptions about the content of your project repository, but how exactly you organize your git repos is still flexible.
+For example I have some single books in their own repositories, some series of books where the repository holds the whole series, others with different books with the same publisher/copyright status lumped together (and worked on in branches), a set of tracts by assorted authors but published together in another repository, etc.
+CaSILE assumes there is some relation between sources in each repository so granular repositores give more complete control, but each resource in a single repository can also be customized.
+You'll have to consider your own workflow and how projects share resources.
+Note that common resources, say defaults for a publisher, can be shared in another submodule(s).
 
 A book project would minimally consist of at least the following:
 
@@ -245,7 +261,8 @@ In return, CaSILE will output
 
 ## Usage
 
-Build whatever resources you need. Assuming you have a book source file `my_book.md` and accompanying meta data at `my_book.yml`, the general syntax for generating resources would be:
+Build whatever resources you need.
+Assuming you have a book source file `my_book.md` and accompanying meta data at `my_book.yml`, the general syntax for generating resources would be:
 
         $ make my_book-<layout>-<options>.<format>
 
@@ -263,44 +280,56 @@ See also the [CaSILE demos][demos] repository for a sample book project layout.
 
 #### Project parameters
 
-These settings apply to the whole project. To override the defaults set them in your project's `Makefile` (or a shared include!).
+These settings apply to the whole project.
+To override the defaults set them in your project's `Makefile` (or a shared include!).
 
 
 * `LANGUAGE` sets the language for localized file names.
 
-    The default is English, so you might run `make book-halfletter-3d-front.png`. Changing this to Turkish:
+    The default is English, so you might run `make book-halfletter-3d-front.png`.
+    Changing this to Turkish:
 
         LANGUAGE = tr
 
-    will mean the command you run should be `make kitap-a5-3b-on.png` to generate the same resource for a similar project with localized filenames. At this time localizations are only included for Turkish, but they are easy enough to add to your project. Submitting them upstream would also me much appreciated.
+    will mean the command you run should be `make kitap-a5-3b-on.png` to generate the same resource for a similar project with localized filenames.
+    At this time localizations are only included for Turkish, but they are easy enough to add to your project.
+    Submitting them upstream would also me much appreciated.
 
 * `TARGETS` is a list of all the books in a project.
 
-    By default this is set by scanning the project directory and finding all the Markdown files that have matching YAML meta data files of the same name. This helps dodge things like `README.md` files that are not the focus of the meat of a project. You can manually set this with a list:
+    By default this is set by scanning the project directory and finding all the Markdown files that have matching YAML meta data files of the same name.
+    This helps dodge things like `README.md` files that are not the focus of the meat of a project.
+    You can manually set this with a list:
 
         TARGETS = book_1 book_2
 
-    Or perhaps populate it with a list of _all_ markdown files. You don't want the extentions here, just the basenames of books to be built:
+    Or perhaps populate it with a list of _all_ markdown files.
+    You don't want the extentions here, just the basenames of books to be built:
 
         TARGETS = $(basename $(wildcard *.md))
 
 * `PROJECT` is the name of the overall project (which might contain several books or other works).
 
-    This defaults to the name of the repository directory. Setting it to some other value is mostly useful if you have values such as `OUTPUTDIR` set to references it in a settings file for your organization but want to override it for a project.
+    This defaults to the name of the repository directory.
+    Setting it to some other value is mostly useful if you have values such as `OUTPUTDIR` set to references it in a settings file for your organization but want to override it for a project.
 
         PROJECT = series_name
 
 * `CASILEDIR` is where CaSILE is located.
 
-    Defaults to the location of the CaSILE rules.mk file as determined by the last makefile in the loaded list (so if you included it from your Makefile, do the include after any others or hard code the location yourself. This can also be used to run a version of CaSILE outside of the current project directory.
+    Defaults to the location of the CaSILE rules.mk file as determined by the last makefile in the loaded list (so if you included it from your Makefile, do the include after any others or hard code the location yourself.
+    This can also be used to run a version of CaSILE outside of the current project directory.
 
-* `PROJECTDIR` is where your project is located. Sources will be examined here and the build process will run here.
+* `PROJECTDIR` is where your project is located.
+    Sources will be examined here and the build process will run here.
 
-    Defaults to the location of the project Makefile as determined by the first makefile in the loaded list. It is unlikely you would ever want to change this.
+    Defaults to the location of the project Makefile as determined by the first makefile in the loaded list.
+    It is unlikely you would ever want to change this.
 
 * `OUTPUTDIR` determines where published files will be placed.
 
-    Ouput files are first created in the current project directory alongside sources. Optionally CaSILE can 'pubish' finished resources to some other location.
+    Ouput files are first created in the current project directory alongside sources.
+    Optionally CaSILE can 'pubish' finished resources to some other location.
 
         OUTPUTDIR = /path/to/pub/$(PROJECT)
 
@@ -316,7 +345,8 @@ These settings apply to the whole project. To override the defaults set them in 
 
 * `FORMATS` contains a list of output formats to build for from each input.
 
-    By default this is set to `pdf epub`, but you may want to build less or more that this. To built "the works":
+    By default this is set to `pdf epub`, but you may want to build less or more that this.
+    To built "the works":
 
         FORMATS = pdf epub mobi odt docx app
 
@@ -342,13 +372,15 @@ These settings apply to the whole project. To override the defaults set them in 
 
 * `COVERGRAVITY` tells the cover generator what direction to crop background images when adjusting for different aspect ration.
 
-    Defaults to Center. Possible options are anything that ImageMagick understands, so South, SouthWest, NorthEast, etc.
+    Defaults to Center.
+    Possible options are anything that ImageMagick understands, so South, SouthWest, NorthEast, etc.
 
         COVERGRAVITY = North
 
 #### Build time settings
 
-These settings are usually not changed except at run time. You _may_ set them in your `Makefile` but they would typically be set as environment variables or on the command line to get other-than-default behaviour for a specific build.
+These settings are usually not changed except at run time.
+You _may_ set them in your `Makefile` but they would typically be set as environment variables or on the command line to get other-than-default behaviour for a specific build.
 
 * `DRAFT` enables draft mode builds for faster testing.
 
@@ -356,7 +388,8 @@ These settings are usually not changed except at run time. You _may_ set them in
 
         make DRAFT=true book-a4-binding.pdf
 
-    What this does will depend on the resource type. Books are only typeset in one pass, so TOC's may be out of date, cover images are generated at 17th final resolution, 3D renderings are done with partial lighting for faster ray-tracing, etc.
+    What this does will depend on the resource type.
+    Books are only typeset in one pass, so TOC's may be out of date, cover images are generated at 17th final resolution, 3D renderings are done with partial lighting for faster ray-tracing, etc.
 
     Note that `make watch ...` automatically enables this mode.
 
@@ -364,13 +397,18 @@ These settings are usually not changed except at run time. You _may_ set them in
 
     Defaults to false.
 
-    Note this works in congunction with the `PARENT` variable. When pre-processing the source of books, the current commit will be comared to the branch (or commit) defined by PARENT. Any differences (at the character level) will be marked up using CriticMarkup sytax. Some output formats (notably PDF) will syntax highlight any additions/removals.
+    Note this works in congunction with the `PARENT` variable.
+    When pre-processing the source of books, the current commit will be comared to the branch (or commit) defined by PARENT.
+    Any differences (at the character level) will be marked up using CriticMarkup sytax.
+    Some output formats (notably PDF) will syntax highlight any additions/removals.
 
 * `STATSMONTHS` sets the default time frame to report on activity.
 
     Defaults to 1.
 
-    At the end of each month I run `make stats` to run a report of all commit activity on the content of books. This computes the current character and word counts and compares them with each previous commit and shows a report crediting the author of that commit. I use this to pay our translators, editors, etc.
+    At the end of each month I run `make stats` to run a report of all commit activity on the content of books.
+    This computes the current character and word counts and compares them with each previous commit and shows a report crediting the author of that commit.
+    I use this to pay our translators, editors, etc.
 
     Override with `make STATSMONTHS=2 stats`.
 
@@ -379,9 +417,11 @@ These settings are usually not changed except at run time. You _may_ set them in
 
     Defaults to false, set to true to enable.
 
-    This will be pretty verbose on the console. Shell scripts will run with `set -x`, programs that have them will be run with debug flags turned on, etc.
+    This will be pretty verbose on the console.
+    Shell scripts will run with `set -x`, programs that have them will be run with debug flags turned on, etc.
 
-* `SILEDEBUG` sets the specific parts of the SILE typesetter to debug. See SILE documentation for details.
+* `SILEDEBUG` sets the specific parts of the SILE typesetter to debug.
+    See SILE documentation for details.
 
     Defaults to casile.
 
@@ -389,7 +429,8 @@ These settings are usually not changed except at run time. You _may_ set them in
 
     Usage from the command line might be `make DEBUG=true SILEDEBUG=frames book-a4.pdf`.
 
-* `COVERS` can be used to disable generating cover images. Raster image generation can take time, this skips those steps and just assumes no graphical covers are present.
+* `COVERS` can be used to disable generating cover images.
+    Raster image generation can take time, this skips those steps and just assumes no graphical covers are present.
 
     Defaults to true, set to false to disable.
 
@@ -397,7 +438,9 @@ These settings are usually not changed except at run time. You _may_ set them in
 
     Default is unset.
 
-    If setting this to an integer, only that many lines of an input book will be processed. This is useful when styling a book. You can work on the first chapter worth of lines and rebuild the book quickly, then turn it off to regenerate the whole book.
+    If setting this to an integer, only that many lines of an input book will be processed.
+    This is useful when styling a book.
+    You can work on the first chapter worth of lines and rebuild the book quickly, then turn it off to regenerate the whole book.
 
         make HEAD=50 book-octavo.pdf
 
@@ -409,7 +452,8 @@ These settings are usually not changed except at run time. You _may_ set them in
 
     Defaults to 1200 with scaling for draft mode enabled.
 
-    This may be set to an another value with or without scaling. For example for a one off command you might run:
+    This may be set to an another value with or without scaling.
+    For example for a one off command you might run:
 
         make HIDPI=600 book-octavo-binding.pdf
 
@@ -423,11 +467,14 @@ These settings are usually not changed except at run time. You _may_ set them in
 
 #### Hooks
 
-These are functions that can be defined in your project's `Makefile` to add additionaly funtionality at various points in the process. You make use either single or multiline syntax as desired, but note the input, output, and variables passed will be the same either way. On the other hand each hook has its own usage so note the context it runs in.
+These are functions that can be defined in your project's `Makefile` to add additionaly funtionality at various points in the process.
+You make use either single or multiline syntax as desired, but note the input, output, and variables passed will be the same either way.
+On the other hand each hook has its own usage so note the context it runs in.
 
 * `pre_sync` and `post_sync` can be used to run an external application before
 
-    Default is unset. The context is a recipie line.
+    Default is unset.
+    The context is a recipie line.
 
     For example, I use this on my CI server to update an ownCloud share before and after publishing to it:
 
