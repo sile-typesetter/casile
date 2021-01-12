@@ -1,6 +1,6 @@
 $(and $(word 2,$(MAKEFILE_LIST)),$(error This is not the makefile you should include in your project to run SILE, please use 'rules.mk' instead.))
 
-_casile = $(shell sed -e "$(program_transform_name)" <<< casile)
+_casile = $(program_prefix)$(shell sed -e "$(program_transform_name)" <<< casile)$(program_suffix)
 
 licensedir = $(datarootdir)/licenses/$(_casile)
 docdir = $(datarootdir)/doc/$(_casile)
@@ -171,10 +171,10 @@ clean-local:
 
 check-local: cargo-test check-version
 
-cargo-test: $(_casile)
+cargo-test: casile$(EXEEXT)
 	cargo test --locked
 
-check-version: $(_casile) | .version
+check-version: casile$(EXEEXT) | .version
 	./$< --version | grep -Ff $|
 
 all: init
@@ -210,4 +210,4 @@ casile-%.md: CHANGELOG.md
 
 .PHONY: docker
 docker: Dockerfile hooks/build .version
-	IMAGE_NAME=siletypesetter/casile:HEAD ./hooks/build $(VERSION)
+	IMAGE_NAME=siletypesetter/$(_casile):HEAD ./hooks/build $(VERSION)

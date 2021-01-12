@@ -170,4 +170,6 @@ AX_SCRIPT([toc2breaks.lua])
 AX_SCRIPT([unicode_symbols.pl])
 AX_SCRIPT([worklog.zsh])
 
+AC_ARG_PROGRAM
+
 AC_OUTPUT
