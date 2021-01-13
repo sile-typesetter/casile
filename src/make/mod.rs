@@ -43,9 +43,8 @@ pub fn run(target: Vec<String>) -> Result<()> {
         .env("CASILE_CLI", "true")
         .env("CASILEDIR", CONFIGURE_DATADIR)
         .env("CONTAINERIZED", status::is_container().to_string())
-        .env("GITNAME", &gitname)
         .env("LANGUAGE", CONF.get_string("language")?)
-        .env("PROJECT", pname(&gitname))
+        .env("PROJECT", &gitname)
         .env("PROJECTDIR", CONF.get_string("path")?)
         .env("PROJECTVERSION", git_version);
     if CONF.get_bool("debug")? {
