@@ -854,6 +854,8 @@ $(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf:
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
 		spine = "$(call spinemm,$(filter %.pdf,$^))mm"
+		SILE.call("language", { main = "$(LANGUAGE)" })
+		SILE.call("font", { language = "$(LANGUAGE)" })
 		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
 		SILE.require("$(basename $(LUA))"))
 	EOF
@@ -903,6 +905,8 @@ $(COVERFRAGMENTS): %-$(_text).pdf:
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
+		SILE.call("language", { main = "$(LANGUAGE)" })
+		SILE.call("font", { language = "$(LANGUAGE)" })
 		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
 		SILE.require("$(basename $(LUA))"))
 	EOF
