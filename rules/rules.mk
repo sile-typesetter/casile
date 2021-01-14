@@ -941,7 +941,7 @@ publisher_logo-grey.svg: $(PUBLISHERLOGO)
 	cp $< $@
 
 BINDINGIMAGES := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding).png)
-$(BINDINGIMAGES): %-$(_binding).png: $(basename $$@)-$(_fragment)-$(_front).png $$(basename $$@)-$(_fragment)-$(_back).png $$(basename $$@)-$(_fragment)-$(_spine).png
+$(BINDINGIMAGES): %-$(_binding).png: $$(addsuffix .png,$$(addprefix $$(basename $$@)-$(_fragment)-,$(_front) $(_back) $(_spine)))
 $(BINDINGIMAGES): %-$(_binding).png: $$(call parse_bookid,$$@)-$(_barcode).png
 $(BINDINGIMAGES): %-$(_binding).png: publisher_emblum.svg publisher_emblum-grey.svg publisher_logo.svg publisher_logo-grey.svg
 $(BINDINGIMAGES): %-$(_binding).png: $$(geometryfile)
