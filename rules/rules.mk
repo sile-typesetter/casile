@@ -838,14 +838,12 @@ $(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf
 	rm $${text} $${bg}
 
 BINDINGFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_text).pdf)
-$(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
-	echo ALLLL $^
-	false
+$(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@)) $$(subst -$(_binding)-$(_text),,$$@) | $(CASILEDIR)layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
 		spine = "$(call spinemm,$(filter %.pdf,$^))mm"
-		$(foreach LUA,$(call reverse,$|),
+		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
 		SILE.require("$(basename $(LUA))"))
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
@@ -887,11 +885,11 @@ $(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfil
 		$@
 
 COVERFRAGMENTS := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_text).pdf)
-$(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
+$(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@)) | $(CASILEDIR)layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
-		$(foreach LUA,$(call reverse,$|),
+		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
 		SILE.require("$(basename $(LUA))"))
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
