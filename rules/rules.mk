@@ -325,6 +325,7 @@ debug:
 	echo "PLAYSOURCES = $(PLAYSOURCES)"
 	echo "PROJECT = $(PROJECT)"
 	echo "PROJECTCONFIGS = $(PROJECTCONFIGS)"
+	echo "PROJECTLUA = $(PROJECTLUA)"
 	echo "REALLAYOUTS = $(REALLAYOUTS)"
 	echo "REALPAPERSIZES = $(REALPAPERSIZES)"
 	echo "RENDERED = $(RENDERED)"
@@ -480,7 +481,11 @@ FULLSILS += $(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil)
 $(FULLSILS): private PANDOCFILTERS += --filter=$(CASILEDIR)pandoc-filters/svg2pdf.py
 $(FULLSILS): private THISEDITS = $(call parse_edits,$@)
 $(FULLSILS): private PROCESSEDSOURCE = $(call pattern_list,$(call parse_bookid,$@),$(_processed),$(and $(THISEDITS),-$(THISEDITS)).md)
-$(FULLSILS): %.sil: $$(PROCESSEDSOURCE) $$(call pattern_list,$$(call parse_bookid,$$@),-manifest.yml -$(_verses)-$(_sorted).json -url.png) $(CASILEDIR)template.sil | $$(call onpaperlibs,$$@)
+$(FULLSILS): %.sil: $$(PROCESSEDSOURCE)
+$(FULLSILS): %.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-manifest.yml -$(_verses)-$(_sorted).json -url.png)
+$(FULLSILS): %.sil: $(CASILEDIR)template.sil
+$(FULLSILS): %.sil: | $$(call onpaperlibs,$$@)
+$(FULLSILS): %.sil:
 	$(PANDOC) --standalone \
 			$(PANDOCARGS) \
 			$(PANDOCFILTERS) \
@@ -650,7 +655,10 @@ $(PHONYPLAYS): %.play: $$(call pattern_list,$$(call printisbn,$$*),_interior.pdf
 
 IGNORES += $(PLAYMETADATAS)
 PLAYMETADATAS := $(call pattern_list,$(PLAYSOURCES),_playbooks.csv)
-$(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call ebookisbn,$$*) $$(call printisbn,$$*),_playbooks.json) %-bio.html %-description.html | $(require_pubdir)
+$(PLAYMETADATAS): %_playbooks.csv: $$(call pattern_list,$$(call ebookisbn,$$*) $$(call printisbn,$$*),_playbooks.json)
+$(PLAYMETADATAS): %_playbooks.csv: %-bio.html %-description.html
+$(PLAYMETADATAS): %_playbooks.csv: | $(require_pubdir)
+$(PLAYMETADATAS): %_playbooks.csv:
 	$(JQ) -M -e -s -r \
 			--rawfile biohtml $(filter %-bio.html,$^) \
 			--rawfile deshtml $(filter %-description.html,$^) \
@@ -837,12 +845,18 @@ $(COVERPDFS): %-$(_cover).pdf: %-$(_cover).png %-$(_cover)-$(_text).pdf
 	rm $${text} $${bg}
 
 BINDINGFRAGMENTS := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_text).pdf)
-$(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)binding.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) $$(subst -$(_binding)-$(_text),,$$@) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
+$(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(CASILEDIR)binding.xml $$(call parse_bookid,$$@)-manifest.yml
+$(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $(LUAINCLUDES) $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@))
+$(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: $$(subst -$(_binding)-$(_text),,$$@)
+$(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf: | $(CASILEDIR)layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
+$(BINDINGFRAGMENTS): %-$(_binding)-$(_text).pdf:
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
 		spine = "$(call spinemm,$(filter %.pdf,$^))mm"
-		$(foreach LUA,$(call reverse,$|),
+		SILE.call("language", { main = "$(LANGUAGE)" })
+		SILE.call("font", { language = "$(LANGUAGE)" })
+		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
 		SILE.require("$(basename $(LUA))"))
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
@@ -884,11 +898,16 @@ $(SPINEFRAGMENTS): %-$(_fragment)-$(_spine).png: %-$(_text).pdf | $$(geometryfil
 		$@
 
 COVERFRAGMENTS := $(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_text).pdf)
-$(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)cover.xml $$(call parse_bookid,$$@)-manifest.yml $(LUAINCLUDES) | $$(TARGETLUAS_$$(call parse_bookid,$$@)) $(PROJECTLUA) $(CASILEDIR)layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
+$(COVERFRAGMENTS): %-$(_text).pdf: $(CASILEDIR)cover.xml $$(call parse_bookid,$$@)-manifest.yml
+$(COVERFRAGMENTS): %-$(_text).pdf: $(LUAINCLUDES) $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@))
+$(COVERFRAGMENTS): %-$(_text).pdf: | $(CASILEDIR)layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS)
+$(COVERFRAGMENTS): %-$(_text).pdf:
 	cat <<- EOF > $*.lua
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
-		$(foreach LUA,$(call reverse,$|),
+		SILE.call("language", { main = "$(LANGUAGE)" })
+		SILE.call("font", { language = "$(LANGUAGE)" })
+		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
 		SILE.require("$(basename $(LUA))"))
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
@@ -926,7 +945,11 @@ publisher_logo-grey.svg: $(PUBLISHERLOGO)
 	cp $< $@
 
 BINDINGIMAGES := $(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding).png)
-$(BINDINGIMAGES): %-$(_binding).png: $$(basename $$@)-$(_fragment)-$(_front).png $$(basename $$@)-$(_fragment)-$(_back).png $$(basename $$@)-$(_fragment)-$(_spine).png $$(call parse_bookid,$$@)-$(_barcode).png publisher_emblum.svg publisher_emblum-grey.svg publisher_logo.svg publisher_logo-grey.svg $$(geometryfile)
+$(BINDINGIMAGES): %-$(_binding).png: $$(addsuffix .png,$$(addprefix $$(basename $$@)-$(_fragment)-,$(_front) $(_back) $(_spine)))
+$(BINDINGIMAGES): %-$(_binding).png: $$(call parse_bookid,$$@)-$(_barcode).png
+$(BINDINGIMAGES): %-$(_binding).png: publisher_emblum.svg publisher_emblum-grey.svg publisher_logo.svg publisher_logo-grey.svg
+$(BINDINGIMAGES): %-$(_binding).png: $$(geometryfile)
+$(BINDINGIMAGES): %-$(_binding).png:
 	$(sourcegeometry)
 	$(MAGICK) \
 		$(MAGICKARGS) \

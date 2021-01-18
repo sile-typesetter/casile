@@ -18,7 +18,8 @@ fn outputs_version() -> Result<()> {
 fn ouput_is_localized() -> Result<()> {
     let mut cmd = Command::cargo_bin(BIN_NAME)?;
     cmd.arg("-l").arg("tr").arg("setup");
-    cmd.assert().stderr(predicate::str::contains("kurun artık"));
+    cmd.assert()
+        .stderr(predicate::str::contains("yapılandırılıyor"));
     Ok(())
 }
 

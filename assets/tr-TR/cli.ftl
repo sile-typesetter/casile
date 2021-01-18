@@ -1,41 +1,45 @@
+help-description =
+  CaSILE avadanlığı için komut satırı arayüzü, SILE ve benzer
+  sihirbazlığından faydılanan bir yayınlama işi akışı.
+
 welcome =
   CaSILE { $version } sürümüne hoş geldiniz!
 
+outro =
+  CaSILE çalışması tamamlandı
+
 make-header =
-  What can I do is the sometimes is the football?
+  ‘make’ aracılığıyla hedef(ler) oluşturuluyor
 
 setup-header =
-  CaSILE’i kurun artık, sen yaparsın dediler!
+  Depoyu CaSILE ile kullanılmak üzere yapılandırılıyor
 
-setup-error-not-git =
-  Girilen yol Git deposu değildir.
-
-setup-error-not-dir =
-  Girilen yol klasör değildir.
-
-status-header =
-  Proje durum rapörü:
-
-status-true =
+setup-true =
   Evet
 
-status-false =
+setup-false =
   Hayır
 
-status-is-repo =
-  Git deposu içinde bulunuyor muyuz?
+setup-good =
+  Her şey yerinde gibi gözüküyor, presleri ısıtın!
 
-status-is-writable =
+setup-bad =
+  Presleri durdurun, bir eksiklik varmış, 'casile setup' çalıştırın.
+
+setup-is-repo =
+  Dizin yolu bir Git deposu mudur?
+
+setup-is-writable =
   Projenin kök klasöründe yazma izinimiz var mıdır?
 
-status-is-make-executable =
-  Sistemin `make`i yürütülebilir durumda mıdır?
+setup-is-make-executable =
+  Sistemin ‘make’i, yürütülebilir durumda mıdır?
 
-status-is-make-gnu =
-  Sistemin `make` GNU Make midir?
+setup-is-make-gnu =
+  Sistemin ‘make’i, desteklenen GNU Make sürümü müdür?
 
-status-good =
-  Her şey yerinde gibi, CaSILE mutludur!
+status-header =
+  Proje durum inceleniyor
 
-status-bad =
-  Bir eksiklik var, 'setup' çalıştırın.
+status-is-gha =
+  GitHub Action olarak mı çalıştırıldık?

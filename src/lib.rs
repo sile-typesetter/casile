@@ -7,8 +7,6 @@ use crate::config::CONF;
 use colored::{ColoredString, Colorize};
 use git2::{Oid, Repository, Signature};
 use i18n::LocalText;
-use inflector::Inflector;
-use regex::Regex;
 use std::ffi::OsStr;
 use std::{error, fmt, path, result, str};
 
@@ -58,13 +56,6 @@ impl error::Error for Error {
     fn description(&self) -> &str {
         &self.details
     }
-}
-
-pub fn pname(input: &str) -> String {
-    let seps = Regex::new(r"[-_]").unwrap();
-    let spaces = Regex::new(r" ").unwrap();
-    let title = seps.replace(input, " ").to_title_case();
-    spaces.replace(&title, "").to_string()
 }
 
 /// Get repository object
