@@ -7,6 +7,7 @@ use crate::config::CONF;
 use colored::{ColoredString, Colorize};
 use git2::{Oid, Repository, Signature};
 use i18n::LocalText;
+use regex::Regex;
 use std::ffi::OsStr;
 use std::{error, fmt, path, result, str};
 
@@ -80,6 +81,12 @@ pub fn commit(repo: Repository, oid: Oid, msg: &str) -> result::Result<Oid, git2
         &parents,
     )
 }
+
+pub fn lang_to_language(lang: String) -> String {
+    let re = Regex::new(r"_.*$").unwrap();
+    String::from(re.replace(lang.as_str(), ""))
+}
+
 /// Output welcome header at start of run before moving on to actual commands
 pub fn show_welcome() {
     let welcome = LocalText::new("welcome").arg("version", VERSION);
