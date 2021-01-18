@@ -4,31 +4,8 @@ AM_SILENT_RULES([yes])
 
 AC_CONFIG_MACRO_DIRS([build-aux])
 
-# Check that we have rust stuff
-AC_CHECK_PROG(CARGO, [cargo], [yes], [no])
-AS_IF(test x$CARGO = xno,
-    AC_MSG_ERROR([cargo is required.  Please install the Rust toolchain])
-)
-AC_CHECK_PROG(RUSTC, [rustc], [yes], [no])
-AS_IF(test x$RUSTC = xno,
-    AC_MSG_ERROR([rustc is required.  Please install the Rust toolchain])
-)
-
-# Add --enable-debug flag to change Rust build mode
-AC_ARG_ENABLE(debug,
-              AS_HELP_STRING([--enable-debug],[Build Rust code with debugging information [default=no]]),
-              [debug_release=$enableval],
-              [debug_release=no])
-
-AC_MSG_CHECKING(whether to build Rust code with debugging information)
-if test "x$debug_release" = "xyes" ; then
-    AC_MSG_RESULT(yes)
-    RUST_TARGET_SUBDIR=debug
-else
-    AC_MSG_RESULT(no)
-    RUST_TARGET_SUBDIR=release
-fi
-AM_CONDITIONAL([DEBUG_RELEASE], [test "x$debug_release" = "xyes"])
+AC_ARG_ENABLE([dependencies],
+              AS_HELP_STRING([--disable-dependencies], [Disable build-time dependency checks]))
 
 AC_ARG_WITH([bash-completion-dir],
     AS_HELP_STRING([--with-bash-completion-dir[=PATH]],
@@ -73,72 +50,101 @@ fi
 AC_SUBST([ZSH_COMPLETION_DIR])
 AM_CONDITIONAL([ENABLE_ZSH_COMPLETION],[test "x$with_zsh_completion_dir" != "xno"])
 
-AC_SUBST([RUST_TARGET_SUBDIR])
+# Add --enable-debug flag to change Rust build mode
+AC_ARG_ENABLE(debug,
+            AS_HELP_STRING([--enable-debug],[Build Rust code with debugging information [default=no]]),
+            [debug_release=$enableval],
+            [debug_release=no])
 
-AC_PROG_SED
-AC_PROG_GREP
-AC_PROG_EGREP
+AC_MSG_CHECKING(whether to build Rust code with debugging information)
+if test "x$debug_release" = "xyes" ; then
+    AC_MSG_RESULT(yes)
+    RUST_TARGET_SUBDIR=debug
+else
+    AC_MSG_RESULT(no)
+    RUST_TARGET_SUBDIR=release
+fi
+AM_CONDITIONAL([DEBUG_RELEASE], [test "x$debug_release" = "xyes"])
+
+AC_SUBST([RUST_TARGET_SUBDIR])
 
 AC_DEFUN([AX_PROGVAR], [AC_PATH_PROG(m4_toupper($1), $1)test -n "$m4_toupper($1)" || AC_MSG_ERROR([$1 is required])])
 
-AX_PROGVAR([bc])
-AX_PROGVAR([entr])
-AX_PROGVAR([epubcheck])
-AX_PROGVAR([find])
-AX_PROGVAR([git])
-AX_PROGVAR([gs])
-AX_PROGVAR([hostname])
-AX_PROGVAR([identify])
-AX_PROGVAR([inkscape])
-AX_PROGVAR([jq])
-AX_PROGVAR([kindlegen])
-AX_PROGVAR([m4])
-AX_PROGVAR([magick])
-AX_PROGVAR([node])
-AX_PROGVAR([pandoc])
-AX_PROGVAR([pcregrep])
-AX_PROGVAR([pdfbook2])
-AX_PROGVAR([pdfinfo])
-AX_PROGVAR([pdfjam])
-AX_PROGVAR([pdftk])
-AX_PROGVAR([pgrep])
-AX_PROGVAR([podofobox])
-AX_PROGVAR([povray])
-AX_PROGVAR([sile])
-AX_PROGVAR([sort])
-AX_PROGVAR([sponge])
-AX_PROGVAR([sqlite3])
-AX_PROGVAR([xargs])
-AX_PROGVAR([yarn])
-AX_PROGVAR([yq])
-AX_PROGVAR([zint])
-AX_PROGVAR([zsh])
+AS_IF([test "x$enable_dependencies" != "xno"], [
 
-AC_MSG_CHECKING(whether pandoc has SILE Writer)
-AS_IF([$PANDOC --list-output-formats | $GREP -qx sile],[
-    AC_MSG_RESULT(yes)
-],[
-    AC_MSG_FAILURE([pandoc must have sile writer support])
+    # Check that we have rust stuff
+    AC_CHECK_PROG(CARGO, [cargo], [yes], [no])
+    AS_IF(test x$CARGO = xno,
+        AC_MSG_ERROR([cargo is required.  Please install the Rust toolchain])
+    )
+    AC_CHECK_PROG(RUSTC, [rustc], [yes], [no])
+    AS_IF(test x$RUSTC = xno,
+        AC_MSG_ERROR([rustc is required.  Please install the Rust toolchain])
+    )
+
+    AC_PROG_SED
+    AC_PROG_GREP
+    AC_PROG_EGREP
+
+    AX_PROGVAR([bc])
+    AX_PROGVAR([entr])
+    AX_PROGVAR([epubcheck])
+    AX_PROGVAR([find])
+    AX_PROGVAR([git])
+    AX_PROGVAR([gs])
+    AX_PROGVAR([hostname])
+    AX_PROGVAR([identify])
+    AX_PROGVAR([inkscape])
+    AX_PROGVAR([jq])
+    AX_PROGVAR([kindlegen])
+    AX_PROGVAR([m4])
+    AX_PROGVAR([magick])
+    AX_PROGVAR([node])
+    AX_PROGVAR([pandoc])
+    AX_PROGVAR([pcregrep])
+    AX_PROGVAR([pdfbook2])
+    AX_PROGVAR([pdfinfo])
+    AX_PROGVAR([pdfjam])
+    AX_PROGVAR([pdftk])
+    AX_PROGVAR([pgrep])
+    AX_PROGVAR([podofobox])
+    AX_PROGVAR([povray])
+    AX_PROGVAR([sile])
+    AX_PROGVAR([sort])
+    AX_PROGVAR([sponge])
+    AX_PROGVAR([sqlite3])
+    AX_PROGVAR([xargs])
+    AX_PROGVAR([yarn])
+    AX_PROGVAR([yq])
+    AX_PROGVAR([zint])
+    AX_PROGVAR([zsh])
+
+    AC_MSG_CHECKING(whether pandoc has SILE Writer)
+    AS_IF([$PANDOC --list-output-formats | $GREP -qx sile],[
+        AC_MSG_RESULT(yes)
+    ],[
+        AC_MSG_FAILURE([pandoc must have sile writer support])
+    ])
+
+    AX_PROG_LUA(5.1, , , AC_MSG_ERROR([lua interpreter is required]))
+    AX_LUAROCKS_ROCK(yaml)
+
+    AC_PATH_PROG([PERL], [perl])
+    AX_PROG_PERL_VERSION(5, ,AC_MSG_ERROR([perl interpreter is required]))
+    AX_PERL_MODULE_VERSION(YAML 1.30, , AC_MSG_ERROR(Need Perl YAML module))
+    AX_PERL_MODULE_VERSION(YAML::Merge::Simple 0.01, , AC_MSG_ERROR(Need Perl YAML::Merge::Simple module))
+
+    AX_PYTHON
+    AX_PYTHON_MODULE(ruamel, true)
+    AX_PYTHON_MODULE(isbnlib, true)
+    AX_PYTHON_MODULE(pandocfilters, true)
+
+    AX_FONT(Hack)
+    AX_FONT(TeX Gyre Heros)
+    AX_FONT(Libertinus Serif)
+    AX_FONT(Libertinus Serif Display)
+    AX_FONT(Libertinus Sans)
 ])
-
-AX_PROG_LUA(5.1, , , AC_MSG_ERROR([lua interpreter is required]))
-AX_LUAROCKS_ROCK(yaml)
-
-AC_PATH_PROG([PERL], [perl])
-AX_PROG_PERL_VERSION(5, ,AC_MSG_ERROR([perl interpreter is required]))
-AX_PERL_MODULE_VERSION(YAML 1.30, , AC_MSG_ERROR(Need Perl YAML module))
-AX_PERL_MODULE_VERSION(YAML::Merge::Simple 0.01, , AC_MSG_ERROR(Need Perl YAML::Merge::Simple module))
-
-AX_PYTHON
-AX_PYTHON_MODULE(ruamel, true)
-AX_PYTHON_MODULE(isbnlib, true)
-AX_PYTHON_MODULE(pandocfilters, true)
-
-AX_FONT(Hack)
-AX_FONT(TeX Gyre Heros)
-AX_FONT(Libertinus Serif)
-AX_FONT(Libertinus Serif Display)
-AX_FONT(Libertinus Sans)
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([rules/casile.mk])
