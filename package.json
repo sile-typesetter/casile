@@ -34,7 +34,8 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^5.0.0",
     "husky": "^4.3.8",
-    "standard-version": "^9.1.0"
+    "standard-version": "^9.1.0",
+    "@iarna/toml": "2.2.5"
   },
   "config": {
     "commitizen": {
