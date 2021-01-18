@@ -18,11 +18,14 @@ jobs:
         run: |
           sudo add-apt-repository ppa:sile-typesetter/sile
           sudo apt-get update
-          sudo apt-get install bc entr epubcheck ghostscript imagemagick inkscape jq libpodofo-utils luarocks nodejs pcregrep texlive-extra-utils poppler-utils pdftk moreutils sile sqlite3 yarn zsh
+          sudo apt-get install bc entr epubcheck ghostscript imagemagick inkscape jq libpodofo-utils luarocks nodejs pcregrep texlive-extra-utils poppler-utils pdftk moreutils sile sqlite3 yarn xz-utils zsh
           # kindlegen imagemagick7 pandoc-sile yq zint
-          # perl modules
-          sudo apt-get install python3-pip python3 python-isbnlib python-pandocfilters python-ruamel.yaml
           sudo apt-get install luarocks lua-yaml
+          sudo apt-get install cpanminus libyaml-perl
+          sudo apt-get install python3-pip python3 python-isbnlib python-pandocfilters python-ruamel.yaml
+          sudo apt-get install fonts-hack fonts-texgyre
+          mkdir ~/.fonts
+          curl -s https://api.github.com/repos/alerque/libertinus/releases/latest | jq -r '.assets[] | select(.name | match(".tar.xz$")).browser_download_url' | xargs curl -Ls | tar xfvJ - -C ~/.fonts --strip-components=2 --wildcards '*/OTF/*'
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
