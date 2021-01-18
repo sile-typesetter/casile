@@ -16,8 +16,13 @@ jobs:
           git fetch --prune --tags ||:
       - name: Setup system dependencies
         run: |
+          sudo add-apt-repository ppa:sile-typesetter/sile
           sudo apt-get update
-          sudo apt-get install python3-pip python3 zsh
+          sudo apt-get install bc entr epubcheck ghostscript imagemagick inkscape jq libpodofo-utils luarocks nodejs pcregrep texlive-extra-utils poppler-utils pdftk moreutils sile sqlite3 yarn zsh
+          # kindlegen imagemagick7 pandoc-sile yq zint
+          # perl modules
+          sudo apt-get install python3-pip python3 python-isbnlib python-pandocfilters python-ruamel.yaml
+          sudo apt-get install luarocks lua-yaml
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -30,8 +35,6 @@ jobs:
             ~/.cargo/git
             target
           key: cargo-build-${{ hashFiles('**/Cargo.lock') }}
-      - name: Setup Python dependencies
-        run: pip install ruamel
       - name: Configure
         run: |
           export PATH="$HOME/.local/bin:$PATH"
