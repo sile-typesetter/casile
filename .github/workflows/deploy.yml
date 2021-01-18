@@ -19,5 +19,5 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
           registry: docker.pkg.github.com
-          repository: theleagueof/fontship/fontship
+          repository: sile-typesetter/casile/casile
           tag_with_ref: true
