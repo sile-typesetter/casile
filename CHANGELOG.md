@@ -2,6 +2,77 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/sile-typesetter/casile/compare/v0.2.0...v0.3.0) (2021-01-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* Rename primary CaSILE include from makefile to rules
+
+### Features
+
+* **build:** Allow multiple side-by-side system installations ([af20612](https://github.com/sile-typesetter/casile/commit/af206121328e63b401b15165572038984308ffa3))
+* **build:** Automatically bump Rust CLI version on releases ([bc8c8b2](https://github.com/sile-typesetter/casile/commit/bc8c8b281b70817809a8fa6d73a8d8e35016d691))
+* **build:** Finish up renameable build support ([75d3929](https://github.com/sile-typesetter/casile/commit/75d39299343a64a302f18afdf74f66303b0c209a))
+* **ci:** Add 'standard' sliding GH‌ Actions major version tags ([525c6fe](https://github.com/sile-typesetter/casile/commit/525c6fec31f171e0287c4f8e38cde82b13786fd2))
+* **ci:** Deploy to GH package registry ([f9643bd](https://github.com/sile-typesetter/casile/commit/f9643bd53c112be5b3fe023fd14d5b19fb1206d3))
+* **cli:** Add basic CLI arg parsing features ([c7240d4](https://github.com/sile-typesetter/casile/commit/c7240d46398d69cc3ea47daabaa7af888a3e8451))
+* **cli:** Add Elvish & Powershell completion output (not installed) ([22c888c](https://github.com/sile-typesetter/casile/commit/22c888cb41486981ee310d1c3a72609dfb46e9c4))
+* **cli:** Add feedback to CLI showing that commands are unimplemented ([4204511](https://github.com/sile-typesetter/casile/commit/4204511cc344bc1277d5ac36abd8ff0c154ae518))
+* **cli:** Add interactive shell option and pass in some ENVs ([fd2b462](https://github.com/sile-typesetter/casile/commit/fd2b4621a6010e0084def463410769e80f5b9f12))
+* **cli:** Add language parameter and parse for supported languages ([afea579](https://github.com/sile-typesetter/casile/commit/afea579c645e6e1fc54093344e3e609479cc3164))
+* **cli:** Add status sub-command ([a419436](https://github.com/sile-typesetter/casile/commit/a4194366b3ee8e4fced17c7155f2d37cd79ee430))
+* **cli:** Allow any CLI flag to be set from the ENV via CASILE_<flag> ([3a9e815](https://github.com/sile-typesetter/casile/commit/3a9e8158adbdad75830d51176896eb4c33abaf63))
+* **cli:** Copy make target wrapper from Fontship ([cf49ea5](https://github.com/sile-typesetter/casile/commit/cf49ea56ed79ad2b5242c4a7a8d14f9b0cc47155))
+* **cli:** Detect casile.mk file as project specific rules ([06cab6a](https://github.com/sile-typesetter/casile/commit/06cab6a0aa8d1480b029769ccf9a69e5953baf65))
+* **cli:** Execute make targets and pass through shell commands ([9ddec52](https://github.com/sile-typesetter/casile/commit/9ddec521fbdeeda7bce3a0794d68a83d340e41c9))
+* **cli:** Generate Bash, Fish, & ZSH completions ([7f79676](https://github.com/sile-typesetter/casile/commit/7f796768a15c94ddb6547ab3b443bf4833c333e8))
+* **cli:** Implement custom error type with localized messages ([4249cde](https://github.com/sile-typesetter/casile/commit/4249cde67bf190ed441e4526f3bb33a7eba5d9cd))
+* **cli:** Initialize Rust app for main CLI ([7d87fd6](https://github.com/sile-typesetter/casile/commit/7d87fd696265ce141b2be262524a4d04d2626ede))
+* **cli:** Negotiate language and store in config at runtime ([3882c01](https://github.com/sile-typesetter/casile/commit/3882c011115555a81cd2b66efc87098e29306f58))
+* **cli:** Split CLI into function for subcommands and validate args ([1f46ea2](https://github.com/sile-typesetter/casile/commit/1f46ea2909f9e1e9af85c4337141236eb8496fd4))
+* **i18n:** Replace placeholders in TR translation with real strings ([080270a](https://github.com/sile-typesetter/casile/commit/080270aae11197241341d411c373de54c38a8a72))
+* **renderings:** Adapt series renderings to work without metadata ([4766929](https://github.com/sile-typesetter/casile/commit/47669290f0c0094406b3a74ee6d7ab9518f06c9d))
+* **rules:** Add default rule to build default formats ([6031209](https://github.com/sile-typesetter/casile/commit/603120918096dfb944da459398a619f96dda7d13))
+* **rules:** Allow all formats to work as target groups ([33fe350](https://github.com/sile-typesetter/casile/commit/33fe3500acdd49da1241bbbffd37270a72abfdbb))
+* **rules:** Pass some universal arguments to all IM runs ([425b5ba](https://github.com/sile-typesetter/casile/commit/425b5ba2b3aa4542e2fc288238835d293e99f076))
+* Swap LGPL for AGPL license ([48b3ec4](https://github.com/sile-typesetter/casile/commit/48b3ec48792355316dc7b30989fbe1fb2ee4fe09))
+
+
+### Bug Fixes
+
+* **build:** Distribute actual completion scripts, not copies of bin ([2b686e7](https://github.com/sile-typesetter/casile/commit/2b686e72faf391fb5206d084aa73af2ca5272596))
+* **build:** Don't fail on subsequent rebuilds ([980ecf3](https://github.com/sile-typesetter/casile/commit/980ecf3e550cc6812d03030fa00f5996487035a5))
+* **build:** Install scripts somewhere with execute permissions ([2cb0947](https://github.com/sile-typesetter/casile/commit/2cb09473f28569cee5fae461ee7c1a6a68f9d15e))
+* **build:** Keep automake inside the bumpers ([2441125](https://github.com/sile-typesetter/casile/commit/244112551b28393baf581723879f58222f7e6c9f))
+* **build:** Use full path for hashbangs ([7f316a5](https://github.com/sile-typesetter/casile/commit/7f316a598788128b56677c63d661f0e63c14c261))
+* **build:** Use new path to scripts ([43765bd](https://github.com/sile-typesetter/casile/commit/43765bdd6086f0a96f0b127ebcb659143e8a5f78))
+* **ci:** Correct syntax for commitlint CI job ([40224be](https://github.com/sile-typesetter/casile/commit/40224beaf4f2c5b55ee9c60accecb2b3fec66816))
+* **classes:** Undo 3 year old bug in cabook, blast c63a84c ([68dbed5](https://github.com/sile-typesetter/casile/commit/68dbed56bcb19f5c4396d698f75dac7ec4dcd749))
+* **cli:** Correct shell flag syntax ([4853d68](https://github.com/sile-typesetter/casile/commit/4853d68237f7b686614932444d08e5d40a8efa3e))
+* **cli:** Don't glob expand PDF page number arguments ([5672b43](https://github.com/sile-typesetter/casile/commit/5672b434728a47b552cb7ecc5766ddf295186b19))
+* **cli:** Don't grab write lock in threads until results ready ([7b9770b](https://github.com/sile-typesetter/casile/commit/7b9770b1e482dfc079022ff0b5a5e6eaa26a8542))
+* **cli:** Pass language flag through to make targets ([67cdac0](https://github.com/sile-typesetter/casile/commit/67cdac0d6e95ba1f83ffaa0d95f552a3e68f0cbf))
+* **docker:** Add missing dependency for IM to work with PDFs ([345c9bc](https://github.com/sile-typesetter/casile/commit/345c9bc256c5d1d1478ec918d31e70fb20de1806))
+* **docker:** Work around GH Actions env limitations, copied from Fontship ([66cfbaf](https://github.com/sile-typesetter/casile/commit/66cfbafa68a4f30ed26fc11811a75c419621c769))
+* **i18n:** Pass only language not locale to make environment ([2c6201e](https://github.com/sile-typesetter/casile/commit/2c6201eeaadeabed205e91adad34eb11d619f05a))
+* **promotionals:** Correct targets for series promotionals ([cec9d81](https://github.com/sile-typesetter/casile/commit/cec9d8176cabba9ac76a1a0ba3f0a684b6e90fb9))
+* **renderings:** Avoid too-thin books from rendering inside-out ([8f0e595](https://github.com/sile-typesetter/casile/commit/8f0e595e23b8665d8a5b9f67637f11e4e19d1bb6))
+* **renderings:** Block povray instances to run in serial ([67e3deb](https://github.com/sile-typesetter/casile/commit/67e3deb68f51b7fed32bb4353a534df548136858))
+* **renderings:** Composite covers only based on extant layers ([eb542c1](https://github.com/sile-typesetter/casile/commit/eb542c16a3398ea3dab50fd2b6b032aba09124b2))
+* **renderings:** Try harder to block parallel execution of povray ([59fed0c](https://github.com/sile-typesetter/casile/commit/59fed0c24531a99d7ef2e3e3acdf3629ba556067))
+* **rules:** Move project specific Lua code out of order-only prerequisites ([d40cd88](https://github.com/sile-typesetter/casile/commit/d40cd88cb66a44023989588104e811d5f9511346))
+* **rules:** Sort IM argument orders ([296dfad](https://github.com/sile-typesetter/casile/commit/296dfadbf5c4c9bbe9ed8599b3fe4080cb14f610))
+* **scripts:** Correct build time variables with bin names ([ea27c43](https://github.com/sile-typesetter/casile/commit/ea27c43a0f1e8a2dda5c7d3c4920032c4c8659a6))
+* **templates:** Disable TOC functions in unwritable directories ([541a63f](https://github.com/sile-typesetter/casile/commit/541a63f91d7ea2a98be0bdebad69aeabdfc75179))
+* Fix order so we can't possibly measure an empty stack ([#72](https://github.com/sile-typesetter/casile/issues/72)) ([971964e](https://github.com/sile-typesetter/casile/commit/971964e564fb03db6bd9e9b9d775572b053c6b39))
+* Only pass anonymous functions as content ([4f3c1d9](https://github.com/sile-typesetter/casile/commit/4f3c1d9e962730883955d90a4fbf588b3af36167))
+
+
+### Code Refactoring
+
+* Rename primary CaSILE include from makefile to rules ([2441622](https://github.com/sile-typesetter/casile/commit/24416224ad76c322cc4466a0864618a96a52e1b0))
+
 ## [0.2.0](https://github.com/sile-typesetter/casile/compare/v0.1.0...v0.2.0) (2020-04-23)
 
 This release tag is to mark a point before I start moving all the cheese. The biggest change from previous releases is the Docker image with all the right dependencies to run CaSILE on any platform.
