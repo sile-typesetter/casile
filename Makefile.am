@@ -15,7 +15,7 @@ dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE
 nobase_data_DATA = rules/casile.mk $(reverse_lang_key_files)
 nobase_dist_data_DATA = rules/rules.mk rules/functions.mk $(lang_key_files)
-EXTRA_DIST = .version package.json yarn.lock Dockerfile build-aux/cargo-updater.js build-aux/bootstrap-docker.sh hooks/build
+EXTRA_DIST = .version package.json yarn.lock Dockerfile build-aux/cargo-updater.js build-aux/bootstrap-docker.sh hooks/build requirements.txt
 
 bin_PROGRAMS = casile
 
