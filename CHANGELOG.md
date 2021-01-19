@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.2](https://github.com/sile-typesetter/casile/compare/v0.3.1...v0.3.2) (2021-01-19)
+
+
+### Bug Fixes
+
+* **build:** Distribute version gen script used in configure ([a9fba92](https://github.com/sile-typesetter/casile/commit/a9fba92ef3bf4f06a9a31b09a2834492a888b703))
+* **docker:** Add missing dependencies ([80aec68](https://github.com/sile-typesetter/casile/commit/80aec681fe31ab21da767fd686e99c9be8a748ab))
+
 ### [0.3.1](https://github.com/sile-typesetter/casile/compare/v0.3.0...v0.3.1) (2021-01-19)
 
 
