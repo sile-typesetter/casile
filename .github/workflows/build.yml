@@ -14,6 +14,9 @@ jobs:
       - name: Fetch Tags
         run: |
           git fetch --prune --tags ||:
+      - name: Setup system dependencies
+        run: |
+          sudo apt-get install autoconf-archive
       - name: Configure
         run: |
           export PATH="$HOME/.local/bin:$PATH"
