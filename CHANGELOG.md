@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.1](https://github.com/sile-typesetter/casile/compare/v0.3.0...v0.3.1) (2021-01-19)
+
+
+### Bug Fixes
+
+* **build:** Add missing developer dependency for release tooling ([889de70](https://github.com/sile-typesetter/casile/commit/889de70bd72a577722f73e798816fa210e04179d))
+* **build:** Don't distribute completions, generated when building cli ([62c57ba](https://github.com/sile-typesetter/casile/commit/62c57ba1327c1005593164d553e2fcbcd8c97d26))
+* **ci:** Correct name of GH package repository where releases are pushed ([023b06a](https://github.com/sile-typesetter/casile/commit/023b06a76ac544447c626eae70d7484377f7538b))
+
 ## [0.3.0](https://github.com/sile-typesetter/casile/compare/v0.2.0...v0.3.0) (2021-01-18)
 
 
