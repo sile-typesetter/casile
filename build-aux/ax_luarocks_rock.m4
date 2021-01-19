@@ -33,7 +33,7 @@
 AC_DEFUN([AX_LUAROCKS_ROCK],[
     # Make sure we have luarocks
     if test -z "$LUAROCKS"; then
-       AX_WITH_PROG(LUAROCKS,luarocks)
+       AC_PATH_PROG(LUAROCKS, luarocks)
        if test -z "$LUAROCKS"; then
            AC_MSG_ERROR([can't find luarocks])
        fi

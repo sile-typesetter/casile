@@ -126,13 +126,13 @@ AS_IF([test "x$enable_dependencies" != "xno"], [
         AC_MSG_FAILURE([pandoc must have sile writer support])
     ])
 
-    AX_PROG_LUA(5.1, , , AC_MSG_ERROR([lua interpreter is required]))
+    AX_PROG_LUA(5.1, [], [], AC_MSG_ERROR([lua interpreter is required]))
     AX_LUAROCKS_ROCK(yaml)
 
     AC_PATH_PROG([PERL], [perl])
-    AX_PROG_PERL_VERSION(5, ,AC_MSG_ERROR([perl interpreter is required]))
-    AX_PERL_MODULE_VERSION(YAML 1.30, , AC_MSG_ERROR(Need Perl YAML module))
-    AX_PERL_MODULE_VERSION(YAML::Merge::Simple 0.01, , AC_MSG_ERROR(Need Perl YAML::Merge::Simple module))
+    AX_PROG_PERL_VERSION([5], [], AC_MSG_ERROR([perl interpreter is required]))
+    AX_PERL_MODULE_VERSION([YAML 1.30], [], AC_MSG_ERROR(Need Perl YAML module))
+    AX_PERL_MODULE_VERSION([YAML::Merge::Simple 0.01], [], AC_MSG_ERROR(Need Perl YAML::Merge::Simple module))
 
     AX_PYTHON
     AX_PYTHON_MODULE(ruamel, true)
