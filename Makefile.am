@@ -15,7 +15,7 @@ dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE
 nobase_data_DATA = rules/casile.mk $(reverse_lang_key_files)
 nobase_dist_data_DATA = rules/rules.mk rules/functions.mk $(lang_key_files)
-EXTRA_DIST = .version package.json yarn.lock Dockerfile build-aux/cargo-updater.js build-aux/bootstrap-docker.sh hooks/build
+EXTRA_DIST = .version package.json yarn.lock Dockerfile build-aux/cargo-updater.js build-aux/bootstrap-docker.sh hooks/build requirements.txt
 
 bin_PROGRAMS = casile
 
@@ -85,17 +85,17 @@ CLEANFILES = $(BUILT_SOURCES) $(bin_PROGRAMS) $(dist_scripts_SCRIPTS)
 
 if ENABLE_BASH_COMPLETION
 bashcompletiondir = $(BASH_COMPLETION_DIR)
-dist_bashcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(_casile)
+nodist_bashcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(_casile)
 endif
 
 if ENABLE_FISH_COMPLETION
 fishcompletiondir = $(FISH_COMPLETION_DIR)
-dist_fishcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(_casile).fish
+nodist_fishcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(_casile).fish
 endif
 
 if ENABLE_ZSH_COMPLETION
 zshcompletiondir = $(ZSH_COMPLETION_DIR)
-dist_zshcompletion_DATA = $(COMPLETIONS_OUT_DIR)/_$(_casile)
+nodist_zshcompletion_DATA = $(COMPLETIONS_OUT_DIR)/_$(_casile)
 endif
 
 if DEBUG_RELEASE

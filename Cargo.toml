@@ -10,13 +10,13 @@ license = "AGPL-3"
 build = "build.rs"
 
 [dependencies]
-colored = "1.9.3"
+colored = "2.0.0"
 config = "0.10.1"
 fluent = "0.12.0"
 fluent-fallback = "0.0.4"
 fluent-langneg = "0.13.0"
 git2 = "0.13.12"
-itertools = "0.9.0"
+itertools = "0.10.0"
 Inflector = "0.11.4"
 lazy_static = "1.4.0"
 num_cpus = "1.13.0"
@@ -32,12 +32,12 @@ features = ["wrap_help"]
 
 [build-dependencies]
 clap = "3.0.0-beta.1"
-clap_generate = "3.0.0-beta.1"
+clap_generate = "3.0.0-beta.2"
 vergen = "3.1.0"
 
 [dev-dependencies]
 assert_cmd = "1.0.2"
-predicates = "1.0.5"
+predicates = "1.0.6"
 
 [profile.release]
 lto = true
