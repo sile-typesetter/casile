@@ -3,10 +3,10 @@ name: Deploy
 on:
   push:
     tags:
-      - '*'
+      - 'v*.*.*'
 
 jobs:
-  deploy:
+  ghpackages:
 
     runs-on: ubuntu-20.04
 
@@ -21,3 +21,37 @@ jobs:
           registry: docker.pkg.github.com
           repository: sile-typesetter/casile/casile
           tag_with_ref: true
+
+  ghrelease:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup system dependencies
+        run: |
+          sudo apt-get install autoconf-archive
+      - name: Configure
+        run: |
+          echo "VERSION=${GITHUB_REF#refs/*/v}" >> $GITHUB_ENV
+          echo "${GITHUB_REF#refs/*/v}" > .tarball-version
+          ./bootstrap.sh
+          ./configure --without-{bash,fish,zsh}-completion-dir --disable-dependencies
+      - name: Build source package
+        run: |
+          make dist
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: casile-${{ env.VERSION }}
+          path: casile*-${{ env.VERSION }}.zip
+      - name: Publish Release
+        uses: softprops/action-gh-release@v0.1.5
+        with:
+          body_path: casile-${{ env.VERSION }}.md
+          files: |
+            casile-${{ env.VERSION }}.zip
+            casile-${{ env.VERSION }}.tar.xz
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
