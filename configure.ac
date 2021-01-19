@@ -4,8 +4,8 @@ AM_SILENT_RULES([yes])
 
 AC_CONFIG_MACRO_DIRS([build-aux])
 
-AC_ARG_ENABLE([dependencies],
-              AS_HELP_STRING([--disable-dependencies], [Disable build-time dependency checks]))
+AC_ARG_ENABLE([dependency-checks],
+              AS_HELP_STRING([--disable-dependency-checks], [Disable dependency checks]))
 
 AC_ARG_WITH([bash-completion-dir],
     AS_HELP_STRING([--with-bash-completion-dir[=PATH]],
@@ -70,7 +70,7 @@ AC_SUBST([RUST_TARGET_SUBDIR])
 
 AC_DEFUN([AX_PROGVAR], [AC_PATH_PROG(m4_toupper($1), $1)test -n "$m4_toupper($1)" || AC_MSG_ERROR([$1 is required])])
 
-AS_IF([test "x$enable_dependencies" != "xno"], [
+AS_IF([test "x$enable_dependency_checks" != "xno"], [
 
     # Check that we have rust stuff
     AC_CHECK_PROG(CARGO, [cargo], [yes], [no])
