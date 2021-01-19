@@ -23,7 +23,7 @@ RUN pacman --needed --noconfirm -Syq \
 		bc bcprov entr epubcheck ghostscript git imagemagick inetutils inkscape \
 		java-commons-lang jq kindlegen m4 make moreutils nodejs otf-libertinus \
 		pandoc-sile-git pcre pdftk podofo poppler povray sile sqlite \
-		tex-gyre-fonts texlive-core ttf-hack yarn yq zint zsh \
+		tex-gyre-fonts texlive-core ttf-hack yq zint zsh \
 		lua lua-{colors,filesystem,yaml} \
 		perl perl-{yaml,yaml-merge-simple} \
 		python python-{isbnlib,pandocfilters,pantable,ruamel-yaml,usfm2osis-cw-git} \
@@ -36,7 +36,7 @@ FROM casile-base AS casile-builder
 
 RUN pacman --needed --noconfirm -Syq \
 		base-devel autoconf-archive rust cargo luarocks \
-    node-prune \
+    node-prune yarn \
 	&& yes | pacman -Sccq
 
 # Set at build time, forces Docker's layer caching to reset at this point
