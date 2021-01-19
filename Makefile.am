@@ -85,17 +85,17 @@ CLEANFILES = $(BUILT_SOURCES) $(bin_PROGRAMS) $(dist_scripts_SCRIPTS)
 
 if ENABLE_BASH_COMPLETION
 bashcompletiondir = $(BASH_COMPLETION_DIR)
-dist_bashcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(_casile)
+nodist_bashcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(_casile)
 endif
 
 if ENABLE_FISH_COMPLETION
 fishcompletiondir = $(FISH_COMPLETION_DIR)
-dist_fishcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(_casile).fish
+nodist_fishcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(_casile).fish
 endif
 
 if ENABLE_ZSH_COMPLETION
 zshcompletiondir = $(ZSH_COMPLETION_DIR)
-dist_zshcompletion_DATA = $(COMPLETIONS_OUT_DIR)/_$(_casile)
+nodist_zshcompletion_DATA = $(COMPLETIONS_OUT_DIR)/_$(_casile)
 endif
 
 if DEBUG_RELEASE
