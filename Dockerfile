@@ -24,9 +24,9 @@ RUN pacman --needed --noconfirm -Syq \
 		java-commons-lang jq kindlegen m4 make moreutils nodejs otf-libertinus \
 		pandoc-sile-git pcre pdftk podofo poppler povray sile sqlite \
 		tex-gyre-fonts texlive-core ttf-hack yarn yq zint zsh \
-		lua-{colors,filesystem,yaml} \
-		perl-{yaml,yaml-merge-simple} \
-		python-{isbnlib,pandocfilters,pantable,ruamel-yaml,usfm2osis-cw-git} \
+		lua lua-{colors,filesystem,yaml} \
+		perl perl-{yaml,yaml-merge-simple} \
+		python python-{isbnlib,pandocfilters,pantable,ruamel-yaml,usfm2osis-cw-git} \
     && yes | pacman -Sccq
 
 # Patch up Arch's Image Magick security settings to let it run Ghostscript
