@@ -7,7 +7,7 @@ rparen := )
 
 # Utility functions for simplifying per-project makefiles
 depend_font = fc-match "$1" family | $(GREP) -qx "$1"
-require_pubdir = $(and $(filter-out true,$(DRAFT)),$(or $(strip $(PUBDIR)),$(error Required PUBDIR not set)))
+require_pubdir = $(error Using obsolete PUBDIR mechanism, please update project rules.)
 
 # Assorted utility functions for juggling information about books
 mockupbase = $(if $(filter $(MOCKUPSOURCES),$(call parse_bookid,$1)),$(subst $(call parse_bookid,$1),$(MOCKUPBASE),$1),$1)
@@ -74,7 +74,11 @@ define ci_setup ?=
 endef
 
 define addtopub ?=
-	$(DRAFT) && rm -f $(PUBDIR)/$@ || ln -f $@ $(PUBDIR)/$@
+	$(require_pubdir)
+endef
+
+define addtodist ?=
+	$(eval DISTFILES += $@)
 endef
 
 # If building in draft mode, scale resolutions down for quick builds
