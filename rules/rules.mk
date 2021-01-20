@@ -39,7 +39,7 @@ MOCKUPFACTOR ?= 1
 FIGURES ?=
 
 # Default output formats and parameters (often overridden)
-FORMATS ?= pdfs epub mobi odt docx web play app
+FORMATS ?= pdfs epub mobi odt docx web $(and $(ISBNS),play) app
 BLEED ?= 3
 TRIM ?= 10
 NOBLEED ?= 0
