@@ -67,6 +67,8 @@ geometryfile = $(call parse_bookid,$@)-$(call parse_papersize,$@)-$(or $(call pa
 sourcegeometry = source $(filter %-$(_geometry).sh,$^ $|)
 dump = $(warning DUMP: $1)
 
+urlinfo ?= https://example.com/$1
+
 define ci_setup ?=
 	cat -
 endef
