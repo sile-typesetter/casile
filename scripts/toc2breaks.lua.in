@@ -33,8 +33,10 @@ infow(meta.title, true)
 infow("SUBTITLE:")
 infow(meta.subtitle, true)
 
-for _, v in ipairs(meta.creator) do
-  if v.role == "author" then meta.author = v.text end
+if meta.creator then
+  for _, v in ipairs(meta.creator) do
+    if v.role == "author" then meta.author = v.text end
+  end
 end
 
 infow("AUTHOR:" )
