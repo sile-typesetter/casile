@@ -20,15 +20,15 @@ mmtopm = $(shell $(_ENV) echo "$1 * 96 * .0393701 / 1" | $(BC))
 mmtopt = $(shell $(_ENV) echo "$1 * 2.83465 / 1" | $(BC))
 width = $(shell $(_ENV) $(IDENTIFY) -density $(HIDPI) -format "%[fx:w]" $1)
 height = $(shell $(_ENV) $(IDENTIFY) -density $(HIDPI) -format "%[fx:h]" $1)
-parse_layout = $(foreach WORD,$1,$(call parse_papersize,$(WORD))-$(call parse_binding,$(WORD)))
+parse_layout = $(foreach WORD,$(notdir $1),$(call parse_papersize,$(WORD))-$(call parse_binding,$(WORD)))
 strip_layout = $(filter-out $1,$(foreach PAPERORBINDING,$(PAPERSIZES) $(BINDINGS),$(subst -$(PAPERORBINDING),,$1)))
-parse_papersize = $(or $(filter $(PAPERSIZES),$(subst -, ,$(basename $1))),)
+parse_papersize = $(or $(filter $(PAPERSIZES),$(subst -, ,$(basename $(notdir $1)))),)
 strip_papersize = $(filter-out $1,$(foreach PAPERSIZE,$(PAPERSIZES),$(subst -$(PAPERSIZE),,$1)))
-parse_binding = $(or $(filter $(BINDINGS),$(subst -, ,$(basename $1))),)
+parse_binding = $(or $(filter $(BINDINGS),$(subst -, ,$(basename $(notdir $1)))),)
 strip_binding = $(filter-out $1,$(foreach BINDING,$(BINDINGS),$(subst -$(BINDING),,$1)))
-parse_edits = $(foreach WORD,$1,$(subst $(space),-,$(or $(filter $(EDITS),$(subst -, ,$(basename $(WORD)))),)))
+parse_edits = $(foreach WORD,$(notdir $1),$(subst $(space),-,$(or $(filter $(EDITS),$(subst -, ,$(basename $(WORD)))),)))
 strip_edits = $(foreach WORD,$1,$(filter-out $(WORD),$(foreach EDIT,$(EDITS),$(subst -$(EDIT),,$(WORD)))))
-parse_bookid = $(firstword $(subst -, ,$(basename $1)))
+parse_bookid = $(firstword $(subst -, ,$(basename $(notdir $1))))
 series_sort = $(shell $(_ENV) SORTORDER=$(SORTORDER) TARGETS="$(TARGETS)" series_sort.lua $1)
 metainfo = $(shell $(_ENV) $(YQ) -r '$1' < $(PROJECTYAML))
 isbntouid = $(call cachevar,$1,uuid,$(basename $(notdir $(shell $(_ENV) $(GREP) -l $1 $(YAMLSOURCES)))))
@@ -62,9 +62,9 @@ unlocalize = $(foreach WORD,$1,$(or $(__$(WORD)),$(WORD)))
 # Geometry file dependency functions
 newgeometry = $(shell $(_ENV) $(GREP) -sq hidpi=$(HIDPI) $1 || echo force)
 newcommits = $(shell $(_ENV) test $$($(GIT) log -n1 --format=%ct)0 -gt $$(stat -c %Y $@ 2>/dev/null)0 && echo force)
-geometrybase = $(and $(filter-out $(FAKEPAPERSIZES),$(call parse_papersize,$1)),$(filter-out $(UNBOUNDLAYOUTS),$(call parse_layout,$1)),$*.pdf) $(_geometry)-$(call parse_papersize,$1).pdf
-geometryfile = $(call parse_bookid,$@)-$(call parse_papersize,$@)-$(or $(call parse_binding,$@),$(_print))-$(_geometry).sh
-sourcegeometry = source $(filter %-$(_geometry).sh,$^ $|)
+geometrybase = $(and $(filter-out $(FAKEPAPERSIZES),$(call parse_papersize,$1)),$(filter-out $(UNBOUNDLAYOUTS),$(call parse_layout,$1)),$*.pdf) $(BUILDDIR)/$(_geometry)-$(call parse_papersize,$1).pdf
+geometryfile = $(BUILDDIR)/$(call parse_bookid,$@)-$(call parse_papersize,$@)-$(or $(call parse_binding,$@),$(_print))-$(_geometry).sh
+sourcegeometry = source $(filter $(BUILDDIR)/%-$(_geometry).sh,$^ $|)
 dump = $(warning DUMP: $1)
 
 urlinfo ?= https://example.com/$1
