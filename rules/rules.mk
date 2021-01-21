@@ -345,6 +345,10 @@ force:;
 
 .PHONY: fail
 
+.PHONY: _gha
+_gha:
+	echo "::set-output name=PROJECT::$(PROJECT)"
+
 .PHONY: list
 list:
 	$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2> /dev/null |
