@@ -134,7 +134,7 @@ AS_IF([test "x$enable_dependency_checks" != "xno"], [
     AX_PERL_MODULE_VERSION([YAML 1.30], [], AC_MSG_ERROR(Need Perl YAML module))
     AX_PERL_MODULE_VERSION([YAML::Merge::Simple 0.01], [], AC_MSG_ERROR(Need Perl YAML::Merge::Simple module))
 
-    AX_PYTHON
+    AM_PATH_PYTHON([3.6])
     AX_PYTHON_MODULE(ruamel, true)
     AX_PYTHON_MODULE(isbnlib, true)
     AX_PYTHON_MODULE(pandocfilters, true)
