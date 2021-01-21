@@ -339,8 +339,9 @@ debug:
 	echo "urlinfo = $(call urlinfo,$(PROJECT))"
 	echo "versioninfo = $(call versioninfo,$(PROJECT))"
 
+# Special dependency to force rebuilds of up to date targets
 .PHONY: force
-force: ;
+force:;
 
 .PHONY: fail
 
