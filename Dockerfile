@@ -52,7 +52,7 @@ WORKDIR /src
 RUN build-aux/bootstrap-docker.sh
 
 RUN ./bootstrap.sh
-RUN ./configure --with-bash-completion-dir --with-zsh-completion-dir
+RUN ./configure
 RUN make
 RUN make check
 RUN make install DESTDIR=/pkgdir
