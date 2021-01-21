@@ -1,4 +1,4 @@
-FROM docker.io/library/archlinux:base-20210117.0.13798 AS casile-base
+FROM docker.io/library/archlinux:base-20210117.0.13798 AS base
 
 # Setup Caleb's hosted Arch repository with prebuilt dependencies
 RUN pacman-key --init && pacman-key --populate
@@ -33,7 +33,7 @@ RUN pacman --needed --noconfirm -Syq \
 RUN sed -i -e '/pattern="gs"/d' /etc/ImageMagick-7/policy.xml
 
 # Setup separate image for build so we don't bloat the final image
-FROM casile-base AS casile-builder
+FROM base AS builder
 
 # Install build time dependecies
 RUN pacman --needed --noconfirm -Syq \
@@ -58,12 +58,12 @@ RUN make check
 RUN make install DESTDIR=/pkgdir
 RUN node-prune /pkgdir/usr/local/share/casile/node_modules
 
-FROM casile-base AS casile
+FROM base AS final
 
 LABEL maintainer="Caleb Maclennan <caleb@alerque.com>"
 LABEL version="$VCS_REF"
 
-COPY --from=casile-builder /pkgdir /
+COPY --from=builder /pkgdir /
 RUN casile --version
 
 WORKDIR /data
