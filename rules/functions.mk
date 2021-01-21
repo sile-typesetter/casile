@@ -62,9 +62,9 @@ unlocalize = $(foreach WORD,$1,$(or $(__$(WORD)),$(WORD)))
 # Geometry file dependency functions
 newgeometry = $(shell $(_ENV) $(GREP) -sq hidpi=$(HIDPI) $1 || echo force)
 newcommits = $(shell $(_ENV) test $$($(GIT) log -n1 --format=%ct)0 -gt $$(stat -c %Y $@ 2>/dev/null)0 && echo force)
-geometrybase = $(and $(filter-out $(FAKEPAPERSIZES),$(call parse_papersize,$1)),$(filter-out $(UNBOUNDLAYOUTS),$(call parse_layout,$1)),$*.pdf) $(BUILDDIR)/$(_geometry)-$(call parse_papersize,$1).pdf
-geometryfile = $(BUILDDIR)/$(call parse_bookid,$@)-$(call parse_papersize,$@)-$(or $(call parse_binding,$@),$(_print))-$(_geometry).sh
-sourcegeometry = source $(filter $(BUILDDIR)/%-$(_geometry).sh,$^ $|)
+geometrybase = $(and $(filter-out $(FAKEPAPERSIZES),$(call parse_papersize,$1)),$(filter-out $(UNBOUNDLAYOUTS),$(call parse_layout,$1)),$*.pdf) $(BUILDDIR)$(_geometry)-$(call parse_papersize,$1).pdf
+geometryfile = $(BUILDDIR)$(call parse_bookid,$@)-$(call parse_papersize,$@)-$(or $(call parse_binding,$@),$(_print))-$(_geometry).sh
+sourcegeometry = source $(filter $(BUILDDIR)%-$(_geometry).sh,$^ $|)
 dump = $(warning DUMP: $1)
 
 urlinfo ?= https://example.com/$1
