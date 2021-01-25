@@ -806,7 +806,7 @@ $(COVERIMAGES): $(BUILDDIR)%-$(_cover).png: $(BUILDDIR)%-$(_cover)-$(_background
 		\) -composite \
 		\( \
 			-gravity Center \
-			$*-$(_cover)-$(_fragment).png \
+			$(filter %-$(_cover)-$(_fragment).png,$^) \
 		\) -compose SrcOver -composite \
 		-gravity Center \
 		-size '%[fx:u.w]x%[fx:u.h]' \
@@ -846,7 +846,7 @@ $(BINDINGFRAGMENTS): $(BUILDDIR)%-$(_binding)-$(_text).pdf: $(LUAINCLUDES) $(PRO
 $(BINDINGFRAGMENTS): $(BUILDDIR)%-$(_binding)-$(_text).pdf: $$(subst $(BUILDDIR),,$$(subst -$(_binding)-$(_text),,$$@))
 $(BINDINGFRAGMENTS): $(BUILDDIR)%-$(_binding)-$(_text).pdf: | $(CASILEDIR)layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS) $(BUILDDIR)
 $(BINDINGFRAGMENTS): $(BUILDDIR)%-$(_binding)-$(_text).pdf:
-	cat <<- EOF > $*.lua
+	cat <<- EOF > $(BUILDDIR)$*.lua
 		versioninfo = "$(call versioninfo,$@)"
 		metadatafile = "$(filter %-manifest.yml,$^)"
 		spine = "$(call spinemm,$(filter %.pdf,$^))mm"
@@ -956,9 +956,9 @@ $(BINDINGIMAGES): $(BUILDDIR)%-$(_binding).png:
 		\( -gravity East $(filter %-$(_front).png,$^) -splice $${bleedpx}x -write mpr:text-front \) -compose SrcOver -composite \
 		\( -gravity West $(filter %-$(_back).png,$^) -splice $${bleedpx}x -write mpr:text-front \) -compose SrcOver -composite \
 		\( -gravity Center $(filter %-$(_spine).png,$^) -write mpr:text-front \) -compose SrcOver -composite \
-		$(call magick_emblum,publisher_emblum.svg) \
+		$(call magick_emblum,$(BUILDDIR)publisher_emblum.svg) \
 		$(call magick_barcode,$(filter %-$(_barcode).png,$^)) \
-		$(call magick_logo,publisher_logo.svg) \
+		$(call magick_logo,$(BUILDDIR)publisher_logo.svg) \
 		-gravity Center -size '%[fx:u.w]x%[fx:u.h]' \
 		$(call magick_binding) \
 		$@
@@ -973,7 +973,7 @@ $(BUILDDIR)%-$(_binding).svg: $(CASILEDIR)binding.svg $$(basename $$@)-printcolo
 	$(sourcegeometry)
 	ver=$(subst @,\\@,$(call versioninfo,$@))
 	$(PERL) $(PERLARGS) -pne "
-			s#IMG#$(filter %.png,$^)#g;
+			s#IMG#$(subst $(BUILDDIR),,$(filter %.png,$^))#g;
 			s#VER#$${ver}#g;
 			s#CANVASX#$${bindingwmm}mm#g;
 			s#CANVASY#$${pagehmm}mm#g;
@@ -1194,26 +1194,26 @@ $(SERIESSCENES): $(BUILDDIR)$(PROJECT)-%-$(_3d).pov: $(BUILDDIR)$(firstword $(SO
 	EOF
 endif
 
-%-$(_light).png: private SCENELIGHT = rgb<1,1,1>
-%-$(_dark).png:  private SCENELIGHT = rgb<0,0,0>
+$(BUILDDIR)%-$(_light).png: private SCENELIGHT = rgb<1,1,1>
+$(BUILDDIR)%-$(_dark).png:  private SCENELIGHT = rgb<0,0,0>
 
 $(BUILDDIR)%-$(_3d)-$(_front)-$(_light).png: $(CASILEDIR)book.pov $(BUILDDIR)%-$(_3d).pov $(CASILEDIR)front.pov
-	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/front.pov,$^),$@,$(SCENEX),$(SCENEY))
+	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/front.pov,$^),$@,$(SCENEX),$(SCENEY))
 
 $(BUILDDIR)%-$(_3d)-$(_front)-$(_dark).png: $(CASILEDIR)book.pov $(BUILDDIR)%-$(_3d).pov $(CASILEDIR)front.pov
-	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/front.pov,$^),$@,$(SCENEX),$(SCENEY))
+	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/front.pov,$^),$@,$(SCENEX),$(SCENEY))
 
 $(BUILDDIR)%-$(_3d)-$(_back)-$(_light).png: $(CASILEDIR)book.pov $(BUILDDIR)%-$(_3d).pov $(CASILEDIR)back.pov
-	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/back.pov,$^),$@,$(SCENEX),$(SCENEY))
+	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/back.pov,$^),$@,$(SCENEX),$(SCENEY))
 
 $(BUILDDIR)%-$(_3d)-$(_back)-$(_dark).png: $(CASILEDIR)book.pov $(BUILDDIR)%-$(_3d).pov $(CASILEDIR)back.pov
-	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/back.pov,$^),$@,$(SCENEX),$(SCENEY))
+	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/back.pov,$^),$@,$(SCENEX),$(SCENEY))
 
 $(BUILDDIR)%-$(_3d)-$(_pile)-$(_light).png: $(CASILEDIR)book.pov $(BUILDDIR)%-$(_3d).pov $(CASILEDIR)pile.pov
-	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/pile.pov,$^),$@,$(SCENEY),$(SCENEX))
+	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/pile.pov,$^),$@,$(SCENEY),$(SCENEX))
 
 $(BUILDDIR)%-$(_3d)-$(_pile)-$(_dark).png: $(CASILEDIR)book.pov $(BUILDDIR)%-$(_3d).pov $(CASILEDIR)pile.pov
-	$(call povray,$(filter %/book.pov,$^),$*-$(_3d).pov,$(filter %/pile.pov,$^),$@,$(SCENEY),$(SCENEX))
+	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/pile.pov,$^),$@,$(SCENEY),$(SCENEX))
 
 $(BUILDDIR)$(PROJECT)-%-$(_3d)-$(_montage)-$(_light).png: $(CASILEDIR)book.pov $(BUILDDIR)$(PROJECT)-%-$(_3d).pov $(CASILEDIR)montage.pov
 	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/montage.pov,$^),$@,$(SCENEY),$(SCENEX))
@@ -1257,24 +1257,24 @@ $(BUILDDIR)%-epub-metadata.yml: %-manifest.yml %-epub-$(_poster).jpg | $(BUILDDI
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$(PANDOCFILTERS) \
-		$*-epub-metadata.yml \
-		$*-$(_processed).md -o $@
+		$(filter %-epub-metadata.yml,$^) \
+		$(filter %-$(_processed).md,$^) -o $@
 	$(addtodist)
 
 %.odt: $(BUILDDIR)%-$(_processed).md %-manifest.yml
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$(PANDOCFILTERS) \
-		$*-manifest.yml \
-		$*-$(_processed).md -o $@
+		$(filter %-manifest.yml,$^) \
+		$(filter %-$(_processed).md,$^) -o $@
 	$(addtodist)
 
 %.docx: $(BUILDDIR)%-$(_processed).md %-manifest.yml
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$(PANDOCFILTERS) \
-		$*-manifest.yml \
-		$*-$(_processed).md -o $@
+		$(filter %-manifest.yml,$^) \
+		$(filter %-$(_processed).md,$^) -o $@
 	$(addtodist)
 
 %.mobi: %.epub
