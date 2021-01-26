@@ -1,6 +1,7 @@
 .PHONY: clean
 clean:
-	$(GIT) clean -xf $(foreach CONFIG,$(PROJECTCONFIGS),-e $(CONFIG))
+	rm -rf $(BUILDDIR) $(DISTDIR) $(call extantfiles,$(DISTFILES))
+	# $(GIT) clean -xf $(foreach CONFIG,$(PROJECTCONFIGS),-e $(CONFIG))
 
 .PHONY: dist
 dist: $(DISTDIR).zip $(DISTDIR).tar.gz
