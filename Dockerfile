@@ -1,4 +1,4 @@
-FROM docker.io/library/archlinux:base-20210117.0.13798 AS casile-base
+FROM docker.io/library/archlinux:base-20210117.0.13798 AS base
 
 # Setup Caleb's hosted Arch repository with prebuilt dependencies
 RUN pacman-key --init && pacman-key --populate
@@ -18,7 +18,7 @@ ARG DOCKER_HUB_CACHE=0
 # Freshen all base system packages
 RUN pacman --needed --noconfirm -Syuq && yes | pacman -Sccq
 
-# Install CaSILE run-time dependecies (increment cache var above)
+# Install run-time dependecies (increment cache var above)
 RUN pacman --needed --noconfirm -Syq \
 		bc bcprov entr epubcheck ghostscript git imagemagick inetutils inkscape \
 		java-commons-lang jq kindlegen m4 make moreutils nodejs otf-libertinus \
@@ -32,11 +32,13 @@ RUN pacman --needed --noconfirm -Syq \
 # Patch up Arch's Image Magick security settings to let it run Ghostscript
 RUN sed -i -e '/pattern="gs"/d' /etc/ImageMagick-7/policy.xml
 
-FROM casile-base AS casile-builder
+# Setup separate image for build so we don't bloat the final image
+FROM base AS builder
 
+# Install build time dependecies
 RUN pacman --needed --noconfirm -Syq \
-		base-devel autoconf-archive rust cargo luarocks \
-    node-prune yarn \
+		base-devel autoconf-archive cargo luarocks rust \
+		node-prune yarn \
 	&& yes | pacman -Sccq
 
 # Set at build time, forces Docker's layer caching to reset at this point
@@ -50,18 +52,18 @@ WORKDIR /src
 RUN build-aux/bootstrap-docker.sh
 
 RUN ./bootstrap.sh
-RUN ./configure --with-bash-completion-dir --with-zsh-completion-dir
+RUN ./configure
 RUN make
 RUN make check
 RUN make install DESTDIR=/pkgdir
 RUN node-prune /pkgdir/usr/local/share/casile/node_modules
 
-FROM casile-base AS casile
+FROM base AS final
 
 LABEL maintainer="Caleb Maclennan <caleb@alerque.com>"
 LABEL version="$VCS_REF"
 
-COPY --from=casile-builder /pkgdir /
+COPY --from=builder /pkgdir /
 RUN casile --version
 
 WORKDIR /data

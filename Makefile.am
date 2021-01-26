@@ -1,4 +1,4 @@
-$(and $(word 2,$(MAKEFILE_LIST)),$(error This is not the makefile you should include in your project to run SILE, please use 'rules.mk' instead.))
+$(and $(word 2,$(MAKEFILE_LIST)),$(error This is not the makefile you should include in your project to run CaSILE, please use 'rules/casile.mk' instead.))
 
 _casile = $(program_prefix)$(shell sed -e "$(program_transform_name)" <<< casile)$(program_suffix)
 

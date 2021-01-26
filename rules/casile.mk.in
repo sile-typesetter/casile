@@ -16,7 +16,7 @@ ifeq ($(CASILE_CLI),)
 $(error Use of CaSILE rule file inclusion outside of the CLI is deprecated!)
 endif
 
-# Run copmlete recipes in wrapper script that facilitates clean CLI output
+# Run complete recipes in wrapper script that facilitates clean CLI output
 SHELL := $(CASILEDIR)make-shell.zsh
 .SHELLFLAGS = target=$@
 .ONESHELL:
@@ -51,7 +51,7 @@ PGREP ?= @PGREP@
 PERL ?= @PERL@
 PODOFOBOX ?= @PODOFOBOX@
 POVRAY ?= @POVRAY@
-PYTHON ?= @PYTHON_BIN@
+PYTHON ?= @PYTHON@
 SED ?= @SED@
 SILE ?= @SILE@
 SORT ?= @SORT@
@@ -61,6 +61,8 @@ XARGS ?= @XARGS@
 YQ ?= @YQ@
 ZINT ?= @ZINT@
 ZSH ?= @ZSH@
+
+BUILDDIR ?= .casile/
 
 .PHONY: default
 default: all

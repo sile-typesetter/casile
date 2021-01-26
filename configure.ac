@@ -68,7 +68,7 @@ AM_CONDITIONAL([DEBUG_RELEASE], [test "x$debug_release" = "xyes"])
 
 AC_SUBST([RUST_TARGET_SUBDIR])
 
-AC_DEFUN([AX_PROGVAR], [AC_PATH_PROG(m4_toupper($1), $1)test -n "$m4_toupper($1)" || AC_MSG_ERROR([$1 is required])])
+AC_DEFUN([AX_PROGVAR], [AC_PATH_PROG(m4_toupper($1), m4_default($2,$1))test -n "$m4_toupper($1)" || AC_MSG_ERROR([m4_default($2,$1) is required])])
 
 AS_IF([test "x$enable_dependency_checks" != "xno"], [
 
@@ -134,7 +134,7 @@ AS_IF([test "x$enable_dependency_checks" != "xno"], [
     AX_PERL_MODULE_VERSION([YAML 1.30], [], AC_MSG_ERROR(Need Perl YAML module))
     AX_PERL_MODULE_VERSION([YAML::Merge::Simple 0.01], [], AC_MSG_ERROR(Need Perl YAML::Merge::Simple module))
 
-    AX_PYTHON
+    AM_PATH_PYTHON([3.6])
     AX_PYTHON_MODULE(ruamel, true)
     AX_PYTHON_MODULE(isbnlib, true)
     AX_PYTHON_MODULE(pandocfilters, true)
