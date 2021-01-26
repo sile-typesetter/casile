@@ -68,6 +68,7 @@ debug:
 	echo "TAG = $(TAG)"
 	echo "TARGETS = $(TARGETS)"
 	echo "UNBOUNDLAYOUTS = $(UNBOUNDLAYOUTS)"
+	echo "PROJECTVERSION = $(PROJECTVERSION)"
 	echo "YAMLSOURCES = $(YAMLSOURCES)"
 	echo "urlinfo = $(call urlinfo,$(PROJECT))"
 	echo "versioninfo = $(call versioninfo,$(PROJECT))"
@@ -80,7 +81,9 @@ force:;
 
 .PHONY: _gha
 _gha:
+	echo "::set-output name=DISTDIR::$(DISTDIR)"
 	echo "::set-output name=PROJECT::$(PROJECT)"
+	echo "::set-output name=VERSION::$(call versioninfo,$(PROJECT))"
 
 .PHONY: list
 list:
