@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/sile-typesetter/casile/compare/v0.3.2...v0.4.0) (2021-01-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* **rules:** Deprecate PUBDIR mechanism
+
+### Features
+
+* **actions:** Setup for use *as* GitHub Action ([4ed6be5](https://github.com/sile-typesetter/casile/commit/4ed6be5d9a8503f55f7f9f488747c4b8d8a94a3e))
+* **rules:** Add default urlinfo function for simpler initial setup ([97a9729](https://github.com/sile-typesetter/casile/commit/97a9729711fd956c8f28853cc5d40b3f7b8b2024))
+* **rules:** Cobble together a ‘dist’ target to package final products ([7744fa4](https://github.com/sile-typesetter/casile/commit/7744fa4cde66fe3f22c071f98486a787d0a36a64))
+
+
+### Bug Fixes
+
+* **rules:** Be more forgiving of path overrides in default rules ([99eac26](https://github.com/sile-typesetter/casile/commit/99eac26292c5e44609a9cd789214885a188c2868))
+* **rules:** Don't try to build Play Books without ISBNs ([215dcf1](https://github.com/sile-typesetter/casile/commit/215dcf1b41ca67d359b92d012b2ea79dc0f7a9d3))
+* **scripts:** Allow building ebooks without author metadata ([1139788](https://github.com/sile-typesetter/casile/commit/11397886fa67392bf1d40346c0aa846b1e539b9f))
+
+
+### Code Refactoring
+
+* **rules:** Deprecate PUBDIR mechanism ([2750ce9](https://github.com/sile-typesetter/casile/commit/2750ce92bc3b8ea34846466ea9bf62542e715119))
+
 ### [0.3.2](https://github.com/sile-typesetter/casile/compare/v0.3.1...v0.3.2) (2021-01-19)
 
 
