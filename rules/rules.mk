@@ -1222,7 +1222,7 @@ $(BUILDDIR)$(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)book.pov $(
 	$(call povray,$(filter %/book.pov,$^),$(filter %-$(_3d).pov,$^),$(filter %/montage.pov,$^),$@,$(SCENEY),$(SCENEX))
 
 # Combine black / white background renderings into transparent one with shadows
-$(BUILDDIR)%.png: $(BUILDDIR)%-$(_dark).png $(BUILDDIR)%-$(_light).png
+%.png: $(BUILDDIR)%-$(_dark).png $(BUILDDIR)%-$(_light).png
 	$(MAGICK) \
 		$(MAGICKARGS) \
 		$(filter %.png,$^) \
@@ -1237,6 +1237,17 @@ $(BUILDDIR)%.png: $(BUILDDIR)%-$(_dark).png $(BUILDDIR)%-$(_light).png
 	$(addtodist)
 
 %.jpg: $(BUILDDIR)%.png
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		$< \
+		-background '$(call povtomagick,$(SCENELIGHT))' \
+		-alpha Remove \
+		-alpha Off \
+		-quality 85 \
+		$@
+	$(addtodist)
+
+%.jpg: %.png
 	$(MAGICK) \
 		$(MAGICKARGS) \
 		$< \
