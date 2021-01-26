@@ -280,6 +280,7 @@ debug:
 	echo "ALLTAGS = $(ALLTAGS)"
 	echo "BINDINGS = $(BINDINGS)"
 	echo "BOUNDLAYOUTS = $(BOUNDLAYOUTS)"
+	echo "BRANCH = $(BRANCH)"
 	echo "CASILEDIR = $(CASILEDIR)"
 	echo "CICONFIG = $(CICONFIG)"
 	echo "CITEMPLATE = $(CITEMPLATE)"
