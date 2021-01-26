@@ -212,6 +212,12 @@ $(foreach SOURCE,$(SOURCES),$(eval TARGETMACROS_$(SOURCE) := $(wildcard $(SOURCE
 $(foreach SOURCE,$(SOURCES),$(eval TARGETYAMLS_$(SOURCE) := $(wildcard $(SOURCE).yml)))
 $(foreach SOURCE,$(SOURCES),$(eval TARGETLUAS_$(SOURCE) := $(wildcard $(SOURCE).lua)))
 
+# Create list of all possible final outputs for possible distribution
+DISTFILES ?=
+DISTDIR ?= $(PROJECT)-$(call versioninfo,$(PROJECT))
+
+include $(CASILEDIR)rules/utilities.mk
+
 .PHONY: all
 all: $(FORMATS)
 
@@ -270,88 +276,6 @@ $(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(SOURCES),%,-$(_p
 		-geometry $${pagewpm}x$${pagehpm}+0+0 \
 		$@
 
-.PHONY: clean
-clean:
-	$(GIT) clean -xf $(foreach CONFIG,$(PROJECTCONFIGS),-e $(CONFIG))
-
-.PHONY: debug
-debug:
-	echo "ALLLAYOUTS = $(ALLLAYOUTS)"
-	echo "ALLTAGS = $(ALLTAGS)"
-	echo "BINDINGS = $(BINDINGS)"
-	echo "BOUNDLAYOUTS = $(BOUNDLAYOUTS)"
-	echo "CASILEDIR = $(CASILEDIR)"
-	echo "CICONFIG = $(CICONFIG)"
-	echo "CITEMPLATE = $(CITEMPLATE)"
-	echo "DEBUG = $(DEBUG)"
-	echo "DEBUGTAGS = $(DEBUGTAGS)"
-	echo "DIFF = $(DIFF)"
-	echo "DISTFILES = $(DISTFILES)"
-	echo "DOCUMENTCLASS = $(DOCUMENTCLASS)"
-	echo "DOCUMENTOPTIONS = $(DOCUMENTOPTIONS)"
-	echo "DRAFT = $(DRAFT)"
-	echo "EDITIONS = $(EDITIONS)"
-	echo "EDITS = $(EDITS)"
-	echo "FAKELAYOUTS = $(FAKELAYOUTS)"
-	echo "FAKEPAPERSIZES = $(FAKEPAPERSIZES)"
-	echo "FIGURES = $(FIGURES)"
-	echo "FORMATS = $(FORMATS)"
-	echo "GOALLAYOUTS = $(GOALLAYOUTS)"
-	echo "ISBNS = $(ISBNS)"
-	echo "LANGUAGE = $(LANGUAGE)"
-	echo "LAYOUTS = $(LAYOUTS)"
-	echo "LUAINCLUDES = $(LUAINCLUDES)"
-	echo "LUALIBS = $(LUALIBS)"
-	echo "LUASOURCES = $(LUASOURCES)"
-	echo "M4MACROS = $(M4MACROS)"
-	echo "MAKECMDGOALS = $(MAKECMDGOALS)"
-	echo "MAKEFILE_LIST = $(MAKEFILE_LIST)"
-	echo "MAKESOURCES = $(MAKESOURCES)"
-	echo "MARKDOWNSOURCES = $(MARKDOWNSOURCES)"
-	echo "METADATA = $(METADATA)"
-	echo "MOCKUPBASE = $(MOCKUPBASE)"
-	echo "MOCKUPFACTOR = $(MOCKUPFACTOR)"
-	echo "MOCKUPSOURCES = $(MOCKUPSOURCES)"
-	echo "PANDOCARGS = $(PANDOCARGS)"
-	echo "PAPERSIZES = $(PAPERSIZES)"
-	echo "PARENT = $(PARENT)"
-	echo "PLAYSOURCES = $(PLAYSOURCES)"
-	echo "PROJECT = $(PROJECT)"
-	echo "PROJECTCONFIGS = $(PROJECTCONFIGS)"
-	echo "PROJECTLUA = $(PROJECTLUA)"
-	echo "REALLAYOUTS = $(REALLAYOUTS)"
-	echo "REALPAPERSIZES = $(REALPAPERSIZES)"
-	echo "RENDERED = $(RENDERED)"
-	echo "SILE = $(SILE)"
-	echo "SILEFLAGS = $(SILEFLAGS)"
-	echo "SILEPATH = $(SILEPATH)"
-	echo "SERIESSCENES = $(SERIESSCENES)"
-	echo "SOURCES = $(SOURCES)"
-	echo "TAG = $(TAG)"
-	echo "TARGETS = $(TARGETS)"
-	echo "UNBOUNDLAYOUTS = $(UNBOUNDLAYOUTS)"
-	echo "YAMLSOURCES = $(YAMLSOURCES)"
-	echo "urlinfo = $(call urlinfo,$(PROJECT))"
-	echo "versioninfo = $(call versioninfo,$(PROJECT))"
-
-# Special dependency to force rebuilds of up to date targets
-.PHONY: force
-force:;
-
-.PHONY: fail
-
-.PHONY: _gha
-_gha:
-	echo "::set-output name=PROJECT::$(PROJECT)"
-
-.PHONY: list
-list:
-	$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2> /dev/null |
-		$(AWK) -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' |
-		$(SORT) |
-		$(EGREP) -v -e '^[^[:alnum:]]' -e '^$@$$' |
-		$(XARGS)
-
 .PHONY: $(SOURCES)
 
 REALSOURCES := $(filter-out $(MOCKUPSOURCES),$(SOURCES))
@@ -360,23 +284,6 @@ $(MOCKUPSOURCES): $(foreach FORMAT,$(filter pdfs,$(FORMATS)),$$@.$(FORMAT))
 
 .PHONY: figures
 figures: $(FIGURES)
-
-.PHONY: update_toolkits
-update_toolkits: update_casile
-
-.PHONY: upgrade_toolkits
-upgrade_toolkits: upgrade_casile
-
-.PHONY: upgrade_repository
-upgrade_repository: upgrade_toolkits $(CICONFIG)_current .gitattributes
-
-.PHONY: upgrade_casile
-upgrade_casile:
-	$(call munge,$(LUASOURCES),$(SED) -f $(CASILEDIR)upgrade-lua.sed,Replace old Lua variables and functions with new namespaces)
-	$(call munge,$(MAKESOURCES),$(SED) -f $(CASILEDIR)upgrade-make.sed,Replace old Makefile variables and functions with new namespaces)
-	$(call munge,$(YAMLSOURCES),$(SED) -f $(CASILEDIR)upgrade-yaml.sed,Replace old YAML key names and data formats)
-	export SKIPM4=false
-	$(call munge,$(MARKDOWNSOURCES),$(SED) -f $(CASILEDIR)upgrade-markdown.sed,Replace obsolete Markdown syntax)
 
 PROJECTCONFIGS += .editorconfig
 .editorconfig: $(CASILEDIR)editorconfig
@@ -414,13 +321,11 @@ $(CICONFIG)_current: $(CICONFIG)
 	$(GIT) update-index --refresh --ignore-submodules ||:
 	$(GIT) diff-files --quiet -- $<
 
-# Reset file timestamps to git history to avoid unnecessary builds
-.PHONY: time_warp
-time_warp:
-	$(call time_warp,$(PROJECTDIR))
-
-$(BUILDDIR):
+$(BUILDDIR) $(DISTDIR):
 	mkdir -p $@
+
+$(DISTDIR).tar.bz2 $(DISTDIR).tar.gz $(DISTDIR).tar.xz $(DISTDIR).zip $(DISTDIR).tar.zst: install-dist
+	bsdtar -acf $@ $(DISTDIR)
 
 # Some layouts have matching extra resources to build such as covers
 ifneq ($(strip $(COVERS)),false)
@@ -467,7 +372,8 @@ $(FULLPDFS): %.pdf: $(BUILDDIR)%.sil $$(call coverpreq,$$@) $$(call onpaperlibs,
 		$(PDFTK) $*.tmp.pdf update_info_utf8 $*.dat output $@
 		rm $*.tmp.pdf
 	fi
-	$(addtodist)
+
+DISTFILES += $(FULLPDFS)
 
 # Apostrophe Hack, see https://github.com/simoncozens/sile/issues/355
 ifeq ($(LANGUAGE),tr)
@@ -511,8 +417,6 @@ $(BUILDDIR).casile.lua: | $(BUILDDIR)
 		CASILE.publisher = "casile"
 	EOF
 
-DISTFILES ?=
-
 WITHVERSEFILTER := $(CASILEDIR)pandoc-filters/withverses.lua
 SOURCESWITHVERSES := $(addprefix $(BUILDDIR),$(call pattern_list,$(SOURCES),-$(_processed)-$(_withverses).md))
 $(SOURCESWITHVERSES): private PANDOCFILTERS += --lua-filter=$(WITHVERSEFILTER)
@@ -554,7 +458,8 @@ $(BUILDDIR)%-$(_processed).md: %.md $(wildcard %-$(_chapters)/*.md) $$(call prep
 %-$(_booklet).pdf: $(BUILDDIR)%-$(_spineless).pdf
 	$(PDFBOOK2) --short-edge --paper="{$(call pageh,$<)pt,$$(($(call pagew,$<)*2))pt}" -- $<
 	mv $*-book.pdf $@
-	$(addtodist)
+
+DISTFILES += *-$(_booklet).pdf
 
 $(BUILDDIR)%-2end.pdf: %.pdf | $(BUILDDIR)
 	$(PDFTK) $< cat 2-end output $@
@@ -562,12 +467,16 @@ $(BUILDDIR)%-2end.pdf: %.pdf | $(BUILDDIR)
 %-2up.pdf: $(BUILDDIR)%-$(_cropped)-2end.pdf
 	$(PDFJAM) --nup 2x1 --noautoscale true --paper a4paper --landscape --outfile $@ -- $<
 
+DISTFILES += *-2up.pdf
+
 $(BUILDDIR)%-topbottom.pdf: $(BUILDDIR)%-set1.pdf $(BUILDDIR)%-set2.pdf
 	$(PDFTK) A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
 
 %-a4proof.pdf: $(BUILDDIR)%-topbottom.pdf
 	$(PDFJAM) --nup 1x2 --noautoscale true --paper a4paper --outfile $@ -- $<
 	$(addtodist)
+
+DISTFILES += *-a4proof.pdf
 
 $(BUILDDIR)%-cropleft.pdf: %.pdf | $$(geometryfile) $(BUILDDIR)
 	$(sourcegeometry)
@@ -607,29 +516,6 @@ $(BUILDDIR)%-$(_even).pdf: %.pdf | $(BUILDDIR)
 
 $(BUILDDIR)%-$(_odd).pdf: %.pdf | $(BUILDDIR)
 	$(PDFTK) $< cat odd output $@
-
-.PHONY: normalize_lua
-normalize_lua: $(LUASOURCES)
-	$(call munge,$^,$(SED) -e 's/function */function /g',Normalize Lua coding style)
-
-.PHONY: normalize_markdown
-normalize_markdown: $(MARKDOWNSOURCES)
-	$(call munge,$(filter %.md,$^),msword_escapes.pl,Fixup bad MS word typing habits that Pandoc tries to preserve)
-	$(call munge,$(filter %.md,$^),lazy_quotes.pl,Replace lazy double single quotes with real doubles)
-	$(call munge,$(filter %.md,$^),figure_dash.pl,Convert hyphens between numbers to figure dashes)
-	$(call munge,$(filter %.md,$^),italic_reorder.pl,Fixup italics around names and parethesised translations)
-	#(call munge,$(filter %.md,$^),apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
-	$(call munge,$(filter %.md,$^),$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(subst -smart,+smart,$(PANDOCFILTERARGS)),Normalize and tidy Markdown syntax using Pandoc)
-	$(call munge,$(filter %.md,$^),reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
-
-normalize_markdown: normalize_markdown_$(LANGUAGE)
-
-.PHONY: normalize_markdown_en
-normalize_markdown_en: $(filter en/%,$(MARKDOWNSOURCES)) ;
-
-.PHONY: normalize_markdown_tr
-normalize_markdown_tr: $(filter tr/%,$(MARKDOWNSOURCES))
-	$(call munge,$(filter %.md,$^),ordinal_spaces.pl,Use narrow non-breaking spaces after ordinal numbers)
 
 $(BUILDDIR)%.toc: %.pdf | $(BUILDDIR) ;
 
@@ -682,7 +568,8 @@ $(PLAYMETADATAS): %_playbooks.csv:
 			],
 			(.[] | .[7] |= $$biohtml | .[10] |= $$deshtml | .[17] |= 0 | .[18] |= "WORLD")
 			| map(. // "") | @csv' $(filter %_playbooks.json,$^) > $@
-	$(addtodist)
+
+DISTFILES += $(PLAYMETADATAS)
 
 ISBNMETADATAS := $(addprefix $(BUILDDIR),$(call pattern_list,$(ISBNS),_playbooks.json))
 $(ISBNMETADATAS): $(BUILDDIR)%_playbooks.json: $$(call pattern_list,$$(call isbntouid,$$*)-,manifest.yml $(firstword $(LAYOUTS)).pdf)
@@ -715,34 +602,40 @@ $(ISBNMETADATAS): $(BUILDDIR)%_playbooks.json: $$(call pattern_list,$$(call isbn
 PLAYFRONTS := $(call pattern_list,$(ISBNS),_frontcover.jpg)
 $(PLAYFRONTS): %_frontcover.jpg: $(BUILDDIR)$$(call isbntouid,$$*)-epub-$(_poster).jpg
 	cp $< $@
-	$(addtodist)
+
+DISTFILES += $(PLAYFRONTS)
 
 PLAYBACKS := $(call pattern_list,$(ISBNS),_backcover.jpg)
 $(PLAYBACKS): %_backcover.jpg: %_frontcover.jpg
 	cp $< $@
-	$(addtodist)
+
+DISTFILES += $(PLAYBACKS)
 
 PLAYINTS := $(call pattern_list,$(ISBNS),_interior.pdf)
 $(PLAYINTS): %_interior.pdf: $$(call isbntouid,$$*)-$(firstword $(LAYOUTS))-$(_cropped).pdf
 	$(PDFTK) $< cat 2-end output $@
-	$(addtodist)
+
+DISTFILES += $(PLAYINTS)
 
 PLAYEPUBS := $(call pattern_list,$(ISBNS),.epub)
 $(PLAYEPUBS): %.epub: $$(call isbntouid,$$*).epub
 	$(EPUBCHECK) $<
 	cp $< $@
-	$(addtodist)
+
+DISTFILES += $(PLAYEPUBS)
 
 %-$(_app).pdf: %-$(_app)-$(_print).pdf
 	cp $< $@
-	$(addtodist)
+
+DISTFILES += *-$(_app).pdf
 
 %-$(_app).info: %-$(_app)-$(_print).toc %-$(_app)-$(_print).pdf %-manifest.yml
 	toc2breaks.lua $* $(filter %-$(_app)-$(_print).toc,$^) $(filter %-manifest.yml,$^) $@ |
 		while read range out; do
 			$(PDFTK) $(filter %-$(_app)-$(_print).pdf,$^) cat $$range output $$out
 		done
-	$(addtodist)
+
+DISTFILES += *-$(_app).info
 
 $(_issue).info:
 	for source in $(SOURCES); do
@@ -761,7 +654,8 @@ $(_issue).info:
 		fi
 		echo
 	done > $@
-	$(addtodist)
+
+DISTFILES += $(_issue).info
 
 COVERBACKGROUNDS := $(addprefix $(BUILDDIR),$(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_background).png))
 git_background = $(shell $(_ENV) $(GIT) ls-files -- $(call strip_layout,$1) 2> /dev/null)
@@ -821,7 +715,8 @@ $(COVERIMAGES): $(BUILDDIR)%-$(_cover).png: $(BUILDDIR)%-$(_cover)-$(_background
 		-resize 196x196 \
 		-quality 9 \
 		$@
-	$(addtodist)
+
+DISTFILES += *-icon.png
 
 COVERPDFS := $(addprefix $(BUILDDIR),$(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover).pdf))
 $(COVERPDFS): $(BUILDDIR)%-$(_cover).pdf: $(BUILDDIR)%-$(_cover).png $(BUILDDIR)%-$(_cover)-$(_text).pdf
@@ -995,7 +890,8 @@ $(BUILDDIR)%-$(_binding).svg: $(CASILEDIR)binding.svg $$(basename $$@)-printcolo
 		--export-margin=$${trimmm} \
 		--file=$< \
 		--export-pdf=$@
-	$(addtodist)
+
+DISTFILES += *-$(_binding).pdf
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
 UNBOUNDGEOMETRIES := $(addprefix $(BUILDDIR),$(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_geometry).sh))
@@ -1234,7 +1130,8 @@ $(BUILDDIR)$(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)book.pov $(
 		-channel Alpha -fx 'a > 0.5 ? 1 : a' -channel All \
 		$(call pov_crop,$(if $(findstring $(_pile),$*),$(SCENEY)x$(SCENEX),$(SCENEX)x$(SCENEY))) \
 		$@
-	$(addtodist)
+
+DISTFILES += *.png
 
 %.jpg: $(BUILDDIR)%.png
 	$(MAGICK) \
@@ -1245,7 +1142,6 @@ $(BUILDDIR)$(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)book.pov $(
 		-alpha Off \
 		-quality 85 \
 		$@
-	$(addtodist)
 
 %.jpg: %.png
 	$(MAGICK) \
@@ -1256,7 +1152,8 @@ $(BUILDDIR)$(PROJECT)-%-$(_3d)-$(_montage)-$(_dark).png: $(CASILEDIR)book.pov $(
 		-alpha Off \
 		-quality 85 \
 		$@
-	$(addtodist)
+
+DISTFILES += *.jpg
 
 $(BUILDDIR)%-epub-metadata.yml: %-manifest.yml %-epub-$(_poster).jpg | $(BUILDDIR)
 	echo '---' > $@
@@ -1270,7 +1167,8 @@ $(BUILDDIR)%-epub-metadata.yml: %-manifest.yml %-epub-$(_poster).jpg | $(BUILDDI
 		$(PANDOCFILTERS) \
 		$(filter %-epub-metadata.yml,$^) \
 		$(filter %-$(_processed).md,$^) -o $@
-	$(addtodist)
+
+DISTFILES += *.epub
 
 %.odt: $(BUILDDIR)%-$(_processed).md %-manifest.yml
 	$(PANDOC) \
@@ -1278,7 +1176,8 @@ $(BUILDDIR)%-epub-metadata.yml: %-manifest.yml %-epub-$(_poster).jpg | $(BUILDDI
 		$(PANDOCFILTERS) \
 		$(filter %-manifest.yml,$^) \
 		$(filter %-$(_processed).md,$^) -o $@
-	$(addtodist)
+
+DISTFILES += *.odt
 
 %.docx: $(BUILDDIR)%-$(_processed).md %-manifest.yml
 	$(PANDOC) \
@@ -1286,11 +1185,13 @@ $(BUILDDIR)%-epub-metadata.yml: %-manifest.yml %-epub-$(_poster).jpg | $(BUILDDI
 		$(PANDOCFILTERS) \
 		$(filter %-manifest.yml,$^) \
 		$(filter %-$(_processed).md,$^) -o $@
-	$(addtodist)
+
+DISTFILES += *.docx
 
 %.mobi: %.epub
 	$(KINDLEGEN) $< ||:
-	$(addtodist)
+
+DISTFILES += *.mobi
 
 PHONYSCREENS := $(call pattern_list,$(SOURCES),.$(_screen))
 .PHONY: $(PHONYSCREENS)
@@ -1303,7 +1204,8 @@ $(MANIFESTS): %-manifest.yml: $(CASILEDIR)casile.yml $(METADATA) $(PROJECTYAML) 
 		$(SED) -e 's/~$$/nil/g;/^--- |/d;$$a...' \
 			-e '/text: [[:digit:]]\{10,13\}/{p;s/^\([[:space:]]*\)text: \([[:digit:]]\+\)$$/$(subst /,\/,$(PYTHON)) -c "import isbnlib; print(\\"\1mask: \\" + isbnlib.mask(\\"\2\\"))"/e}' \
 			-e '/\(own\|next\)cloudshare: [^"]/s/: \(.*\)$$/: "\1"/' > $@
-	$(addtodist)
+
+DISTFILES += $(MANIFESTS)
 
 BIOHTMLS := $(addprefix $(BUILDDIR),$(call pattern_list,$(SOURCES),-bio.html))
 $(BIOHTMLS): $(BUILDDIR)%-bio.html: %-manifest.yml
@@ -1432,43 +1334,5 @@ $(BUILDDIR)%-$(_verses)-$(_text).yml: $(BUILDDIR)%-$(_verses)-$(_sorted).json
 		# Because lua-yaml has a bug parsing non quoted keys...
 		$(SED) -e '/^[^ ]/s/^\([^:]\+\):/"\1":/' \
 			> $@
-
-.PHONY: normalize_references
-normalize_references: $(MARKDOWNSOURCES)
-	$(call munge,$^,normalize_references.js,Normalize verse references using BCV parser)
-
-.PHONY: normalize
-normalize: normalize_lua normalize_markdown normalize_references
-
-split_chapters:
-	$(if $(MARKDOWNSOURCES),,exit 0)
-	$(foreach SOURCE,$(MARKDOWNSOURCES),$(call split_chapters,$(SOURCE)))
-
-.PHONY: normalize_files
-normalize_files: private PANDOCFILTERS = --lua-filter=$(CASILEDIR)pandoc-filters/chapterid.lua
-normalize_files:
-	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
-	$(if $(MARKDOWNSOURCES),,exit 0)
-	echo $(MARKDOWNSOURCES) |
-		$(PERL) -pne 's/ /\n/g' |
-		$(PCREGREP) "$(PROJECTDIR)/($(subst $(space),|,$(strip $(SOURCES))))-.*/" |
-		while read src; do
-			$(GIT) diff-files --quiet -- $${src} || exit 1 # die if this file has uncommitted changes
-			basename $${src} | $(PERL) -pne 's/-.*$$//' | read chapno
-			dirname $${src} | read dir
-			$(SED) -n '/^#/{s/ı/i/g;p}' $${src} |
-				$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) | read identifier
-				target="$${dir}/$${chapno}-$${identifier}.md"
-				[[ $${src} == $${target} ]] || $(GIT) mv "$${src}" "$${target}"
-		done
-	$(GIT) diff-index --quiet --cached HEAD || $(GIT) commit -m "[auto] Normalize filenames based on chapter ids"
-
-watch:
-	$(GIT) ls-files --recurse-submodules |
-		$(ENTR) $(ENTRFLAGS) make DRAFT=true LAZY=true $(WATCHARGS)
-
-diff:
-	$(GIT) diff --color=always --ignore-submodules --no-ext-diff
-	$(GIT) submodule foreach $(GIT) diff --color=always --no-ext-diff
 
 -include $(POSTCASILEINCLUDE)
