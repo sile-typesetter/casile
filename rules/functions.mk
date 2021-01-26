@@ -77,10 +77,6 @@ define addtopub ?=
 	$(require_pubdir)
 endef
 
-define addtodist ?=
-	$(eval DISTFILES += $@)
-endef
-
 # If building in draft mode, scale resolutions down for quick builds
 define scale ?=
 $(strip $(shell $(_ENV) $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | $(BC)) || echo $1))
