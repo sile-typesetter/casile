@@ -2,6 +2,13 @@
 clean:
 	$(GIT) clean -xf $(foreach CONFIG,$(PROJECTCONFIGS),-e $(CONFIG))
 
+.PHONY: dist
+dist: $(DISTDIR).zip $(DISTDIR).tar.gz
+
+.PHONY: install-dist
+install-dist: $$(or $$(call extantfiles,$$(DISTFILES)),fail) | $(DISTDIR)
+	install -m644 -t "$(DISTDIR)" $^
+
 .PHONY: debug
 debug:
 	echo "ALLLAYOUTS = $(ALLLAYOUTS)"
@@ -16,6 +23,7 @@ debug:
 	echo "DEBUGTAGS = $(DEBUGTAGS)"
 	echo "DIFF = $(DIFF)"
 	echo "DISTFILES = $(DISTFILES)"
+	echo "DISTDIR = $(DISTDIR)"
 	echo "DOCUMENTCLASS = $(DOCUMENTCLASS)"
 	echo "DOCUMENTOPTIONS = $(DOCUMENTOPTIONS)"
 	echo "DRAFT = $(DRAFT)"

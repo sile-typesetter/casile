@@ -214,6 +214,7 @@ $(foreach SOURCE,$(SOURCES),$(eval TARGETLUAS_$(SOURCE) := $(wildcard $(SOURCE).
 
 # Create list of all possible final outputs for possible distribution
 DISTFILES ?=
+DISTDIR ?= $(PROJECT)-$(call versioninfo,$(PROJECT))
 
 include $(CASILEDIR)rules/utilities.mk
 
@@ -320,8 +321,11 @@ $(CICONFIG)_current: $(CICONFIG)
 	$(GIT) update-index --refresh --ignore-submodules ||:
 	$(GIT) diff-files --quiet -- $<
 
-$(BUILDDIR):
+$(BUILDDIR) $(DISTDIR):
 	mkdir -p $@
+
+$(DISTDIR).tar.bz2 $(DISTDIR).tar.gz $(DISTDIR).tar.xz $(DISTDIR).zip $(DISTDIR).tar.zst: install-dist
+	bsdtar -acf $@ $(DISTDIR)
 
 # Some layouts have matching extra resources to build such as covers
 ifneq ($(strip $(COVERS)),false)

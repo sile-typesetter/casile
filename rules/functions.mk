@@ -48,6 +48,8 @@ uniq = $(if $1,$(firstword $1) $(call uniq,$(filter-out $(firstword $1),$1)))
 
 cachevar = $(or $($(1)_$(2)_cache),$(eval $(1)_$(2)_cache := $3),$($(1)_$(2)_cache))
 
+extantfiles = $(sort $(wildcard $1))
+
 # Making lists of possible targets is tedious syntax, but just using pattern
 # rules means the targets are not extendible. By dynamically generating names by
 # iterating over all possible combinations of an arbitrary sequence of lists
