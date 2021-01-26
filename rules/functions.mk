@@ -297,7 +297,7 @@ define pagetopng ?=
 endef
 
 define povray ?=
-	headers=$$(mktemp povXXXXXX.inc)
+	headers=$$(mktemp $(BUILDDIR)povXXXXXX.inc)
 	cat <<- EOF < $2 < $3 > $$headers
 		#version 3.7;
 		#declare SceneLight = $(SCENELIGHT);
