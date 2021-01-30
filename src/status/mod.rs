@@ -91,6 +91,21 @@ pub fn get_rules() -> Result<Vec<path::PathBuf>> {
     Ok(rules)
 }
 
+/// Scan for CaSILE configuration files
+pub fn get_confs() -> Result<Vec<path::PathBuf>> {
+    let repo = get_repo()?;
+    let root = repo.workdir().unwrap();
+    let files = vec!["casile.yml"];
+    let mut confs = Vec::new();
+    for file in &files {
+        let p = root.join(file);
+        if p.exists() {
+            confs.push(p);
+        }
+    }
+    Ok(confs)
+}
+
 /// Figure out version string from repo tags
 pub fn get_git_version() -> String {
     let zero_version = String::from("0.000");

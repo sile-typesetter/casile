@@ -1,8 +1,9 @@
 use crate::cli::Cli;
+use crate::status;
 use crate::Result;
 
-use config::{Config, Environment};
-use std::sync;
+use config::{Config, Environment, File, FileFormat};
+use std::{env, sync};
 
 static ERROR_CONFIG_WRITE: &str = "Unable to gain write lock on global app config";
 static ERROR_CONFIG_READ: &str = "Unable to gain read lock on global app config";
@@ -13,8 +14,8 @@ lazy_static! {
 
 impl CONF {
     pub fn defaults(&self) -> Result<()> {
-        self.write()
-            .expect(ERROR_CONFIG_WRITE)
+        let mut config = self.write().expect(ERROR_CONFIG_WRITE);
+        config
             .set_default("debug", false)?
             .set_default("quiet", false)?
             .set_default("verbose", false)?
@@ -23,14 +24,28 @@ impl CONF {
         Ok(())
     }
 
-    pub fn from_env(&self) -> Result<()> {
-        self.write()
-            .expect(ERROR_CONFIG_WRITE)
-            .merge(Environment::with_prefix("casile"))?;
+    pub fn merge_env(&self) -> Result<()> {
+        let mut config = self.write().expect(ERROR_CONFIG_WRITE);
+        config.merge(Environment::with_prefix("casile"))?;
+        if let Some(lang) = env::var_os("LANG") {
+            if lang.len() > 0 {
+                config.set("language", lang.to_str());
+            }
+        }
         Ok(())
     }
 
-    pub fn from_args(&self, args: &Cli) -> Result<()> {
+    pub fn merge_files(&self) -> Result<()> {
+        let confs = status::get_confs()?;
+        let mut config = self.write().expect(ERROR_CONFIG_WRITE);
+        for (_, conf) in confs.iter().enumerate() {
+            let f = File::new(conf.to_str().unwrap(), FileFormat::Yaml);
+            config.merge(f).unwrap();
+        }
+        Ok(())
+    }
+
+    pub fn merge_args(&self, args: &Cli) -> Result<()> {
         if args.debug {
             self.set_bool("debug", true)?;
             self.set_bool("verbose", true)?;

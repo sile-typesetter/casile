@@ -9,7 +9,8 @@ use std::env;
 
 fn main() -> Result<()> {
     CONF.defaults()?;
-    CONF.from_env()?;
+    CONF.merge_env()?;
+    CONF.merge_files()?;
     // Workaround for Github Actions usage to make the prebuilt Docker image
     // invocation interchangeable with the default run-time built invocation we
     // need to set some default arguments. These are not used by the regular CLI.
@@ -24,7 +25,7 @@ fn main() -> Result<()> {
         let app = Cli::into_app().version(VERSION);
         let matches = app.get_matches();
         let args = Cli::from_arg_matches(&matches);
-        CONF.from_args(&args)?;
+        CONF.merge_args(&args)?;
         casile::show_welcome();
         match args.subcommand {
             Subcommand::Make { target } => make::run(target),
