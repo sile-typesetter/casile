@@ -11,7 +11,6 @@ build = "build.rs"
 
 [dependencies]
 colored = "2.0.0"
-config = "0.10.1"
 fluent = "0.12.0"
 fluent-fallback = "0.0.4"
 fluent-langneg = "0.13.0"
@@ -25,6 +24,11 @@ regex = "1.4.2"
 rust-embed = "5.7.0"
 subprocess = "0.2.6"
 unic-langid = "0.9.0"
+
+  [dependencies.config]
+  version = "0.10.1"
+  default-features = false
+  features = [ "yaml" ]
 
   [dependencies.clap]
   version = "3.0.0-beta.2"
