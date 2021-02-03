@@ -26,12 +26,14 @@ impl CONF {
 
     pub fn merge_env(&self) -> Result<()> {
         let mut config = self.write().expect(ERROR_CONFIG_WRITE);
-        config.merge(Environment::with_prefix("casile"))?;
         if let Some(lang) = env::var_os("LANG") {
             if lang.len() > 0 {
-                config.set("language", lang.to_str());
+                if let None = env::var_os("CASILE_LANGUAGELANG") {
+                    env::set_var("CASILE_LANGUAGE", lang);
+                }
             }
         }
+        config.merge(Environment::with_prefix("casile"))?;
         Ok(())
     }
 
