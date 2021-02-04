@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.1](https://github.com/sile-typesetter/casile/compare/v0.4.0...v0.4.1) (2021-02-04)
+
+
+### Features
+
+* **cli:** Merge config values from casile.yml ([55f0b6b](https://github.com/sile-typesetter/casile/commit/55f0b6b0a4b175538ed1f7d9dca6ea8426d75eac))
+
+
+### Bug Fixes
+
+* **cli:** Allow --version to work outside of a repo ([e751125](https://github.com/sile-typesetter/casile/commit/e75112569026ff83e4676618e5012a7504a1aca1))
+
 ## [0.4.0](https://github.com/sile-typesetter/casile/compare/v0.3.2...v0.4.0) (2021-01-26)
 
 
