@@ -15,7 +15,7 @@ pub struct Cli {
 
     // FTL: help-flags-language
     /// Set language
-    #[clap(short, long, env = "LANG")]
+    #[clap(short, long)]
     pub language: Option<String>,
 
     // FTL: help-flags-path
