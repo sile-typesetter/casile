@@ -2,9 +2,15 @@
 
 local yaml = require("yaml")
 
+yaml.configure({
+	load_nulls_as_nil = true,
+	load_numeric_scalars = false,
+})
+
 local PROJECT = os.getenv("PROJECT")
 local SORTORDER = os.getenv("SORTORDER")
 local TARGETS = os.getenv("TARGETS")
+local BUILDDIR = os.getenv("BUILDDIR")
 
 -- luacheck: ignore dump
 local function dump(...)
@@ -15,11 +21,11 @@ end
 local booktitles = {}
 local books = { ... } -- arg has 0 and -1 keys that aren't the passed arguments
 
-local seriesmeta = pcall(yaml.loadpath, PROJECT .. '.yml')
+local status, seriesmeta = pcall(yaml.loadpath, PROJECT .. '.yml')
 
 local seriestitles = {}
 local seriesorders = {}
-if seriesmeta then
+if status and seriesmeta then
   for _, title in ipairs(seriesmeta.seriestitles) do
     table.insert(seriestitles, title.title)
     seriesorders[title.title] = title.order
@@ -42,7 +48,7 @@ local getorder = function (book)
   if SORTORDER == "alphabetical" then
     return book
   end
-  local bookid = book:gsub("-.*", "")
+  local bookid = book:gsub("-.*", ""):gsub(BUILDDIR, "")
   for key,val in ipairs(seriestitles) do
     if SORTORDER == "manual" then
       if seriesorders[fetchtitle(bookid)] then
