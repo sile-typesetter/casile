@@ -63,6 +63,8 @@ FROM base AS final
 LABEL maintainer="Caleb Maclennan <caleb@alerque.com>"
 LABEL version="$VCS_REF"
 
+COPY build-aux/docker-fontconfig.conf /etc/fonts/conf.d/99-docker.conf
+
 COPY --from=builder /pkgdir /
 RUN casile --version
 
