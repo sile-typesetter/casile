@@ -5,11 +5,22 @@ set -e
 
 DESC=$(git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
 
+RUNTIME_DEPS='bc bcprov entr epubcheck ghostscript git imagemagick inetutils'\
+' inkscape java-commons-lang jq kindlegen m4 make moreutils nodejs'\
+' otf-libertinus pandoc-sile-git pcre pdftk podofo poppler povray sile sqlite'\
+' tex-gyre-fonts texlive-core ttf-hack yq zint zsh'\
+' lua lua-colors lua-filesystem lua-yaml'\
+' perl perl-yaml perl-yaml-merge-simple'\
+' python python-isbnlib python-pandocfilters python-pantable python-ruamel-yaml python-usfm2osis-cw-git'
+BUILD_DEPS='base-devel autoconf-archive luarocks node-prune rust yarn'
+
 : "${DOCKER_BUILDKIT:=1}"
 export DOCKER_BUILDKIT
 
 docker build \
 	--build-arg ARCHTAG="$ARCHTAG" \
 	--build-arg VCS_REF="${1:-$DESC}" \
+	--build-arg RUNTIME_DEPS="$RUNTIME_DEPS" \
+	--build-arg BUILD_DEPS="$BUILD_DEPS" \
 	--tag $IMAGE_NAME \
 	./
