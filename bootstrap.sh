@@ -21,6 +21,4 @@ else
     ./build-aux/git-version-gen .tarball-version > .version
 fi
 
-aclocal -I build-aux --install --force --warnings=none
-autoreconf -B build-aux --symlink --install --force --warnings=none
-automake --force-missing --add-missing --warnings=none
+autoreconf --install
