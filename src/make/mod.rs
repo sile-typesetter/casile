@@ -107,8 +107,8 @@ pub fn run(target: Vec<String>) -> Result<()> {
     let status = popen.wait();
     match status {
         Ok(ExitStatus::Exited(int)) => {
-            let foo = int + ret;
-            match foo {
+            let code = int + ret;
+            match code {
                 0 => {
                     if targets.contains(&"debug".into()) {
                         dump_backlog(&backlog)
@@ -154,7 +154,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
     }
 }
 
-fn dump_backlog(backlog: &Vec<String>) {
+fn dump_backlog(backlog: &[String]) {
     let start = LocalText::new("make-backlog-start").fmt();
     eprintln!("{} {}", "┖┄".cyan(), start);
     for line in backlog.iter() {
