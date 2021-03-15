@@ -14,6 +14,7 @@ jobs:
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
+          profile: minimal
           components: rustfmt
       - name: Run rustfmt
         run: |
@@ -29,6 +30,7 @@ jobs:
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
+          profile: minimal
           components: clippy
       - uses: actions-rs/clippy-check@v1
         with:
