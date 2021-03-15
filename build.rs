@@ -1,26 +1,19 @@
-extern crate vergen;
-
 use clap::IntoApp;
 use clap_generate::generate_to;
 use clap_generate::generators::{Bash, Elvish, Fish, PowerShell, Zsh};
 use std::{collections, env, fs};
-use vergen::{generate_cargo_keys, ConstantsFlags};
+use vergen::vergen;
 
 include!("src/cli.rs");
 
 fn main() {
-    // Setup the flags, toggling off the 'SEMVER_FROM_CARGO_PKG' flag
-    let mut flags = ConstantsFlags::all();
-    flags.toggle(ConstantsFlags::SEMVER_FROM_CARGO_PKG);
-
-    // Generate the 'cargo:' key output
-    generate_cargo_keys(flags).expect("Unable to generate the cargo keys!");
-
+    let mut flags = vergen::Config::default();
     // If automake has passed a version, use that instead of vergen's formatting
     if let Ok(val) = env::var("CASILE_VERSION") {
-        println!("cargo:rustc-env=VERGEN_SEMVER_LIGHTWEIGHT={}", val)
+        *flags.git_mut().semver_mut() = false;
+        println!("cargo:rustc-env=VERGEN_GIT_SEMVER={}", val)
     };
-
+    vergen(flags).expect("Unable to generate the cargo keys!");
     pass_on_configure_details();
     generate_shell_completions();
 }
