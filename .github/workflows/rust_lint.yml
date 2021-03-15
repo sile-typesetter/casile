@@ -16,6 +16,8 @@ jobs:
         with:
           profile: minimal
           components: rustfmt
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v1
       - name: Run rustfmt
         run: |
           git ls-files '*.rs' | xargs rustfmt --check
@@ -32,6 +34,8 @@ jobs:
         with:
           profile: minimal
           components: clippy
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v1
       - uses: actions-rs/clippy-check@v1
         with:
           token: ${{ github.token }}

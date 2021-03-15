@@ -13,14 +13,8 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-      - name: Cache cargo
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: bloat-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v1
       - name: Run cargo bloat
         uses: orf/cargo-bloat-action@v1
         with:

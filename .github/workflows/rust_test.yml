@@ -16,14 +16,9 @@ jobs:
           git fetch --prune --tags ||:
       - name: Install Rust
         uses: actions-rs/toolchain@v1
-      - name: Cache cargo
-        uses: actions/cache@v2
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v1
+      - uses: actions-rs/cargo@v1
         with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: cargo-test-${{ hashFiles('**/Cargo.lock') }}
-      - name: Run cargo test
-        run: |
-          cargo test --locked
+          command: test
+          args: --locked
