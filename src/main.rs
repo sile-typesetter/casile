@@ -34,5 +34,5 @@ fn main() -> Result<()> {
         }
     };
     casile::show_outro();
-    return ret;
+    ret
 }
