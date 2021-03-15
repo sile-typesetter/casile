@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.2](https://github.com/sile-typesetter/casile/compare/v0.4.1...v0.4.2) (2021-03-15)
+
+
+### Features
+
+* **docker:** Enable font resource directory mounting ([fb68d25](https://github.com/sile-typesetter/casile/commit/fb68d2542b1896cd20a6fe0c9ef0c36411664349))
+
+
+### Bug Fixes
+
+* **docker:** Switch to BuildKit ([e5e5f5e](https://github.com/sile-typesetter/casile/commit/e5e5f5e477510ab4ebb7e52bed82309d0a814b34))
+* **docker:** Work around archaic host kernels on Docker Hub ([9aef2e2](https://github.com/sile-typesetter/casile/commit/9aef2e2348230a04fe2440914e64b76519dee17c))
+* **metadata:** Handle YAML keys that start with digits as strings ([3d96da3](https://github.com/sile-typesetter/casile/commit/3d96da33fb3d269eb77261854d46234bd8928cb0))
+* **renderings:** Teach series title sort how to work in BUILDDIR ([8d22ce0](https://github.com/sile-typesetter/casile/commit/8d22ce0f82286e3a2ef46f73f18a1654766818b8))
+
 ### [0.4.1](https://github.com/sile-typesetter/casile/compare/v0.4.0...v0.4.1) (2021-02-04)
 
 
