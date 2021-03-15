@@ -182,7 +182,7 @@ export PROJECT := $(PROJECT)
 
 # Make’s shell function doesn't pass environment variables
 # See https://stackoverflow.com/q/65553367/313192
-_ENV := PATH=$(PATH) HOSTNAME=$(HOSTNAME) PROJECT=$(PROJECT)
+_ENV := PATH=$(PATH) HOSTNAME=$(HOSTNAME) PROJECT=$(PROJECT) BUILDDIR=$(BUILDDIR)
 
 LOCALSILE ?= $(HOME)/projects/sile-typesetter/sile
 ifeq ($(DEBUG),true)

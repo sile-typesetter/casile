@@ -2,12 +2,12 @@
   <script>
     SILE.require(CASILE.include)
     SILE.documentState.documentClass.writeToc = function () end
-    SILE.registerCommand("meta:surum", function()
+    SILE.registerCommand("meta:surum", function ()
       SILE.typesetter:typeset(versioninfo)
     end)
     CASILE.metadata = require("readmeta").load(metadatafile)
+    SILE.registerCommand("output-right-running-head", function () end)
   </script>
-  <define command="output-right-running-head"></define>
   <script src="packages/rotate" />
   <script src="packages/frametricks" />
   <nofolios />
