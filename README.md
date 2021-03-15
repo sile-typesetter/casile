@@ -1,7 +1,8 @@
 # CaSILE toolkit
 
+[![Rust Test Status](https://img.shields.io/github/workflow/status/sile-typesetter/casile/Rust+Test?label=Rust+Test&logo=Rust)](https://github.com/sile-typesetter/casile/actions?workflow=Rust+Test)
 [![Docker Build Status](https://img.shields.io/docker/cloud/build/siletypesetter/casile?label=Docker%20Build&logo=Docker)](https://hub.docker.com/repository/docker/siletypesetter/casile/builds)
-[![Rust Lint Status](https://img.shields.io/github/workflow/status/sile-typesetter/casile/Rust?label=Rustfmt&logo=Rust)](https://github.com/sile-typesetter/casile/actions?workflow=Rust)
+[![Rust Lint Status](https://img.shields.io/github/workflow/status/sile-typesetter/casile/Rust+Lint?label=Rustfmt&logo=Rust)](https://github.com/sile-typesetter/casile/actions?workflow=Rust+Lint)
 [![Lua Lint Status](https://img.shields.io/github/workflow/status/sile-typesetter/casile/Luacheck?label=Luacheck&logo=Lua)](https://github.com/sile-typesetter/casile/actions?workflow=Luacheck)
 ![Reviewdog Lint Status](https://img.shields.io/github/workflow/status/sile-typesetter/casile/Reviewdog?label=Reviewdog&logo=eslint)<br />
 [![Chat on Gitter](https://img.shields.io/gitter/room/sile-typesetter/casile?color=blue&label=Chat&logo=Gitter)](https://gitter.im/sile-typesetter/casile?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
