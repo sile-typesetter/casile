@@ -1,0 +1,35 @@
+name: Rust Lint
+
+on: [ "pull_request", "push" ]
+
+jobs:
+
+  rustfmt:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          components: rustfmt
+      - name: Run rustfmt
+        run: |
+          git ls-files '*.rs' | xargs rustfmt --check
+
+  clippy:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          components: clippy
+      - uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ github.token }}
