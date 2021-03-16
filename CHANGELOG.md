@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.5](https://github.com/sile-typesetter/casile/compare/v0.4.4...v0.4.5) (2021-03-16)
+
+
+### Features
+
+* **actions:** Use prebuilt image at matching version ([41848b4](https://github.com/sile-typesetter/casile/commit/41848b4047a61a054ecf6b8d2d23c970b5878012))
+* **docker:** Switch to GitHub container registry beta ([808c9e4](https://github.com/sile-typesetter/casile/commit/808c9e44ae9de131c63a9b2011909fcc93558645))
+
+
+### Bug Fixes
+
+* **ci:** Deploy all release tag formats to GHPR ([321a098](https://github.com/sile-typesetter/casile/commit/321a09883883e4f9c31aa638f50afad747ed291f))
+* **docker:** Add missing ‘v’ to GHPR image tags ([08a20ad](https://github.com/sile-typesetter/casile/commit/08a20ad662d7e376980964adc7bd248f118bbe6b))
+
 ### [0.4.4](https://github.com/sile-typesetter/casile/compare/v0.4.3...v0.4.4) (2021-03-16)
 
 
