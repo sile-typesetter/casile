@@ -209,6 +209,17 @@ casile-%.md: CHANGELOG.md
 	sed -e '/\.\.\.v$*/,/\.\.\.v/!d' $< | \
 		sed -e '1,3d;N;$$!P;$$!D;$$d' > $@
 
+export DOCKER_REGISTRY ?= docker.io
+export DOCKER_REPO ?= siletypesetter/$(_casile)
+export DOCKER_TAG ?= HEAD
+
 .PHONY: docker
 docker: Dockerfile hooks/build .version
-	IMAGE_NAME=siletypesetter/$(_casile):HEAD ./hooks/build $(VERSION)
+	./hooks/build $(VERSION)
+	docker tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
+
+
+.PHONY: docker-build-push
+docker-build-push: docker
+	docker login https://$(DOCKER_REGISTRY) -u $(DOCKER_USERNAME)
+	docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
