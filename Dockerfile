@@ -45,7 +45,7 @@ RUN build-aux/bootstrap-docker.sh
 RUN ./bootstrap.sh
 RUN ./configure
 RUN make
-RUN make check
+RUN make check-version
 RUN make install DESTDIR=/pkgdir
 RUN node-prune /pkgdir/usr/local/share/casile/node_modules
 
