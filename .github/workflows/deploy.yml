@@ -2,9 +2,11 @@ name: Deploy
 
 on:
   push:
+    branches:
+      - master
     tags:
-      - 'v*'
-      - 'latest'
+      - latest
+      - v*
 
 jobs:
 
@@ -15,13 +17,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Fetch tags
+        run: |
+          git fetch --prune --tags ||:
       - name: Setup system dependencies
         run: |
           sudo apt-get install autoconf-archive
       - name: Configure
         run: |
-          echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-          echo "${GITHUB_REF#refs/*/}" > .tarball-version
+          echo "REF=${GITHUB_REF##refs/*/}" >> $GITHUB_ENV
           ./bootstrap.sh
           ./configure --without-{bash,fish,zsh}-completion-dir --disable-dependency-checks
       - name: Publish Docker Image to GH Pakcages
@@ -30,36 +36,6 @@ jobs:
         env:
           DOCKER_REGISTRY: ghcr.io
           DOCKER_REPO: ${{ github.repository }}
-          DOCKER_TAG: ${{ env.TAG }}
+          DOCKER_TAG: ${{ env.REF }}
           DOCKER_USERNAME: ${{ github.actor }}
           DOCKER_PAT: ${{ secrets.CR_SILE_TYPESETTER }}
-
-  ghrelase:
-    strategy:
-      fail-fast: false
-    runs-on: ubuntu-latest
-    if: contains(github.ref, '/v') && contains(github.ref, '.')
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup system dependencies
-        run: |
-          sudo apt-get install autoconf-archive
-      - name: Configure
-        run: |
-          echo "VERSION=${GITHUB_REF#refs/*/v}" >> $GITHUB_ENV
-          echo "${GITHUB_REF#refs/*/v}" > .tarball-version
-          ./bootstrap.sh
-          ./configure --without-{bash,fish,zsh}-completion-dir --disable-dependency-checks
-      - name: Build source package
-        run: |
-          make dist
-      - name: Publish Release
-        uses: softprops/action-gh-release@v1
-        with:
-          body_path: casile-${{ env.VERSION }}.md
-          files: |
-            casile-${{ env.VERSION }}.zip
-            casile-${{ env.VERSION }}.tar.xz
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
