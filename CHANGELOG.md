@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.4](https://github.com/sile-typesetter/casile/compare/v0.4.3...v0.4.4) (2021-03-16)
+
+
+### Bug Fixes
+
+* **ci:** Authenticate to publish on GH Packages Repository ([754a061](https://github.com/sile-typesetter/casile/commit/754a0616882a8b177c09b761c933ee13287b9670))
+
 ### [0.4.3](https://github.com/sile-typesetter/casile/compare/v0.4.2...v0.4.3) (2021-03-16)
 
 ### [0.4.2](https://github.com/sile-typesetter/casile/compare/v0.4.1...v0.4.2) (2021-03-15)
