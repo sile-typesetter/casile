@@ -216,10 +216,9 @@ export DOCKER_TAG ?= HEAD
 .PHONY: docker
 docker: Dockerfile hooks/build .version
 	./hooks/build $(VERSION)
-	docker tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
-
 
 .PHONY: docker-build-push
 docker-build-push: docker
-	docker login https://$(DOCKER_REGISTRY) -u $(DOCKER_USERNAME)
+	docker tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
+	docker login https://$(DOCKER_REGISTRY) -u $(DOCKER_USERNAME) -p $(DOCKER_PASSWORD)
 	docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
