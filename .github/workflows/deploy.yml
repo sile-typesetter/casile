@@ -10,7 +10,7 @@ on:
 
 jobs:
 
-  ghpackages:
+  ghcr:
     strategy:
       fail-fast: false
     runs-on: ubuntu-latest
