@@ -43,7 +43,7 @@ jobs:
           make docker-build-push
         env:
           DOCKER_REGISTRY: docker.pkg.github.com
-          DOCKER_REPO: $GITHUB_REPOSITORY/casile
+          DOCKER_REPO: ${{ github.repository }}/casile
           DOCKER_TAG: ${{ env.VERSION }}
           DOCKER_USERNAME: ${{ github.actor }}
           DOCKER_PASSWORD: ${{ github.token }}
