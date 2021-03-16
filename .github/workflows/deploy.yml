@@ -28,11 +28,11 @@ jobs:
         run: |
           make docker-build-push
         env:
-          DOCKER_REGISTRY: docker.pkg.github.com
-          DOCKER_REPO: ${{ github.repository }}/casile
+          DOCKER_REGISTRY: ghcr.io
+          DOCKER_REPO: ${{ github.repository }}
           DOCKER_TAG: ${{ env.TAG }}
           DOCKER_USERNAME: ${{ github.actor }}
-          DOCKER_PASSWORD: ${{ github.token }}
+          DOCKER_PAT: ${{ secrets.CR_SILE_TYPESETTER }}
 
   ghrelase:
     strategy:
