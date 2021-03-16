@@ -15,7 +15,7 @@ dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE
 nobase_data_DATA = rules/casile.mk $(reverse_lang_key_files)
 nobase_dist_data_DATA = rules/rules.mk rules/functions.mk rules/utilities.mk $(lang_key_files)
-EXTRA_DIST = .version package.json yarn.lock build-aux/cargo-updater.js build-aux/git-version-gen requirements.txt
+EXTRA_DIST = .version package.json yarn.lock build-aux/action-updater.js build-aux/cargo-updater.js build-aux/git-version-gen requirements.txt
 EXTRA_DIST += Dockerfile build-aux/bootstrap-docker.sh build-aux/docker-fontconfig.conf build-aux/docker-glibc-workaround.sh hooks/build
 
 bin_PROGRAMS = casile
@@ -200,7 +200,7 @@ tagrelease:
 
 .PHONY: release-preview
 release-preview:
-	yarn run release -- --dry-run $(and $(RELTYPE),--release-as $(RELTYPE))
+	yarn run release --dry-run $(and $(RELTYPE),--release-as $(RELTYPE))
 
 .PHONY: release
 release: tagrelease
@@ -220,5 +220,5 @@ docker: Dockerfile hooks/build .version
 .PHONY: docker-build-push
 docker-build-push: docker
 	docker tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
-	docker login https://$(DOCKER_REGISTRY) -u $(DOCKER_USERNAME) -p $(DOCKER_PASSWORD)
+	docker login https://$(DOCKER_REGISTRY) -u $(DOCKER_USERNAME) -p $(DOCKER_PAT)
 	docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)

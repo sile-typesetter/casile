@@ -1,5 +1,6 @@
 name: CaSILE
-description: The CaSILE toolkit, a book publishing workflow employing SILE and other wizardry.
+description: The CaSILE toolkit, a book publishing workflow employing SILE and
+  other wizardry.
 outputs:
   DISTDIR:
     description: Output directory
@@ -9,7 +10,7 @@ outputs:
     description: Version string
 runs:
   using: docker
-  image: Dockerfile
+  image: docker://ghcr.io/sile-typesetter/casile:v0.4.4
   args:
     - make
 branding:

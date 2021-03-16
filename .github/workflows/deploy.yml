@@ -3,12 +3,42 @@ name: Deploy
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - 'v*'
+      - 'latest'
 
 jobs:
 
-  ghpublish:
+  ghpackages:
+    strategy:
+      fail-fast: false
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup system dependencies
+        run: |
+          sudo apt-get install autoconf-archive
+      - name: Configure
+        run: |
+          echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "${GITHUB_REF#refs/*/}" > .tarball-version
+          ./bootstrap.sh
+          ./configure --without-{bash,fish,zsh}-completion-dir --disable-dependency-checks
+      - name: Publish Docker Image to GH Pakcages
+        run: |
+          make docker-build-push
+        env:
+          DOCKER_REGISTRY: ghcr.io
+          DOCKER_REPO: ${{ github.repository }}
+          DOCKER_TAG: ${{ env.TAG }}
+          DOCKER_USERNAME: ${{ github.actor }}
+          DOCKER_PAT: ${{ secrets.CR_SILE_TYPESETTER }}
+
+  ghrelase:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-latest
+    if: contains(github.ref, '/v') && contains(github.ref, '.')
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -24,11 +54,6 @@ jobs:
       - name: Build source package
         run: |
           make dist
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: casile-${{ env.VERSION }}
-          path: casile*-${{ env.VERSION }}.zip
       - name: Publish Release
         uses: softprops/action-gh-release@v1
         with:
@@ -38,12 +63,3 @@ jobs:
             casile-${{ env.VERSION }}.tar.xz
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - name: Publish Docker Image to GH Pakcages
-        run: |
-          make docker-build-push
-        env:
-          DOCKER_REGISTRY: docker.pkg.github.com
-          DOCKER_REPO: ${{ github.repository }}/casile
-          DOCKER_TAG: ${{ env.VERSION }}
-          DOCKER_USERNAME: ${{ github.actor }}
-          DOCKER_PASSWORD: ${{ github.token }}
