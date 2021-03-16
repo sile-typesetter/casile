@@ -1,6 +1,6 @@
 [package]
 name = "casile"
-version = "0.4.2"
+version = "0.4.3"
 authors = [ "Caleb Maclennan <caleb@alerque.com>" ]
 edition = "2018"
 description = "The command line interface to the CaSILE toolkit, a book publishing workflow employing SILE and other wizardry"
