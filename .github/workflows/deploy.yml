@@ -44,6 +44,6 @@ jobs:
         env:
           DOCKER_REGISTRY: docker.pkg.github.com
           DOCKER_REPO: ${{ github.repository }}/casile
-          DOCKER_TAG: ${{ env.VERSION }}
+          DOCKER_TAG: v${{ env.VERSION }}
           DOCKER_USERNAME: ${{ github.actor }}
           DOCKER_PASSWORD: ${{ github.token }}
