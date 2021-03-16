@@ -200,7 +200,7 @@ tagrelease:
 
 .PHONY: release-preview
 release-preview:
-	yarn run release -- --dry-run $(and $(RELTYPE),--release-as $(RELTYPE))
+	yarn run release --dry-run $(and $(RELTYPE),--release-as $(RELTYPE))
 
 .PHONY: release
 release: tagrelease
