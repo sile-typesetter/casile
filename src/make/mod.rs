@@ -39,6 +39,10 @@ pub fn run(target: Vec<String>) -> Result<()> {
     let mut targets: Vec<_> = target.into_iter().collect();
     if status::is_gha()? {
         targets.push(String::from("_gha"));
+        if targets.len() == 1 {
+            targets.push(String::from("default"));
+        }
+        targets.push(String::from("install-dist"));
     }
     let gitname = status::get_gitname()?;
     let git_version = status::get_git_version();
