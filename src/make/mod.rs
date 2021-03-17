@@ -36,7 +36,14 @@ pub fn run(target: Vec<String>) -> Result<()> {
         .args(&makeflags)
         .args(&makefiles)
         .args(&target);
-    let targets: Vec<_> = target.into_iter().collect();
+    let mut targets: Vec<_> = target.into_iter().collect();
+    if status::is_gha()? {
+        targets.push(String::from("_gha"));
+        if targets.len() == 1 {
+            targets.push(String::from("default"));
+        }
+        targets.push(String::from("install-dist"));
+    }
     let gitname = status::get_gitname()?;
     let git_version = status::get_git_version();
     process = process
@@ -72,7 +79,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
             "CASILE" => match fields[1] {
                 "PRE" => report_start(fields[2]),
                 "STDOUT" => {
-                    if targets.contains(&"_gha".into()) {
+                    if status::is_gha()? {
                         println!("{}", fields[3]);
                     } else if CONF.get_bool("verbose")? {
                         report_line(fields[3]);

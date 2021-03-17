@@ -4,6 +4,7 @@ space := $() $()
 $(space) := $() $()
 lparen := (
 rparen := )
+hash := \#
 
 # Utility functions for simplifying per-project makefiles
 depend_font = fc-match "$1" family | $(GREP) -qx "$1"

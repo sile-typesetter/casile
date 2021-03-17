@@ -178,6 +178,17 @@ cargo-test: casile$(EXEEXT)
 check-version: casile$(EXEEXT) | .version
 	./$< --version | grep -Ff $|
 
+.PHONY: lint
+lint: rustfmt clippy
+
+.PHONY: rustfmt
+rustfmt:
+	git ls-files '*.rs' | xargs rustfmt --check
+
+.PHONY: clippy
+clippy:
+	cargo clippy -- -D warnings
+
 all: init
 
 .PHONY:
@@ -223,3 +234,11 @@ docker-build-push: docker
 	test -z "$(DOCKER_PAT)" || \
 		docker login https://$(DOCKER_REGISTRY) -u $(DOCKER_USERNAME) -p $(DOCKER_PAT)
 	docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
+	if [[ "$(DOCKER_TAG)" == v*.*.* ]]; then \
+		tag=$(DOCKER_TAG) ;\
+		docker tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):latest ;\
+		docker tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$${tag//.*} ;\
+		docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO):latest ;\
+		docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$${tag//.*} ;\
+	fi
+
