@@ -6,9 +6,12 @@ clean:
 .PHONY: dist
 dist: $(DISTDIR).zip $(DISTDIR).tar.gz
 
+NONDISTGOALS = $(filter-out %dist $(DISTDIR).%,$(MAKECMDGOALS))
 .PHONY: install-dist
-install-dist: $$(or $$(call extantfiles,$$(DISTFILES)),fail) | $(DISTDIR)
-	install -m644 -t "$(DISTDIR)" $^
+install-dist: $(NONDISTGOALS) | $(DISTDIR)
+install-dist: $$(or $$(call extantfiles,$$(DISTFILES)),fail)
+	set -o extendedglob
+	install -m644 -t "$(DISTDIR)" $(addsuffix ($(hash)qN),$(DISTFILES))
 
 .PHONY: debug
 debug:
