@@ -178,6 +178,17 @@ cargo-test: casile$(EXEEXT)
 check-version: casile$(EXEEXT) | .version
 	./$< --version | grep -Ff $|
 
+.PHONY: lint
+lint: rustfmt clippy
+
+.PHONY: rustfmt
+rustfmt:
+	git ls-files '*.rs' | xargs rustfmt --check
+
+.PHONY: clippy
+clippy:
+	cargo clippy -- -D warnings
+
 all: init
 
 .PHONY:
