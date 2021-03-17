@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.6](https://github.com/sile-typesetter/casile/compare/v0.4.5...v0.4.6) (2021-03-17)
+
+
+### Features
+
+* **actions:** Allow customizing args from GHA ([71e10f4](https://github.com/sile-typesetter/casile/commit/71e10f4b737eb8500dae9e257f028b3582849b32))
+* **actions:** Always invoke install-dist when run as action ([d87b89b](https://github.com/sile-typesetter/casile/commit/d87b89befc51a33b515fd42a7eab829732920568))
+* **rules:** Resolve deps for ‘dist’ targets in single invocation ([a848824](https://github.com/sile-typesetter/casile/commit/a8488245a696605e6822ebdd7c100424dda748d6))
+
+
+### Bug Fixes
+
+* **actions:** Use same default targets in GH Actions as CLI ([1c5d753](https://github.com/sile-typesetter/casile/commit/1c5d753366441838233138b1c3546e0de107ece6))
+
 ### [0.4.5](https://github.com/sile-typesetter/casile/compare/v0.4.4...v0.4.5) (2021-03-16)
 
 
