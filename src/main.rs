@@ -19,7 +19,7 @@ fn main() -> Result<()> {
     let ret = if status::is_gha()? && invocation.len() == 1 {
         CONF.set_str("language", "en-US")?;
         casile::show_welcome();
-        let target = vec![String::from("_gha"), String::from("pdfs")];
+        let target = vec![String::from("_gha"), String::from("default")];
         make::run(target)
     } else {
         let app = Cli::into_app().version(VERSION);
