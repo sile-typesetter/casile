@@ -32,10 +32,6 @@ pub fn run(target: Vec<String>) -> Result<()> {
         "{}{}",
         CONFIGURE_DATADIR, "rules/rules.mk"
     )));
-    let mut process = Exec::cmd("make")
-        .args(&makeflags)
-        .args(&makefiles)
-        .args(&target);
     let mut targets: Vec<_> = target.into_iter().collect();
     if status::is_gha()? {
         targets.push(String::from("_gha"));
@@ -44,6 +40,10 @@ pub fn run(target: Vec<String>) -> Result<()> {
         }
         targets.push(String::from("install-dist"));
     }
+    let mut process = Exec::cmd("make")
+        .args(&makeflags)
+        .args(&makefiles)
+        .args(&targets);
     let gitname = status::get_gitname()?;
     let git_version = status::get_git_version();
     process = process
