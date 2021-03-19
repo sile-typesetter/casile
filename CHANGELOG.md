@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.7](https://github.com/sile-typesetter/casile/compare/v0.4.6...v0.4.7) (2021-03-19)
+
+
+### Bug Fixes
+
+* **actions:** Inject GHA specific targets in time to execute ([43995c6](https://github.com/sile-typesetter/casile/commit/43995c62481649f8481bfddf6ab10f397e22d81d))
+* **actions:** Work around over-aggressive quoting ([348ad62](https://github.com/sile-typesetter/casile/commit/348ad628202e7343b0b02ea7183297eb8c0081bd))
+
 ### [0.4.6](https://github.com/sile-typesetter/casile/compare/v0.4.5...v0.4.6) (2021-03-17)
 
 
