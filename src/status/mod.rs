@@ -35,6 +35,13 @@ pub fn is_gha() -> Result<bool> {
     Ok(ret)
 }
 
+/// Check to see if we're running in GitLab CI
+pub fn is_glc() -> Result<bool> {
+    let ret = env::var("GITLAB_CI").is_ok();
+    display_check("status-is-glc", ret);
+    Ok(ret)
+}
+
 /// Figure out if we're running inside Docker or another container
 pub fn is_container() -> bool {
     let dockerenv = path::Path::new("/.dockerenv");

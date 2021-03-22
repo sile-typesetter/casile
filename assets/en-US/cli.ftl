@@ -141,3 +141,6 @@ status-header =
 
 status-is-gha =
   Are we running as a GitHub Action?
+
+status-is-glc =
+  Are we running as a GitLab CI job?

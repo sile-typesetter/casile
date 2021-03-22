@@ -46,3 +46,6 @@ status-header =
 
 status-is-gha =
   GitHub Action olarak mı çalıştırıldık?
+
+status-is-glc =
+  GitLab CI iş olarak mı çalıştırıldık?
