@@ -1,4 +1,4 @@
-NONDISTGOALS = $(filter-out %dist $(DISTDIR).% _glc %.env,$(MAKECMDGOALS))
+NONDISTGOALS = $(filter-out %dist $(DISTDIR).% _gha _glc %.env,$(MAKECMDGOALS))
 
 .PHONY: clean
 clean:
