@@ -101,13 +101,13 @@ define versioninfo ?=
 $(shell $(_ENV)
 	echo -en "$(call parse_bookid,$1)@$(subst $(call parse_bookid,$1)/,,$(or $(TAG),$(BRANCH)))-"
 	if [[ -n "$(TAG)" ]]; then
-		$(GIT) describe --always --dirty=* | cut -d/ -f2 | xargs echo -en
+		$(GIT) describe --always --dirty='*' | cut -d/ -f2 | xargs echo -en
 	elif [[ "$(BRANCH)" == master ]]; then
-		$(GIT) describe --always --tags --dirty=* | cut -d/ -f2 | xargs echo -en
+		$(GIT) describe --always --tags --dirty='*' | cut -d/ -f2 | xargs echo -en
 	else
 		$(GIT) rev-list --boundary $(PARENT)..HEAD | $(GREP) -v - | wc -l | xargs -iX echo -en "X-"
 		$(DIFF) && echo -en "$$($(GIT) rev-parse --short $(PARENT))→"
-		$(GIT) describe --always --dirty=* | cut -d/ -f2 | xargs echo -en
+		$(GIT) describe --always --dirty='*' | cut -d/ -f2 | xargs echo -en
 	fi)
 endef
 

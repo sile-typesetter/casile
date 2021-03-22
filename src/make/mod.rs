@@ -124,7 +124,10 @@ pub fn run(target: Vec<String>) -> Result<()> {
             let code = int + ret;
             match code {
                 0 => {
-                    if targets.contains(&"debug".into()) {
+                    if CONF.get_bool("debug")?
+                        || targets.contains(&"debug".into())
+                        || targets.contains(&"-p".into())
+                    {
                         dump_backlog(&backlog)
                     };
                     Ok(())

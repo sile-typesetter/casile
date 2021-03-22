@@ -166,10 +166,6 @@ CICONFIG ?= .travis.yml
 # List of files that persist across make clean
 PROJECTCONFIGS :=
 
-ifeq ($(DRAFT),true)
-$(MAKECMDGOALS): force
-endif
-
 # For watch targets, treat extra parameters as things to pass to the next make
 ifeq (watch,$(firstword $(MAKECMDGOALS)))
 WATCHARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -629,7 +625,7 @@ DISTFILES += $(PLAYEPUBS)
 
 DISTFILES += *-$(_app).pdf
 
-%-$(_app).info: %-$(_app)-$(_print).toc %-$(_app)-$(_print).pdf %-manifest.yml
+%-$(_app).info: $(BUILDDIR)%-$(_app)-$(_print).toc %-$(_app)-$(_print).pdf %-manifest.yml
 	toc2breaks.lua $* $(filter %-$(_app)-$(_print).toc,$^) $(filter %-manifest.yml,$^) $@ |
 		while read range out; do
 			$(PDFTK) $(filter %-$(_app)-$(_print).pdf,$^) cat $$range output $$out
