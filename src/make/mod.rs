@@ -40,6 +40,12 @@ pub fn run(target: Vec<String>) -> Result<()> {
         }
         targets.push(String::from("install-dist"));
     }
+    if status::is_glc()? {
+        if targets.len() == 0 {
+            targets.push(String::from("default"));
+        }
+        targets.push(String::from("install-dist"));
+    }
     let mut process = Exec::cmd("make")
         .args(&makeflags)
         .args(&makefiles)
