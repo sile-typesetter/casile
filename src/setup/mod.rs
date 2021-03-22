@@ -53,6 +53,10 @@ pub fn is_setup() -> Result<bool> {
     if results.read().unwrap().iter().all(|&v| v) {
         rayon::scope(|s| {
             s.spawn(|_| {
+                let ret = is_not_casile_source().unwrap();
+                results.write().unwrap().push(ret);
+            });
+            s.spawn(|_| {
                 let ret = is_writable().unwrap();
                 results.write().unwrap().push(ret);
             });
@@ -80,6 +84,16 @@ pub fn is_repo() -> Result<bool> {
     Ok(ret)
 }
 
+/// Are we not in the CaSILE source repo?
+pub fn is_not_casile_source() -> Result<bool> {
+    let repo = get_repo()?;
+    let workdir = repo.workdir().unwrap();
+    let testfile = workdir.join("make-shell.zsh.in");
+    let ret = fs::File::open(&testfile).is_err();
+    display_check("setup-is-not-casile", ret);
+    Ok(ret)
+}
+
 /// Is the git repo we are in writable?
 pub fn is_writable() -> Result<bool> {
     let repo = get_repo()?;
@@ -90,7 +104,7 @@ pub fn is_writable() -> Result<bool> {
     fs::remove_file(&testfile)?;
     let ret = true;
     display_check("setup-is-writable", ret);
-    Ok(true)
+    Ok(ret)
 }
 
 /// Check if we can execute the system's `make` utility
@@ -102,7 +116,7 @@ pub fn is_make_exectuable() -> Result<bool> {
         .join()
         .is_ok();
     display_check("setup-is-make-executable", ret);
-    Ok(true)
+    Ok(ret)
 }
 
 /// Check that the system's `make` utility is GNU Make
@@ -115,7 +129,7 @@ pub fn is_make_gnu() -> Result<bool> {
         .stdout_str();
     let ret = out.starts_with("GNU Make 4.");
     display_check("setup-is-make-gnu", ret);
-    Ok(true)
+    Ok(ret)
 }
 
 fn regen_gitignore(repo: Repository) -> Result<()> {

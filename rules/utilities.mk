@@ -1,3 +1,5 @@
+NONDISTGOALS = $(filter-out %dist $(DISTDIR).% _gha _glc %.env,$(MAKECMDGOALS))
+
 .PHONY: clean
 clean:
 	rm -rf $(BUILDDIR) $(DISTDIR) $(call extantfiles,$(DISTFILES))
@@ -6,7 +8,6 @@ clean:
 .PHONY: dist
 dist: $(DISTDIR).zip $(DISTDIR).tar.gz
 
-NONDISTGOALS = $(filter-out %dist $(DISTDIR).%,$(MAKECMDGOALS))
 .PHONY: install-dist
 install-dist: $(NONDISTGOALS) | $(DISTDIR)
 install-dist: $$(or $$(call extantfiles,$$(DISTFILES)),fail)
@@ -87,6 +88,18 @@ _gha:
 	echo "::set-output name=DISTDIR::$(DISTDIR)"
 	echo "::set-output name=PROJECT::$(PROJECT)"
 	echo "::set-output name=VERSION::$(call versioninfo,$(PROJECT))"
+
+
+.PHONY: _glc
+_glc: $(CI_JOB_NAME).env
+
+$(CI_JOB_NAME).env: $(NONDISTGOALS)
+	$(ZSH) << 'EOF' # inception to break out of CaSILE’s make shell wrapper
+	export PS4=; set -x ; exec 2> $@ # black magic to output sourcable content
+	DISTDIR="$(DISTDIR)"
+	PROJECT="$(PROJECT)"
+	VERSION="$(call versioninfo,$(PROJECT))"
+	EOF
 
 .PHONY: list
 list:
