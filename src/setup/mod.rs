@@ -90,7 +90,7 @@ pub fn is_writable() -> Result<bool> {
     fs::remove_file(&testfile)?;
     let ret = true;
     display_check("setup-is-writable", ret);
-    Ok(true)
+    Ok(ret)
 }
 
 /// Check if we can execute the system's `make` utility
@@ -102,7 +102,7 @@ pub fn is_make_exectuable() -> Result<bool> {
         .join()
         .is_ok();
     display_check("setup-is-make-executable", ret);
-    Ok(true)
+    Ok(ret)
 }
 
 /// Check that the system's `make` utility is GNU Make
@@ -115,7 +115,7 @@ pub fn is_make_gnu() -> Result<bool> {
         .stdout_str();
     let ret = out.starts_with("GNU Make 4.");
     display_check("setup-is-make-gnu", ret);
-    Ok(true)
+    Ok(ret)
 }
 
 fn regen_gitignore(repo: Repository) -> Result<()> {
