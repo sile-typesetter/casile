@@ -12,7 +12,9 @@ dist: $(DISTDIR).zip $(DISTDIR).tar.gz
 install-dist: $(NONDISTGOALS) | $(DISTDIR)
 install-dist: $$(or $$(call extantfiles,$$(DISTFILES)),fail)
 	set -o extendedglob
-	install -m644 -t "$(DISTDIR)" $(addsuffix ($(hash)qN),$(DISTFILES))
+	export VERSION_CONTROL=none
+	extants=($(addsuffix ($(hash)qN),$(DISTFILES)))
+	install -m644 -t "$(DISTDIR)" $${(u)extants}
 
 .PHONY: debug
 debug:
