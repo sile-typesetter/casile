@@ -61,7 +61,7 @@ if [[ $1 = "-x" ]]; then
   shift
 fi
 
-if [[ -n $target && -v MAKELEVEL ]]; then
+if [[ -v target && -v MAKELEVEL ]]; then
   process_recipe $@
 else
   process_shell $@
