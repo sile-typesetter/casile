@@ -625,7 +625,7 @@ DISTFILES += $(PLAYEPUBS)
 
 DISTFILES += *-$(_app).pdf
 
-%-$(_app).info: %-$(_app)-$(_print).toc %-$(_app)-$(_print).pdf %-manifest.yml
+%-$(_app).info: $(BUILDDIR)%-$(_app)-$(_print).toc %-$(_app)-$(_print).pdf %-manifest.yml
 	toc2breaks.lua $* $(filter %-$(_app)-$(_print).toc,$^) $(filter %-manifest.yml,$^) $@ |
 		while read range out; do
 			$(PDFTK) $(filter %-$(_app)-$(_print).pdf,$^) cat $$range output $$out
