@@ -166,10 +166,6 @@ CICONFIG ?= .travis.yml
 # List of files that persist across make clean
 PROJECTCONFIGS :=
 
-ifeq ($(DRAFT),true)
-$(MAKECMDGOALS): force
-endif
-
 # For watch targets, treat extra parameters as things to pass to the next make
 ifeq (watch,$(firstword $(MAKECMDGOALS)))
 WATCHARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
