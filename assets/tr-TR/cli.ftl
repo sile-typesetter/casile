@@ -29,6 +29,9 @@ setup-bad =
 setup-is-repo =
   Dizin yolu bir Git deposu mudur?
 
+setup-is-not-casile =
+  CaSILE kaynak deposu üzerinden başka yerde miyiz?
+
 setup-is-writable =
   Projenin kök klasöründe yazma izinimiz var mıdır?
 
