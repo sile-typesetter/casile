@@ -41,7 +41,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
         targets.push(String::from("install-dist"));
     }
     if status::is_glc()? {
-        targets.push(String::from("_glc.env"));
+        targets.push(String::from("_glc"));
         if targets.len() == 1 {
             targets.push(String::from("default"));
         }

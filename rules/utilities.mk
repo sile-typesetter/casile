@@ -1,4 +1,4 @@
-NONDISTGOALS = $(filter-out %dist $(DISTDIR).% _glc.env,$(MAKECMDGOALS))
+NONDISTGOALS = $(filter-out %dist $(DISTDIR).% _glc %.env,$(MAKECMDGOALS))
 
 .PHONY: clean
 clean:
@@ -89,7 +89,11 @@ _gha:
 	echo "::set-output name=PROJECT::$(PROJECT)"
 	echo "::set-output name=VERSION::$(call versioninfo,$(PROJECT))"
 
-_glc.env: $(NONDISTGOALS)
+
+.PHONY: _glc
+_glc: $(CI_JOB_NAME).env
+
+$(CI_JOB_NAME).env: $(NONDISTGOALS)
 	$(ZSH) << 'EOF' # inception to break out of CaSILE’s make shell wrapper
 	export PS4=; set -x ; exec 2> $@ # black magic to output sourcable content
 	DISTDIR="$(DISTDIR)"
