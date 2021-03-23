@@ -19,32 +19,191 @@ CaSILE completely eschews this limitation completely automating all the ‘later
 By automating the production workflow from end to end all the normal sequence restrictions are removed.
 Book exterior design can be done at any stage of the process.
 Book interior design can be done at any stage of the process.
-Copy editing can happen simultaniously by different editors on different parts of a book.
+Copy editing can happen simultaneously by different editors on different parts of a book.
 Because the pipeline doesn’t narrow as projects progress and the content is always font and center the only restrictions on the workflow are those dictated by *you* for the project, not by the tooling used.
 
 CaSILE (pronounced /ˈkɑːs(ə)l/ just like ‘castle’) started out life as a submodule called `avadanlik` included inside my book project repositories (avadanlık being a Turkish word for something like a tackle box).
 As most of the parts revolved around SILE, in my head at least CaSILE became **Caleb’in Avadanlığı birlikte SILE**, roughly translating to “SILE with Caleb’s Toolkit”.
 Initially everything was hard coded in Turkish, but eventually I added localization for English and generalized most of the tooling so it can be used for books in nearly any language.
 
-## Dependencies
+## Status
+
+I’ve published dozens of books and other projects this way and have more in progress.
+It’s now used by at least 3 publishing companies.
+In other words it *Works for Me™* but your millage may vary.
+This tool started out as just some scripts baked into one book project.
+Then I worked on another book and copied the scripts over to get started.
+When I hit book number 3, it dawned on me I should make my tools more modular and just include them in each project.
+About this time I knew I wanted to open source it if it proved useful for more than one _type_ of book.
+That day came and went.
+One day I just decided to throw it out there so that it would be easier to explain what I was doing.
+As such in many ways it is hard coded to my publishing needs any adaption to be more flexible only happens as people request or contribute the changes.
+
+There are several different ways to use CaSILE, with or without installation.
+Originally (through v0.2.x) CaSILE focused on use as a submodule to Git projects.
+Beginning with v0.3.0 the primary focus has been on use as CLI tool completely separate from any project.
+
+## Setup
+
+CaSILE can be installed and run locally as a standard CLI program if you’re willing to setup the extensive list of [dependencies](#dependencies).
+
+- Pros: Best (fastest) utilization of system hardware, ability to tinker with the dependencies as their own applications, shell goodies like autocompletion.
+- Cons: System packages typically only support one version at a time, manual installation supports parallel versions but must be instantiated with the appropriate affix (.e.g. `casile make <target>` becomes `casile-vN make <target`).
+
+As an easier alternative to installing all the dependencies yourself, everything may be run prepackaged together [as a single Docker container](#docker-setup).
+
+- Pros: No dependencies to setup and hence very easy to get started, easy to switch between versions including full matching dependency stack.
+- Cons: Tricky to setup access to fonts or other resources available outside your project source, some overhead in startup time and reduced CPU and memory resources.
+
+In addition to being run locally, CaSILE can also be run from nearly any remote CI platform.
+If your book project is on GitHub, you can [add CaSILE to any workflow](#github-action-setup) as a GitHub [Action](https://github.com/marketplace/actions/casile).
+If your book project is hosted on GitLab, you can easily [configure it to run in GitLab CI](#gitlab-ci-setup).
+
+- Pros: Nothing to download or install locally, easy to share the results of each build.
+- Cons: Long turn around time, must push repository to a supported remote host.
+
+Of course it is also possible to mix and match.
+
+### Local Native Setup
+
+If you happen to be using Arch Linux the [casile][aur-casile] package on the AUR is all you need.
+Also a [casile-git][aur-casile-git] recipe is available, and packages (including all dependencies) can be installed directly from [this repo][arch-alerque]) for easy setup.
+For any other platform you’ll either need to be up for an adventure, see [building from source](#building-from-source) (or just use Docker).
+It is possible to run on macOS if you spend some time pulling in dependencies from Homebrew and elsewhere.
+Windows support will almost certainly require considerable monkey business; [not my circus, not my monkeys][nmcnmm].
+
+### Local Docker Setup
+
+Use of a Docker container can make it a lot easier to get up and running because you won’t need to have a huge collection of dependencies installed.
+Ready made containers are available from either [Docker Hub][dockerhub] or [GitHub Container Registry][ghcr].
+Download (or update) an image using  `docker pull docker.io/siletypesetter/casile:latest` or `docker pull ghcr.io/sile-typesetter/casile:latest`.
+Note *latest* will be the most recent stable tagged release, or you may substitute a specific tag (e.g. *v0.<.0*), *master* for the more recent Git commit build, or `v0` for the more recent tagged release in that major series.
+
+Optionally you may build a docker image yourself.
+From any CasILE source directory (a Git clone extracted source package), configure using `./configure --disable-dependency-checks`, then build using `make docker`.
+The resulting image will be available on your system as `siletypesetter/casile:HEAD`.
+
+In order to invoke CasILE from Docker you need to pass it your project files and some information about your system user so it can write it’s output.
+The full Docker run command can be substituted anywhere you would invoke CaSILE.
+For convenience you’ll probably want to give yourself an alias:
+
+```bash
+alias casile='docker run -it --volume "$(pwd):/data" --user "$(id -u):$(id -g)" siletypesetter/casile:latest
+```
+
+Save this in your shell’s rc file (e.g. `~/.bashrc`) to persist the alias.
+This substitution should work anywhere and with any arguments you would have run `casile` for.
+
+### GitHub Action Setup
+
+Use as an Action follows the traditional GitHub Action configuration pattern.
+You can specify the exact version you want, `v0` for the most recent tagged release in the same major version sequence, `latest` far the very latest tagged release of any sequence, or `master` for the latest development build.
+
+```yaml
+- name: CaSILE
+  uses: sile-typesetter/casile@latest
+```
+
+If no arguments are passed, by the Action will default to running `casile make -- default`.
+You can pass your own arguments using the `args` input parameter.
+The `DISTDIR` value is output automatically and can be used to post artifacts from your build.
+A complete workflow example `.github/workflows/casile.yml` with customized targets and artifact posting might look like this:
+
+```yaml
+name: CaSILE
+on: [push, pull_request]
+jobs:
+  casile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - id: casile
+        uses: sile-typesetter/casile@latest
+        with:
+          args: make -- pdfs epub renderings
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.casile.outputs.DISTDIR }}.zip
+          path: ${{ steps.casile.outputs.DISTDIR }}/*
+```
+
+Another useful paradigm is to run your steps inside the container:
+
+```yaml
+name: CaSILE
+on: [push, pull_request]
+jobs:
+  casile:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/sile-typesetter/casile:latest
+      options: --entrypoint=bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: make
+        run: |
+          casile make -- pdfs
+          casile make -- epub
+          casile make -- renderings
+          casile make -- DISTDIR=pub install-dist
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: pub.zip
+          path: pub/*
+```
+
+If you are just starting from scratch, consider using the [casile-template][template] repository to initialize your project.
+For more ideas and complex examples, check out the [casile-demos][demos] repository.
+
+### GitLab CI Setup
+
+Setup your job to use the CaSILE image and version of your choice, but disable the default entry point:
+
+```yaml
+image:
+  name: "siletypesetter/casile:latest"
+  entrypoint: [""]
+script:
+  - casile make
+```
+
+Unfortunately GitLab CI can’t name artifacts dynamically (see [upstream report](https://gitlab.com/gitlab-org/gitlab/-/issues/17096)), so you’ll need to define the `DISTDIR` variable yourself.
+A complete pipeline example `.gitlab-ci.yaml` with customized targets and artifact posting might look like this:
+
+```yaml
+default:
+  image:
+    name: "siletypesetter/casile:latest"
+    entrypoint: [""]
+variables:
+  DISTDIR: $CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA
+casile:
+  script:
+    - casile make -- pdfs epub renderings
+  artifacts:
+    name: $DISTDIR
+    paths:
+      - ./$DISTDIR
+```
+
+### Dependencies
+
+*Note if you use any of the distro packages, Docker containers, or CI configurations listed in [Setup](#setup) you don't need to worry about these dependencies.*
 
 CaSILE glues together *a lot* of different open source tools to assemble a complete publishing tool chain.
 Behind the scenes this is very messy business.
 In order to make everything work I’ve had to use an eclectic variety of software.
 All of these are open source and available across platforms, but I only personally test on Linux.
-Arch Linux packages are available (AUR recipes at [casile][aur-casile] or [casile-git][aur-casile-git], precompiled packages in [this repo][arch-alerque]) for easy setup.
-It is possible to run on macOS if you spend some time pulling in dependencies from Homebrew and elsewhere.
-Windows support will almost certainly require considerable monkey business.
-[Not my circus, not my monkeys][nmcnmm].
-
-If you aren’t on a natively supported platform, there is a [Docker image][dockerhub] with all the dependencies self contained that can be run on almost any platform.
-See [Docker Usage](#docker-usage) for more information.
 
 All of the following are utilized in one way or another.
 Currently the toolkit assumes all the following are present, but as not all of them are used to build all resources it could be possible to make this more selective.
 For example not having the ray tracing engine would just mean no fancy 3D previews of book covers, but you could still build PDFs and other digital formats.
 Not having Node would mean no Bible verse format normalization, but you should still be able to build books.
-Not having ImageMagick would mean no covers, but you could still process the interior of books.
+Not having ImageMagick would mean no cover images, but you could still process the interior of books.
 On the other hand not having GNU Make, Pandoc, or SILE would of course be fatal.
 
 * The [SILE][sile] Typesetter is the workhorse behind most of the text layout.
@@ -63,10 +222,12 @@ On the other hand not having GNU Make, Pandoc, or SILE would of course be fatal.
 * Up to date versions of assorted shell tools like `jq`, `yq`, `entr`, `bc`, and `sqlite`.
 * GNU Make (and assorted other GNU tools) glue everything together.
 * The default book templates assume system installed versions of **Hack**, **Libertinus**, and **TeX Gyre** font sets.
-* Some other stuff (`./confiruge` will warn you if your system doesn’t have something that’s required).
+* Some other stuff (`./configure` will warn you if your system doesn’t have something that’s required).
 
 In addition to run-time dependencies, compiling the CLI interface (optional) requires a Rust build toolchain.
 Once built the CLI requires no dependencies to run.
+
+### Companion tools
 
 You’ll probably want some other things not provided by CaSILE as well.
 CaSILE takes care of transforming sources to finished outputs, but leaves you to edit the sources and view the outputs yourself.
@@ -77,58 +238,14 @@ Of course you’ll want a way to view generated PDFs.
 I recommend one that auto updates on file changes; I use [zathura][zathura]), but Okular and quite a few others also support this.
 An image viewer and an E-Book reader like [Calibre][calibre] are also useful.
 
-## Status
+### Building from Source
 
-I’ve published dozens of books and other projects this way and have more in progress.
-It’s now used by at least 3 publishing companies.
-In other words it *Works for Me*™ but your millage may vary.
-This tool started out as just some tooling built into one book project.
-Then I worked on another book and copied the scripts over to get started.
-When I hit book number 3 I realized I should make my tools more modular and just include them in each of my book projects.
-About this time I knew I wanted to open source it if it proved useful for more than one _type_ of book.
-That day came and went.
-One day I just decided to throw it out there so that it would be easier to explain what I was doing.
-As such in many ways it is hard coded to my publishing needs any adaption to be more flexible only happens as people request or contribute the changes.
-
-### Setup
-
-There are several different ways to use CaSILE, with or without installation.
-Originally (through v0.2.0) CaSILE focused on use as a submodule to Git projects.
-Beginning with v0.3.0 the primary focus will be on use as CLI tool completely separate from any project.
-
-* Installed to your system.
-
-  - Pros: No modifications to projects repositories necessary, installation procedure checks (and in the case of supported systems with pre-compiled packages, resolves) all dependencies ahead of time.
-  - Cons: System packages typically only support one version at a time, manual installation supports parallel versions but must be instantiated with the appropriate affix (.e.g. `casile make <target>` becomes `casile-vN make <target`).
-
-* Using Docker.
-
-  - Pros: No dependencies to run and hence very easy to get started, easy to switch between versions including full matching dependency stack.
-  - Cons: Tricky to setup access to fonts or other resources available outside your project.
-    Some overhead in startup time and reduced CPU and memory resources.
-
-* From any directory.
-
-  - Pros: No installation required, can have one or several versions.
-  - Cons: Installing dependencies and maintaining a link to the directory with the correct version for each project is up to you.
-
-* From a CI runner.
-
-  - Pros: Nothing to download or install locally.
-  - Cons: Long turn around time, must push repository to a supported remote host.
-
-It is also possible to mix and match, notably you can use both local options and setup a CI runner.
-
-## Installed Setup
-
-If you are using Arch Linux, take your pick of AUR recipes at [casile][aur-casile] or [casile-git][aur-casile-git] or install precompiled packages from [this repo][arch-alerque] using `pacman -S casile` or `pacman -S casile-git` — then skip to step 4.
-
-1. Clone the Git repository or download and extract a source archive or a release bundle.
+1. Clone the Git repository or download and extract a source archive or source release package.
 
 2. Change to the directory, configure for your system, and build the tools:
 
-    ```bash
-    # Only for `git clone`s or source archives...
+    ```console
+    # Only for git clones or source archives...
     $ ./bootstrap.sh
 
     # Configure & build
@@ -136,89 +253,11 @@ If you are using Arch Linux, take your pick of AUR recipes at [casile][aur-casil
     $ make
     ```
 
-3. ...
-
-   a. Install to your system (may need to run with `sudo` or as root):
-
-       ```bash
-       $ make install
-       ```
-
-  b. "Install" for just your user by adding the CasILE bin directory to your `$PATH`.
-
-      ```bash
-      # Can be added to your .bashrc or similar...
-      export PATH="~/path/to/casile/bin:$PATH"
-      ```
-
-4. Include the rules.mk file from your project’s Makefile:
-
-    ```makefile
-    include /usr/share/casile/rules.mk
+    ```console
+    $ make install
     ```
 
-    (Note the path may be `/usr/local/share/casile/rules.mk` if you installed manually or a different path entirely if you opted for a user-only installation.
-
-5. Initialize _only if_ your project has project specific initialization hooks:
-
-    ```bash
-    $ make init
-    ```
-
-### Docker Setup
-
-Use of the [Docker container][dockerhub] can make it a lot easier to get up and running because you won’t need to have a huge collection of dependencies installed.
-Download (or update) the image using  `docker pull siletypesetter/casile:latest`.
-Note *latest* will be the most recent stable tagged release, or you may substitude a specific tag (e.g. *v0.2.0*) or *master* for the more recent Git commit build.
-
-Optionally you may build a docker image yourself.
-From any CasILE source directory (Git clone, source archive, release archive) run `make docker`.
-The resulting image will be available on your system as `siletypesetter/casile:HEAD`.
-
-Once installed, the docker image run command can be substituted anywhere you would invoke CaSILE.
-For convenience you’ll probably want to give yourself an alias:
-
-```bash
-alias casile-docker='docker run -it --volume "$(pwd):/data" --user "$(id -u):$(id -g)" siletypesetter/casile:latest'
-```
-
-Now instead of running `make my_book-a4-print.pdf` you would run `casile-docker make my_book-a4-print.pdf`.
-This substitution should work anywhere you would have run `make` in a submodule or linked directory usage.
-
-## External Directory Setup
-
-1. Clone the Git repository or download and extract a source tarball.
-
-2. Optionally create a symlink to the external directory so the location can be changed without editing your makefile:
-
-    ```bash
-    $ ln -s /path/to/casile
-    ```
-
-2. Include the rules.mk file from your project’s Makefile:
-
-    ```makefile
-    # Direct approach
-    include /path/to/casile/rules.mk
-
-    # Optional symlinked approach
-    include casile/rules.mk
-    ```
-
-3. Initialize the toolkit before first use:
-
-    ```bash
-    $ make init
-    ```
-
-
-### CI Setup
-
-(To be documented.)
-
-```bash
-$ make .gitlab-conf.yml
-```
+    Note if you don't plan to install to your system but would like to compile and run from the source directory (e.g. for development work on CaSILE itself), use `./configure --datarootdir=$(cd ..;pwd); make -B`, then add the CasILE source directory to your `$PATH`.
 
 ## Input
 
@@ -230,7 +269,7 @@ Note that common resources, say defaults for a publisher, can be shared in anoth
 
 A book project would minimally consist of at least the following:
 
-* Makefile
+* casile.mk
 * my_book.md
 * my_book.yml
 
@@ -270,15 +309,15 @@ In return, CaSILE will output
 Build whatever resources you need.
 Assuming you have a book source file `my_book.md` and accompanying meta data at `my_book.yml`, the general syntax for generating resources would be:
 
-        $ make my_book-<layout>-<options>.<format>
+        $ casile make -- my_book-<layout>-<options>.<format>
 
     For example to build the press ready PDF for an Octavo size version:
 
-        $ make my_book-octavo-hardback-cover.pdf
+        $ casile make -- my_book-octavo-hardback-cover.pdf
 
     Or to build a 3D rendering of the front cover at Halfletter size:
 
-        $ make my_book-halfletter-paperback-3d-front.jpg
+        $ casile make -- my_book-halfletter-paperback-3d-front.jpg
 
 See also the [CaSILE demos][demos] repository for a sample book project layout.
 
@@ -487,22 +526,24 @@ On the other hand each hook has its own usage so note the context it runs in.
         pre_sync = owncloudcmd -n -s $(OUTPUTDIR) $(OWNCLOUD) 2>/dev/null
         post_sync = $(pre_sync)
 
-[sile]: https://sile-typesetter.org
-[pandoc]: http://pandoc.org/
-[pandocsile]: https://github.com/jgm/pandoc/pull/6088
-[im]: http://imagemagick.org/
-[pov]: http://www.povray.org/
-[zint]: https://zint.github.io/
-[inkscape]: https://inkscape.org/
-[pdftk]: https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/
-[podofo]: http://podofo.sourceforge.net/
-[poppler]: https://poppler.freedesktop.org/
-[kindlegen]: https://www.amazon.com/gp/feature.html?docId=1000234621
-[nmcnmm]: https://duckduckgo.com/?q=%22Not+My+Circus%2C+Not+My+Monkeys%22&ia=images
-[zathura]: https://pwmt.org/projects/zathura/
+[arch-alerque]: https://wiki.archlinux.org/index.php/Unofficial_user_repositories#alerque
+[aur-casile-git]: https://aur.archlinux.org/packages/casile-git/
+[aur-casile]: https://aur.archlinux.org/packages/casile/
 [calibre]: http://calibre-ebook.com/
 [demos]: https://github.com/sile-typesetter/casile-demos
 [dockerhub]: https://hub.docker.com/repository/docker/siletypesetter/casile/
-[arch-alerque]: https://wiki.archlinux.org/index.php/Unofficial_user_repositories#alerque
-[aur-casile]: https://aur.archlinux.org/packages/casile/
-[aur-casile-git]: https://aur.archlinux.org/packages/casile-git/
+[ghcr]: https://github.com/orgs/sile-typesetter/packages/container/package/casile
+[im]: http://imagemagick.org/
+[inkscape]: https://inkscape.org/
+[kindlegen]: https://www.amazon.com/gp/feature.html?docId=1000234621
+[nmcnmm]: https://duckduckgo.com/?q=%22Not+My+Circus%2C+Not+My+Monkeys%22&ia=images
+[pandoc]: http://pandoc.org/
+[pandocsile]: https://github.com/jgm/pandoc/pull/6088
+[pdftk]: https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/
+[podofo]: http://podofo.sourceforge.net/
+[poppler]: https://poppler.freedesktop.org/
+[pov]: http://www.povray.org/
+[sile]: https://sile-typesetter.org
+[tempalte]: https://github.com/sile-typesetter/casile-template
+[zathura]: https://pwmt.org/projects/zathura/
+[zint]: https://zint.github.io/
