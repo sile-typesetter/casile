@@ -23,7 +23,7 @@ subprocess = "0.2.6"
 unic-langid = "0.9.0"
 
   [dependencies.config]
-  version = "0.10.1"
+  version = "0.11.0"
   default-features = false
   features = [ "yaml" ]
 
@@ -32,7 +32,7 @@ unic-langid = "0.9.0"
   features = [ "wrap_help" ]
 
   [dependencies.git2]
-  version = "0.13.12"
+  version = "0.13.17"
   default-features = false
 
   [dependencies.Inflector]
@@ -40,7 +40,7 @@ unic-langid = "0.9.0"
   default-features = false
 
   [dependencies.regex]
-  version = "1.4.2"
+  version = "1.4.5"
   default-features = false
 
 [build-dependencies]
@@ -48,7 +48,7 @@ clap = "3.0.0-beta.2"
 clap_generate = "3.0.0-beta.2"
 
   [build-dependencies.vergen]
-  version = "4.2.0"
+  version = "5.0.1"
   default-features = false
   features = [ "build", "git" ]
 
