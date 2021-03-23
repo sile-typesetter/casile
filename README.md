@@ -48,7 +48,7 @@ Beginning with v0.3.0 the primary focus has been on use as CLI tool completely s
 CaSILE can be installed and run locally as a standard CLI program if you’re willing to setup the extensive list of [dependencies](#dependencies).
 
 - Pros: Best (fastest) utilization of system hardware, ability to tinker with the dependencies as their own applications, shell goodies like autocompletion.
-- Cons: System packages typically only support one version at a time, manual installation supports parallel versions but must be instantiated with the appropriate affix (.e.g. `casile make <target>` becomes `casile-vN make <target`).
+- Cons: System packages typically only support one version at a time, manual installation supports parallel versions but must be instantiated with the appropriate affix (.e.g. if installed with `./configure --program-suffix=-vN` then `casile make <target>` becomes `casile-vN make <target>`).
 
 As an easier alternative to installing all the dependencies yourself, everything may be run prepackaged together [as a single Docker container](#docker-setup).
 
@@ -145,10 +145,7 @@ jobs:
         uses: actions/checkout@v2
       - name: make
         run: |
-          casile make -- pdfs
-          casile make -- epub
-          casile make -- renderings
-          casile make -- DISTDIR=pub install-dist
+          casile make -- pdfs epub renderings
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -321,22 +318,78 @@ Assuming you have a book source file `my_book.md` and accompanying meta data at 
 
 See also the [CaSILE demos][demos] repository for a sample book project layout.
 
-### Makefile options
+### Settings
+
+CaSILE has a lot of knobs to fiddle with, and almost anything can be changed.
+The main trick is understanding where to make changes, because order matters.
+
+As a broad overview from least specific to most:
+
+* Compile time discovery.
+
+  When CaSILE is configured it runs a bunch of discovery operations (during `./configure`).
+  These detect where dependencies are installed and what versions they are.
+  These can also be manually defined if you wish to substitute some program.
+
+  This stage also generally sets up *where* CasILE will be run from.
+  The configure stage reviews the system for where the package will be installed so it knows where to find itself.
+
+* Baked in run time defaults.
+
+  All settings have some default value baked in that will be used if nothing later overrides them.
+
+* Project rules file.
+
+  Each project may have one or more rules files that are injected intact into the GNU Make runtime. The filename `casile.mk` is suggested, but `rules.mk`, `Makefile`, `makefile`, and `GNUMakeFile` are also considered.
+
+  Your project rules file is easily the most technical way to tie in, and Make’s syntax is often confusing.
+  Many projects will not need this at all –or use it only for simple variable assignments– but almost anything goes.
+
+* Publisher rules file.
+
+  *to be implemented*
+
+* Publisher mata data.
+
+  *to be implemented*
+
+* Project meta data.
+
+  Each project is expected to have a main meta data file in YAML format.
+  The file name should match the project name, which is usually the same name as the git repository directory.
+
+* Book meta data.
+
+  Each book in a project is expected to have a meta data file with book specific information.
+  
+  Note for projects with a single book, this may be the same as the project meta data file.
+
+* Project CaSILE settings file.
+
+  Each project may have a YAML file defining settings that override the defaults and save having to pass them manually on each invocation.
+
+* Run time environment variables.
+
+  Many settings can be set an environment variables and will be considered for each invocation of the CLI.
+
+* Run time flags.
+
+  Some settings have CLI flags that will override any other settings.
 
 #### Project parameters
 
-These settings apply to the whole project.
-To override the defaults set them in your project’s `Makefile` (or a shared include!).
+Most settings apply to a whole project (repository).
+To override the defaults set them in your project’s `casile.mk`
 
 
 * `LANGUAGE` sets the language for localized file names.
 
-    The default is English, so you might run `make book-halfletter-3d-front.png`.
+    The default is English, so you might run `casile make -- book-halfletter-3d-front.png`.
     Changing this to Turkish:
 
         LANGUAGE = tr
 
-    will mean the command you run should be `make kitap-a5-3b-on.png` to generate the same resource for a similar project with localized filenames.
+    will mean the command you run should be `casile make -- kitap-a5-3b-on.png` to generate the same resource for a similar project with localized filenames.
     At this time localizations are only included for Turkish, but they are easy enough to add to your project.
     Submitting them upstream would also me much appreciated.
 
@@ -414,18 +467,18 @@ To override the defaults set them in your project’s `Makefile` (or a shared in
 #### Build time settings
 
 These settings are usually not changed except at run time.
-You _may_ set them in your `Makefile` but they would typically be set as environment variables or on the command line to get other-than-default behaviour for a specific build.
+You _may_ set them in your rules file such as `casile.mk` but they would typically be set as environment variables or on the command line to get other-than-default behaviour for a specific build.
 
 * `DRAFT` enables draft mode builds for faster testing.
 
     This defaults to false, but may be set to true when executing make:
 
-        make DRAFT=true book-a4-binding.pdf
+        casile make -- DRAFT=true book-a4-binding.pdf
 
     What this does will depend on the resource type.
     Books are only typeset in one pass, so TOC’s may be out of date, cover images are generated at 17th final resolution, 3D renderings are done with partial lighting for faster ray-tracing, etc.
 
-    Note that `make watch ...` automatically enables this mode.
+    Note that `casile make -- watch ...` automatically enables this mode.
 
 * `DIFF` enables highlighting differences between git branches.
 
@@ -440,11 +493,11 @@ You _may_ set them in your `Makefile` but they would typically be set as environ
 
     Defaults to 1.
 
-    At the end of each month I run `make stats` to run a report of all commit activity on the content of books.
+    At the end of each month I run `casile make -- stats` to run a report of all commit activity on the content of books.
     This computes the current character and word counts and compares them with each previous commit and shows a report crediting the author of that commit.
     I use this to pay our translators, editors, etc.
 
-    Override with `make STATSMONTHS=2 stats`.
+    Override with `casile make -- STATSMONTHS=2 stats`.
 
 
 * `DEBUG` enables extra output from various programs showing whats going on durring a build.
@@ -461,7 +514,7 @@ You _may_ set them in your `Makefile` but they would typically be set as environ
 
         SILEDEBUG = casile insertions frames
 
-    Usage from the command line might be `make DEBUG=true SILEDEBUG=frames book-a4.pdf`.
+    Usage from the command line might be `casile make -- DEBUG=true SILEDEBUG=frames book-a4.pdf`.
 
 * `COVERS` can be used to disable generating cover images.
     Raster image generation can take time, this skips those steps and just assumes no graphical covers are present.
@@ -476,7 +529,7 @@ You _may_ set them in your `Makefile` but they would typically be set as environ
     This is useful when styling a book.
     You can work on the first chapter worth of lines and rebuild the book quickly, then turn it off to regenerate the whole book.
 
-        make HEAD=50 book-octavo.pdf
+        casile make -- HEAD=50 book-octavo.pdf
 
 * `SCALE` sets the factor by which to downsample resources while in draft mode.
 
@@ -489,9 +542,9 @@ You _may_ set them in your `Makefile` but they would typically be set as environ
     This may be set to an another value with or without scaling.
     For example for a one off command you might run:
 
-        make HIDPI=600 book-octavo-binding.pdf
+        casile make -- HIDPI=600 book-octavo-binding.pdf
 
-    But to change the project default you might set this in your `Makefile`:
+    But to change the project default you might set this in your rules file:
 
         HIDPI = $(call scale,600)
 
