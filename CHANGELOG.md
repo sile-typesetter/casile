@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.1](https://github.com/sile-typesetter/casile/compare/v0.5.0...v0.5.1) (2021-03-23)
+
+
+### Bug Fixes
+
+* **rules:** Reinstate parent branch discovery, overzealously removed in 113d51f ([907d2e9](https://github.com/sile-typesetter/casile/commit/907d2e9027c396802f49046194fac7a6221ec942))
+
 ## [0.5.0](https://github.com/sile-typesetter/casile/compare/v0.4.7...v0.5.0) (2021-03-23)
 
 
