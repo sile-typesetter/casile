@@ -880,12 +880,12 @@ $(BUILDDIR)%-$(_binding).svg: $(CASILEDIR)binding.svg $$(basename $$@)-printcolo
 
 %-$(_binding).pdf: $(BUILDDIR)%-$(_binding).svg $$(geometryfile)
 	$(sourcegeometry)
-	$(INKSCAPE) --without-gui \
+	$(INKSCAPE) $< \
+		--batch-process \
 		--export-dpi=$${hidpi} \
 		--export-area-page \
 		--export-margin=$${trimmm} \
-		--file=$< \
-		--export-pdf=$@
+		-o $@
 
 DISTFILES += *-$(_binding).pdf
 
