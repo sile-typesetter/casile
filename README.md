@@ -9,30 +9,35 @@
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-blue.svg)](https://conventionalcommits.org)
 [![Commitizen Friendly](https://img.shields.io/badge/Commitizen-friendly-blue.svg)](http://commitizen.github.io/cz-cli/)
 
-The CaSILE toolkit is a build system that glues together a large collection of tools into a cohesive system to automate book publishing from start to finish.
-The concept is to take very simple easily edited input and turn it into a finished product with as little manual intervention as possible.
-It transforms plain text document formats and meta data into press ready PDFs, E-Books, and rendered promotional materials.
+The CaSILE toolkit is a build system that glues together a large collection of tools into a cohesive system that automates book publishing from start to finish.
+The concept is to take very simple, easily edited content and configuration files as input and turn them into all the artifacts of a finished product with as little manual intervention as possible.
+Plain text document formats and a small amount of meta data are transformed automatically into press ready PDFs, E-Books, and rendered promotional materials.
 
 In traditional publishing workflows the closer a book is to production the harder becomes to work with.
 The pipeline ‘narrows’ to more and more advanced (complex/expensive) software and more and more restricted access.
-CaSILE turns this around by completely automating all the ‘later’ production stages and putting the content font and center in an easily edited format.
+CaSILE completely eschews this limitation completely automating all the ‘later’ production stages.
+By automating the production workflow from end to end all the normal sequence restrictions are removed.
+Book exterior design can be done at any stage of the process.
+Book interior design can be done at any stage of the process.
+Copy editing can happen simultaniously by different editors on different parts of a book.
+Because the pipeline doesn’t narrow as projects progress and the content is always font and center the only restrictions on the workflow are those dictated by *you* for the project, not by the tooling used.
 
-CaSILE (pronounced like 'castle') started out life as a submodule called `avadanlik` included inside my book project repositories (avadanlık being a Turkish word for toolkit).
-AS most of the parts revolve around SILE, in my head at least CaSILE became **Caleb’in Avadanlığı ile SILE**, roughly translating to “Caleb's Toolkit for SILE”.
-Come to think of it that would have been a simpler way to arrive at the name, but the project has deep Turkish roots so I'm keeping the "a" in the name name as a nod to its origin.
+CaSILE (pronounced /ˈkɑːs(ə)l/ just like ‘castle’) started out life as a submodule called `avadanlik` included inside my book project repositories (avadanlık being a Turkish word for something like a tackle box).
+As most of the parts revolved around SILE, in my head at least CaSILE became **Caleb’in Avadanlığı birlikte SILE**, roughly translating to “SILE with Caleb’s Toolkit”.
+Initially everything was hard coded in Turkish, but eventually I added localization for English and generalized most of the tooling so it can be used for books in nearly any language.
 
 ## Dependencies
 
 CaSILE glues together *a lot* of different open source tools to assemble a complete publishing tool chain.
 Behind the scenes this is very messy business.
-In order to make everything work I've had to use an eclectic variety of software.
+In order to make everything work I’ve had to use an eclectic variety of software.
 All of these are open source and available across platforms, but I only personally test on Linux.
 Arch Linux packages are available (AUR recipes at [casile][aur-casile] or [casile-git][aur-casile-git], precompiled packages in [this repo][arch-alerque]) for easy setup.
 It is possible to run on macOS if you spend some time pulling in dependencies from Homebrew and elsewhere.
 Windows support will almost certainly require considerable monkey business.
 [Not my circus, not my monkeys][nmcnmm].
 
-If you aren't on a natively supported platform, there is a [Docker image][dockerhub] with all the dependencies self contained that can be run on almost any platform.
+If you aren’t on a natively supported platform, there is a [Docker image][dockerhub] with all the dependencies self contained that can be run on almost any platform.
 See [Docker Usage](#docker-usage) for more information.
 
 All of the following are utilized in one way or another.
@@ -58,24 +63,24 @@ On the other hand not having GNU Make, Pandoc, or SILE would of course be fatal.
 * Up to date versions of assorted shell tools like `jq`, `yq`, `entr`, `bc`, and `sqlite`.
 * GNU Make (and assorted other GNU tools) glue everything together.
 * The default book templates assume system installed versions of **Hack**, **Libertinus**, and **TeX Gyre** font sets.
-* Some other stuff (`./confiruge` will warn you if your system doesn't have something that’s required).
+* Some other stuff (`./confiruge` will warn you if your system doesn’t have something that’s required).
 
 In addition to run-time dependencies, compiling the CLI interface (optional) requires a Rust build toolchain.
 Once built the CLI requires no dependencies to run.
 
-You'll probably want some other things not provided by CaSILE as well.
+You’ll probably want some other things not provided by CaSILE as well.
 CaSILE takes care of transforming sources to finished outputs, but leaves you to edit the sources and view the outputs yourself.
 For starters a text editor for working with Markdown & YAML sources will be a must-have.
 Options abound here and are mostly out of scope, but think Marktext, Zettlr, Atom, VSCode, Sublime, Vim, etc.
 CaSILE also assumes your book project is tracked in Git, so a client such as the CLI tools or a GUI like GitAhead, Fork, Sourcetree, GitKraken, Tower, or a plugin specific to your editor of choice is a must-have.
-Of course you'll want a way to view generated PDFs.
+Of course you’ll want a way to view generated PDFs.
 I recommend one that auto updates on file changes; I use [zathura][zathura]), but Okular and quite a few others also support this.
 An image viewer and an E-Book reader like [Calibre][calibre] are also useful.
 
 ## Status
 
-I've published dozens of books and other projects this way and have more in progress.
-It's now used by at least 3 publishing companies.
+I’ve published dozens of books and other projects this way and have more in progress.
+It’s now used by at least 3 publishing companies.
 In other words it *Works for Me*™ but your millage may vary.
 This tool started out as just some tooling built into one book project.
 Then I worked on another book and copied the scripts over to get started.
@@ -146,7 +151,7 @@ If you are using Arch Linux, take your pick of AUR recipes at [casile][aur-casil
       export PATH="~/path/to/casile/bin:$PATH"
       ```
 
-4. Include the rules.mk file from your project's Makefile:
+4. Include the rules.mk file from your project’s Makefile:
 
     ```makefile
     include /usr/share/casile/rules.mk
@@ -162,7 +167,7 @@ If you are using Arch Linux, take your pick of AUR recipes at [casile][aur-casil
 
 ### Docker Setup
 
-Use of the [Docker container][dockerhub] can make it a lot easier to get up and running because you won't need to have a huge collection of dependencies installed.
+Use of the [Docker container][dockerhub] can make it a lot easier to get up and running because you won’t need to have a huge collection of dependencies installed.
 Download (or update) the image using  `docker pull siletypesetter/casile:latest`.
 Note *latest* will be the most recent stable tagged release, or you may substitude a specific tag (e.g. *v0.2.0*) or *master* for the more recent Git commit build.
 
@@ -171,7 +176,7 @@ From any CasILE source directory (Git clone, source archive, release archive) ru
 The resulting image will be available on your system as `siletypesetter/casile:HEAD`.
 
 Once installed, the docker image run command can be substituted anywhere you would invoke CaSILE.
-For convenience you'll probably want to give yourself an alias:
+For convenience you’ll probably want to give yourself an alias:
 
 ```bash
 alias casile-docker='docker run -it --volume "$(pwd):/data" --user "$(id -u):$(id -g)" siletypesetter/casile:latest'
@@ -190,7 +195,7 @@ This substitution should work anywhere you would have run `make` in a submodule 
     $ ln -s /path/to/casile
     ```
 
-2. Include the rules.mk file from your project's Makefile:
+2. Include the rules.mk file from your project’s Makefile:
 
     ```makefile
     # Direct approach
@@ -220,7 +225,7 @@ $ make .gitlab-conf.yml
 CaSILE makes a number of assumptions about the content of your project repository, but how exactly you organize your git repos is still flexible.
 For example I have some single books in their own repositories, some series of books where the repository holds the whole series, others with different books with the same publisher/copyright status lumped together (and worked on in branches), a set of tracts by assorted authors but published together in another repository, etc.
 CaSILE assumes there is some relation between sources in each repository so granular repositores give more complete control, but each resource in a single repository can also be customized.
-You'll have to consider your own workflow and how projects share resources.
+You’ll have to consider your own workflow and how projects share resources.
 Note that common resources, say defaults for a publisher, can be shared in another submodule(s).
 
 A book project would minimally consist of at least the following:
@@ -282,7 +287,7 @@ See also the [CaSILE demos][demos] repository for a sample book project layout.
 #### Project parameters
 
 These settings apply to the whole project.
-To override the defaults set them in your project's `Makefile` (or a shared include!).
+To override the defaults set them in your project’s `Makefile` (or a shared include!).
 
 
 * `LANGUAGE` sets the language for localized file names.
@@ -305,7 +310,7 @@ To override the defaults set them in your project's `Makefile` (or a shared incl
         TARGETS = book_1 book_2
 
     Or perhaps populate it with a list of _all_ markdown files.
-    You don't want the extentions here, just the basenames of books to be built:
+    You don’t want the extentions here, just the basenames of books to be built:
 
         TARGETS = $(basename $(wildcard *.md))
 
@@ -330,7 +335,7 @@ To override the defaults set them in your project's `Makefile` (or a shared incl
 * `OUTPUTDIR` determines where published files will be placed.
 
     Ouput files are first created in the current project directory alongside sources.
-    Optionally CaSILE can 'pubish' finished resources to some other location.
+    Optionally CaSILE can ‘pubish’ finished resources to some other location.
 
         OUTPUTDIR = /path/to/pub/$(PROJECT)
 
@@ -390,7 +395,7 @@ You _may_ set them in your `Makefile` but they would typically be set as environ
         make DRAFT=true book-a4-binding.pdf
 
     What this does will depend on the resource type.
-    Books are only typeset in one pass, so TOC's may be out of date, cover images are generated at 17th final resolution, 3D renderings are done with partial lighting for faster ray-tracing, etc.
+    Books are only typeset in one pass, so TOC’s may be out of date, cover images are generated at 17th final resolution, 3D renderings are done with partial lighting for faster ray-tracing, etc.
 
     Note that `make watch ...` automatically enables this mode.
 
@@ -468,7 +473,7 @@ You _may_ set them in your `Makefile` but they would typically be set as environ
 
 #### Hooks
 
-These are functions that can be defined in your project's `Makefile` to add additionaly funtionality at various points in the process.
+These are functions that can be defined in your project’s `Makefile` to add additionaly funtionality at various points in the process.
 You make use either single or multiline syntax as desired, but note the input, output, and variables passed will be the same either way.
 On the other hand each hook has its own usage so note the context it runs in.
 
@@ -482,7 +487,6 @@ On the other hand each hook has its own usage so note the context it runs in.
         pre_sync = owncloudcmd -n -s $(OUTPUTDIR) $(OWNCLOUD) 2>/dev/null
         post_sync = $(pre_sync)
 
-[viachristus]: http://yayinlar.viachristus.com/
 [sile]: https://sile-typesetter.org
 [pandoc]: http://pandoc.org/
 [pandocsile]: https://github.com/jgm/pandoc/pull/6088
