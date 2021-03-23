@@ -356,37 +356,26 @@ To override the defaults set them in your project’s `Makefile` (or a shared in
 * `PROJECT` is the name of the overall project (which might contain several books or other works).
 
     This defaults to the name of the repository directory.
-    Setting it to some other value is mostly useful if you have values such as `OUTPUTDIR` set to references it in a settings file for your organization but want to override it for a project.
 
         PROJECT = series_name
 
 * `CASILEDIR` is where CaSILE is located.
-
-    Defaults to the location of the CaSILE rules.mk file as determined by the last makefile in the loaded list (so if you included it from your Makefile, do the include after any others or hard code the location yourself.
-    This can also be used to run a version of CaSILE outside of the current project directory.
+    Path from which shared resource files are loaded from.
+    Typically the value set automatically based on the CaSILE installation will be sufficient.
+    This is mostly useful for doing development work on CaSILE itself.
 
 * `PROJECTDIR` is where your project is located.
     Sources will be examined here and the build process will run here.
 
-    Defaults to the location of the project Makefile as determined by the first makefile in the loaded list.
+    Defaults to the root of the current Git repository.
     It is unlikely you would ever want to change this.
 
-* `OUTPUTDIR` determines where published files will be placed.
+* `DISTDIR` determines where published files will be placed.
 
     Ouput files are first created in the current project directory alongside sources.
-    Optionally CaSILE can ‘pubish’ finished resources to some other location.
+    Optionally CaSILE can ‘install’ finished resources to some other location.
 
-        OUTPUTDIR = /path/to/pub/$(PROJECT)
-
-    The default is unset so `make publish` will do nothing.
-
-* `INPUTDIR` determines where to check for pre-built resources before getting started.
-
-    This value is not set by default, but the most common usage would be to use the same value as in `OUTPUTDIR`:
-
-        INPUTDIR = $(OUTPUTDIR)
-
-    This will have the effect of copying in files from that location to the project folder before `make` gets started to save the trouble of regenerating files that may already exist and be up to date.
+        DISTDIR = /path/to/pub/$(PROJECT)
 
 * `FORMATS` contains a list of output formats to build for from each input.
 
@@ -395,7 +384,7 @@ To override the defaults set them in your project’s `Makefile` (or a shared in
 
         FORMATS = pdf epub mobi odt docx app
 
-    Note this only affects the formats that get built by default from the `all` target, you can still build individual resources in any format manually.
+    Note this only affects the formats that get built by default from the `default` or `all` targets, you can still build individual resources in any format manually withouth them being listed here.
 
 * `BLEED` sets the bleed margin for press resources in mm.
 
@@ -515,16 +504,6 @@ You _may_ set them in your `Makefile` but they would typically be set as environ
 These are functions that can be defined in your project’s `Makefile` to add additionaly funtionality at various points in the process.
 You make use either single or multiline syntax as desired, but note the input, output, and variables passed will be the same either way.
 On the other hand each hook has its own usage so note the context it runs in.
-
-* `pre_sync` and `post_sync` can be used to run an external application before
-
-    Default is unset.
-    The context is a recipie line.
-
-    For example, I use this on my CI server to update an ownCloud share before and after publishing to it:
-
-        pre_sync = owncloudcmd -n -s $(OUTPUTDIR) $(OWNCLOUD) 2>/dev/null
-        post_sync = $(pre_sync)
 
 [arch-alerque]: https://wiki.archlinux.org/index.php/Unofficial_user_repositories#alerque
 [aur-casile-git]: https://aur.archlinux.org/packages/casile-git/
