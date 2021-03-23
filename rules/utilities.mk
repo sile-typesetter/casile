@@ -91,7 +91,6 @@ _gha:
 	echo "::set-output name=PROJECT::$(PROJECT)"
 	echo "::set-output name=VERSION::$(call versioninfo,$(PROJECT))"
 
-
 .PHONY: _glc
 _glc: $(CI_JOB_NAME).env
 
