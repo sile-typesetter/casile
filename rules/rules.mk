@@ -194,7 +194,7 @@ SILEFLAGS += -d $(subst $( ),$(,),$(strip $(DEBUGTAGS)))
 endif
 
 # Most CI runners need help getting the branch name because of sparse checkouts
-BRANCH := $(or $(CI_COMMIT_REF_NAME),$(shell $(_ENV) $(GIT) rev-parse --abbrev-ref HEAD))
+BRANCH := $(or $(CI_COMMIT_REF_NAME),$(GITHUB_HEAD_REF),$(GITHUB_REF),$(shell $(_ENV) $(GIT) rev-parse --abbrev-ref HEAD))
 TAG := $(or $(CI_COMMIT_TAG),$(shell $(_ENV) $(GIT) describe --tags --exact-match 2>/dev/null))
 ALLTAGS := $(strip $(CI_COMMIT_TAG) $(shell $(_ENV) $(GIT) tag --points-at HEAD | $(XARGS) echo))
 
