@@ -15,7 +15,7 @@ outputs:
     description: Version string
 runs:
   using: docker
-  image: docker://ghcr.io/sile-typesetter/casile:v0.4.7
+  image: docker://ghcr.io/sile-typesetter/casile:v0.5.0
   entrypoint: sh
   args:
     - -c

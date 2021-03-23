@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.5.0](https://github.com/sile-typesetter/casile/compare/v0.4.7...v0.5.0) (2021-03-23)
+
+
+### Features
+
+* **cli:** Abort if being run on CaSILE sourec repo ([82f81fd](https://github.com/sile-typesetter/casile/commit/82f81fdfbba42d5864822d102a2f2ff971c78607))
+* **gitlab:** Add runtime detection of GitLab CI ([7421a22](https://github.com/sile-typesetter/casile/commit/7421a228934e7fac471ee6f610c228f0c4cb3480))
+* **gitlab:** Export dotenv vars for GHA feature parity ([e29d124](https://github.com/sile-typesetter/casile/commit/e29d124e881dda711b51cf86cd91a125191ad479))
+* **gitlab:** Output dist artifacts by default if run in CI job ([55cf1bd](https://github.com/sile-typesetter/casile/commit/55cf1bdffcbfcb7a9aa34ad5e5b85883fae8d453))
+* **gitlab:** Pass dotenv variables on a per-job basis ([8494aec](https://github.com/sile-typesetter/casile/commit/8494aec7c02986c20f60c0491e15b279f4ae1055))
+
+
+### Bug Fixes
+
+* **cli:** Return correct state for status checks ([b13e6f6](https://github.com/sile-typesetter/casile/commit/b13e6f6875b6e1493147f5bdea56cedf898dd2b7))
+* **rules:** Avoid unintended shell globbing ([746c8f7](https://github.com/sile-typesetter/casile/commit/746c8f70227b416a109a6653fdf51353494b0d23))
+* **rules:** Correct path to TOC file intermediary target ([6ca7e54](https://github.com/sile-typesetter/casile/commit/6ca7e547ca4e305c25237a7bad9c68c6bbfaaa5c))
+* **rules:** Deduplicate file list on local install ([29fc67b](https://github.com/sile-typesetter/casile/commit/29fc67bf3b830483c669493a5244de2a50784216))
+* **rules:** Don't pass empty target variable make wrapper ([364a959](https://github.com/sile-typesetter/casile/commit/364a959212c5faaacfe619a21e00cd96ddbd9fa8))
+* **rules:** Remove troublesome force from draft mode ([6dce1e4](https://github.com/sile-typesetter/casile/commit/6dce1e410e140cfc8ba5e365bb9f593407723348))
+
 ### [0.4.7](https://github.com/sile-typesetter/casile/compare/v0.4.6...v0.4.7) (2021-03-19)
 
 
