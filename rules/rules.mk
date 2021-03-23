@@ -880,6 +880,8 @@ $(BUILDDIR)%-$(_binding).svg: $(CASILEDIR)binding.svg $$(basename $$@)-printcolo
 
 %-$(_binding).pdf: $(BUILDDIR)%-$(_binding).svg $$(geometryfile)
 	$(sourcegeometry)
+	unset DISPLAY
+	export HOME=$(BUILDDIR)
 	$(INKSCAPE) $< \
 		--batch-process \
 		--export-dpi=$${hidpi} \
