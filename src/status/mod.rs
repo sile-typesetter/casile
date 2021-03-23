@@ -82,8 +82,8 @@ pub fn get_rules() -> Result<Vec<path::PathBuf>> {
         "GNUMakefile",
         "makefile",
         "Makefile",
-        "casile.mk",
         "rules.mk",
+        "casile.mk",
     ];
     let mut rules = Vec::new();
     for file in &files {
