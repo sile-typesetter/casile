@@ -4,7 +4,8 @@
   "description": "The CaSILE toolkit, a book publishing workflow employing SILE and other wizardry",
   "main": "casile",
   "scripts": {
-    "release": "standard-version"
+    "release": "standard-version",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -34,18 +35,13 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-standard": "^5.0.0",
-    "husky": "^5.1.3",
+    "husky": "^5.2.0",
     "standard-version": "^9.1.1",
     "yaml": "^1.10.2"
   },
   "config": {
     "commitizen": {
       "path": "@commitlint/prompt"
-    }
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "standard-version": {
