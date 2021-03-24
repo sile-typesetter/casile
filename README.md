@@ -125,8 +125,8 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ steps.casile.outputs.DISTDIR }}.zip
-          path: ${{ steps.casile.outputs.DISTDIR }}/*
+          name: ${{ steps.casile.outputs.DISTDIR }}
+          path: ${{ steps.casile.outputs.DISTDIR }}
 ```
 
 Another useful paradigm is to run your steps inside the container:
@@ -149,8 +149,8 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: pub.zip
-          path: pub/*
+          name: pub
+          path: pub
 ```
 
 If you are just starting from scratch, consider using the [casile-template][template] repository to initialize your project.
