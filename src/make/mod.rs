@@ -16,12 +16,12 @@ pub fn run(target: Vec<String>) -> Result<()> {
     let cpus = num_cpus::get();
     makeflags.push(OsString::from(format!("--jobs={}", cpus)));
     let mut makefiles: Vec<OsString> = Vec::new();
+    let rules = status::get_rules()?;
     makefiles.push(OsString::from("-f"));
     makefiles.push(OsString::from(format!(
         "{}{}",
         CONFIGURE_DATADIR, "rules/casile.mk"
     )));
-    let rules = status::get_rules()?;
     for rule in rules {
         makefiles.push(OsString::from("-f"));
         let p = rule.into_os_string();
@@ -112,7 +112,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
                 },
                 _ => {
                     let errmsg = LocalText::new("make-error-unknown-code").fmt();
-                    panic!(errmsg)
+                    panic!("{}", errmsg)
                 }
             },
             _ => backlog.push(String::from(fields[0])),
