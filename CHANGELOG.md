@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.2](https://github.com/sile-typesetter/casile/compare/v0.5.1...v0.5.2) (2021-03-26)
+
+
+### Bug Fixes
+
+* **actions:** Strip refs clutter from branch name declared by GHA ([acc5cbc](https://github.com/sile-typesetter/casile/commit/acc5cbc65eba9b7996c77444312938f68a1805e7))
+* **rules:** Don't die in CI if asked to install but nothing is built ([84d99e6](https://github.com/sile-typesetter/casile/commit/84d99e618f4fd6271e3b4ec610d2dcdb27a8f2e8))
+
 ### [0.5.1](https://github.com/sile-typesetter/casile/compare/v0.5.0...v0.5.1) (2021-03-23)
 
 
