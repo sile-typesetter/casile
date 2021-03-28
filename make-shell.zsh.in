@@ -53,8 +53,10 @@ local process_shell() {
   )
 }
 
-eval $1
-shift
+if [[ $1 =~ "^target=" ]]; then
+  eval $1
+  shift
+fi
 
 if [[ $1 = "-x" ]]; then
   _debug=true
