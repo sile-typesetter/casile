@@ -1,13 +1,36 @@
-### CaSILE runtime generated files ###
-
-*.toc
-makefile-*-reversed
-
 ### Generated files ###
 
+/casile
 casile-*
 .version
 .version-prev
+.tarball-version
+make-shell.zsh
+rules/casile.mk
+rules/en-reversed.mk
+rules/tr-reversed.mk
+scripts/branch2criticmark.zsh
+scripts/cover_title.py
+scripts/diff2marked.zsh
+scripts/extract_references.js
+scripts/figure_dash.pl
+scripts/isbn_format.py
+scripts/italic_reorder.pl
+scripts/lazy_quotes.pl
+scripts/link_verses.js
+scripts/loadchapters.zsh
+scripts/msword_escapes.pl
+scripts/normalize_references.js
+scripts/ordinal_spaces.pl
+scripts/renumber_footnotes.pl
+scripts/reorder_punctuation.pl
+scripts/series_sort.lua
+scripts/smart_quotes.pl
+scripts/split_chapters.zsh
+scripts/stats.zsh
+scripts/toc2breaks.lua
+scripts/unicode_symbols.pl
+scripts/worklog.zsh
 
 ### Editor cruft ###
 
@@ -44,8 +67,8 @@ autom4te.cache
 /configure
 /configure.scan
 /depcomp
-/install-sh
-/missing
+build-aux/install-sh
+build-aux/missing
 /stamp-h1
 
 ### Python ###
