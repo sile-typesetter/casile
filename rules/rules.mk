@@ -180,10 +180,7 @@ export PROJECT := $(PROJECT)
 # See https://stackoverflow.com/q/65553367/313192
 _ENV := PATH=$(PATH) HOSTNAME=$(HOSTNAME) PROJECT=$(PROJECT) BUILDDIR=$(BUILDDIR)
 
-LOCALSILE ?= $(HOME)/projects/sile-typesetter/sile
 ifeq ($(DEBUG),true)
-SILE = $(LOCALSILE)/sile
-$(call prepend,SILEPATH,$(LOCALSILE) $(LOCALSILE)/core )
 SILEFLAGS += -t
 .SHELLFLAGS += -x
 endif
