@@ -84,11 +84,14 @@ AS_IF([test "x$enable_dependency_checks" != "xno"], [
         AC_MSG_ERROR([rustc is required.  Please install the Rust toolchain])
     )
 
+    AC_PROG_AWK
     AC_PROG_SED
     AC_PROG_GREP
     AC_PROG_EGREP
 
     AX_PROGVAR([bc])
+    AX_PROGVAR([cmp])
+    AX_PROGVAR([cut])
     AX_PROGVAR([entr])
     AX_PROGVAR([epubcheck])
     AX_PROGVAR([find])
@@ -115,6 +118,7 @@ AS_IF([test "x$enable_dependency_checks" != "xno"], [
     AX_PROGVAR([sort])
     AX_PROGVAR([sponge])
     AX_PROGVAR([sqlite3])
+    AX_PROGVAR([wc])
     AX_PROGVAR([xargs])
     AX_PROGVAR([yarn])
     AX_PROGVAR([yq])

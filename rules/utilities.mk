@@ -14,7 +14,7 @@ install-dist: $$(or $$(call extantfiles,$$(DISTFILES)),fail)
 	set -o extendedglob
 	export VERSION_CONTROL=none
 	extants=($(addsuffix ($(hash)qN),$(DISTFILES)))
-	xargs -r install -m644 -t "$(DISTDIR)" <<< $${(u)extants}
+	$(XARGS) -r install -m644 -t "$(DISTDIR)" <<< $${(u)extants}
 
 .PHONY: debug
 debug:

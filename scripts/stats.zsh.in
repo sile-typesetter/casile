@@ -31,7 +31,7 @@ function list_commits () {
 			echo $at $sha1
 		done |
 		@SORT@ -u |
-		cut -d\  -f2
+		@CUT@ -d\  -f2
 }
 
 function calculate_affected () {

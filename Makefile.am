@@ -144,17 +144,17 @@ $(COMPLETIONS_OUT_DIR)/_$(_casile): $(CARGO_TARGET)
 $(CARGO_TARGET): $(casile_SOURCES) clean-embedded-assets
 	cargo build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
 
-.version: $(shell test -e .git && awk '{print ".git/" $$2}' .git/HEAD)
+.version: $(shell test -e .git && $(AWK) '{print ".git/" $$2}' .git/HEAD)
 	mv $@{,-prev} 2>/dev/null || touch $@-prev
 	( test -e .git && ./build-aux/git-version-gen .tarball-version || echo $(VERSION) ) > $@
-	cmp -s $@{,-prev} || autoreconf configure.ac --force -W none
+	$(CMP) -s $@{,-prev} || autoreconf configure.ac --force -W none
 
 %-reversed.mk: %.mk
-	awk -F' := ' '/^_/ { gsub(/_/, "", $$1); print "__" $$2 " := " $$1 }' < $< > $@
+	$(AWK) -F' := ' '/^_/ { gsub(/_/, "", $$1); print "__" $$2 " := " $$1 }' < $< > $@
 
 .PHONY: clean-embedded-assets
 clean-embedded-assets:
-	[[ ! -e .git  ]] || git clean -dxf assets
+	[[ ! -e .git  ]] || $(GIT) clean -dxf assets
 
 dist: casile-$(VERSION).md
 
@@ -184,7 +184,7 @@ lint: rustfmt clippy
 
 .PHONY: rustfmt
 rustfmt:
-	git ls-files '*.rs' | xargs rustfmt --check
+	$(GIT) ls-files '*.rs' | $(XARGS) rustfmt --check
 
 .PHONY: clippy
 clippy:
@@ -205,9 +205,9 @@ RELTYPE ?=
 
 .PHONY: tagrelease
 tagrelease:
-	test -z $$(git tag --points-at HEAD) || \
-	git diff-index --quiet --cached HEAD && \
-	git diff-files --quiet && \
+	test -z $$($(GIT) tag --points-at HEAD) || \
+	$(GIT) diff-index --quiet --cached HEAD && \
+	$(GIT) diff-files --quiet && \
 	yarn run release $(and $(RELTYPE),--release-as $(RELTYPE))
 
 .PHONY: release-preview
