@@ -41,6 +41,12 @@ setup-is-make-executable =
 setup-is-make-gnu =
   Sistemin ‘make’i, desteklenen GNU Make sürümü müdür?
 
+setup-warp-time =
+  İzlenen dosyaların son etkileme zamanı, etkilenen son işleme döndürülüyor
+
+setup-warp-time-file =
+  Dosya { $path } geçmişine göre döndürüldü
+
 status-header =
   Proje durum inceleniyor
 
