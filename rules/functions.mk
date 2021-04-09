@@ -87,14 +87,7 @@ endef
 
 define time_warp ?=
 	cd $1
-	$(GIT) update-index --refresh --ignore-submodules ||:
-	$(GIT) diff-index --quiet --cached HEAD
-	$(GIT) ls-files |
-		while read file; do
-			ts=$$($(GIT) log -n1 --pretty=format:%cI -- $$file)
-			$(GIT) diff-files --quiet -- $$file || continue
-			touch -d "$$ts" -- $$file
-		done
+	$(GITWARPTIME)
 endef
 
 define versioninfo ?=
