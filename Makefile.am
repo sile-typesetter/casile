@@ -1,6 +1,6 @@
 $(and $(word 2,$(MAKEFILE_LIST)),$(error This is not the makefile you should include in your project to run CaSILE, please use 'rules/casile.mk' instead.))
 
-_casile = $(program_prefix)$(shell sed -e "$(program_transform_name)" <<< casile)$(program_suffix)
+_casile = $(program_prefix)$(shell $(SED) -e "$(program_transform_name)" <<< casile)$(program_suffix)
 
 licensedir = $(datarootdir)/licenses/$(_casile)
 docdir = $(datarootdir)/doc/$(_casile)
@@ -15,7 +15,7 @@ dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE
 nobase_data_DATA = rules/casile.mk $(reverse_lang_key_files)
 nobase_dist_data_DATA = rules/rules.mk rules/functions.mk rules/utilities.mk $(lang_key_files)
-EXTRA_DIST = .version package.json yarn.lock requirements.txt
+EXTRA_DIST = package.json yarn.lock requirements.txt
 EXTRA_DIST += build-aux/action-updater.js build-aux/cargo-updater.js build-aux/git-version-gen
 EXTRA_DIST += Dockerfile build-aux/bootstrap-docker.sh build-aux/docker-fontconfig.conf build-aux/docker-glibc-workaround.sh hooks/build
 
@@ -177,7 +177,7 @@ cargo-test: casile$(EXEEXT)
 	cargo test --locked
 
 check-version: casile$(EXEEXT) | .version
-	./$< --version | grep -Ff $|
+	./$< --version | $(GREP) -Ff $|
 
 .PHONY: lint
 lint: rustfmt clippy
@@ -218,8 +218,8 @@ release-preview:
 release: tagrelease
 
 casile-%.md: CHANGELOG.md
-	sed -e '/\.\.\.v$*/,/\.\.\.v/!d' $< | \
-		sed -e '1,3d;N;$$!P;$$!D;$$d' > $@
+	$(SED) -e '/\.\.\.v$*/,/\.\.\.v/!d' $< | \
+		$(SED) -e '1,3d;N;$$!P;$$!D;$$d' > $@
 
 export DOCKER_REGISTRY ?= docker.io
 export DOCKER_REPO ?= siletypesetter/$(_casile)
