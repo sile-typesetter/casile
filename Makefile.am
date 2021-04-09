@@ -1,6 +1,6 @@
 $(and $(word 2,$(MAKEFILE_LIST)),$(error This is not the makefile you should include in your project to run CaSILE, please use 'rules/casile.mk' instead.))
 
-_casile = $(program_prefix)$(shell sed -e "$(program_transform_name)" <<< casile)$(program_suffix)
+_casile = $(program_prefix)$(shell $(SED) -e "$(program_transform_name)" <<< casile)$(program_suffix)
 
 licensedir = $(datarootdir)/licenses/$(_casile)
 docdir = $(datarootdir)/doc/$(_casile)
@@ -177,7 +177,7 @@ cargo-test: casile$(EXEEXT)
 	cargo test --locked
 
 check-version: casile$(EXEEXT) | .version
-	./$< --version | grep -Ff $|
+	./$< --version | $(GREP) -Ff $|
 
 .PHONY: lint
 lint: rustfmt clippy
@@ -218,8 +218,8 @@ release-preview:
 release: tagrelease
 
 casile-%.md: CHANGELOG.md
-	sed -e '/\.\.\.v$*/,/\.\.\.v/!d' $< | \
-		sed -e '1,3d;N;$$!P;$$!D;$$d' > $@
+	$(SED) -e '/\.\.\.v$*/,/\.\.\.v/!d' $< | \
+		$(SED) -e '1,3d;N;$$!P;$$!D;$$d' > $@
 
 export DOCKER_REGISTRY ?= docker.io
 export DOCKER_REPO ?= siletypesetter/$(_casile)
