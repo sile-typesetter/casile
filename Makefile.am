@@ -88,7 +88,7 @@ assetsdir = $(datadir)/assets
 dist_assets_DATA =
 
 BUILT_SOURCES = .version
-CLEANFILES = $(BUILT_SOURCES) $(bin_PROGRAMS) $(dist_scripts_SCRIPTS)
+CLEANFILES = $(BUILT_SOURCES) .version-prev $(bin_PROGRAMS) $(dist_scripts_SCRIPTS)
 
 if ENABLE_BASH_COMPLETION
 bashcompletiondir = $(BASH_COMPLETION_DIR)
@@ -150,9 +150,9 @@ $(CARGO_TARGET): $(casile_SOURCES) clean-embedded-assets
 	cargo build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
 
 .version: $(shell test -e .git && $(AWK) '{print ".git/" $$2}' .git/HEAD)
-	mv $@{,-prev} 2>/dev/null || touch $@-prev
-	( test -e .git && ./build-aux/git-version-gen .tarball-version || echo $(VERSION) ) > $@
-	$(CMP) -s $@{,-prev} || autoreconf configure.ac --force -W none
+	[ -e "$@" ] && mv "$@" "$@-prev" || $(if $<,touch,cp "$(srcdir)/.tarball-version") "$@-prev"
+	$(if $<,./build-aux/git-version-gen "$(srcdir)/.tarball-version",printf "$(VERSION)") > "$@"
+	$(CMP) -s "$@" "$@-prev" || autoreconf configure.ac --force
 
 %-reversed.mk: %.mk
 	$(AWK) -F' := ' '/^_/ { gsub(/_/, "", $$1); print "__" $$2 " := " $$1 }' < $< > $@
@@ -164,7 +164,7 @@ clean-embedded-assets:
 dist: casile-$(VERSION).md
 
 dist-hook:
-	echo $(VERSION) > $(distdir)/.tarball-version
+	printf "$(VERSION)" > "$(distdir)/.tarball-version"
 	yarn install --production --frozen-lockfile --modules-folder "$(distdir)/node_modules"
 
 install-data-hook:
