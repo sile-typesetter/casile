@@ -1,5 +1,10 @@
 $(and $(word 2,$(MAKEFILE_LIST)),$(error This is not the makefile you should include in your project to run CaSILE, please use 'rules/casile.mk' instead.))
 
+.ONESHELL:
+.SECONDARY:
+.SECONDEXPANSION:
+.DELETE_ON_ERROR:
+
 _casile = $(program_prefix)$(shell $(SED) -e "$(program_transform_name)" <<< casile)$(program_suffix)
 
 licensedir = $(datarootdir)/licenses/$(_casile)
