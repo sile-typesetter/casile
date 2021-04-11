@@ -165,10 +165,10 @@ dist: casile-$(VERSION).md
 
 dist-hook:
 	printf "$(VERSION)" > "$(distdir)/.tarball-version"
-	yarn install --production --frozen-lockfile --modules-folder "$(distdir)/node_modules"
+	$(YARN) install --production --frozen-lockfile --modules-folder "$(distdir)/node_modules"
 
 install-data-hook:
-	yarn install --production --frozen-lockfile --modules-folder "$(DESTDIR)$(datadir)/node_modules"
+	$(YARN) install --production --frozen-lockfile --modules-folder "$(DESTDIR)$(datadir)/node_modules"
 
 uninstall-hook:
 	rm -rf "$(DESTDIR)$(datadir)/node_modules"
@@ -201,10 +201,10 @@ all: init
 init: node_modules
 
 node_modules: yarn.lock
-	yarn install --frozen-lockfile
+	$(YARN) install --frozen-lockfile
 
 yarn.lock: package.json
-	yarn install
+	$(YARN) install
 
 RELTYPE ?=
 
@@ -213,11 +213,11 @@ tagrelease:
 	test -z $$($(GIT) tag --points-at HEAD) || \
 	$(GIT) diff-index --quiet --cached HEAD && \
 	$(GIT) diff-files --quiet && \
-	yarn run release $(and $(RELTYPE),--release-as $(RELTYPE))
+	$(YARN) run release $(and $(RELTYPE),--release-as $(RELTYPE))
 
 .PHONY: release-preview
 release-preview:
-	yarn run release --dry-run $(and $(RELTYPE),--release-as $(RELTYPE))
+	$(YARN) run release --dry-run $(and $(RELTYPE),--release-as $(RELTYPE))
 
 .PHONY: release
 release: tagrelease

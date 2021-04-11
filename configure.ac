@@ -73,16 +73,8 @@ AC_SUBST([RUST_TARGET_SUBDIR])
 AC_DEFUN([AX_PROGVAR], [AC_PATH_PROG(m4_toupper($1), m4_default($2,$1))test -n "$m4_toupper($1)" || AC_MSG_ERROR([m4_default($2,$1) is required])])
 
 AS_IF([test "x$enable_dependency_checks" != "xno"], [
-
-    # Check that we have rust stuff
-    AC_CHECK_PROG(CARGO, [cargo], [yes], [no])
-    AS_IF(test x$CARGO = xno,
-        AC_MSG_ERROR([cargo is required.  Please install the Rust toolchain])
-    )
-    AC_CHECK_PROG(RUSTC, [rustc], [yes], [no])
-    AS_IF(test x$RUSTC = xno,
-        AC_MSG_ERROR([rustc is required.  Please install the Rust toolchain])
-    )
+       AX_PROGVAR([cargo])
+       AX_PROGVAR([rustc])
 
     AC_PROG_AWK
     AC_PROG_SED
