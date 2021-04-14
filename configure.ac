@@ -6,6 +6,15 @@ AM_SILENT_RULES([yes])
 
 AC_CONFIG_MACRO_DIR([build-aux])
 
+AC_DEFUN([AX_PROGVAR],
+		 [
+		  test -n "$m4_toupper($1)" || { AC_PATH_PROG(m4_toupper($1), m4_default($2,$1)) }
+		  test -n "$m4_toupper($1)" || AC_MSG_ERROR([m4_default($2,$1) is required])
+		 ])
+
+AX_PROGVAR([cmp])
+
+
 AC_ARG_ENABLE([dependency-checks],
               AS_HELP_STRING([--disable-dependency-checks], [Disable dependency checks]))
 
@@ -69,8 +78,6 @@ fi
 AM_CONDITIONAL([DEBUG_RELEASE], [test "x$debug_release" = "xyes"])
 
 AC_SUBST([RUST_TARGET_SUBDIR])
-
-AC_DEFUN([AX_PROGVAR], [AC_PATH_PROG(m4_toupper($1), m4_default($2,$1))test -n "$m4_toupper($1)" || AC_MSG_ERROR([m4_default($2,$1) is required])])
 
 AS_IF([test "x$enable_dependency_checks" != "xno"], [
        AX_PROGVAR([cargo])
