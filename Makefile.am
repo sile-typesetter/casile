@@ -20,17 +20,15 @@ dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE
 nobase_data_DATA = rules/casile.mk $(reverse_lang_key_files)
 nobase_dist_data_DATA = rules/rules.mk rules/functions.mk rules/utilities.mk $(lang_key_files)
-EXTRA_DIST = package.json yarn.lock requirements.txt
-EXTRA_DIST += build-aux/action-updater.js build-aux/cargo-updater.js build-aux/git-version-gen
-EXTRA_DIST += Dockerfile build-aux/bootstrap-docker.sh build-aux/docker-fontconfig.conf build-aux/docker-glibc-workaround.sh hooks/build
-
-bin_PROGRAMS = casile
-
 _casile_libs = src/lib.rs src/cli.rs src/config.rs src/i18n.rs
 _casile_modules = src/make/mod.rs src/setup/mod.rs src/status/mod.rs
 _casile_assets = assets/en-US/cli.ftl assets/tr-TR/cli.ftl
 casile_SOURCES = Cargo.toml build.rs src/main.rs $(_casile_libs) $(_casile_modules) $(_casile_assets)
 EXTRA_casile_SOURCES = Cargo.lock tests/cli.rs
+bin_PROGRAMS = casile
+EXTRA_DIST = package.json yarn.lock requirements.txt
+EXTRA_DIST += build-aux/action-updater.js build-aux/cargo-updater.js build-aux/git-version-gen
+EXTRA_DIST += Dockerfile build-aux/bootstrap-docker.sh build-aux/docker-fontconfig.conf build-aux/docker-glibc-workaround.sh hooks/build
 
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
@@ -90,6 +88,19 @@ dist_assets_DATA =
 BUILT_SOURCES = .version
 CLEANFILES = $(BUILT_SOURCES) .version-prev $(bin_PROGRAMS) $(dist_scripts_SCRIPTS)
 
+if DEBUG_RELEASE
+CARGO_RELEASE_ARGS=--all-features
+_TARGETDIR=debug
+else
+CARGO_RELEASE_ARGS=--release --locked --all-features
+_TARGETDIR=release
+endif
+
+CARGO_ENV = CARGO_TARGET_DIR=@abs_top_builddir@/target
+RUST_BIN = @abs_top_builddir@/target/@RUST_TARGET_SUBDIR@/$(PACKAGE_NAME)
+_RUST_OUT = @abs_top_builddir@/target/@RUST_TARGET_SUBDIR@/.cargo_out_dir
+COMPLETIONS_OUT_DIR = completions
+
 if ENABLE_BASH_COMPLETION
 bashcompletiondir = $(BASH_COMPLETION_DIR)
 nodist_bashcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME)
@@ -108,14 +119,6 @@ nodist_zshcompletion_DATA = $(COMPLETIONS_OUT_DIR)/_$(TRANSFORMED_PACKAGE_NAME)
 CLEANFILES += $(nodist_zshcompletion_DATA)
 endif
 
-if DEBUG_RELEASE
-CARGO_RELEASE_ARGS=--all-features
-_TARGETDIR=debug
-else
-CARGO_RELEASE_ARGS=--release --locked --all-features
-_TARGETDIR=release
-endif
-
 export CASILE_VERSION = v$(VERSION)
 
 # Leave some tips for cargo to use so CLI knows where it is
@@ -128,29 +131,32 @@ cargo_verbose_ = $(cargo_verbose_$(AM_DEFAULT_VERBOSITY))
 cargo_verbose_0 =
 cargo_verbose_1 = --verbose
 
-CARGO_TARGET = target/$(_TARGETDIR)/casile
-COMPLETIONS_OUT_DIR = target/$(_TARGETDIR)/completions
+$(COMPLETIONS_OUT_DIR):
+	mkdir -p $@
 
-casile$(EXEEXT): $(CARGO_TARGET)
+casile$(EXEEXT): $(RUST_BIN)
 	cp -bf $< $@
 
-$(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME): $(CARGO_TARGET)
-	cp -bf $(COMPLETIONS_OUT_DIR)/casile.bash $@
+$(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME): $(RUST_BIN) | $(COMPLETIONS_OUT_DIR)
+	cp -bf $$(cat $(_RUST_OUT))/$(COMPLETIONS_OUT_DIR)/$(PACKAGE_NAME).bash $@
 
-$(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME).elv: $(CARGO_TARGET)
-	cp -bf $(COMPLETIONS_OUT_DIR)/casile.elv $@
+$(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME).elv: $(RUST_BIN) | $(COMPLETIONS_OUT_DIR)
+	cp -bf $$(cat $(_RUST_OUT))/$(COMPLETIONS_OUT_DIR)/$(PACKAGE_NAME).elv $@
 
-$(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME).fish: $(CARGO_TARGET)
-	cp -bf $(COMPLETIONS_OUT_DIR)/casile.fish $@
+$(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME).fish: $(RUST_BIN) | $(COMPLETIONS_OUT_DIR)
+	cp -bf $$(cat $(_RUST_OUT))/$(COMPLETIONS_OUT_DIR)/$(PACKAGE_NAME).fish $@
 
-$(COMPLETIONS_OUT_DIR)/_$(TRANSFORMED_PACKAGE_NAME).ps1: $(CARGO_TARGET)
-	cp -bf $(COMPLETIONS_OUT_DIR)/_casile.ps1 $@
+$(COMPLETIONS_OUT_DIR)/_$(TRANSFORMED_PACKAGE_NAME).ps1: $(RUST_BIN) | $(COMPLETIONS_OUT_DIR)
+	cp -bf $$(cat $(_RUST_OUT))/$(COMPLETIONS_OUT_DIR)/_$(PACKAGE_NAME).ps1 $@
 
-$(COMPLETIONS_OUT_DIR)/_$(TRANSFORMED_PACKAGE_NAME): $(CARGO_TARGET)
-	cp -bf $(COMPLETIONS_OUT_DIR)/_casile $@
+$(COMPLETIONS_OUT_DIR)/_$(TRANSFORMED_PACKAGE_NAME): $(RUST_BIN) | $(COMPLETIONS_OUT_DIR)
+	cp -bf $$(cat $(_RUST_OUT))/$(COMPLETIONS_OUT_DIR)/_$(PACKAGE_NAME) $@
 
-$(CARGO_TARGET): $(casile_SOURCES) clean-embedded-assets
-	cargo build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
+$(_RUST_OUT) $(RUST_BIN): $(casile_SOURCES) $(EXTRA_casile_SOURCES) clean-embedded-assets
+	cd $(top_srcdir)
+	$(CARGO_ENV) $(CARGO) build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
+	$(CARGO_ENV) $(CARGO) build --quiet --message-format=json $(CARGO_RELEASE_ARGS) |
+		$(JQ) -sr 'map(select(.reason == "build-script-executed")) | last | .out_dir' > $(_RUST_OUT)
 
 .version: $(shell test -e .git && $(AWK) '{print ".git/" $$2}' .git/HEAD)
 	[ -e "$@" ] && mv "$@" "$@-prev" || $(if $<,touch,cp "$(srcdir)/.tarball-version") "$@-prev"
@@ -177,15 +183,20 @@ uninstall-hook:
 	rm -rf "$(DESTDIR)$(datadir)/node_modules"
 
 clean-local:
-	cargo clean
+	cd $(top_srcdir)
+	$(CARGO_ENV) $(CARGO) clean
 
 check-local: cargo-test check-version
 
-cargo-test: casile$(EXEEXT)
-	cargo test --locked
+cargo-test: $(PACKAGE_NAME)$(EXEEXT)
+	cd $(srcdir)
+	$(CARGO_ENV) $(CARGO) test --locked
 
-check-version: casile$(EXEEXT) | .version
+check-version: $(PACKAGE_NAME)$(EXEEXT) | .version
 	./$< --version | $(GREP) -Ff $|
+
+installcheck-local:
+	./$(TRANSFORMED_PACKAGE_NAME) --version
 
 .PHONY: lint
 lint: rustfmt clippy
@@ -196,7 +207,8 @@ rustfmt:
 
 .PHONY: clippy
 clippy:
-	cargo clippy -- -D warnings
+	cd $(srcdir)
+	$(CARGO_ENV) $(CARGO) clippy -- -D warnings
 
 all: init
 
