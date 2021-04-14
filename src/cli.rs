@@ -1,5 +1,4 @@
 use clap::{AppSettings, Clap};
-use std::path;
 
 // FTL: help-description
 /// The command line interface to the CaSILE toolkit,
@@ -21,7 +20,7 @@ pub struct Cli {
     // FTL: help-flags-path
     /// Set project root path
     #[clap(short, long, default_value = "./")]
-    pub path: path::PathBuf,
+    pub path: std::path::PathBuf,
 
     // FTL: help-flags-quiet
     /// Discard all non-error output messages
