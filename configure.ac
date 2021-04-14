@@ -152,6 +152,9 @@ AS_IF([test "x$enable_dependency_checks" != "xno"], [
     AX_FONT(Libertinus Sans)
 ])
 
+TRANSFORMED_PACKAGE_NAME="$(printf "$PACKAGE_NAME" | $SED -e "${program_transform_name//\$\$/\$}")"
+AC_SUBST([TRANSFORMED_PACKAGE_NAME])
+
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([rules/casile.mk])
 AC_CONFIG_FILES([make-shell.zsh], [chmod +x make-shell.zsh])

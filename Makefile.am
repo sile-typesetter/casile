@@ -1,15 +1,15 @@
 $(and $(word 2,$(MAKEFILE_LIST)),$(error This is not the makefile you should include in your project to run CaSILE, please use 'rules/casile.mk' instead.))
 
+ACLOCAL_AMFLAGS = -I build-aux
+
 .ONESHELL:
 .SECONDARY:
 .SECONDEXPANSION:
 .DELETE_ON_ERROR:
 
-_casile = $(program_prefix)$(shell $(SED) -e "$(program_transform_name)" <<< casile)$(program_suffix)
-
-licensedir = $(datarootdir)/licenses/$(_casile)
-docdir = $(datarootdir)/doc/$(_casile)
-datadir = $(datarootdir)/$(_casile)
+licensedir = $(datarootdir)/licenses/$(TRANSFORMED_PACKAGE_NAME)
+docdir = $(datarootdir)/doc/$(TRANSFORMED_PACKAGE_NAME)
+datadir = $(datarootdir)/$(TRANSFORMED_PACKAGE_NAME)
 pkgdatadir = $(datadir)
 
 lang_key_files = rules/en.mk rules/tr.mk
@@ -92,17 +92,17 @@ CLEANFILES = $(BUILT_SOURCES) .version-prev $(bin_PROGRAMS) $(dist_scripts_SCRIP
 
 if ENABLE_BASH_COMPLETION
 bashcompletiondir = $(BASH_COMPLETION_DIR)
-nodist_bashcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(_casile)
+nodist_bashcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME)
 endif
 
 if ENABLE_FISH_COMPLETION
 fishcompletiondir = $(FISH_COMPLETION_DIR)
-nodist_fishcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(_casile).fish
+nodist_fishcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME).fish
 endif
 
 if ENABLE_ZSH_COMPLETION
 zshcompletiondir = $(ZSH_COMPLETION_DIR)
-nodist_zshcompletion_DATA = $(COMPLETIONS_OUT_DIR)/_$(_casile)
+nodist_zshcompletion_DATA = $(COMPLETIONS_OUT_DIR)/_$(TRANSFORMED_PACKAGE_NAME)
 endif
 
 if DEBUG_RELEASE
@@ -131,19 +131,19 @@ COMPLETIONS_OUT_DIR = target/$(_TARGETDIR)/completions
 casile$(EXEEXT): $(CARGO_TARGET)
 	cp -bf $< $@
 
-$(COMPLETIONS_OUT_DIR)/$(_casile): $(CARGO_TARGET)
+$(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME): $(CARGO_TARGET)
 	cp -bf $(COMPLETIONS_OUT_DIR)/casile.bash $@
 
-$(COMPLETIONS_OUT_DIR)/$(_casile).elv: $(CARGO_TARGET)
+$(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME).elv: $(CARGO_TARGET)
 	cp -bf $(COMPLETIONS_OUT_DIR)/casile.elv $@
 
-$(COMPLETIONS_OUT_DIR)/$(_casile).fish: $(CARGO_TARGET)
+$(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME).fish: $(CARGO_TARGET)
 	cp -bf $(COMPLETIONS_OUT_DIR)/casile.fish $@
 
-$(COMPLETIONS_OUT_DIR)/_$(_casile).ps1: $(CARGO_TARGET)
+$(COMPLETIONS_OUT_DIR)/_$(TRANSFORMED_PACKAGE_NAME).ps1: $(CARGO_TARGET)
 	cp -bf $(COMPLETIONS_OUT_DIR)/_casile.ps1 $@
 
-$(COMPLETIONS_OUT_DIR)/_$(_casile): $(CARGO_TARGET)
+$(COMPLETIONS_OUT_DIR)/_$(TRANSFORMED_PACKAGE_NAME): $(CARGO_TARGET)
 	cp -bf $(COMPLETIONS_OUT_DIR)/_casile $@
 
 $(CARGO_TARGET): $(casile_SOURCES) clean-embedded-assets
@@ -227,7 +227,7 @@ casile-%.md: CHANGELOG.md
 		$(SED) -e '1,3d;N;$$!P;$$!D;$$d' > $@
 
 export DOCKER_REGISTRY ?= docker.io
-export DOCKER_REPO ?= siletypesetter/$(_casile)
+export DOCKER_REPO ?= siletypesetter/$(TRANSFORMED_PACKAGE_NAME)
 export DOCKER_TAG ?= HEAD
 
 .PHONY: docker
