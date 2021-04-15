@@ -388,9 +388,9 @@ dependencies = [
 
 [[package]]
 name = "git-warp-time"
-version = "0.4.0"
+version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5df7678fe19775098f65244951b57ce7a3a27721ab525fa0d7291e9ed375d8b1"
+checksum = "b5e8a389d58066558d4430fb70f8a513cc3994fd1cbc192c59b79f3e1db27712"
 dependencies = [
  "filetime",
  "git2",
