@@ -6,6 +6,15 @@ AM_SILENT_RULES([yes])
 
 AC_CONFIG_MACRO_DIR([build-aux])
 
+AC_DEFUN([AX_PROGVAR],
+		 [
+		  test -n "$m4_toupper($1)" || { AC_PATH_PROG(m4_toupper($1), m4_default($2,$1)) }
+		  test -n "$m4_toupper($1)" || AC_MSG_ERROR([m4_default($2,$1) is required])
+		 ])
+
+AX_PROGVAR([cmp])
+
+
 AC_ARG_ENABLE([dependency-checks],
               AS_HELP_STRING([--disable-dependency-checks], [Disable dependency checks]))
 
@@ -16,7 +25,7 @@ AC_ARG_WITH([bash-completion-dir],
     [with_bash_completion_dir=yes])
 if test "x$with_bash_completion_dir" = "xyes"; then
     PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0],
-        [BASH_COMPLETION_DIR="`pkg-config --variable=completionsdir bash-completion`"],
+		[BASH_COMPLETION_DIR="`pkg-config --define-variable=datadir=$datadir --variable=completionsdir bash-completion`"],
         [BASH_COMPLETION_DIR="$datadir/bash-completion/completions"])
 else
     BASH_COMPLETION_DIR="$with_bash_completion_dir"
@@ -31,7 +40,7 @@ AC_ARG_WITH([fish-completion-dir],
     [with_fish_completion_dir=yes])
 if test "x$with_fish_completion_dir" = "xyes"; then
     PKG_CHECK_MODULES([FISH_COMPLETION], [fish >= 3.0],
-        [FISH_COMPLETION_DIR="`pkg-config --variable=completionsdir fish`"],
+		[FISH_COMPLETION_DIR="`pkg-config --define-variable=datadir=$datadir --variable=completionsdir fish`"],
         [FISH_COMPLETION_DIR="$datadir/fish/vendor_completions.d"])
 else
     FISH_COMPLETION_DIR="$with_fish_completion_dir"
@@ -70,19 +79,9 @@ AM_CONDITIONAL([DEBUG_RELEASE], [test "x$debug_release" = "xyes"])
 
 AC_SUBST([RUST_TARGET_SUBDIR])
 
-AC_DEFUN([AX_PROGVAR], [AC_PATH_PROG(m4_toupper($1), m4_default($2,$1))test -n "$m4_toupper($1)" || AC_MSG_ERROR([m4_default($2,$1) is required])])
-
 AS_IF([test "x$enable_dependency_checks" != "xno"], [
-
-    # Check that we have rust stuff
-    AC_CHECK_PROG(CARGO, [cargo], [yes], [no])
-    AS_IF(test x$CARGO = xno,
-        AC_MSG_ERROR([cargo is required.  Please install the Rust toolchain])
-    )
-    AC_CHECK_PROG(RUSTC, [rustc], [yes], [no])
-    AS_IF(test x$RUSTC = xno,
-        AC_MSG_ERROR([rustc is required.  Please install the Rust toolchain])
-    )
+       AX_PROGVAR([cargo])
+       AX_PROGVAR([rustc])
 
     AC_PROG_AWK
     AC_PROG_SED
@@ -152,6 +151,9 @@ AS_IF([test "x$enable_dependency_checks" != "xno"], [
     AX_FONT(Libertinus Serif Display)
     AX_FONT(Libertinus Sans)
 ])
+
+TRANSFORMED_PACKAGE_NAME="$(printf "$PACKAGE_NAME" | $SED -e "${program_transform_name//\$\$/\$}")"
+AC_SUBST([TRANSFORMED_PACKAGE_NAME])
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([rules/casile.mk])
