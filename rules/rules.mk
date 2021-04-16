@@ -407,6 +407,7 @@ $(BUILDDIR).casile.lua: | $(BUILDDIR)
 	cat <<- EOF > $@
 		package.path = package.path .. ";?.lua;?/init.lua;$(BUILDDIR)?.lua"
 		CASILE = {}
+		CASILE.project = "$(PROJECT)"
 		CASILE.casiledir = "$(CASILEDIR)"
 		CASILE.publisher = "casile"
 	EOF
