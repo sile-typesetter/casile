@@ -242,6 +242,7 @@ SILE.registerCommand("chaptertoc", function (_, _)
       SILE.call("tableofcontents:item", {
           chaptertoc = true,
           level = item.level,
+          number = item.number,
           pageno = item.pageno
         }, item.label)
     end
@@ -270,6 +271,7 @@ SILE.registerCommand("tableofcontents", function (_, _)
       SILE.call("tableofcontents:item", {
           chaptertoc = false,
           level = item.level,
+          number = item.number,
           pageno = item.pageno
         }, item.label)
     end
@@ -281,7 +283,7 @@ SILE.registerCommand("tableofcontents:item", function (options, content)
   options.dotfill = SU.boolean(options.dotfill, true)
   SILE.settings.temporarily(function ()
     SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.glue())
-    SILE.call("tableofcontents:level"..options.level.."item", {}, function ()
+    SILE.call("tableofcontents:level"..options.level.."item", options, function ()
       SILE.process(CASILE.addDiscressionaryBreaks({}, content))
       if options.level == 2 then
         SILE.call("hbox", {}, function ()
@@ -295,7 +297,7 @@ SILE.registerCommand("tableofcontents:item", function (options, content)
   end)
 end)
 
-SILE.registerCommand("tableofcontents:level1item", function (_, content)
+SILE.registerCommand("tableofcontents:level1item", function (options, content)
   SILE.call("bigskip")
   SILE.settings.temporarily(function ()
     SILE.settings.set("current.parindent", SILE.nodefactory.glue())
@@ -305,7 +307,7 @@ SILE.registerCommand("tableofcontents:level1item", function (_, content)
   end)
 end)
 
-SILE.registerCommand("tableofcontents:level2item", function (_, content)
+SILE.registerCommand("tableofcontents:level2item", function (options, content)
   SILE.call("skip", { height = "4.5pt" })
   SILE.settings.set("current.parindent", SILE.nodefactory.glue())
   SILE.settings.set("document.lskip", SILE.nodefactory.glue("5ex"))
@@ -317,7 +319,7 @@ SILE.registerCommand("tableofcontents:level2item", function (_, content)
   SILE.call("skip", { height = 0 })
 end)
 
-SILE.registerCommand("tableofcontents:level3item", function (_, content)
+SILE.registerCommand("tableofcontents:level3item", function (options, content)
   SILE.call("skip", { height = "4.5pt" })
   SILE.settings.set("current.parindent", SILE.nodefactory.glue())
   SILE.settings.set("document.lskip", SILE.nodefactory.glue("5ex"))
@@ -329,7 +331,7 @@ SILE.registerCommand("tableofcontents:level3item", function (_, content)
   SILE.call("skip", { height = 0 })
 end)
 
-SILE.registerCommand("tableofcontents:level4item", function (_, content)
+SILE.registerCommand("tableofcontents:level4item", function (options, content)
   SILE.call("skip", { height = "4.5pt" })
   SILE.settings.set("current.parindent", SILE.nodefactory.glue())
   SILE.settings.set("document.lskip", SILE.nodefactory.glue("5ex"))
@@ -341,7 +343,7 @@ SILE.registerCommand("tableofcontents:level4item", function (_, content)
   SILE.call("skip", { height = 0 })
 end)
 
-SILE.registerCommand("tableofcontents:level5item", function (_, content)
+SILE.registerCommand("tableofcontents:level5item", function (options, content)
   SILE.call("skip", { height = "4.5pt" })
   SILE.settings.set("current.parindent", SILE.nodefactory.glue())
   SILE.settings.set("document.lskip", SILE.nodefactory.glue("5ex"))

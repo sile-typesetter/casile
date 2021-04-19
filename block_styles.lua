@@ -61,7 +61,11 @@ SILE.registerCommand("tableofcontents", function (_, _)
   SILE.call("tableofcontents:header")
   for i = 1, #toc do
     local item = toc[i]
-    SILE.call("tableofcontents:item", { level = item.level, pageno = item.pageno }, item.label)
+    SILE.call("tableofcontents:item", {
+      level = item.level,
+      numbering = item.numbering,
+      pageno = item.pageno
+    }, item.label)
   end
   SILE.call("tableofcontents:footer")
 end)
