@@ -262,4 +262,3 @@ docker-build-push: docker
 		docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO):latest ;\
 		docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$${tag//.*} ;\
 	fi
-
