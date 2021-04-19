@@ -131,9 +131,8 @@ LUALIBS += $(CASILEDIR)casile.lua
 
 # Extensible list of files for git to ignore
 IGNORES += $(PROJECTCONFIGS)
-IGNORES += $(call pattern_list,$(SOURCES),$(foreach FORMAT,$(FORMATS),.$(FORMAT)))
-IGNORES += $(call pattern_list,$(ISBNS),_* .epub)
 IGNORES += $(BUILDDIR)
+IGNORES += $(DISTFILES)
 
 # Tell SILE to look here for stuff before its internal stuff
 SILEPATH += $(CASILEDIR)
@@ -285,9 +284,9 @@ PROJECTCONFIGS += .editorconfig
 	cp $< $@
 
 PROJECTCONFIGS += .gitignore
-.gitignore: $(CASILEDIR)gitignore $(MAKEFILE_LIST)
+.gitignore: $(MAKEFILE_LIST)
 	$(call skip_if_tracked,$@)
-	cp $< $@
+	$(TRUNCATE) -s 0 $@
 	$(foreach IGNORE,$(IGNORES),echo '$(IGNORE)' >> $@;)
 
 .gitattributes: $(MAKEFILE_LIST)
@@ -532,7 +531,6 @@ $(PHONYPLAYS): %.play: %_playbooks.csv
 $(PHONYPLAYS): %.play: $$(call pattern_list,$$(call ebookisbn,$$*),.epub _frontcover.jpg _backcover.jpg)
 $(PHONYPLAYS): %.play: $$(call pattern_list,$$(call printisbn,$$*),_interior.pdf _frontcover.jpg _backcover.jpg)
 
-IGNORES += $(PLAYMETADATAS)
 PLAYMETADATAS := $(call pattern_list,$(PLAYSOURCES),_playbooks.csv)
 $(PLAYMETADATAS): %_playbooks.csv: $$(addprefix $(BUILDDIR),$$(call pattern_list,$$(call ebookisbn,$$*) $$(call printisbn,$$*),_playbooks.json))
 $(PLAYMETADATAS): %_playbooks.csv: $(BUILDDIR)%-bio.html $(BUILDDIR)%-description.html
@@ -903,8 +901,6 @@ $(EMPTYGEOMETRIES): $(BUILDDIR)$(_geometry)-%.pdf: $(CASILEDIR)geometry.xml $(LU
 	$(SILE) $(SILEFLAGS) \
 		-e "papersize = '$(call unlocalize,$*)'" \
 		$< -o $@
-
-IGNORES += $(EMPTYGEOMETRIES)
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES := $(addprefix $(BUILDDIR),$(call pattern_list,$(SOURCES),$(ALLLAYOUTS),-$(_geometry).sh))
