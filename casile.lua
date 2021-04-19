@@ -64,7 +64,8 @@ end)
 
 SILE.registerCommand("cabook:subparagraph:post", function () end)
 
-SILE.registerCommand("tableofcontents:header", function ()
+SILE.registerCommand("tableofcontents:header", function (options, _)
+  options.rule = SU.boolean(options.rule, true)
   SILE.call("center", {}, function ()
     SILE.call("hbox", {}, function ()
       SILE.call("skip", { height = "12ex" })
@@ -74,8 +75,10 @@ SILE.registerCommand("tableofcontents:header", function ()
     end)
   end)
   SILE.call("bigskip")
-  SILE.call("fullrule", { raise = 0 })
-  SILE.call("bigskip")
+  if options.rule then
+    SILE.call("fullrule", { raise = 0 })
+    SILE.call("bigskip")
+  end
 end)
 
 SILE.registerCommand("tableofcontents:footer", function ()
