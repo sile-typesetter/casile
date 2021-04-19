@@ -14,12 +14,11 @@ colored = "2.0.0"
 fluent = "0.12.0"
 fluent-fallback = "0.0.4"
 fluent-langneg = "0.13.0"
-git-warp-time = { version = "0.4.3", default-features = false }
 itertools = "0.10.0"
 lazy_static = "1.4.0"
 num_cpus = "1.13.0"
 rayon = "1.5.0"
-rust-embed = "5.7.0"
+rust-embed = "5.9.0"
 subprocess = "0.2.6"
 unic-langid = "0.9.0"
 
@@ -36,6 +35,10 @@ unic-langid = "0.9.0"
   version = "0.13.17"
   default-features = false
 
+  [dependencies.git-warp-time]
+  version = "0.4.3"
+  default-features = false
+
   [dependencies.Inflector]
   version = "0.11.4"
   default-features = false
@@ -43,6 +46,7 @@ unic-langid = "0.9.0"
   [dependencies.regex]
   version = "1.4.5"
   default-features = false
+  features = ["std"]
 
 [build-dependencies]
 clap = "3.0.0-beta.2"
