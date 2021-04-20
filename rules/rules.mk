@@ -468,7 +468,6 @@ $(BUILDDIR)%-topbottom.pdf: $(BUILDDIR)%-set1.pdf $(BUILDDIR)%-set2.pdf
 
 %-a4proof.pdf: $(BUILDDIR)%-topbottom.pdf
 	$(PDFJAM) --nup 1x2 --noautoscale true --paper a4paper --outfile $@ -- $<
-	$(addtodist)
 
 DISTFILES += *-a4proof.pdf
 
@@ -497,7 +496,6 @@ $(BUILDDIR)%-$(_cropped).pdf: %.pdf | $$(geometryfile) $(BUILDDIR)
 	w=$$(echo "$(call pagew,$<) * 100 - $${t} * 2" | $(BC))
 	h=$$(echo "$(call pageh,$<) * 100 - $${t} * 2" | $(BC))
 	$(PODOFOBOX) $< $@ media $${t} $${t} $${w} $${h}
-	$(addtodist)
 
 $(BUILDDIR)%-set1.pdf: %.pdf | $(BUILDDIR)
 	$(PDFTK) $< cat 1-$$(($(call pagecount,$<)/2)) output $@
