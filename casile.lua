@@ -685,6 +685,16 @@ SILE.registerCommand("requireSpace", function (options, content)
   end
 end)
 
+SILE.registerCommand("lpad", function (options, content)
+  local width = SILE.length(options.width)
+  local nodes = SILE.typesetter.state.nodes
+  local hbox = SILE.call("hbox", {}, content)
+  nodes[#nodes] = nil
+  SILE.call("glue", { width = width:absolute() - hbox.width:absolute() })
+  nodes[#nodes+1] = hbox
+  return hbox
+end)
+
 SILE.registerUnit("%pmed", { relative = true, definition = function (v)
   return v / 100 * (SILE.documentState.orgPaperSize[1] + SILE.documentState.orgPaperSize[2]) / 2
 end})
