@@ -490,12 +490,14 @@ $(BUILDDIR)%-cropright.pdf: %.pdf | $$(geometryfile) $(BUILDDIR)
 $(BUILDDIR)%-$(_spineless).pdf: $(BUILDDIR)%-$(_odd)-cropright.pdf $(BUILDDIR)%-$(_even)-cropleft.pdf
 	$(PDFTK) A=$(word 1,$^) B=$(word 2,$^) shuffle A B output $@
 
-$(BUILDDIR)%-$(_cropped).pdf: %.pdf | $$(geometryfile) $(BUILDDIR)
+%-$(_cropped).pdf: %.pdf | $$(geometryfile) $(BUILDDIR)
 	$(sourcegeometry)
 	t=$$(echo "$${trimpt} * 100" | $(BC))
 	w=$$(echo "$(call pagew,$<) * 100 - $${t} * 2" | $(BC))
 	h=$$(echo "$(call pageh,$<) * 100 - $${t} * 2" | $(BC))
 	$(PODOFOBOX) $< $@ media $${t} $${t} $${w} $${h}
+
+DISTFILES += *-$(_cropped).pdf
 
 $(BUILDDIR)%-set1.pdf: %.pdf | $(BUILDDIR)
 	$(PDFTK) $< cat 1-$$(($(call pagecount,$<)/2)) output $@
