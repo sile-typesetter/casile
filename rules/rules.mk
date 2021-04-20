@@ -435,7 +435,7 @@ SILEFLAGS += $(foreach LUAINCLUDE,$(call reverse,$(LUAINCLUDES)),-I $(LUAINCLUDE
 
 preprocess_macros = $(CASILEDIR)casile.m4 $(M4MACROS) $(PROJECTMACRO) $(TARGETMACROS_$1)
 
-$(BUILDDIR)%-$(_processed).md: %.md $(wildcard %-$(_chapters)/*.md) $$(call preprocess_macros,$$*) $$(wildcard $$*-bolumler/*.md) | $(BUILDDIR) figures
+$(BUILDDIR)%-$(_processed).md: %.md $$(wildcard $(PROJECT)*.md $$*-$(_chapters)/*.md) $$(call preprocess_macros,$$*) | $(BUILDDIR) figures
 	if $(DIFF) && $(if $(PARENT),true,false); then
 		branch2criticmark.zsh $(PARENT) $<
 	else
