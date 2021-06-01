@@ -199,11 +199,15 @@ installcheck-local:
 	./$(TRANSFORMED_PACKAGE_NAME) --version
 
 .PHONY: lint
-lint: rustfmt clippy
+lint: clippy luacheck rustfmt
 
 .PHONY: rustfmt
 rustfmt:
 	$(GIT) ls-files '*.rs' | $(XARGS) rustfmt --check
+
+.PHONY: luacheck
+luacheck:
+	luacheck .
 
 .PHONY: clippy
 clippy:
