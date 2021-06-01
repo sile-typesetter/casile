@@ -17,9 +17,9 @@ fluent-langneg = "0.13.0"
 itertools = "0.10.0"
 lazy_static = "1.4.0"
 num_cpus = "1.13.0"
-rayon = "1.5.0"
+rayon = "1.5.1"
 rust-embed = "5.9.0"
-subprocess = "0.2.6"
+subprocess = "0.2.7"
 unic-langid = "0.9.0"
 
   [dependencies.config]
@@ -32,7 +32,7 @@ unic-langid = "0.9.0"
   features = [ "wrap_help" ]
 
   [dependencies.git2]
-  version = "0.13.17"
+  version = "0.13.20"
   default-features = false
 
   [dependencies.git-warp-time]
@@ -44,7 +44,7 @@ unic-langid = "0.9.0"
   default-features = false
 
   [dependencies.regex]
-  version = "1.4.5"
+  version = "1.5.4"
   default-features = false
   features = ["std"]
 
@@ -53,13 +53,13 @@ clap = "3.0.0-beta.2"
 clap_generate = "3.0.0-beta.2"
 
   [build-dependencies.vergen]
-  version = "5.0.1"
+  version = "5.1.8"
   default-features = false
   features = [ "build", "git" ]
 
 [dev-dependencies]
-assert_cmd = "1.0.2"
-predicates = "1.0.6"
+assert_cmd = "1.0.4"
+predicates = "1.0.8"
 
 [profile.release]
 lto = true
