@@ -1,6 +1,6 @@
 [package]
 name = "casile"
-version = "0.5.2"
+version = "0.6.0"
 authors = [ "Caleb Maclennan <caleb@alerque.com>" ]
 edition = "2018"
 description = "The command line interface to the CaSILE toolkit, a book publishing workflow employing SILE and other wizardry"
@@ -46,7 +46,7 @@ unic-langid = "0.9.0"
   [dependencies.regex]
   version = "1.5.4"
   default-features = false
-  features = ["std"]
+  features = [ "std" ]
 
 [build-dependencies]
 clap = "3.0.0-beta.2"

@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.0](https://github.com/sile-typesetter/casile/compare/v0.5.2...v0.6.0) (2021-06-02)
+
+
+### Features
+
+* **class:** Add left padded hbox function ([3c6793d](https://github.com/sile-typesetter/casile/commit/3c6793da8f0845cef1759afd16ff7e2833bab76c))
+* **class:** Make rule after TOC optional ([aa5ca7f](https://github.com/sile-typesetter/casile/commit/aa5ca7f386987b88b39dde37e829e94165723087))
+* **class:** Pass chapter numbering information to TOC functions ([cb9f541](https://github.com/sile-typesetter/casile/commit/cb9f541307186dfca70c8ccfaccebe96d41d28e1))
+* **cli:** Reset file timestamps on ‘fontship setup’ ([41eedbd](https://github.com/sile-typesetter/casile/commit/41eedbdde9e8cf7610c974fe3cd550a8b9cb2d34))
+* **rules:** Generate gitignore list based on distfiles ([4a6ca71](https://github.com/sile-typesetter/casile/commit/4a6ca712f64f403905c8760cf884cefd4f9c2334))
+* **rules:** Include project-specific tagged messages to debug output ([c43a627](https://github.com/sile-typesetter/casile/commit/c43a6279a74c6c3b84767b88a8b4e9d6e0b31491))
+* **tooling:** Add luacheck to lint matching CI jobs ([a9ed6d0](https://github.com/sile-typesetter/casile/commit/a9ed6d00aac15a5e6abb6ca632e4a12c5e210660))
+
+
+### Bug Fixes
+
+* **cli:** Handle no target data for Make $(shell ...) invocations ([98c9486](https://github.com/sile-typesetter/casile/commit/98c9486ef9e7962a3dda2cf89eda8f406418bc99))
+* **rules:** Bring cropped PDFs back to distfiles ([ff6cdd4](https://github.com/sile-typesetter/casile/commit/ff6cdd4a0c3b7936a5e67ab2a2b5e7a4fb318691))
+* **rules:** Include series content in book content dependencies ([c1dfac2](https://github.com/sile-typesetter/casile/commit/c1dfac2cb400a35331f2bbe8e1d0595f83018f89))
+
 ### [0.5.2](https://github.com/sile-typesetter/casile/compare/v0.5.1...v0.5.2) (2021-03-26)
 
 
