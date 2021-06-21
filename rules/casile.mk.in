@@ -17,7 +17,7 @@ $(error Use of CaSILE rule file inclusion outside of the CLI is deprecated!)
 endif
 
 # Run complete recipes in wrapper script that facilitates clean CLI output
-SHELL := $(CASILEDIR)make-shell.zsh
+SHELL := $(CASILEDIR)/make-shell.zsh
 .SHELLFLAGS = $(and $@,target=$@)
 .ONESHELL:
 .SECONDEXPANSION:
@@ -72,4 +72,4 @@ BUILDDIR ?= .casile/
 .PHONY: default
 default: all
 
-include $(CASILEDIR)rules/functions.mk
+include $(CASILEDIR)/rules/functions.mk
