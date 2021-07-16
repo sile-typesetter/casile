@@ -217,6 +217,7 @@ On the other hand not having GNU Make, Pandoc, or SILE would of course be fatal.
 * Perl, Python, Lua, Node, Zsh, and a few other language interpreters!
 * Various modules for those languages like `lua-yaml`, `python-ruamel`, `python-isblib`, and `python-pandocfilters`.
 * Up to date versions of assorted shell tools like `jq`, `yq`, `entr`, `bc`, and `sqlite`.
+* The CLI utility variant of [git-warp-time][git-warp-time] (the library variant is also used by Cargo at build time).
 * GNU Make (and assorted other GNU tools) glue everything together.
 * The default book templates assume system installed versions of **Hack**, **Libertinus**, and **TeX Gyre** font sets.
 * Some other stuff (`./configure` will warn you if your system doesn’t have something that’s required).
@@ -565,6 +566,7 @@ On the other hand each hook has its own usage so note the context it runs in.
 [demos]: https://github.com/sile-typesetter/casile-demos
 [dockerhub]: https://hub.docker.com/repository/docker/siletypesetter/casile/
 [ghcr]: https://github.com/orgs/sile-typesetter/packages/container/package/casile
+[git-warp-time]: https://crates.io/crates/git-warp-time
 [im]: http://imagemagick.org/
 [inkscape]: https://inkscape.org/
 [kindlegen]: https://www.amazon.com/gp/feature.html?docId=1000234621
