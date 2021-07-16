@@ -11,7 +11,7 @@ RUN --mount=type=bind,target=/mp,source=build-aux/docker-glibc-workaround.sh /mp
 RUN pacman-key --init && pacman-key --populate
 RUN sed -i  /etc/pacman.conf -e \
 	'/^.community/{n;n;s!^!\n\[alerque\]\nServer = https://arch.alerque.com/$arch\n!}'
-RUN echo 'keyserver pool.sks-keyservers.net' >> /etc/pacman.d/gnupg/gpg.conf
+RUN echo 'keyserver keyserver.ubuntu.com' >> /etc/pacman.d/gnupg/gpg.conf
 RUN pacman-key --recv-keys 63CC496475267693 && pacman-key --lsign-key 63CC496475267693
 
 ARG RUNTIME_DEPS
