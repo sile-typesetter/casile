@@ -77,7 +77,7 @@ Windows support will almost certainly require considerable monkey business; [not
 Use of a Docker container can make it a lot easier to get up and running because you won’t need to have a huge collection of dependencies installed.
 Ready made containers are available from either [Docker Hub][dockerhub] or [GitHub Container Registry][ghcr].
 Download (or update) an image using  `docker pull docker.io/siletypesetter/casile:latest` or `docker pull ghcr.io/sile-typesetter/casile:latest`.
-Note *latest* will be the most recent stable tagged release, or you may substitute a specific tag (e.g. *v0.<.0*), *master* for the more recent Git commit build, or `v0` for the more recent tagged release in that major series.
+Note *latest* will be the most recent stable tagged release, or you may substitute a specific tag (e.g. *vX.Y.Z*), *master* for the more recent Git commit build, or `v0` for the more recent tagged release in that major series.
 
 Optionally you may build a docker image yourself.
 From any CasILE source directory (a Git clone extracted source package), configure using `./configure --disable-dependency-checks`, then build using `make docker`.
