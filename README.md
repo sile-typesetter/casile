@@ -77,7 +77,7 @@ Windows support will almost certainly require considerable monkey business; [not
 Use of a Docker container can make it a lot easier to get up and running because you won’t need to have a huge collection of dependencies installed.
 Ready made containers are available from either [Docker Hub][dockerhub] or [GitHub Container Registry][ghcr].
 Download (or update) an image using  `docker pull docker.io/siletypesetter/casile:latest` or `docker pull ghcr.io/sile-typesetter/casile:latest`.
-Note *latest* will be the most recent stable tagged release, or you may substitute a specific tag (e.g. *v0.<.0*), *master* for the more recent Git commit build, or `v0` for the more recent tagged release in that major series.
+Note *latest* will be the most recent stable tagged release, or you may substitute a specific tag (e.g. *vX.Y.Z*), *master* for the more recent Git commit build, or `v0` for the more recent tagged release in that major series.
 
 Optionally you may build a docker image yourself.
 From any CasILE source directory (a Git clone extracted source package), configure using `./configure --disable-dependency-checks`, then build using `make docker`.
@@ -217,12 +217,16 @@ On the other hand not having GNU Make, Pandoc, or SILE would of course be fatal.
 * Perl, Python, Lua, Node, Zsh, and a few other language interpreters!
 * Various modules for those languages like `lua-yaml`, `python-ruamel`, `python-isblib`, and `python-pandocfilters`.
 * Up to date versions of assorted shell tools like `jq`, `yq`, `entr`, `bc`, and `sqlite`.
+* The CLI utility variant of [git-warp-time][git-warp-time] (the library variant is also used by Cargo at build time).
 * GNU Make (and assorted other GNU tools) glue everything together.
 * The default book templates assume system installed versions of **Hack**, **Libertinus**, and **TeX Gyre** font sets.
 * Some other stuff (`./configure` will warn you if your system doesn’t have something that’s required).
 
 In addition to run-time dependencies, compiling the CLI interface (optional) requires a Rust build toolchain.
 Once built the CLI requires no dependencies to run.
+
+Until other distros have packages, perhaps the most definitive list of dependencies is the Arch Linux [package meta-dataa](https://aur.archlinux.org/cgit/aur.git/tree/.SRCINFO?h=casile-git).
+You will need to translate the package names for your platform but everything is listed there.
 
 ### Companion tools
 
@@ -565,6 +569,7 @@ On the other hand each hook has its own usage so note the context it runs in.
 [demos]: https://github.com/sile-typesetter/casile-demos
 [dockerhub]: https://hub.docker.com/repository/docker/siletypesetter/casile/
 [ghcr]: https://github.com/orgs/sile-typesetter/packages/container/package/casile
+[git-warp-time]: https://crates.io/crates/git-warp-time
 [im]: http://imagemagick.org/
 [inkscape]: https://inkscape.org/
 [kindlegen]: https://www.amazon.com/gp/feature.html?docId=1000234621
