@@ -20,7 +20,7 @@ By automating the production workflow from end to end all the normal sequence re
 Book exterior design can be done at any stage of the process.
 Book interior design can be done at any stage of the process.
 Copy editing can happen simultaneously by different editors on different parts of a book.
-Because the pipeline doesn’t narrow as projects progress and the content is always font and center the only restrictions on the workflow are those dictated by *you* for the project, not by the tooling used.
+Because the pipeline doesn’t narrow as projects progress and the content is always front and center the only restrictions on the workflow are those dictated by *you* for the project, not by the tooling used.
 
 CaSILE (pronounced /ˈkɑːs(ə)l/ just like ‘castle’) started out life as a submodule called `avadanlik` included inside my book project repositories (avadanlık being a Turkish word for something like a tackle box).
 As most of the parts revolved around SILE, in my head at least CaSILE became **Caleb’in Avadanlığı birlikte SILE**, roughly translating to “SILE with Caleb’s Toolkit”.
