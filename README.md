@@ -225,6 +225,9 @@ On the other hand not having GNU Make, Pandoc, or SILE would of course be fatal.
 In addition to run-time dependencies, compiling the CLI interface (optional) requires a Rust build toolchain.
 Once built the CLI requires no dependencies to run.
 
+Until other distros have packages, perhaps the most definitive list of dependencies is the Arch Linux [package meta-dataa](https://aur.archlinux.org/cgit/aur.git/tree/.SRCINFO?h=casile-git).
+You will need to translate the package names for your platform but everything is listed there.
+
 ### Companion tools
 
 You’ll probably want some other things not provided by CaSILE as well.
