@@ -1,4 +1,4 @@
-NONDISTGOALS = $(filter-out %dist $(DISTDIR).% _gha _glc %.env,$(MAKECMDGOALS))
+NONDISTGOALS = $(filter-out %dist $(DISTDIR)/.% _gha _glc %.env,$(MAKECMDGOALS))
 
 .PHONY: clean
 clean:
@@ -121,11 +121,11 @@ upgrade_repository: upgrade_toolkits $(CICONFIG)_current .gitattributes
 
 .PHONY: upgrade_casile
 upgrade_casile:
-	$(call munge,$(LUASOURCES),$(SED) -f $(CASILEDIR)upgrade-lua.sed,Replace old Lua variables and functions with new namespaces)
-	$(call munge,$(MAKESOURCES),$(SED) -f $(CASILEDIR)upgrade-make.sed,Replace old Makefile variables and functions with new namespaces)
-	$(call munge,$(YAMLSOURCES),$(SED) -f $(CASILEDIR)upgrade-yaml.sed,Replace old YAML key names and data formats)
+	$(call munge,$(LUASOURCES),$(SED) -f $(CASILEDIR)/upgrade-lua.sed,Replace old Lua variables and functions with new namespaces)
+	$(call munge,$(MAKESOURCES),$(SED) -f $(CASILEDIR)/upgrade-make.sed,Replace old Makefile variables and functions with new namespaces)
+	$(call munge,$(YAMLSOURCES),$(SED) -f $(CASILEDIR)/upgrade-yaml.sed,Replace old YAML key names and data formats)
 	export SKIPM4=false
-	$(call munge,$(MARKDOWNSOURCES),$(SED) -f $(CASILEDIR)upgrade-markdown.sed,Replace obsolete Markdown syntax)
+	$(call munge,$(MARKDOWNSOURCES),$(SED) -f $(CASILEDIR)/upgrade-markdown.sed,Replace obsolete Markdown syntax)
 
 # Reset file timestamps to git history to avoid unnecessary builds
 .PHONY: time_warp
@@ -167,7 +167,7 @@ split_chapters:
 	$(foreach SOURCE,$(MARKDOWNSOURCES),$(call split_chapters,$(SOURCE)))
 
 .PHONY: normalize_files
-normalize_files: private PANDOCFILTERS = --lua-filter=$(CASILEDIR)pandoc-filters/chapterid.lua
+normalize_files: private PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/chapterid.lua
 normalize_files:
 	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
 	$(if $(MARKDOWNSOURCES),,exit 0)

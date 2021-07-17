@@ -122,9 +122,9 @@ endif
 export CASILE_VERSION = v$(VERSION)
 
 # Leave some tips for cargo to use so CLI knows where it is
-export CONFIGURE_PREFIX = $(prefix)/
-export CONFIGURE_DATADIR = $(datadir)/
-export CONFIGURE_BINDIR = $(bindir)/
+export CONFIGURE_PREFIX = $(prefix)
+export CONFIGURE_DATADIR = $(datadir)
+export CONFIGURE_BINDIR = $(bindir)
 
 CARGO_VERBOSE = $(cargo_verbose_$(V))
 cargo_verbose_ = $(cargo_verbose_$(AM_DEFAULT_VERBOSITY))

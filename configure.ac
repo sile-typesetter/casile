@@ -97,7 +97,7 @@ AS_IF([test "x$enable_dependency_checks" != "xno"], [
     AX_PROGVAR([git])
     AX_PROGVAR([gitwarptime], [git-warp-time])
     AX_PROGVAR([gs])
-    AX_PROGVAR([hostname])
+    AX_PROGVAR([hostnamebin], [hostname])
     AX_PROGVAR([identify])
     AX_PROGVAR([inkscape])
     AX_PROGVAR([jq])

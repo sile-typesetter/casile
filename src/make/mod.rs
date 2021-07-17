@@ -20,7 +20,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
     makefiles.push(OsString::from("-f"));
     makefiles.push(OsString::from(format!(
         "{}{}",
-        CONFIGURE_DATADIR, "rules/casile.mk"
+        CONFIGURE_DATADIR, "/rules/casile.mk"
     )));
     for rule in rules {
         makefiles.push(OsString::from("-f"));
@@ -30,7 +30,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
     makefiles.push(OsString::from("-f"));
     makefiles.push(OsString::from(format!(
         "{}{}",
-        CONFIGURE_DATADIR, "rules/rules.mk"
+        CONFIGURE_DATADIR, "/rules/rules.mk"
     )));
     let mut targets: Vec<_> = target.into_iter().collect();
     if status::is_gha()? {
