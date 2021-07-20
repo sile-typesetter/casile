@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.1](https://github.com/sile-typesetter/casile/compare/v0.6.0...v0.6.1) (2021-07-20)
+
+
+### Bug Fixes
+
+* **docker:** Use a keyserver that is alive ([82c37c3](https://github.com/sile-typesetter/casile/commit/82c37c39c86820c66dfbaecd895896d196102481))
+* **rules:** Disambiguate `hostname` vs. $HOSTNAME ([846332d](https://github.com/sile-typesetter/casile/commit/846332dad6c867e9fc0b17967ce3d313fe048246))
+
 ## [0.6.0](https://github.com/sile-typesetter/casile/compare/v0.5.2...v0.6.0) (2021-06-02)
 
 
