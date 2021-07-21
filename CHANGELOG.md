@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.2](https://github.com/sile-typesetter/casile/compare/v0.6.1...v0.6.2) (2021-07-21)
+
+
+### Bug Fixes
+
+* **build:** Don't expect release tarballs to be Git repos ([b95e6a3](https://github.com/sile-typesetter/casile/commit/b95e6a35e6f3c8d30d92f453b6edc2ffe1df6ab2))
+
 ### [0.6.1](https://github.com/sile-typesetter/casile/compare/v0.6.0...v0.6.1) (2021-07-20)
 
 
