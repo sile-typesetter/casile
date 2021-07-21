@@ -10,7 +10,7 @@ fn main() {
     let mut flags = vergen::Config::default();
     // If passed a version, use that instead of vergen's formatting
     if let Ok(val) = env::var("CASILE_VERSION") {
-        *flags.git_mut().semver_mut() = false;
+        *flags.git_mut().enabled_mut() = false;
         println!("cargo:rustc-env=VERGEN_GIT_SEMVER={}", val)
     };
     vergen(flags).expect("Unable to generate the cargo keys!");
