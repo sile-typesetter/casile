@@ -33,5 +33,3 @@ jobs:
           files: |
             casile-${{ env.VERSION }}.zip
             casile-${{ env.VERSION }}.tar.xz
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
