@@ -214,13 +214,13 @@ define magick_emblum ?=
 	-gravity South \
 	\( -background none \
 		$1 \
+		$(call magick_emblum_filter) \
 		-resize "%[fx:min($$spinepx/100*(100-$$spinemm),$(call mmtopx,12))]"x \
-		$(call magick_sembol_filter) \
 		-splice "x%[fx:$(call mmtopx,5)+$$bleedpx]" \
 	\) -compose SrcOver -composite
 endef
 
-define magick_sembol_filter ?=
+define magick_emblum_filter ?=
 endef
 
 define magick_logo ?=
