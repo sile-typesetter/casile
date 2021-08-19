@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.3](https://github.com/sile-typesetter/casile/compare/v0.6.2...v0.6.3) (2021-08-19)
+
+
+### Bug Fixes
+
+* **rules:** Correct sembol→emblum in filter hook name to match function ([6e7d204](https://github.com/sile-typesetter/casile/commit/6e7d2043885dfc336e924bb09b0567f3f7647c6e))
+* **rules:** Remove trailing path from default BUILDDIR ([8ef0579](https://github.com/sile-typesetter/casile/commit/8ef0579ad47c4821f7c5cff5df8e324609bc1ef4))
+
 ### [0.6.2](https://github.com/sile-typesetter/casile/compare/v0.6.1...v0.6.2) (2021-07-21)
 
 
