@@ -32,11 +32,16 @@ fn generate_shell_completions() {
         .get_bin_name()
         .expect("Could not retrieve bin-name from generated Clap app");
     let mut app = Cli::into_app();
-    generate_to::<Bash, _, _>(&mut app, bin_name, &completions_dir);
-    generate_to::<Elvish, _, _>(&mut app, bin_name, &completions_dir);
-    generate_to::<Fish, _, _>(&mut app, bin_name, &completions_dir);
-    generate_to::<PowerShell, _, _>(&mut app, bin_name, &completions_dir);
-    generate_to::<Zsh, _, _>(&mut app, bin_name, &completions_dir);
+    generate_to::<Bash, _, _>(&mut app, bin_name, &completions_dir)
+        .expect("Unable to generate bash completions");
+    generate_to::<Elvish, _, _>(&mut app, bin_name, &completions_dir)
+        .expect("Unable to generate elvish completions");
+    generate_to::<Fish, _, _>(&mut app, bin_name, &completions_dir)
+        .expect("Unable to generate fish completions");
+    generate_to::<PowerShell, _, _>(&mut app, bin_name, &completions_dir)
+        .expect("Unable to generate powershell completions");
+    generate_to::<Zsh, _, _>(&mut app, bin_name, &completions_dir)
+        .expect("Unable to generate zsh completions");
 }
 
 /// Pass through some variables set by autoconf/automake about where we're installed to cargo for
