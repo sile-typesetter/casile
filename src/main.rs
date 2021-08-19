@@ -11,7 +11,7 @@ fn main() -> Result<()> {
     CONF.merge_files()?;
     let app = Cli::into_app().version(VERSION);
     let matches = app.get_matches();
-    let args = Cli::from_arg_matches(&matches);
+    let args = Cli::from_arg_matches(&matches).expect("Unable to parse arguments");
     CONF.merge_args(&args)?;
     casile::show_welcome();
     let ret = match args.subcommand {
