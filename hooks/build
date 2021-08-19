@@ -6,7 +6,7 @@ set -e
 DESC=$(git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
 
 RUNTIME_DEPS='bc bcprov entr epubcheck ghostscript git git-warp-time imagemagick inetutils'\
-' inkscape java-commons-lang jq kindlegen libertinus-font m4 make moreutils nodejs'\
+' inkscape java-commons-lang jq kindlegen libertinus-font m4 make moreutils nodejs procps-ng'\
 ' pandoc-sile-git pcre pdftk podofo poppler povray sile sqlite'\
 ' tex-gyre-fonts texlive-core ttf-hack yq zint zsh'\
 ' lua lua-colors lua-filesystem lua-yaml'\
