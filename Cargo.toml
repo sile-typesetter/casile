@@ -18,7 +18,7 @@ itertools = "0.10.0"
 lazy_static = "1.4.0"
 num_cpus = "1.13.0"
 rayon = "1.5.1"
-rust-embed = "5.9.0"
+rust-embed = "6.0.0"
 subprocess = "0.2.7"
 unic-langid = "0.9.0"
 
@@ -28,11 +28,11 @@ unic-langid = "0.9.0"
   features = [ "yaml" ]
 
   [dependencies.clap]
-  version = "3.0.0-beta.2"
+  version = "3.0.0-beta.4"
   features = [ "wrap_help" ]
 
   [dependencies.git2]
-  version = "0.13.20"
+  version = "0.13.21"
   default-features = false
 
   [dependencies.git-warp-time]
@@ -49,16 +49,16 @@ unic-langid = "0.9.0"
   features = [ "std" ]
 
 [build-dependencies]
-clap = "3.0.0-beta.2"
-clap_generate = "3.0.0-beta.2"
+clap = "3.0.0-beta.4"
+clap_generate = "3.0.0-beta.4"
 
   [build-dependencies.vergen]
-  version = "5.1.8"
+  version = "5.1.15"
   default-features = false
   features = [ "build", "git" ]
 
 [dev-dependencies]
-assert_cmd = "1.0.4"
+assert_cmd = "2.0.0"
 predicates = "1.0.8"
 
 [profile.release]
