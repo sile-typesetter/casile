@@ -67,7 +67,7 @@ YQ ?= @YQ@
 ZINT ?= @ZINT@
 ZSH ?= @ZSH@
 
-BUILDDIR ?= .casile/
+BUILDDIR ?= .casile
 
 .PHONY: default
 default: all
