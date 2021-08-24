@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.4](https://github.com/sile-typesetter/casile/compare/v0.6.3...v0.6.4) (2021-08-24)
+
+
+### Bug Fixes
+
+* **docker:** Add missing Docker dep needed for some renderings ([08ec084](https://github.com/sile-typesetter/casile/commit/08ec084ca5a322b7dfa06841b4ca119c8ed371c0))
+* **scripts:** Handle BUILDDIR in series sort script without trailing slash ([21a1552](https://github.com/sile-typesetter/casile/commit/21a1552e7918093b9a58420111200fd530e052c0))
+
 ### [0.6.3](https://github.com/sile-typesetter/casile/compare/v0.6.2...v0.6.3) (2021-08-19)
 
 
