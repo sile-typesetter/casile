@@ -48,7 +48,7 @@ local getorder = function (book)
   if SORTORDER == "alphabetical" then
     return book
   end
-  local bookid = book:gsub("-.*", ""):gsub(BUILDDIR, "")
+  local bookid = book:gsub("-.*", ""):gsub(BUILDDIR.."/", "")
   for key,val in ipairs(seriestitles) do
     if SORTORDER == "manual" then
       if seriesorders[fetchtitle(bookid)] then
