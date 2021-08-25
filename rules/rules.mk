@@ -132,7 +132,7 @@ LUALIBS += $(CASILEDIR)/casile.lua
 # Add a place where project local fonts can live
 FONTDIRS += $(CASILEDIR)/fonts $(wildcard $(PROJECTDIR)/.fonts)
 
-export FONTCONFIG_FILE := $(BUILDDIR)/fontconfig.conf
+export FONTCONFIG_FILE := $(shell cd "$(BUILDDIR)" && pwd)/fontconfig.conf
 
 # Extensible list of files for git to ignore
 IGNORES += $(PROJECTCONFIGS)
