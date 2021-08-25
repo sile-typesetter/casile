@@ -132,6 +132,7 @@ LUALIBS += $(CASILEDIR)/casile.lua
 # Add a place where project local fonts can live
 FONTDIRS += $(CASILEDIR)/fonts $(wildcard $(PROJECTDIR)/.fonts)
 
+FCCONFIG := $(BUILDDIR)/fontconfig.conf
 export FONTCONFIG_FILE := $(shell cd "$(BUILDDIR)" && pwd)/fontconfig.conf
 
 # Extensible list of files for git to ignore
@@ -345,7 +346,7 @@ $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
 
 FULLPDFS := $(call pattern_list,$(REALSOURCES),$(REALLAYOUTS),.pdf)
 FULLPDFS += $(call pattern_list,$(REALSOURCES),$(EDITS),$(REALLAYOUTS),.pdf)
-$(FULLPDFS): %.pdf: $(BUILDDIR)/%.sil $$(call coverpreq,$$@) $$(call onpaperlibs,$$@) $(LUAINCLUDES) $(FONTCONFIG_FILE)
+$(FULLPDFS): %.pdf: $(BUILDDIR)/%.sil $$(call coverpreq,$$@) $$(call onpaperlibs,$$@) $(LUAINCLUDES) $(FCCONFIG)
 	$(call skip_if_lazy,$@)
 	$(DIFF) && $(SED) -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
@@ -416,7 +417,7 @@ $(BUILDDIR)/.casile.lua: | $(BUILDDIR)
 		CASILE.publisher = "casile"
 	EOF
 
-$(FONTCONFIG_FILE): | $(BUILDDIR)
+$(FCCONFIG): | $(BUILDDIR)
 	cat <<- EOF > $@
 		<?xml version="1.0"?>
 		<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
@@ -726,7 +727,7 @@ $(COVERIMAGES): $(BUILDDIR)/%-$(_cover).png: $(BUILDDIR)/%-$(_cover)-$(_backgrou
 DISTFILES += *-icon.png
 
 COVERPDFS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover).pdf))
-$(COVERPDFS): $(BUILDDIR)/%-$(_cover).pdf: $(BUILDDIR)/%-$(_cover).png $(BUILDDIR)/%-$(_cover)-$(_text).pdf $(FONTCONFIG_FILE)
+$(COVERPDFS): $(BUILDDIR)/%-$(_cover).pdf: $(BUILDDIR)/%-$(_cover).png $(BUILDDIR)/%-$(_cover)-$(_text).pdf $(FCCONFIG)
 	$(COVERS) || exit 0
 	text=$$(mktemp kapakXXXXXX.pdf)
 	bg=$$(mktemp kapakXXXXXX.pdf)
@@ -746,7 +747,7 @@ BINDINGFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(BO
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(LUAINCLUDES) $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@))
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $$(subst $(BUILDDIR)/,,$$(subst -$(_binding)-$(_text),,$$@))
-$(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(FONTCONFIG_FILE)
+$(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(FCCONFIG)
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: | $(CASILEDIR)/layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS) $(BUILDDIR)
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf:
 	cat <<- EOF > $(BUILDDIR)/$*.lua
@@ -799,7 +800,7 @@ $(SPINEFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_spine).png: $(BUILDDIR)/%-$(_te
 COVERFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_text).pdf))
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(LUAINCLUDES) $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@))
-$(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(FONTCONFIG_FILE)
+$(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(FCCONFIG)
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: | $(CASILEDIR)/layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS) $(BUILDDIR)
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf:
 	cat <<- EOF > $*.lua
@@ -891,7 +892,7 @@ $(BUILDDIR)/%-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printco
 			s#SW#$${spinepm}#g;
 		" $< > $@
 
-%-$(_binding).pdf: $(BUILDDIR)/%-$(_binding).svg $(FONTCONFIG_FILE) $$(geometryfile)
+%-$(_binding).pdf: $(BUILDDIR)/%-$(_binding).svg $(FCCONFIG) $$(geometryfile)
 	$(sourcegeometry)
 	unset DISPLAY
 	export HOME=$(BUILDDIR)
