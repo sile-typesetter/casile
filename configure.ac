@@ -93,6 +93,7 @@ AS_IF([test "x$enable_dependency_checks" != "xno"], [
     AX_PROGVAR([cut])
     AX_PROGVAR([entr])
     AX_PROGVAR([epubcheck])
+    AX_PROGVAR([fcconflist], [fc-conflist])
     AX_PROGVAR([find])
     AX_PROGVAR([git])
     AX_PROGVAR([gitwarptime], [git-warp-time])

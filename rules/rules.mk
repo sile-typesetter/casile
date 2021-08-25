@@ -417,12 +417,14 @@ $(BUILDDIR)/.casile.lua: | $(BUILDDIR)
 		CASILE.publisher = "casile"
 	EOF
 
+$(FCCONFIG): FCDEFAULT ?= $(shell env -u FONTCONFIG_FILE $(FCCONFLIST) | $(AWK) -F'[ :]' '/Default configuration file/ { print $$2 }')
 $(FCCONFIG): | $(BUILDDIR)
 	cat <<- EOF > $@
 		<?xml version="1.0"?>
 		<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
 		<fontconfig>$(foreach DIR,$(FONTDIRS),
-		    <dir prefix="search_path">$(shell cd "$(shell dirname $(DIR))" && pwd)</dir>)
+		    <dir>$(shell cd "$(shell dirname $(DIR))" && pwd)</dir>)
+		    <include ignore_missing="no">$(FCDEFAULT)</include>
 		</fontconfig>
 	EOF
 
