@@ -658,22 +658,20 @@ CASILE.dropcapNextLetter = function ()
   SILE.typesetter.typeset = function (self, text)
     local first, rest = text:match("([^%w]*%w)(.*)")
     if first and rest then
+      SILE.typesetter.typeset = originalTypesetter
       SILE.call("dropcap", {}, { first })
-      originalTypesetter(self, rest)
+      SILE.typesetter.typeset(self, rest)
     else
       originalTypesetter(self, text)
     end
-    SILE.call("noindent")
-    SILE.typesetter.typeset = originalTypesetter
+    SILE.call("indent")
   end
 end
 
 SILE.registerCommand("dropcap", function (_, content)
-  SILE.call("noindent")
   SILE.call("float", { bottomboundary = "1.2ex", rightboundary = "1spc" }, function ()
     SILE.call("cabook:font:chaptertitle", { size = "5.2ex", weight = 800 }, content)
   end)
-  SILE.call("indent")
 end)
 
 SILE.registerCommand("requireSpace", function (options, content)
