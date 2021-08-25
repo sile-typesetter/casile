@@ -651,17 +651,20 @@ SILE.registerCommand("pubDateFormat", function (_, content)
   SILE.call("date", { format = "%B %Y", time = ts, locale = "tr_TR.utf-8" })
 end, "Output publication dates in proper format for imprint page")
 
-local originalTypesetter = SILE.typesetter.typeset
+local originalTypesetter
 CASILE.dropcapNextLetter = function ()
+  originalTypesetter = SILE.typesetter.typeset
+  SILE.call("noindent")
   SILE.typesetter.typeset = function (self, text)
     local first, rest = text:match("([^%w]*%w)(.*)")
-    if load and first and rest then
-      SILE.typesetter.typeset = originalTypesetter
+    if first and rest then
       SILE.call("dropcap", {}, { first })
-      SILE.typesetter.typeset(self, rest)
+      originalTypesetter(self, rest)
     else
       originalTypesetter(self, text)
     end
+    SILE.call("noindent")
+    SILE.typesetter.typeset = originalTypesetter
   end
 end
 
