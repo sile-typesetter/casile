@@ -46,7 +46,7 @@ SILE.registerCommand("cabook:chapter:post", function (options, _)
   if options.flourish then
     SILE.call("center", {} , function ()
       SILE.call("novbreak")
-      SILE.call("font", { filename = CASILE.casiledir .. "/fonts/FeFlow2.otf", size = "9pt" }, function ()
+      SILE.call("font", { family = "IM FELL FLOWERS 2", size = "9pt" }, function ()
         SILE.call("skip", { height = "-3pt" })
         SILE.typesetter:typeset("a")
         SILE.call("medskip")
