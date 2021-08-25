@@ -129,6 +129,11 @@ PROJECTLUA := $(wildcard $(PROJECT).lua)
 # Primary libraries to include (loaded in reverse order so this one is first)
 LUALIBS += $(CASILEDIR)/casile.lua
 
+# Add a place where project local fonts can live
+FONTDIRS += $(CASILEDIR)/fonts $(wildcard $(PROJECTDIR)/.fonts)
+
+export FONTCONFIG_FILE = $(BUILDDIR)/fontconfig.conf
+
 # Extensible list of files for git to ignore
 IGNORES += $(PROJECTCONFIGS)
 IGNORES += $(BUILDDIR)
@@ -340,7 +345,7 @@ $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
 
 FULLPDFS := $(call pattern_list,$(REALSOURCES),$(REALLAYOUTS),.pdf)
 FULLPDFS += $(call pattern_list,$(REALSOURCES),$(EDITS),$(REALLAYOUTS),.pdf)
-$(FULLPDFS): %.pdf: $(BUILDDIR)/%.sil $$(call coverpreq,$$@) $$(call onpaperlibs,$$@) $(LUAINCLUDES)
+$(FULLPDFS): %.pdf: $(BUILDDIR)/%.sil $$(call coverpreq,$$@) $$(call onpaperlibs,$$@) $(LUAINCLUDES) $(FONTCONFIG_FILE)
 	$(call skip_if_lazy,$@)
 	$(DIFF) && $(SED) -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
@@ -409,6 +414,15 @@ $(BUILDDIR)/.casile.lua: | $(BUILDDIR)
 		CASILE.project = "$(PROJECT)"
 		CASILE.casiledir = "$(CASILEDIR)"
 		CASILE.publisher = "casile"
+	EOF
+
+$(BUILDDIR)/fontconfig.conf: | $(BUILDDIR)
+	cat <<- EOF > $@
+		<?xml version="1.0"?>
+		<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+		<fontconfig>$(foreach DIR,$(FONTDIRS),
+		    <dir prefix="search_path">$(shell cd "$(shell dirname $(DIR))" && pwd)</dir>)
+		</fontconfig>
 	EOF
 
 WITHVERSEFILTER := $(CASILEDIR)/pandoc-filters/withverses.lua
@@ -712,7 +726,7 @@ $(COVERIMAGES): $(BUILDDIR)/%-$(_cover).png: $(BUILDDIR)/%-$(_cover)-$(_backgrou
 DISTFILES += *-icon.png
 
 COVERPDFS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover).pdf))
-$(COVERPDFS): $(BUILDDIR)/%-$(_cover).pdf: $(BUILDDIR)/%-$(_cover).png $(BUILDDIR)/%-$(_cover)-$(_text).pdf
+$(COVERPDFS): $(BUILDDIR)/%-$(_cover).pdf: $(BUILDDIR)/%-$(_cover).png $(BUILDDIR)/%-$(_cover)-$(_text).pdf $(FONTCONFIG_FILE)
 	$(COVERS) || exit 0
 	text=$$(mktemp kapakXXXXXX.pdf)
 	bg=$$(mktemp kapakXXXXXX.pdf)
@@ -732,6 +746,7 @@ BINDINGFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(BO
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(LUAINCLUDES) $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@))
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $$(subst $(BUILDDIR)/,,$$(subst -$(_binding)-$(_text),,$$@))
+$(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(FONTCONFIG_FILE)
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: | $(CASILEDIR)/layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS) $(BUILDDIR)
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf:
 	cat <<- EOF > $(BUILDDIR)/$*.lua
@@ -784,6 +799,7 @@ $(SPINEFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_spine).png: $(BUILDDIR)/%-$(_te
 COVERFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_text).pdf))
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(LUAINCLUDES) $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@))
+$(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(FONTCONFIG_FILE)
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: | $(CASILEDIR)/layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS) $(BUILDDIR)
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf:
 	cat <<- EOF > $*.lua
@@ -875,7 +891,7 @@ $(BUILDDIR)/%-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printco
 			s#SW#$${spinepm}#g;
 		" $< > $@
 
-%-$(_binding).pdf: $(BUILDDIR)/%-$(_binding).svg $$(geometryfile)
+%-$(_binding).pdf: $(BUILDDIR)/%-$(_binding).svg $(FONTCONFIG_FILE) $$(geometryfile)
 	$(sourcegeometry)
 	unset DISPLAY
 	export HOME=$(BUILDDIR)
