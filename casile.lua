@@ -656,7 +656,7 @@ CASILE.dropcapNextLetter = function ()
   originalTypesetter = SILE.typesetter.typeset
   SILE.call("noindent")
   SILE.typesetter.typeset = function (self, text)
-    local first, rest = text:match("([^%w]*%w)(.*)")
+    local first, rest = text:match("([^%wüöşçğıİ]*[%wüöşçğıİ][^%wüöşçğıİ]*)(.*)")
     if first and rest then
       SILE.typesetter.typeset = originalTypesetter
       SILE.call("dropcap", {}, { first })
