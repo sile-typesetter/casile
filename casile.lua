@@ -725,7 +725,31 @@ CASILE.isScreenLayout = function ()
   return CASILE.layout == "app" or CASILE.layout == "screen"
 end
 
--- Apostrophe Hack, see https://github.com/simoncozens/sile/issues/355
+-- Apostrophe Hack, see https://github.com/sile-typesetter/sile/issues/355
 SILE.registerCommand("ah", function ()
-  SILE.call("discretionary", { prebreak = "-", replacement = "’" })
+  SILE.call("discretionary", { discardable = false, prebreak = "-", replacement = "’" })
 end)
+
+-- SILE pushBack() is discarding our discretionaries
+SILE.registerCommand("discretionary", function (options, _)
+  local discretionary = SILE.nodefactory.discretionary({})
+  if type(options.discardable) ~= "nil" then
+    discretionary.discardable = options.discardable
+  end
+  if options.prebreak then
+    SILE.call("hbox", {}, function () SILE.typesetter:typeset(options.prebreak) end)
+    discretionary.prebreak = { SILE.typesetter.state.nodes[#SILE.typesetter.state.nodes] }
+    SILE.typesetter.state.nodes[#SILE.typesetter.state.nodes] = nil
+  end
+  if options.postbreak then
+    SILE.call("hbox", {}, function () SILE.typesetter:typeset(options.postbreak) end)
+    discretionary.postbreak = { SILE.typesetter.state.nodes[#SILE.typesetter.state.nodes] }
+    SILE.typesetter.state.nodes[#SILE.typesetter.state.nodes] = nil
+  end
+  if options.replacement then
+    SILE.call("hbox", {}, function () SILE.typesetter:typeset(options.replacement) end)
+    discretionary.replacement = { SILE.typesetter.state.nodes[#SILE.typesetter.state.nodes] }
+    SILE.typesetter.state.nodes[#SILE.typesetter.state.nodes] = nil
+  end
+  table.insert(SILE.typesetter.state.nodes, discretionary)
+end, "Inserts a discretionary node.")
