@@ -653,8 +653,8 @@ end, "Output publication dates in proper format for imprint page")
 
 local originalTypesetter
 CASILE.dropcapNextLetter = function ()
+  SILE.require("refloat")
   originalTypesetter = SILE.typesetter.typeset
-  SILE.call("noindent")
   SILE.typesetter.typeset = function (self, text)
     local first, rest = text:match("([^%wüöşçğıİ]*[%wüöşçğıİ][^%wüöşçğıİ]*)(.*)")
     if first and rest then
@@ -664,13 +664,13 @@ CASILE.dropcapNextLetter = function ()
     else
       originalTypesetter(self, text)
     end
-    SILE.call("indent")
   end
 end
 
 SILE.registerCommand("dropcap", function (_, content)
+  local h = SILE.measurement("2em"):absolute() + SILE.measurement("1bs"):absolute()
   SILE.call("float", { bottomboundary = "1.2ex", rightboundary = "1spc" }, function ()
-    SILE.call("cabook:font:chaptertitle", { size = "5.2ex", weight = 800 }, content)
+    SILE.call("cabook:font:chaptertitle", { size = h, weight = 800 }, content)
   end)
 end)
 
