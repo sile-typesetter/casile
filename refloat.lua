@@ -43,7 +43,7 @@ local splitFrame = function (used, width, height)
   current.next = wrap.id
 end
 
-SILE.registerCommand("float", function (options, content)
+SILE.registerCommand("refloat", function (options, content)
   local used = lockAdvance()
   if #SILE.typesetter.state.nodes > 0 then
     SU.error("Node queue not empty")

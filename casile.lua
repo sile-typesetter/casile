@@ -669,7 +669,7 @@ end
 
 SILE.registerCommand("dropcap", function (_, content)
   local h = SILE.measurement("2em"):absolute() + SILE.measurement("1bs"):absolute()
-  SILE.call("float", { bottomboundary = "1.2ex", rightboundary = "1spc" }, function ()
+  SILE.call("refloat", { bottomboundary = "1.2ex", rightboundary = "1spc" }, function ()
     SILE.call("cabook:font:chaptertitle", { size = h, weight = 800 }, content)
   end)
 end)
