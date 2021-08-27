@@ -651,12 +651,22 @@ SILE.registerCommand("pubDateFormat", function (_, content)
   SILE.call("date", { format = "%B %Y", time = ts, locale = "tr_TR.utf-8" })
 end, "Output publication dates in proper format for imprint page")
 
+local isolateDropcapLetter = function (str)
+  local lpeg = require("lpeg")
+  local R, P, C = lpeg.R, lpeg.P, lpeg.C
+  local letter = P"Ü" + P"Ö" + P"Ş" + P"Ç" + P"İ" + P"Â" + R"AZ" + R"09"
+  local lpunct = P"'" + P'"' + P"‘" + P"“"
+  local tpunct = P"'" + P'"' + P"’" + P"”" + P"."
+  local grp = C(lpunct^0 * letter * tpunct^0) * C(P(1)^1) * P(-1)
+  return grp:match(str)
+end
+
 local originalTypesetter
 CASILE.dropcapNextLetter = function ()
   SILE.require("refloat")
   originalTypesetter = SILE.typesetter.typeset
   SILE.typesetter.typeset = function (self, text)
-    local first, rest = text:match("([^%wüöşçğıİ]*[%wüöşçğıİ][^%wüöşçğıİ]*)(.*)")
+    local first, rest = isolateDropcapLetter(text)
     if first and rest then
       SILE.typesetter.typeset = originalTypesetter
       SILE.call("dropcap", {}, { first })
