@@ -18,7 +18,7 @@ itertools = "0.10.0"
 lazy_static = "1.4.0"
 num_cpus = "1.13.0"
 rayon = "1.5.1"
-rust-embed = "6.0.0"
+rust-embed = "6.0.1"
 subprocess = "0.2.7"
 unic-langid = "0.9.0"
 
