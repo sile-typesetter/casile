@@ -663,26 +663,21 @@ end
 
 local originalTypesetter
 CASILE.dropcapNextLetter = function ()
-  SILE.require("refloat")
+  SILE.require("packages/dropcaps")
   originalTypesetter = SILE.typesetter.typeset
   SILE.typesetter.typeset = function (self, text)
     local first, rest = isolateDropcapLetter(text)
     if first and rest then
       SILE.typesetter.typeset = originalTypesetter
-      SILE.call("dropcap", {}, { first })
+      SILE.call("dropcap", {}, function ()
+        SILE.call("cabook:font:chaptertitle", { weight = 800 }, { first })
+      end)
       SILE.typesetter.typeset(self, rest)
     else
       originalTypesetter(self, text)
     end
   end
 end
-
-SILE.registerCommand("dropcap", function (_, content)
-  local h = SILE.measurement("2em"):absolute() + SILE.measurement("1bs"):absolute()
-  SILE.call("refloat", { bottomboundary = "1.2ex", rightboundary = "1spc" }, function ()
-    SILE.call("cabook:font:chaptertitle", { size = h, weight = 800 }, content)
-  end)
-end)
 
 SILE.registerCommand("requireSpace", function (options, content)
   local required = SILE.length(options.height or 0)
@@ -737,29 +732,5 @@ end
 
 -- Apostrophe Hack, see https://github.com/sile-typesetter/sile/issues/355
 SILE.registerCommand("ah", function ()
-  SILE.call("discretionary", { discardable = false, prebreak = "-", replacement = "’" })
+  SILE.call("discretionary", { prebreak = "-", replacement = "’" })
 end)
-
--- SILE pushBack() is discarding our discretionaries
-SILE.registerCommand("discretionary", function (options, _)
-  local discretionary = SILE.nodefactory.discretionary({})
-  if type(options.discardable) ~= "nil" then
-    discretionary.discardable = options.discardable
-  end
-  if options.prebreak then
-    SILE.call("hbox", {}, function () SILE.typesetter:typeset(options.prebreak) end)
-    discretionary.prebreak = { SILE.typesetter.state.nodes[#SILE.typesetter.state.nodes] }
-    SILE.typesetter.state.nodes[#SILE.typesetter.state.nodes] = nil
-  end
-  if options.postbreak then
-    SILE.call("hbox", {}, function () SILE.typesetter:typeset(options.postbreak) end)
-    discretionary.postbreak = { SILE.typesetter.state.nodes[#SILE.typesetter.state.nodes] }
-    SILE.typesetter.state.nodes[#SILE.typesetter.state.nodes] = nil
-  end
-  if options.replacement then
-    SILE.call("hbox", {}, function () SILE.typesetter:typeset(options.replacement) end)
-    discretionary.replacement = { SILE.typesetter.state.nodes[#SILE.typesetter.state.nodes] }
-    SILE.typesetter.state.nodes[#SILE.typesetter.state.nodes] = nil
-  end
-  table.insert(SILE.typesetter.state.nodes, discretionary)
-end, "Inserts a discretionary node.")
