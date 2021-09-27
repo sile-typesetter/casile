@@ -653,28 +653,27 @@ end, "Output publication dates in proper format for imprint page")
 
 local isolateDropcapLetter = function (str)
   local lpeg = require("lpeg")
-  local R, P, C = lpeg.R, lpeg.P, lpeg.C
+  local R, P, C, S = lpeg.R, lpeg.P, lpeg.C, lpeg.S
   local letter = P"Ü" + P"Ö" + P"Ş" + P"Ç" + P"İ" + P"Â" + R"AZ" + R"09"
   local lpunct = P"'" + P'"' + P"‘" + P"“"
   local tpunct = P"'" + P'"' + P"’" + P"”" + P"."
-  local grp = C(lpunct^0 * letter * tpunct^0) * C(P(1)^1) * P(-1)
+  local whitespace = S"\r\n\f\t "
+  local grp = whitespace^0 * C(lpunct^0 * letter * tpunct^0) * C(P(1)^1) * P(-1)
   return grp:match(str)
 end
 
-local originalTypesetter
+local originalTypeset
 CASILE.dropcapNextLetter = function ()
   SILE.require("packages/dropcaps")
-  originalTypesetter = SILE.typesetter.typeset
+  originalTypeset = SILE.typesetter.typeset
   SILE.typesetter.typeset = function (self, text)
     local first, rest = isolateDropcapLetter(text)
     if first and rest then
-      SILE.typesetter.typeset = originalTypesetter
-      SILE.call("dropcap", {}, function ()
-        SILE.call("cabook:font:chaptertitle", { weight = 800 }, { first })
-      end)
+      SILE.typesetter.typeset = originalTypeset
+      SILE.call("dropcap", {}, { first })
       SILE.typesetter.typeset(self, rest)
     else
-      originalTypesetter(self, text)
+      originalTypeset(self, text)
     end
   end
 end
