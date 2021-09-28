@@ -1,6 +1,12 @@
 -- luacheck: ignore loadstring
 local loadstring = loadstring or load
 
+SILE.registerCommand("foliostyle", function (_, content)
+  SILE.call("center", {}, function ()
+    SILE.call("cabook:font:folio", {}, content)
+  end)
+end)
+
 SILE.registerCommand("titlepage", function (_, _)
   if not SILE.Commands["meta:title"] then return end
   SILE.call("nofolios")
