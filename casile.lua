@@ -220,6 +220,7 @@ SILE.registerCommand("open-page", function (options)
       SILE.typesetter:typeset("")
       SILE.typesetter:leaveHmode()
       SILE.scratch.headers.skipthispage = true
+      SILE.scratch.counters.folio.off = 2
     end
     SILE.typesetter:leaveHmode()
     SILE.call("supereject")
