@@ -496,6 +496,7 @@ end)
 SILE.registerCommand("class:dedication", function (options, content)
   options.eject = SU.boolean(options.eject, true)
   SILE.scratch.headers.skipthispage = true
+  SILE.scratch.counters.folio.off = 2
   SILE.call("center", {}, function ()
     SILE.settings.set("linespacing.method", "fit-font")
     SILE.settings.set("linespacing.fit-font.extra-space", SILE.length("0.4ex plus 0.1ex minus 0.1ex"))
