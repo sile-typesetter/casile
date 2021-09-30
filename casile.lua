@@ -208,25 +208,27 @@ SILE.registerCommand("tocentry", function (options, content)
   })
 end)
 
--- This is the same as SILE's version but sets our no-headers variable on blank pages
--- ...and allows opening to an even page
-SILE.registerCommand("open-page", function (options)
+-- This is similar to SILE's open-double-page, but disables headers and folios
+-- on blank pages and allows opening the even side (with or without a leading blank)
+SILE.registerCommand("open-spread", function (options)
   local odd = SU.boolean(options.odd, not CASILE.isScreenLayout())
   local double = SU.boolean(options.double, not CASILE.isScreenLayout())
   local class = SILE.documentState.documentClass
   local count = 0
+  local pageHook = function () count = count + 1 end
+  SILE.typesetter:registerPageEndHook(pageHook)
   repeat
+    SILE.typesetter:leaveHmode()
     if count > 0 then
-      SILE.typesetter:typeset("")
+      SILE.call("hbox")
       SILE.typesetter:leaveHmode()
       SILE.scratch.headers.skipthispage = true
       SILE.scratch.counters.folio.off = 2
     end
-    SILE.typesetter:leaveHmode()
     SILE.call("supereject")
-    count = count + 1
-  until (not double or count > 1) and (not odd or class:oddPage())
-  SILE.typesetter:leaveHmode()
+    SILE.typesetter:leaveHmode()
+  until (not double or count > 1) and (odd and class:oddPage()) or (not odd and not class:oddPage())
+  table.remove(SILE.typesetter.hooks.pageend)
 end)
 
 SILE.registerCommand("chaptertoc", function (_, _)
@@ -515,9 +517,9 @@ SILE.registerCommand("seriespage:series", function (_, content)
 end)
 
 SILE.registerCommand("seriespage:pre", function (_, _)
-  SILE.call("open-page")
+  SILE.call("open-spread", { odd = true, double = true })
   SILE.scratch.headers.skipthispage = true
-  SILE.call("nofolios")
+  SILE.scratch.counters.folio.off = 2
   SILE.call("topfill")
 end)
 

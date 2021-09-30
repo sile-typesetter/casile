@@ -29,3 +29,4 @@ s#nodefactory\.zeroGlue#nodefactory.glue()#g
 s#nodefactory\.zeroVglue#nodefactory.zerovglue()#g
 s#nodefactory\.hfillGlue#nodefactory.hfillglue()#g
 s#SILE\.length\.\(make\|new\|parse\)#SILE.length#g
+s#\bopen-page\b#open-spread#g
