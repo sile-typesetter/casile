@@ -518,7 +518,7 @@ SILE.registerCommand("seriespage:series", function (_, content)
 end)
 
 SILE.registerCommand("seriespage:pre", function (_, _)
-  SILE.call("open-spread", { odd = true, double = true })
+  SILE.call("open-spread", { odd = true, double = false })
   SILE.scratch.headers.skipthispage = true
   SILE.scratch.counters.folio.off = 2
   SILE.call("topfill")
