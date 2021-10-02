@@ -737,3 +737,23 @@ end
 SILE.registerCommand("ah", function ()
   SILE.call("discretionary", { prebreak = "-", replacement = "’" })
 end)
+
+-- Calculate height of current output queue withouth taking into account any
+-- stretch or shrink.
+local precalcheight = function()
+  local totalHeight = SILE.measurement()
+  for _, node in ipairs(SILE.typesetter.state.outputQueue) do
+    totalHeight:___add(node.height)
+    totalHeight:___add(node.depth)
+  end
+  return totalHeight
+end
+
+SILE.registerCommand("skipto", function (options, _)
+  local targetHeight = SU.cast("measurement", options.height):tonumber()
+  SILE.call("hbox")
+  SILE.typesetter:leaveHmode()
+  local queueHeight = precalcheight()
+  table.remove(SILE.typesetter.state.nodes)
+  SILE.call("skip", { height = targetHeight - queueHeight })
+end)
