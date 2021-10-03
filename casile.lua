@@ -651,27 +651,32 @@ SILE.registerCommand("pubDateFormat", function (_, content)
   SILE.call("date", { format = "%B %Y", time = ts, locale = "tr_TR.utf-8" })
 end, "Output publication dates in proper format for imprint page")
 
-local originalTypesetter = SILE.typesetter.typeset
+local isolateDropcapLetter = function (str)
+  local lpeg = require("lpeg")
+  local R, P, C, S = lpeg.R, lpeg.P, lpeg.C, lpeg.S
+  local letter = P"Ü" + P"Ö" + P"Ş" + P"Ç" + P"İ" + P"Â" + R"AZ" + R"09"
+  local lpunct = P"'" + P'"' + P"‘" + P"“"
+  local tpunct = P"'" + P'"' + P"’" + P"”" + P"."
+  local whitespace = S"\r\n\f\t "
+  local grp = whitespace^0 * C(lpunct^0 * letter * tpunct^0) * C(P(1)^1) * P(-1)
+  return grp:match(str)
+end
+
+local originalTypeset
 CASILE.dropcapNextLetter = function ()
+  SILE.require("packages/dropcaps")
+  originalTypeset = SILE.typesetter.typeset
   SILE.typesetter.typeset = function (self, text)
-    local first, rest = text:match("([^%w]*%w)(.*)")
-    if load and first and rest then
-      SILE.typesetter.typeset = originalTypesetter
+    local first, rest = isolateDropcapLetter(text)
+    if first and rest then
+      SILE.typesetter.typeset = originalTypeset
       SILE.call("dropcap", {}, { first })
       SILE.typesetter.typeset(self, rest)
     else
-      originalTypesetter(self, text)
+      originalTypeset(self, text)
     end
   end
 end
-
-SILE.registerCommand("dropcap", function (_, content)
-  SILE.call("noindent")
-  SILE.call("float", { bottomboundary = "1.2ex", rightboundary = "1spc" }, function ()
-    SILE.call("cabook:font:chaptertitle", { size = "5.2ex", weight = 800 }, content)
-  end)
-  SILE.call("indent")
-end)
 
 SILE.registerCommand("requireSpace", function (options, content)
   local required = SILE.length(options.height or 0)
@@ -724,7 +729,7 @@ CASILE.isScreenLayout = function ()
   return CASILE.layout == "app" or CASILE.layout == "screen"
 end
 
--- Apostrophe Hack, see https://github.com/simoncozens/sile/issues/355
+-- Apostrophe Hack, see https://github.com/sile-typesetter/sile/issues/355
 SILE.registerCommand("ah", function ()
   SILE.call("discretionary", { prebreak = "-", replacement = "’" })
 end)
