@@ -379,6 +379,8 @@ ifeq ($(LANGUAGE),tr)
 ah := $(PERL) $(PERLARGS) -pne '/^\#/ or s/(?<=\p{L})’(?=\p{L})/\\ah{}/g' |
 endif
 
+PANDOCTEMPLATE ?= $(CASILEDIR)/travis.yml
+
 FULLSILS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil))
 FULLSILS += $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil))
 $(FULLSILS): private PANDOCFILTERS += --filter=$(CASILEDIR)/pandoc-filters/svg2pdf.py
@@ -387,7 +389,7 @@ $(FULLSILS): private PROCESSEDSOURCE = $(addprefix $(BUILDDIR)/,$(call pattern_l
 $(FULLSILS): $(BUILDDIR)/%.sil: $$(PROCESSEDSOURCE)
 $(FULLSILS): $(BUILDDIR)/%.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-manifest.yml)
 $(FULLSILS): $(BUILDDIR)/%.sil: $$(addprefix $(BUILDDIR)/,$$(call pattern_list,$$(call parse_bookid,$$@),-$(_verses)-$(_sorted).json -url.png))
-$(FULLSILS): $(BUILDDIR)/%.sil: $(CASILEDIR)/template.sil
+$(FULLSILS): $(BUILDDIR)/%.sil: $(PANDOCTEMPLATE)
 $(FULLSILS): $(BUILDDIR)/%.sil: | $$(call onpaperlibs,$$@)
 $(FULLSILS): $(BUILDDIR)/%.sil:
 	$(PANDOC) --standalone \
