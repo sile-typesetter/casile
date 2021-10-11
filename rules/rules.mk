@@ -898,7 +898,7 @@ $(BUILDDIR)/%-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printco
 
 %-$(_binding).pdf: $(BUILDDIR)/%-$(_binding).svg $(FCCONFIG) $$(geometryfile)
 	$(sourcegeometry)
-	unset DISPLAY
+	# unset DISPLAY
 	export HOME=$(BUILDDIR)
 	$(INKSCAPE) $< \
 		--batch-process \
