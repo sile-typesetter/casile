@@ -14,12 +14,12 @@ colored = "2.0.0"
 fluent = "0.12.0"
 fluent-fallback = "0.0.4"
 fluent-langneg = "0.13.0"
-itertools = "0.10.0"
+itertools = "0.10.3"
 lazy_static = "1.4.0"
-num_cpus = "1.13.0"
+num_cpus = "1.13.1"
 rayon = "1.5.1"
-rust-embed = "6.0.1"
-subprocess = "0.2.7"
+rust-embed = "6.3.0"
+subprocess = "0.2.8"
 unic-langid = "0.9.0"
 
   [dependencies.config]
@@ -58,8 +58,8 @@ clap_generate = "3.0.0-beta.4"
   features = [ "build", "git" ]
 
 [dev-dependencies]
-assert_cmd = "2.0.0"
-predicates = "1.0.8"
+assert_cmd = "2.0.2"
+predicates = "2.1.0"
 
 [profile.release]
 lto = true
