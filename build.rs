@@ -1,6 +1,6 @@
 use clap::IntoApp;
-use clap_generate::generate_to;
-use clap_generate::generators::{Bash, Elvish, Fish, PowerShell, Zsh};
+use clap_complete::generator::generate_to;
+use clap_complete::shells::{Bash, Elvish, Fish, PowerShell, Zsh};
 use std::{env, fs, path};
 use vergen::vergen;
 
@@ -32,15 +32,15 @@ fn generate_shell_completions() {
         .get_bin_name()
         .expect("Could not retrieve bin-name from generated Clap app");
     let mut app = Cli::into_app();
-    generate_to::<Bash, _, _>(&mut app, bin_name, &completions_dir)
+    generate_to(Bash, &mut app, bin_name, &completions_dir)
         .expect("Unable to generate bash completions");
-    generate_to::<Elvish, _, _>(&mut app, bin_name, &completions_dir)
+    generate_to(Elvish, &mut app, bin_name, &completions_dir)
         .expect("Unable to generate elvish completions");
-    generate_to::<Fish, _, _>(&mut app, bin_name, &completions_dir)
+    generate_to(Fish, &mut app, bin_name, &completions_dir)
         .expect("Unable to generate fish completions");
-    generate_to::<PowerShell, _, _>(&mut app, bin_name, &completions_dir)
+    generate_to(PowerShell, &mut app, bin_name, &completions_dir)
         .expect("Unable to generate powershell completions");
-    generate_to::<Zsh, _, _>(&mut app, bin_name, &completions_dir)
+    generate_to(Zsh, &mut app, bin_name, &completions_dir)
         .expect("Unable to generate zsh completions");
 }
 

@@ -1,6 +1,6 @@
 use clap::{FromArgMatches, IntoApp};
 
-use casile::cli::{Cli, Subcommand};
+use casile::cli::{Cli, Commands};
 use casile::config::CONF;
 use casile::{make, setup, status};
 use casile::{Result, VERSION};
@@ -15,9 +15,9 @@ fn main() -> Result<()> {
     CONF.merge_args(&args)?;
     casile::show_welcome();
     let ret = match args.subcommand {
-        Subcommand::Make { target } => make::run(target),
-        Subcommand::Setup {} => setup::run(),
-        Subcommand::Status {} => status::run(),
+        Commands::Make { target } => make::run(target),
+        Commands::Setup {} => setup::run(),
+        Commands::Status {} => status::run(),
     };
     casile::show_outro();
     ret
