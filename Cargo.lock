@@ -110,7 +110,7 @@ dependencies = [
  "rust-embed",
  "subprocess",
  "unic-langid",
- "vergen",
+ "vergen 6.0.0",
 ]
 
 [[package]]
@@ -424,7 +424,7 @@ checksum = "b5e8a389d58066558d4430fb70f8a513cc3994fd1cbc192c59b79f3e1db27712"
 dependencies = [
  "filetime",
  "git2",
- "vergen",
+ "vergen 5.1.15",
 ]
 
 [[package]]
@@ -1132,6 +1132,22 @@ name = "vergen"
 version = "5.1.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "265455aab08c55a1ab13f07c8d5e25c7d46900f4484dd7cbd682e77171f93f3c"
+dependencies = [
+ "anyhow",
+ "cfg-if",
+ "chrono",
+ "enum-iterator",
+ "getset",
+ "git2",
+ "rustversion",
+ "thiserror",
+]
+
+[[package]]
+name = "vergen"
+version = "6.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fd0c9f8387e118573859ae0e6c6fbdfa41bd1f4fbea451b0b8c5a81a3b8bc9e0"
 dependencies = [
  "anyhow",
  "cfg-if",
