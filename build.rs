@@ -1,13 +1,13 @@
 use clap::IntoApp;
 use clap_complete::generator::generate_to;
 use clap_complete::shells::{Bash, Elvish, Fish, PowerShell, Zsh};
-use std::{env, fs, path};
-use vergen::vergen;
+use std::{collections, env, fs};
+use vergen::{vergen, Config};
 
 include!("src/cli.rs");
 
 fn main() {
-    let mut flags = vergen::Config::default();
+    let mut flags = Config::default();
     // If passed a version, use that instead of vergen's formatting
     if let Ok(val) = env::var("CASILE_VERSION") {
         *flags.git_mut().enabled_mut() = false;
@@ -47,7 +47,7 @@ fn generate_shell_completions() {
 /// Pass through some variables set by autoconf/automake about where we're installed to cargo for
 /// use in finding resources at runtime
 fn pass_on_configure_details() {
-    let mut autoconf_vars = std::collections::HashMap::new();
+    let mut autoconf_vars = collections::HashMap::new();
     autoconf_vars.insert("CONFIGURE_PREFIX", String::from("./"));
     autoconf_vars.insert("CONFIGURE_BINDIR", String::from("./"));
     autoconf_vars.insert("CONFIGURE_DATADIR", String::from("./"));
