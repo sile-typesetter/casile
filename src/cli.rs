@@ -1,9 +1,10 @@
-use clap::{AppSettings, Clap};
+use clap::{AppSettings, Parser, Subcommand};
+use std::path;
 
 // FTL: help-description
 /// The command line interface to the CaSILE toolkit,
 /// a publishing workflow employing SILE and other wizardry.
-#[derive(Clap, Debug)]
+#[derive(Parser, Debug)]
 #[clap(bin_name = "casile")]
 #[clap(setting = AppSettings::InferSubcommands)]
 pub struct Cli {
@@ -20,7 +21,7 @@ pub struct Cli {
     // FTL: help-flags-path
     /// Set project root path
     #[clap(short, long, default_value = "./")]
-    pub path: std::path::PathBuf,
+    pub path: path::PathBuf,
 
     // FTL: help-flags-quiet
     /// Discard all non-error output messages
@@ -33,11 +34,11 @@ pub struct Cli {
     pub verbose: bool,
 
     #[clap(subcommand)]
-    pub subcommand: Subcommand,
+    pub subcommand: Commands,
 }
 
-#[derive(Clap, Debug)]
-pub enum Subcommand {
+#[derive(Subcommand, Debug)]
+pub enum Commands {
     // FTL: help-subcommand-make
     /// Build specified target(s) with ‘make’
     Make {

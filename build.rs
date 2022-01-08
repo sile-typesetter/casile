@@ -1,13 +1,13 @@
 use clap::IntoApp;
-use clap_generate::generate_to;
-use clap_generate::generators::{Bash, Elvish, Fish, PowerShell, Zsh};
-use std::{env, fs, path};
-use vergen::vergen;
+use clap_complete::generator::generate_to;
+use clap_complete::shells::{Bash, Elvish, Fish, PowerShell, Zsh};
+use std::{collections, env, fs};
+use vergen::{vergen, Config};
 
 include!("src/cli.rs");
 
 fn main() {
-    let mut flags = vergen::Config::default();
+    let mut flags = Config::default();
     // If passed a version, use that instead of vergen's formatting
     if let Ok(val) = env::var("CASILE_VERSION") {
         *flags.git_mut().enabled_mut() = false;
@@ -32,22 +32,22 @@ fn generate_shell_completions() {
         .get_bin_name()
         .expect("Could not retrieve bin-name from generated Clap app");
     let mut app = Cli::into_app();
-    generate_to::<Bash, _, _>(&mut app, bin_name, &completions_dir)
+    generate_to(Bash, &mut app, bin_name, &completions_dir)
         .expect("Unable to generate bash completions");
-    generate_to::<Elvish, _, _>(&mut app, bin_name, &completions_dir)
+    generate_to(Elvish, &mut app, bin_name, &completions_dir)
         .expect("Unable to generate elvish completions");
-    generate_to::<Fish, _, _>(&mut app, bin_name, &completions_dir)
+    generate_to(Fish, &mut app, bin_name, &completions_dir)
         .expect("Unable to generate fish completions");
-    generate_to::<PowerShell, _, _>(&mut app, bin_name, &completions_dir)
+    generate_to(PowerShell, &mut app, bin_name, &completions_dir)
         .expect("Unable to generate powershell completions");
-    generate_to::<Zsh, _, _>(&mut app, bin_name, &completions_dir)
+    generate_to(Zsh, &mut app, bin_name, &completions_dir)
         .expect("Unable to generate zsh completions");
 }
 
 /// Pass through some variables set by autoconf/automake about where we're installed to cargo for
 /// use in finding resources at runtime
 fn pass_on_configure_details() {
-    let mut autoconf_vars = std::collections::HashMap::new();
+    let mut autoconf_vars = collections::HashMap::new();
     autoconf_vars.insert("CONFIGURE_PREFIX", String::from("./"));
     autoconf_vars.insert("CONFIGURE_BINDIR", String::from("./"));
     autoconf_vars.insert("CONFIGURE_DATADIR", String::from("./"));
