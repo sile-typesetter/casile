@@ -28,7 +28,7 @@ unic-langid = "0.9.0"
   features = [ "yaml" ]
 
   [dependencies.clap]
-  version = "3.0.5"
+  version = "3.0.6"
   features = [ "derive", "wrap_help" ]
 
   [dependencies.git2]
@@ -49,7 +49,7 @@ unic-langid = "0.9.0"
   features = [ "std" ]
 
 [build-dependencies]
-clap = "3.0.5"
+clap = "3.0.6"
 clap_complete = "3.0.2"
 
   [build-dependencies.vergen]
