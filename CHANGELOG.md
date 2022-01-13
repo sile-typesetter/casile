@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.7.0](https://github.com/sile-typesetter/casile/compare/v0.6.4...v0.7.0) (2022-01-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **class:** The open-page function has been removed, but
+open-spread is not a drop in replacement for all previous usage because
+it will force an even page opening if odd is false.
+* **class:** The dropcap function formerly provided by CaSILE used
+frames (via frametricks) and needed constant tweaking. The new upstream
+package is *much* better suited to this task, but since the
+implementation is almost completely different most book projects that
+used this will need to adjust.
+
+### Features
+
+* **class:** Add \skipto command for frame relative absolute skips ([7c24f73](https://github.com/sile-typesetter/casile/commit/7c24f73d55e3a8866a7cf21560bfd4d2240fd1ee))
+* **class:** Disable folios when disabling headers on speads ([ec2dda6](https://github.com/sile-typesetter/casile/commit/ec2dda6bb1bb9c3e126f910b766e304faa47878f))
+* **class:** Typeset section/subsection titles as raggedright ([fd84d26](https://github.com/sile-typesetter/casile/commit/fd84d26d9534475e72bc4a1372b0126c188c591d))
+* **rules:** Handle project-local fonts transparently ([2cdfd9b](https://github.com/sile-typesetter/casile/commit/2cdfd9ba4af18c7dec0607ea4c0822d91c5d01cb))
+* **templates:** Add alternative float implementation for dropcaps ([9474307](https://github.com/sile-typesetter/casile/commit/9474307fa0584585f71ee896fe2a1f8129341a8d))
+* **templates:** Allow using a custom pandoc template ([0d34177](https://github.com/sile-typesetter/casile/commit/0d341771fecaa4486861acee81e84904f9219e3f))
+* **templates:** Use LPEG to parse Turkish (non-ansi) dropcaps ([7d9c7bf](https://github.com/sile-typesetter/casile/commit/7d9c7bffb2bc356a3714f2527f958bd24441e9c8))
+
+
+### Bug Fixes
+
+* **build:** Swap unportable ‘cp -bf’ for ‘install’ ([ef64ca5](https://github.com/sile-typesetter/casile/commit/ef64ca5f3aad5b9eafa9d0d2a2bab5995258f541))
+* **covers:** Enable Inkscape access to DISPLAY (temporary) ([e8ac51a](https://github.com/sile-typesetter/casile/commit/e8ac51a4b9604d1d867ba9c58927892579c32812))
+* **templates:** Avoid Turkish apostrophe-hyphen hack being dropped after dropcaps ([b6d0137](https://github.com/sile-typesetter/casile/commit/b6d0137bc88ca87c79da5bc4c4986fa7e80f7601))
+* **templates:** Detect Turkish alphabet as part of dropcap characters ([cb5353c](https://github.com/sile-typesetter/casile/commit/cb5353cdc8c4809d008079405e7399c76efb7bf6))
+
+
+### Miscellaneous Chores
+
+* **class:** Drop custom dropcap function, use new SILE package ([cddd698](https://github.com/sile-typesetter/casile/commit/cddd698f0a40bc09e30af35dcfa696a83f377e57))
+
+
+### Code Refactoring
+
+* **class:** Replace open-page with open-spread ([0338f17](https://github.com/sile-typesetter/casile/commit/0338f17e5b8b7ce131f74e87b245af95403fbe69))
+
 ### [0.6.4](https://github.com/sile-typesetter/casile/compare/v0.6.3...v0.6.4) (2021-08-24)
 
 
