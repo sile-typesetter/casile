@@ -17,10 +17,10 @@ LANGUAGE ?= en
 # Empty recipes for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;
 
-MARKDOWNSOURCES := $(call find,*.md)
-LUASOURCES := $(call find,*.lua)
-MAKESOURCES := $(call find,[Mm]akefile*)
-YAMLSOURCES := $(call find,*.yml)
+MARKDOWNSOURCES := $(patsubst ./%,%,$(call find,*.md))
+LUASOURCES := $(patsubst ./%,%,$(call find,*.lua))
+MAKESOURCES := $(patsubst ./%,%,$(call find,[Mm]akefile*))
+YAMLSOURCES := $(patsubst ./%,%,$(call find,*.yml))
 
 # Find stuff that could be built based on what has matching YAML and a MD components
 SOURCES_DEF := $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(notdir $(YAMLSOURCES))))
@@ -130,7 +130,7 @@ PROJECTLUA := $(wildcard $(PROJECT).lua)
 LUALIBS += $(CASILEDIR)/casile.lua
 
 # Add a place where project local fonts can live
-FONTDIRS += $(CASILEDIR)/fonts $(wildcard $(PROJECTDIR)/.fonts)
+FONTDIRS += $(patsubst ./%,%,$(CASILEDIR)/fonts $(wildcard $(PROJECTDIR:./=.)/.fonts)))
 
 FCCONFIG := $(BUILDDIR)/fontconfig.conf
 export FONTCONFIG_FILE := $(shell cd "$(BUILDDIR)" && pwd)/fontconfig.conf
