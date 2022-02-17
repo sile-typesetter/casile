@@ -11,6 +11,7 @@ i=0
 of=$dir/000.md
 chapters=()
 
+@PANDOC@ $src --atx-headers --wrap=none --to=markdown --reference-location=document |
 while read line; do
 	# Stop processing if we've hit footnotes
 	[[ $line =~ "^\[\^1\]: .*" ]] && break
@@ -24,7 +25,7 @@ while read line; do
 		cp /dev/null $of
 	fi
 	>> $of <<< $line
-done < $src
+done
 
 # Truncate source to just footnotes
 @SED@ -i -n -e '/^\[\^1\]: /,$p' $src
