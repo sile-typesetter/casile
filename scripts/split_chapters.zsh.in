@@ -39,5 +39,5 @@ for chapter in $chapters; do
 done
 
 # Make source an index to the chapters
-> $src <<< "esyscmd([[loadchapters.zsh $dir/<0->-*.md]])"
+> $src <<< "esyscmd([[loadchapters.zsh \"$dir/<0->-*.md\"]])"
 @GIT@ add $src
