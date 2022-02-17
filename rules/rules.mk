@@ -379,7 +379,7 @@ ifeq ($(LANGUAGE),tr)
 ah := $(PERL) $(PERLARGS) -pne '/^\#/ or s/(?<=\p{L})’(?=\p{L})/\\ah{}/g' |
 endif
 
-PANDOCTEMPLATE ?= $(CASILEDIR)/travis.yml
+PANDOCTEMPLATE ?= $(CASILEDIR)/template.sil
 
 FULLSILS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil))
 FULLSILS += $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil))
