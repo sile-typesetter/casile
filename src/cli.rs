@@ -1,4 +1,4 @@
-use clap::{AppSettings, Parser, Subcommand};
+use clap::{Parser, Subcommand};
 use std::path;
 
 // FTL: help-description
@@ -6,7 +6,6 @@ use std::path;
 /// a publishing workflow employing SILE and other wizardry.
 #[derive(Parser, Debug)]
 #[clap(bin_name = "casile")]
-#[clap(setting = AppSettings::InferSubcommands)]
 pub struct Cli {
     // FTL: help-flags-debug
     /// Enable extra debug output from tooling

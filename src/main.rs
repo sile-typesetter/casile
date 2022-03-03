@@ -9,7 +9,7 @@ fn main() -> Result<()> {
     CONF.defaults()?;
     CONF.merge_env()?;
     CONF.merge_files()?;
-    let app = Cli::into_app().version(VERSION);
+    let app = Cli::command().infer_subcommands(true).version(VERSION);
     let matches = app.get_matches();
     let args = Cli::from_arg_matches(&matches).expect("Unable to parse arguments");
     CONF.merge_args(&args)?;
