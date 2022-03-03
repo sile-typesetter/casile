@@ -23,7 +23,8 @@ subprocess = "0.2.8"
 unic-langid = "0.9.0"
 
   [dependencies.config]
-  version = "0.12.0"
+  # hold 0.12.0, see https://github.com/mehcode/config-rs/pull/277
+  version = "0.11.0"
   default-features = false
   features = [ "yaml" ]
 
