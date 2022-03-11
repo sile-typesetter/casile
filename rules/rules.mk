@@ -1349,4 +1349,8 @@ $(BUILDDIR)/%-$(_verses)-$(_text).yml: $(BUILDDIR)/%-$(_verses)-$(_sorted).json
 		$(SED) -e '/^[^ ]/s/^\([^:]\+\):/"\1":/' \
 			> $@
 
+ifneq (,$(POSTCASILEEVAL))
+$(eval $(POSTCASILEEVAL))
+endif
+
 -include $(POSTCASILEINCLUDE)
