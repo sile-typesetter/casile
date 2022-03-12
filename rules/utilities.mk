@@ -112,7 +112,6 @@ list:
 		$(XARGS)
 
 .PHONY: update_toolkits
-update_toolkits: update_casile
 
 .PHONY: upgrade_toolkits
 upgrade_toolkits: upgrade_casile
