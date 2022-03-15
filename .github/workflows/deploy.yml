@@ -13,10 +13,10 @@ jobs:
   ghcr:
     strategy:
       fail-fast: false
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Fetch tags
@@ -30,7 +30,7 @@ jobs:
           echo "REF=${GITHUB_REF##refs/*/}" >> $GITHUB_ENV
           ./bootstrap.sh
           ./configure --without-{bash,fish,zsh}-completion-dir --disable-dependency-checks
-      - name: Publish Docker Image to GH Pakcages
+      - name: Publish Docker Image to GH Container Registry
         run: |
           make docker-build-push
         env:
