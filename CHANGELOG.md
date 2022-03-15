@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.1](https://github.com/sile-typesetter/casile/compare/v0.7.0...v0.7.1) (2022-03-15)
+
+
+### Features
+
+* **rules:** Add ability to eval Make code after default rules ([fccf315](https://github.com/sile-typesetter/casile/commit/fccf315b2946a5ed74e4152187dcdfa763f0c484))
+* **utilities:** Handle chapter splitting for sources with footnotes in sections ([3d5e7b5](https://github.com/sile-typesetter/casile/commit/3d5e7b54b9b51635440ce480d92cde25cd471b05))
+
+
+### Bug Fixes
+
+* **layouts:** Only mark verse positions if creating a verse index ([4535a5c](https://github.com/sile-typesetter/casile/commit/4535a5ceaf5af16566bf897e4ee9cc6fe7a74769))
+* **rules:** Correct Pandoc template override variable ([#138](https://github.com/sile-typesetter/casile/issues/138)) ([4314008](https://github.com/sile-typesetter/casile/commit/43140084ec994d19596ee678ad53c2c165c7a22f))
+* **utilities:** Correct shell quoting on generated chapter concatenater ([d72bb91](https://github.com/sile-typesetter/casile/commit/d72bb915e7e0854214f1e2501cccffa049699302))
+
 ## [0.7.0](https://github.com/sile-typesetter/casile/compare/v0.6.4...v0.7.0) (2022-01-13)
 
 
