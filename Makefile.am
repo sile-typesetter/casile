@@ -242,6 +242,9 @@ casile-%.md: CHANGELOG.md
 	$(SED) -e '/\.\.\.v$*/,/\.\.\.v/!d' $< | \
 		$(SED) -e '1,3d;N;$$!P;$$!D;$$d' > $@
 
+export GHCR_REGISTRY ?= ghcr.io
+export GHCR_REPO ?= sile-typesetter/$(TRANSFORMED_PACKAGE_NAME)
+
 export DOCKER_REGISTRY ?= docker.io
 export DOCKER_REPO ?= siletypesetter/$(TRANSFORMED_PACKAGE_NAME)
 export DOCKER_TAG ?= HEAD
@@ -264,16 +267,26 @@ docker-dep-check: .docker_deps .aur_deps
 		$(SED) -nE '/\bdepends =/{s/.*= //;p}' | \
 		sort > $@
 
-.PHONY: docker-build-push
-docker-build-push: docker
-	docker tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
+define docker_push =
 	test -z "$(DOCKER_PAT)" || \
 		docker login https://$(DOCKER_REGISTRY) -u $(DOCKER_USERNAME) -p $(DOCKER_PAT)
 	docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
 	if [[ "$(DOCKER_TAG)" == v*.*.* ]]; then \
-		tag=$(DOCKER_TAG) ;\
-		docker tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):latest ;\
-		docker tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$${tag//.*} ;\
-		docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO):latest ;\
-		docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$${tag//.*} ;\
+		tag=$(DOCKER_TAG) ; \
+		docker tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):latest ; \
+		docker tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$${tag//.*} ; \
+		docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO):latest ; \
+		docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$${tag//.*} ; \
 	fi
+endef
+
+.PHONY: docker-ghcr-to-hub
+docker-ghcr-to-hub:
+	docker pull $(GHCR_REGISTRY)/$(GHCR_REPO):$(DOCKER_TAG)
+	docker tag  $(GHCR_REGISTRY)/$(GHCR_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
+	$(docker_push)
+
+.PHONY: docker-build-push
+docker-build-push: docker
+	docker tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
+	$(docker_push)
