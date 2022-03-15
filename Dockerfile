@@ -13,6 +13,13 @@ RUN sed -i  /etc/pacman.conf -e \
 	'/^.community/{n;n;s!^!\n\[alerque\]\nServer = https://arch.alerque.com/$arch\n!}'
 RUN pacman-key --recv-keys 63CC496475267693 && pacman-key --lsign-key 63CC496475267693
 
+# This hack can convince Docker its cache is obsolete; e.g. when the contents
+# of downloaded resources have changed since being fetched. It's helpful to have
+# this as a separate layer because it saves time for local builds. Incrementing
+# this when pushing dependency updates to Caleb's Arch user repository or just
+# when the remote Docker Hub builds die should be enough.
+ARG DOCKER_HUB_CACHE=0
+
 ARG RUNTIME_DEPS
 ARG BUILD_DEPS
 
