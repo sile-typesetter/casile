@@ -200,7 +200,7 @@ endif
 BRANCH := $(subst refs/heads/,,$(or $(CI_COMMIT_REF_NAME),$(GITHUB_HEAD_REF),$(GITHUB_REF),$(shell $(_ENV) $(GIT) rev-parse --abbrev-ref HEAD)))
 TAG := $(or $(CI_COMMIT_TAG),$(shell $(_ENV) $(GIT) describe --tags --exact-match 2>/dev/null))
 ALLTAGS := $(strip $(CI_COMMIT_TAG) $(shell $(_ENV) $(GIT) tag --points-at HEAD | $(XARGS) echo))
-PARENT ?= $(shell $(_ENV) $(GIT) merge-base $(or $(CI_MERGE_REQUEST_SOURCE_BRANCH_NAME),$(GITHUB_BASE_REF),master) $(BRANCH))
+PARENT := $(shell $(_ENV) $(GIT) merge-base $(or $(CI_MERGE_REQUEST_SOURCE_BRANCH_NAME),$(GITHUB_BASE_REF),master) $(BRANCH) 2>/dev/null)
 
 # Add mock-ups to sources
 ifeq ($(strip $(MOCKUPS)),true)
