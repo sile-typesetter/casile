@@ -29,9 +29,6 @@ RUN pacman --needed --noconfirm -Syuq && yes | pacman -Sccq
 # Install run-time dependecies
 RUN pacman --needed --noconfirm -Sq $RUNTIME_DEPS && yes | pacman -Sccq
 
-# Patch up Arch’s Image Magick security settings to let it run Ghostscript
-RUN sed -i -e '/pattern="gs"/d' /etc/ImageMagick-7/policy.xml
-
 # Setup separate image for build so we don’t bloat the final image
 FROM base AS builder
 
