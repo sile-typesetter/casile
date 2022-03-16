@@ -20,7 +20,9 @@ pub fn run() -> Result<()> {
             true => {
                 regen_gitignore(get_repo()?)?;
                 configure_short_shas(get_repo()?)?;
-                warp_time(get_repo()?)?;
+                if is_deep()? {
+                    warp_time(get_repo()?)?;
+                }
                 Ok(())
             }
             false => Err(Box::new(io::Error::new(
@@ -83,6 +85,13 @@ pub fn is_setup() -> Result<bool> {
 pub fn is_repo() -> Result<bool> {
     let ret = get_repo().is_ok();
     display_check("setup-is-repo", ret);
+    Ok(ret)
+}
+
+/// Is this repo a deep clone?
+pub fn is_deep() -> Result<bool> {
+    let ret = !get_repo()?.is_shallow();
+    display_check("setup-is-deep", ret);
     Ok(ret)
 }
 

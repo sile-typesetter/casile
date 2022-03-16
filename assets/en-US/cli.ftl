@@ -115,6 +115,9 @@ setup-bad =
 setup-is-repo =
   Is the path a Git repository?
 
+setup-is-deep =
+  Is the Git a deep clone?
+
 setup-is-not-casile =
   Are we not in the CaSILE source repository?
 

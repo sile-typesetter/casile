@@ -29,6 +29,9 @@ setup-bad =
 setup-is-repo =
   Dizin yolu bir Git deposu mudur?
 
+setup-is-deep =
+  Git deposu derin klonlanmış mıdır?
+
 setup-is-not-casile =
   CaSILE kaynak deposu üzerinden başka yerde miyiz?
 
