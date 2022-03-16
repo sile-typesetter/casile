@@ -39,7 +39,7 @@ FROM base AS builder
 RUN pacman --needed --noconfirm -Sq $BUILD_DEPS && yes | pacman -Sccq
 
 # Set at build time, forces Docker’s layer caching to reset at this point
-ARG VCS_REF=0
+ARG REVISION
 
 COPY ./ /src
 WORKDIR /src
@@ -57,8 +57,17 @@ RUN node-prune /pkgdir/usr/local/share/casile/node_modules
 
 FROM base AS final
 
-LABEL maintainer="Caleb Maclennan <caleb@alerque.com>"
-LABEL version="$VCS_REF"
+ARG REVISION
+ARG VERSION
+
+LABEL org.opencontainers.image.title="CaSILE"
+LABEL org.opencontainers.image.description="A containerized version of the CaSILE toolkit, a book publishing workflow employing SILE and other wizardry"
+LABEL org.opencontainers.image.authors="Caleb Maclennan <caleb@alerque.com>"
+LABEL org.opencontainers.image.licenses="AGPL-3.0"
+LABEL org.opencontainers.image.url="https://github.com/sile-typesetter/casile/pkgs/container/casile"
+LABEL org.opencontainers.image.source="https://github.com/sile-typesetter/casile"
+LABEL org.opencontainers.image.version="v$VERSION"
+LABEL org.opencontainers.image.revision="$REVISION"
 
 COPY build-aux/docker-fontconfig.conf /etc/fonts/conf.d/99-docker.conf
 
