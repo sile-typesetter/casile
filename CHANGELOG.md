@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.2](https://github.com/sile-typesetter/casile/compare/v0.7.1...v0.7.2) (2022-03-16)
+
+
+### Features
+
+* **cli:** Put parallel pov job execution behind CASILE_SINGLEPOVJOB env flag ([c48aee5](https://github.com/sile-typesetter/casile/commit/c48aee57ee30a41f4d142d6cb0eb6a5ad851d635))
+
+
+### Bug Fixes
+
+* **cli:** Don't force install-dist target if debug is first target ([e13d9bb](https://github.com/sile-typesetter/casile/commit/e13d9bb9a1c55c5c0f050e40c241954c3ba7bbb3))
+
 ### [0.7.1](https://github.com/sile-typesetter/casile/compare/v0.7.0...v0.7.1) (2022-03-15)
 
 
