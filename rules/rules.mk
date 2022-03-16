@@ -133,7 +133,8 @@ LUALIBS += $(CASILEDIR)/casile.lua
 FONTDIRS += $(patsubst ./%,%,$(CASILEDIR)/fonts $(wildcard $(PROJECTDIR:./=.)/.fonts)))
 
 FCCONFIG := $(BUILDDIR)/fontconfig.conf
-export FONTCONFIG_FILE := $(shell cd "$(BUILDDIR)" && pwd)/fontconfig.conf
+# BUILDDIR would otherwise get created by other rules anyway, but we're dodging race conditions
+export FONTCONFIG_FILE := $(shell test -d "$(BUILDDIR)" || mkdir -p "$(BUILDDIR)" && cd "$(BUILDDIR)" && pwd)/fontconfig.conf
 
 # Extensible list of files for git to ignore
 IGNORES += $(PROJECTCONFIGS)
