@@ -33,18 +33,16 @@ pub fn run(target: Vec<String>) -> Result<()> {
         CONFIGURE_DATADIR, "/rules/rules.mk"
     )));
     let mut targets: Vec<_> = target.into_iter().collect();
+    if targets.is_empty() {
+        targets.push(String::from("default"));
+    }
     if status::is_gha()? {
         targets.push(String::from("_gha"));
-        if targets.len() == 1 {
-            targets.push(String::from("default"));
-        }
-        targets.push(String::from("install-dist"));
     }
     if status::is_glc()? {
         targets.push(String::from("_glc"));
-        if targets.len() == 1 {
-            targets.push(String::from("default"));
-        }
+    }
+    if (status::is_gha()? || status::is_glc()?) && targets.first().unwrap() != "debug" {
         targets.push(String::from("install-dist"));
     }
     let mut process = Exec::cmd("make")
