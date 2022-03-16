@@ -54,6 +54,7 @@ RUN node-prune /pkgdir/usr/local/share/casile/node_modules
 
 FROM base AS final
 
+# Same args as above, repeated because they went out of scope with FROM
 ARG REVISION
 ARG VERSION
 
