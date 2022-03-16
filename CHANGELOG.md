@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.3](https://github.com/sile-typesetter/casile/compare/v0.7.2...v0.7.3) (2022-03-16)
+
+
+### Bug Fixes
+
+* **cli:** Check for deep clone and skip warp-time if not ([dc9c7e0](https://github.com/sile-typesetter/casile/commit/dc9c7e08f77c1dbe0f01e03a82503368004c8094)), closes [#140](https://github.com/sile-typesetter/casile/issues/140)
+* **cli:** Don't force install-dist target on setup / .gitignore regen ([06d2ca3](https://github.com/sile-typesetter/casile/commit/06d2ca37077deb0869b4e92437fb37978ffe891e))
+* **rules:** Avoid race condition creating fresh BUILDDIR ([c1e507b](https://github.com/sile-typesetter/casile/commit/c1e507b465635711b026f643f270b189992fbde5))
+* **rules:** Only calculate PARENT once and don't die if it's the same as BRANCH ([fbd05f8](https://github.com/sile-typesetter/casile/commit/fbd05f852ffe7bed6cb14c670a2478fdada09ea1))
+
 ### [0.7.2](https://github.com/sile-typesetter/casile/compare/v0.7.1...v0.7.2) (2022-03-16)
 
 
