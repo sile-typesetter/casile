@@ -298,8 +298,9 @@ define povray ?=
 		#declare Rand3 = seed(2134);
 		#declare MinThickness = 0.005;
 	EOF
+	$(and $(CASILE_SINGLEPOVJOB),
 	sleep 1.$${RANDOM} # block parallel execution
-	while $(PGREP) povray > /dev/null; do sleep 2.$${RANDOM}; done
+	while $(PGREP) povray > /dev/null; do sleep 2.$${RANDOM}; done)
 	$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$5 -H$6 -Q$(call scale,11,4) -O$4
 	rm $$headers
 endef
