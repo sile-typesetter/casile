@@ -12,7 +12,8 @@ RUNTIME_DEPS='bc bcprov entr epubcheck fontconfig ghostscript git git-warp-time 
 ' lua lua-colors-git lua-filesystem lua-yaml'\
 ' lua53-colors-git lua53-filesystem lua53-yaml'\
 ' perl perl-yaml perl-yaml-merge-simple'\
-' python python-isbnlib python-pandocfilters python-pantable python-ruamel-yaml python-usfm2osis-cw-git'
+' python python-isbnlib python-pandocfilters python-pantable python-ruamel-yaml python-usfm2osis-cw-git'\
+' xorg-server-xvfb'
 BUILD_DEPS='base-devel autoconf-archive cargo luarocks node-prune yarn'
 
 : "${DOCKER_BUILDKIT:=1}"
