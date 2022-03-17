@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.4](https://github.com/sile-typesetter/casile/compare/v0.7.3...v0.7.4) (2022-03-17)
+
+
+### Features
+
+* **covers:** Run inkscape in an X virtual frame buffer ([292d87d](https://github.com/sile-typesetter/casile/commit/292d87d1bbcc3d0ee019cfed8f754c227a57c38c))
+* **docker:** Let non-privileged container users install deps with su ([0d14dcf](https://github.com/sile-typesetter/casile/commit/0d14dcf89382c193b14b266ef985e36eb31f7c16))
+
+
+### Bug Fixes
+
+* **docker:** Install compatible lua-colors fork ([70c8b2d](https://github.com/sile-typesetter/casile/commit/70c8b2de95f6d782178c6542517c90540966272a))
+* **rules:** Guard versioninfo characters that might look like shell globs ([ef00978](https://github.com/sile-typesetter/casile/commit/ef00978996919cd627b74f7eaf8d076e931ba02f))
+
 ### [0.7.3](https://github.com/sile-typesetter/casile/compare/v0.7.2...v0.7.3) (2022-03-16)
 
 
