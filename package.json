@@ -24,14 +24,14 @@
     "svg-modify": "^0.0.12"
   },
   "devDependencies": {
-    "@commitlint/cli": "^16.2.1",
+    "@commitlint/cli": "^16.2.3",
     "@commitlint/config-conventional": "^16.2.1",
-    "@commitlint/prompt": "^16.2.1",
+    "@commitlint/prompt": "^16.2.3",
     "@iarna/toml": "2.2.5",
     "commitizen": "^4.2.4",
     "conventional-changelog-cli": "^2.2.2",
-    "eslint": "^8.10.0",
-    "eslint-config-standard": "^17.0.0-0",
+    "eslint": "^8.11.0",
+    "eslint-config-standard": "^17.0.0-1",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.0.0",
