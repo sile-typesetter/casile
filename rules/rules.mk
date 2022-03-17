@@ -322,10 +322,10 @@ $(CICONFIG)_current: $(CICONFIG)
 	$(GIT) diff-files --quiet -- $<
 
 $(BUILDDIR) $(DISTDIR):
-	mkdir -p $@
+	mkdir -p "$@"
 
 $(DISTDIR).tar.bz2 $(DISTDIR).tar.gz $(DISTDIR).tar.xz $(DISTDIR).zip $(DISTDIR).tar.zst: install-dist
-	bsdtar -acf $@ $(DISTDIR)
+	bsdtar -acf "$@" "$(DISTDIR)"
 
 # Some layouts have matching extra resources to build such as covers
 ifneq ($(strip $(COVERS)),false)
@@ -881,7 +881,7 @@ $(BUILDDIR)/%-printcolor.png: $(BUILDDIR)/%.png
 
 $(BUILDDIR)/%-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printcolor.png $$(geometryfile)
 	$(sourcegeometry)
-	ver=$(subst @,\\@,$(call versioninfo,$@))
+	ver="$(subst @,\\@,$(call versioninfo,$@))"
 	$(PERL) $(PERLARGS) -pne "
 			s#IMG#$(subst $(BUILDDIR)/,,$(filter %.png,$^))#g;
 			s#VER#$${ver}#g;
@@ -1298,8 +1298,8 @@ $(BUILDDIR)/repository-worklog.sqlite: $(BUILDDIR)/repository-lastcommit.ts
 WORKLOGFIELDS := sha AS 'Commit', date AS 'Date', file AS 'Filename', added AS 'Added', removed AS 'Removed'
 
 $(BUILDDIR)/repository-worklog.md: $(BUILDDIR)/repository-worklog.sqlite force
-	now=$$(LANG=en_US date +%c)
-	ver=$(call versioninfo,$(PROJECT))
+	now="$$(LANG=en_US date +%c)"
+	ver="$(call versioninfo,$(PROJECT))"
 	export IFS='|'
 	$(SQLITE3) $< "SELECT DISTINCT(author) FROM commits" |
 		while read author; do
