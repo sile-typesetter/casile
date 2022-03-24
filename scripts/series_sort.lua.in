@@ -67,7 +67,7 @@ local seriessort = function (a, b)
   return getorder(a) < getorder(b)
 end
 
-if not (SORTORDER == "none") then
+if SORTORDER ~= "none" then
   table.sort(books, seriessort)
 end
 

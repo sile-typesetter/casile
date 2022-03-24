@@ -41,9 +41,9 @@ local init = function (self)
   end
 
   local pushBack = SILE.typesetter.pushBack
-  SILE.typesetter.pushBack = function (_self)
-    continuepair(_self)
-    pushBack(_self)
+  SILE.typesetter.pushBack = function (current_typesetter)
+    continuepair(current_typesetter)
+    pushBack(current_typesetter)
     repairbreak()
   end
 
@@ -124,7 +124,7 @@ local init = function (self)
     for _, ref in pairs(CASILE.verses) do
       if not refshash[ref.osis] then
         refshash[ref.osis] = true
-        if not(lastbook == ref.b) then
+        if lastbook ~= ref.b then
           if inpair then endpair(seq) end
           SILE.call("tableofverses:book", { }, { ref.b })
           seq = 1

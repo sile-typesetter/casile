@@ -23,7 +23,7 @@ SILE.registerCommand("imprint", function (_, _)
         SILE.settings.set("linespacing.method", "fixed")
         SILE.settings.set("linespacing.fixed.baselinedistance", SILE.length("2.8ex plus 1pt minus 0.5pt"))
 
-        if CASILE.metadata.publisher and not (CASILE.layout == "app") then
+        if CASILE.metadata.publisher and CASILE.layout ~= "app" then
           SILE.processMarkdown({SU.contentToString(CASILE.metadata.publisher)})
           SILE.call("par")
         end
@@ -47,7 +47,7 @@ SILE.registerCommand("imprint", function (_, _)
         if CASILE.metadata.manufacturer then
           SILE.call("skip", { height = "5.4em" })
           SILE.settings.temporarily(function ()
-						-- luacheck: ignore qrimg
+            -- luacheck: ignore qrimg
             SILE.call("img", { src = qrimg, height = "5.8em" })
             SILE.call("skip", { height = "-6.3em" })
             SILE.settings.set("document.lskip", SILE.nodefactory.glue({ width = imgUnit * 6.5 }))
