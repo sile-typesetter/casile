@@ -25,7 +25,7 @@ SILE.registerCommand("endnotes", function (_, _)
     for i = 1, #SILE.scratch.endnotes do
       local counter, material = SILE.scratch.endnotes[i]()
       SILE.call("footnote:font", {}, function ()
-        SILE.typesetter:pushGlue({ width = 0 - SILE.length(indent) })
+        SILE.typesetter:pushGlue({ width = -SILE.length(indent) })
         SILE.call("rebox", { width = indent }, function ()
           SILE.call("endnote:counter", { value = counter })
         end)
