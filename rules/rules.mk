@@ -1201,14 +1201,24 @@ $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 
 DISTDIRS += *.static
 
-%.static: %.static/index.html %.epub %.mdbook
-	mkdir -p $(@D)
-	cp $^ $(@D)
+%.static: %.static/index.html
 
-%.static/index.html: %-manifest.yml
-	set -x
-	mkdir -p $(@D)
-	echo "<!DOCTYPE html><html><body><a href=../$*.epub>epub</a> <a href=../$*.mdbook/>oku</a></body></html>" > $@
+%.static/index.html: $(BUILDDIR)/%.static/config.toml
+	rm -rf $(@D)
+	zola -r $(<D) build -o $(@D)
+
+ZOLA_TEMPLATE ?= $(CASILEDIR)/zola_template.html
+$(BUILDDIR)/%.static/config.toml: %-manifest.yml $(ZOLA_TEMPLATE) | $(BUILDDIR)
+	mkdir -p $(@D)/{,content,templates}
+	yq -t ' { "title": .title, "base_url": "$(call urlinfo,$*)" } ' $< > $@
+	{
+		echo "---"
+		yq -y ' { "title": .title } ' $<
+		echo -e "---\n"
+		echo "Now the ides of"
+		date
+	} > $(@D)/content/_index.md
+	cp $(ZOLA_TEMPLATE) $(@D)/templates/index.html
 
 DISTFILES += *.epub
 
