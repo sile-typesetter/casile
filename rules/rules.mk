@@ -38,7 +38,7 @@ MOCKUPFACTOR ?= 1
 FIGURES ?=
 
 # Default output formats and parameters (often overridden)
-FORMATS ?= pdfs epub mobi odt docx mdbook web $(and $(ISBNS),play) app
+FORMATS ?= pdfs epub mobi odt docx mdbook web static $(and $(ISBNS),play) app
 BLEED ?= 3
 TRIM ?= 10
 NOBLEED ?= 0
@@ -1198,6 +1198,17 @@ $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 			"author": .creator[] | select(.role == "author") | .text,
 			"language": .lang
 		}}' $< > $@
+
+DISTDIRS += *.static
+
+%.static: %.static/index.html %.epub %.mdbook
+	mkdir -p $(@D)
+	cp $^ $(@D)
+
+%.static/index.html: %-manifest.yml
+	set -x
+	mkdir -p $(@D)
+	echo "<!DOCTYPE html><html><body><a href=../$*.epub>epub</a> <a href=../$*.mdbook/>oku</a></body></html>" > $@
 
 DISTFILES += *.epub
 
