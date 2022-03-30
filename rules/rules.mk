@@ -38,7 +38,7 @@ MOCKUPFACTOR ?= 1
 FIGURES ?=
 
 # Default output formats and parameters (often overridden)
-FORMATS ?= pdfs epub mobi odt docx web $(and $(ISBNS),play) app
+FORMATS ?= pdfs epub mobi odt docx mdbook web $(and $(ISBNS),play) app
 BLEED ?= 3
 TRIM ?= 10
 NOBLEED ?= 0
@@ -1181,6 +1181,23 @@ $(BUILDDIR)/%-epub-metadata.yml: %-manifest.yml %-epub-$(_poster).jpg | $(BUILDD
 		$(PANDOCFILTERS) \
 		$(filter %-epub-metadata.yml,$^) \
 		$(filter %-$(_processed).md,$^) -o $@
+
+DISTFILES += *.mdbook/**
+
+%.mdbook: $(BUILDDIR)/%.mdbook/src/SUMMARY.md $(BUILDDIR)/%.mdbook/book.toml
+	$(MDBOOK) build $(<D)/.. --dest-dir ../../$@
+
+$(BUILDDIR)/%.mdbook/src/SUMMARY.md: $(BUILDDIR)/%-$(_processed).md
+	mkdir -p $(@D)
+	split_mdbook_src.zsh $< $(@D) > $@
+
+$(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
+	mkdir -p $(@D)
+	yq -t '{"book": {
+			"title": .title,
+			"author": .creator[] | select(.role == "author") | .text,
+			"language": .lang
+		}}' $< > $@
 
 DISTFILES += *.epub
 
