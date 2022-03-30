@@ -1204,8 +1204,9 @@ DISTDIRS += *.static
 .PHONY: %.static
 %.static: %.static/index.html
 
-%.static/index.html: $(BUILDDIR)/%.static/config.toml | %.epub %.mdbook
+%.static/index.html: $(BUILDDIR)/%.static/config.toml | %-epub-$(_poster).jpg %.epub %.mdbook
 	set -x
+	rm -rf $(<D)/static
 	mkdir -p $(<D)/static
 	cp -r $| $(<D)/static
 	mv $(<D)/static/{$*.mdbook,oku}
@@ -1215,7 +1216,7 @@ DISTDIRS += *.static
 ZOLA_TEMPLATE ?= $(CASILEDIR)/zola_template.html
 ZOLA_STYLE ?= $(CASILEDIR)/zola_style.sass
 
-$(BUILDDIR)/%.static/config.toml: %-manifest.yml $(ZOLA_TEMPLATE) $(ZOLA_STYLE) | $(BUILDDIR)
+$(BUILDDIR)/%.static/config.toml: %-manifest.yml $(ZOLA_TEMPLATE) $(ZOLA_STYLE) | %-epub-$(_poster).jpg $(BUILDDIR)
 	mkdir -p $(@D)/{,content,templates,sass}
 	yq -t '{
 			"title": .title,
@@ -1223,11 +1224,12 @@ $(BUILDDIR)/%.static/config.toml: %-manifest.yml $(ZOLA_TEMPLATE) $(ZOLA_STYLE) 
 			"compile_sass": true
 		}' $< > $@
 	{
-		echo "---"
-		yq -y '{
-				"slug": "$*"
+		echo "+++"
+		yq -t '{
+				"slug": "$*",
+				"extra": { "coverimg": "$(filter %.jpg,$|)" }
 			}' $<
-		echo -e "---\n"
+		echo -e "+++\n"
 		yq -r '.abstract' $<
 		echo "- [epub indir]($*.epub)"
 		echo "- [online oku](oku)"
