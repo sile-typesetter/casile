@@ -1201,14 +1201,20 @@ $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 
 DISTDIRS += *.static
 
+.PHONY: %.static
 %.static: %.static/index.html
 
-%.static/index.html: $(BUILDDIR)/%.static/config.toml
+%.static/index.html: $(BUILDDIR)/%.static/config.toml | %.epub %.mdbook
+	set -x
+	mkdir -p $(<D)/static
+	cp -r $| $(<D)/static
+	mv $(<D)/static/{$*.mdbook,oku}
 	rm -rf $(@D)
 	zola -r $(<D) build -o $(@D)
 
 ZOLA_TEMPLATE ?= $(CASILEDIR)/zola_template.html
 ZOLA_STYLE ?= $(CASILEDIR)/zola_style.sass
+
 $(BUILDDIR)/%.static/config.toml: %-manifest.yml $(ZOLA_TEMPLATE) $(ZOLA_STYLE) | $(BUILDDIR)
 	mkdir -p $(@D)/{,content,templates,sass}
 	yq -t '{
@@ -1223,6 +1229,8 @@ $(BUILDDIR)/%.static/config.toml: %-manifest.yml $(ZOLA_TEMPLATE) $(ZOLA_STYLE) 
 			}' $<
 		echo -e "---\n"
 		yq -r '.abstract' $<
+		echo "- [epub indir]($*.epub)"
+		echo "- [online oku](oku)"
 	} > $(@D)/content/_index.md
 	cp $(ZOLA_TEMPLATE) $(@D)/templates/index.html
 	cp $(ZOLA_STYLE) $(@D)/sass/style.sass
