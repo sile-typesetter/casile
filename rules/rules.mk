@@ -139,7 +139,7 @@ export FONTCONFIG_FILE := $(shell test -d "$(BUILDDIR)" || mkdir -p "$(BUILDDIR)
 # Extensible list of files for git to ignore
 IGNORES += $(PROJECTCONFIGS)
 IGNORES += $(BUILDDIR)
-IGNORES += $(DISTFILES)
+IGNORES += $(DISTFILES) $(DISTDIRS)
 
 # Tell SILE to look here for stuff before its internal stuff
 SILEPATH += $(CASILEDIR)
@@ -1182,7 +1182,7 @@ $(BUILDDIR)/%-epub-metadata.yml: %-manifest.yml %-epub-$(_poster).jpg | $(BUILDD
 		$(filter %-epub-metadata.yml,$^) \
 		$(filter %-$(_processed).md,$^) -o $@
 
-DISTFILES += *.mdbook/**
+DISTDIRS += *.mdbook
 
 %.mdbook: $(BUILDDIR)/%.mdbook/src/SUMMARY.md $(BUILDDIR)/%.mdbook/book.toml
 	$(MDBOOK) build $(<D)/.. --dest-dir ../../$@
