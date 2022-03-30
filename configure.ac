@@ -105,6 +105,7 @@ AS_IF([test "x$enable_dependency_checks" != "xno"], [
     AX_PROGVAR([kindlegen])
     AX_PROGVAR([m4])
     AX_PROGVAR([magick])
+    AX_PROGVAR([mdbook])
     AX_PROGVAR([node])
     AX_PROGVAR([pandoc])
     AX_PROGVAR([pcregrep])
