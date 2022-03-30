@@ -541,7 +541,7 @@ $(APPSOURCES): %.app: %-$(_app).info %.promotionals
 
 WEBSOURCES := $(call pattern_list,$(SOURCES),.web)
 .PHONY: $(WEBSOURCES)
-$(WEBSOURCES): %.web: %-manifest.yml %.promotionals %.renderings
+$(WEBSOURCES): %.web: %-manifest.yml %.promotionals %.renderings %.mdbook
 
 PLAYSOURCES := $(foreach ISBN,$(ISBNS),$(call isbntouid,$(ISBN)))
 
