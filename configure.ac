@@ -125,6 +125,7 @@ AS_IF([test "x$enable_dependency_checks" != "xno"], [
     AX_PROGVAR([yarn])
     AX_PROGVAR([yq])
     AX_PROGVAR([zint])
+    AX_PROGVAR([zola])
     AX_PROGVAR([zsh])
 
     AC_MSG_CHECKING(whether pandoc has SILE Writer)

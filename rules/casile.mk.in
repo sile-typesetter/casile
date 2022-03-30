@@ -68,6 +68,7 @@ WC ?= @WC@
 XARGS ?= @XARGS@
 YQ ?= @YQ@
 ZINT ?= @ZINT@
+ZOLA ?= @ZOLA@
 ZSH ?= @ZSH@
 
 BUILDDIR ?= .casile

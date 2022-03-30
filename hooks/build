@@ -8,7 +8,7 @@ REVISION=$(git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
 RUNTIME_DEPS='bc bcprov entr epubcheck fontconfig ghostscript git git-warp-time imagemagick inetutils'\
 ' inkscape java-commons-lang jq kindlegen libertinus-font m4 make mdbook moreutils nodejs procps-ng'\
 ' pandoc-sile-git pcre pdftk podofo poppler povray sile sqlite'\
-' tex-gyre-fonts texlive-core ttf-hack yq zint zsh'\
+' tex-gyre-fonts texlive-core ttf-hack yq zint zola zsh'\
 ' lua lua-colors-git lua-filesystem lua-yaml'\
 ' lua53-colors-git lua53-filesystem lua53-yaml'\
 ' perl perl-yaml perl-yaml-merge-simple'\
