@@ -1208,17 +1208,24 @@ DISTDIRS += *.static
 	zola -r $(<D) build -o $(@D)
 
 ZOLA_TEMPLATE ?= $(CASILEDIR)/zola_template.html
-$(BUILDDIR)/%.static/config.toml: %-manifest.yml $(ZOLA_TEMPLATE) | $(BUILDDIR)
-	mkdir -p $(@D)/{,content,templates}
-	yq -t ' { "title": .title, "base_url": "$(call urlinfo,$*)" } ' $< > $@
+ZOLA_STYLE ?= $(CASILEDIR)/zola_style.sass
+$(BUILDDIR)/%.static/config.toml: %-manifest.yml $(ZOLA_TEMPLATE) $(ZOLA_STYLE) | $(BUILDDIR)
+	mkdir -p $(@D)/{,content,templates,sass}
+	yq -t '{
+			"title": .title,
+			"base_url": "$(call urlinfo,$*)",
+			"compile_sass": true
+		}' $< > $@
 	{
 		echo "---"
-		yq -y ' { "title": .title } ' $<
+		yq -y '{
+				"slug": "$*"
+			}' $<
 		echo -e "---\n"
-		echo "Now the ides of"
-		date
+		yq -r '.abstract' $<
 	} > $(@D)/content/_index.md
 	cp $(ZOLA_TEMPLATE) $(@D)/templates/index.html
+	cp $(ZOLA_STYLE) $(@D)/sass/style.sass
 
 DISTFILES += *.epub
 

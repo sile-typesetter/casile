@@ -3,19 +3,17 @@
 	<head>
 		<meta charset="utf-8">
 		<title>{% block title %}{{ config.title }}{% endblock title %}</title>
-		<link rel="stylesheet" href="/style.css">
+		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
-		<div class="wrapper">
-			<header>
+		<main>
+			<div>
+				<img src="" title="{{ config.title }}" />
+			</div>
+			<article>
 				<h1>{{ config.title }}</h1>
-			</header>
-			<main>
-				<article>
-					<h1>{{ section.title }}</h1>
-					{{ section.content | safe }}
-				</article>
-			</main>
-		</div>
+				{{ section.content | safe }}
+			</article>
+		</main>
 	</body>
 </html>
