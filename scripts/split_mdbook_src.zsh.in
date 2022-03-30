@@ -1,0 +1,35 @@
+#!@ZSH@
+set -e
+set -x
+
+src=$1
+dir=$2
+
+echo -e "# Summary\n\n"
+
+i=0
+of=00.md
+
+function trunc() {
+  : > $1
+}
+
+trunc $dir/$of
+
+@PANDOC@ $src --markdown-headings=atx --wrap=none --to=commonmark_x-smart+gfm_auto_identifiers --reference-location=section |
+@PERL@ -pne 's/{osis=".*"}//g' |
+while read line; do
+  # Check for chapter header
+  if [[ $line =~ "^# .*" ]]; then
+    [[ $line =~ ".*unnumbered.*" ]] || let i=$i+1
+    @PERL@ -pne 's/^# (.*) {.*#([-\w]+).*}/\2 \1/' <<< "$line" |
+      read slug title
+    test -n "$slug"
+    test -n "$title"
+    of=$(printf %02d $i)-$slug.md
+    trunc $dir/$of
+    line="# $title"
+    echo "[$title](./$of)"
+  fi
+  >> $dir/$of <<< $line
+done

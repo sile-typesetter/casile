@@ -11,7 +11,7 @@ i=0
 of=$dir/000.md
 chapters=()
 
-@PANDOC@ $src --atx-headers --wrap=none --to=markdown --reference-location=document |
+@PANDOC@ $src --markdown-headings=atx --wrap=none --to=markdown --reference-location=document |
 while read line; do
 	# Stop processing if we've hit footnotes
 	[[ $line =~ "^\[\^1\]: .*" ]] && break
@@ -33,7 +33,7 @@ done
 # Put footnotes in all files, renumber, and generally cleanup
 for chapter in $chapters; do
 	>> $chapter < $src
-	@PANDOC@ $chapter --atx-headers --wrap=none --to=markdown |
+	@PANDOC@ $chapter --markdown-headings=atx --wrap=none --to=markdown |
 		@SPONGE@ $chapter
 	@GIT@ add $chapter
 done
