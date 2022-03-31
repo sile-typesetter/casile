@@ -1,6 +1,5 @@
 #!@ZSH@
 set -e
-set -x
 
 src=$1
 dir=$2
