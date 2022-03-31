@@ -1201,11 +1201,7 @@ $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 
 DISTDIRS += *.static
 
-# Phony behaves badly when it is also real, so fake it....
-%.static: %.static/index.html
-	:
-
-%.static/index.html: $(BUILDDIR)/%.static/config.toml | %-epub-$(_poster).jpg %.epub %.mdbook
+%.static: $(BUILDDIR)/%.static/config.toml | %-epub-$(_poster).jpg %.epub %.mdbook
 	rm -rf $(<D)/static
 	mkdir -p $(<D)/static
 	cp -r $| $(<D)/static
@@ -1214,8 +1210,8 @@ DISTDIRS += *.static
 	local covercandidates=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT)-$(_3d)-$(_front).png )$(filter %.jpg,$|)))
 	cp $${covercandidates} $(<D)/static
 	mv $(<D)/static/{$*.mdbook,oku}
-	rm -rf $(@D)
-	zola -r $(<D) build -o $(@D)
+	rm -rf $@
+	zola -r $(<D) build -o $@
 
 ZOLA_TEMPLATE ?= $(CASILEDIR)/zola_template.html
 ZOLA_STYLE ?= $(CASILEDIR)/zola_style.sass
