@@ -54,7 +54,7 @@ yamldir = $(datadir)
 dist_yaml_DATA = casile.yml
 
 templatesdir = $(datadir)
-dist_templates_DATA = editorconfig gitlab-ci.yml
+dist_templates_DATA = editorconfig gitlab-ci.yml zola_template.html zola_style.sass
 
 namesdir = $(datadir)
 dist_names_DATA = names.en.txt names.la.txt names.part.txt names.tr.txt names.und.txt names.xx.txt
