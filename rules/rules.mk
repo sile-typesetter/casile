@@ -38,7 +38,7 @@ MOCKUPFACTOR ?= 1
 FIGURES ?=
 
 # Default output formats and parameters (often overridden)
-FORMATS ?= pdfs epub mobi odt docx mdbook web $(and $(ISBNS),play) app
+FORMATS ?= pdfs epub mobi odt docx mdbook web static $(and $(ISBNS),play) app
 BLEED ?= 3
 TRIM ?= 10
 NOBLEED ?= 0
@@ -541,7 +541,7 @@ $(APPSOURCES): %.app: %-$(_app).info %.promotionals
 
 WEBSOURCES := $(call pattern_list,$(SOURCES),.web)
 .PHONY: $(WEBSOURCES)
-$(WEBSOURCES): %.web: %-manifest.yml %.promotionals %.renderings
+$(WEBSOURCES): %.web: %-manifest.yml %.promotionals %.renderings %.mdbook
 
 PLAYSOURCES := $(foreach ISBN,$(ISBNS),$(call isbntouid,$(ISBN)))
 
@@ -1198,6 +1198,44 @@ $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 			"author": .creator[] | select(.role == "author") | .text,
 			"language": .lang
 		}}' $< > $@
+
+DISTDIRS += *.static
+
+.PHONY: %.static
+%.static: %.static/index.html
+
+%.static/index.html: $(BUILDDIR)/%.static/config.toml | %-epub-$(_poster).jpg %.epub %.mdbook
+	set -x
+	rm -rf $(<D)/static
+	mkdir -p $(<D)/static
+	cp -r $| $(<D)/static
+	mv $(<D)/static/{$*.mdbook,oku}
+	rm -rf $(@D)
+	zola -r $(<D) build -o $(@D)
+
+ZOLA_TEMPLATE ?= $(CASILEDIR)/zola_template.html
+ZOLA_STYLE ?= $(CASILEDIR)/zola_style.sass
+
+$(BUILDDIR)/%.static/config.toml: %-manifest.yml $(ZOLA_TEMPLATE) $(ZOLA_STYLE) | %-epub-$(_poster).jpg $(BUILDDIR)
+	mkdir -p $(@D)/{,content,templates,sass}
+	yq -t '{
+			"title": .title,
+			"base_url": "$(call urlinfo,$*)",
+			"compile_sass": true
+		}' $< > $@
+	{
+		echo "+++"
+		yq -t '{
+				"slug": "$*",
+				"extra": { "coverimg": "$(filter %.jpg,$|)" }
+			}' $<
+		echo -e "+++\n"
+		yq -r '.abstract' $<
+		echo "- [epub indir]($*.epub)"
+		echo "- [online oku](oku)"
+	} > $(@D)/content/_index.md
+	cp $(ZOLA_TEMPLATE) $(@D)/templates/index.html
+	cp $(ZOLA_STYLE) $(@D)/sass/style.sass
 
 DISTFILES += *.epub
 

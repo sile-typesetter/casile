@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="tr">
+	<head>
+		<meta charset="utf-8">
+		<title>{% block title %}{{ config.title }}{% endblock title %}</title>
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<main>
+			<div>
+				<img src="{{ section.extra.coverimg }}" title="{{ config.title }}" />
+			</div>
+			<article>
+				<h1>{{ config.title }}</h1>
+				{{ section.content | safe }}
+			</article>
+		</main>
+	</body>
+</html>
