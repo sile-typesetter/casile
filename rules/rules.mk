@@ -1201,8 +1201,9 @@ $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 
 DISTDIRS += *.static
 
-.PHONY: %.static
+# Phony behaves badly when it is also real, so fake it....
 %.static: %.static/index.html
+	:
 
 %.static/index.html: $(BUILDDIR)/%.static/config.toml | %-epub-$(_poster).jpg %.epub %.mdbook
 	rm -rf $(<D)/static
