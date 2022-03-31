@@ -267,7 +267,7 @@ CLEANFILES += .aur_deps
 .aur_deps:
 	curl -Ls 'https://aur.archlinux.org/cgit/aur.git/plain/.SRCINFO?h=casile-git' | \
 		$(SED) -nE '/\bdepends =/{s/.*= //;p}' | \
-		sort > $@
+		$(GREP) -v 'so.$$' | \
 
 define docker_push =
 	test -z "$(DOCKER_PAT)" || \
