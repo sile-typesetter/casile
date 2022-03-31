@@ -16,7 +16,7 @@ install-dist: $$(or $$(call extantfiles,$$(DISTFILES)),fail)
 	local files=($(addsuffix ($(hash)qN),$(DISTFILES)))
 	$(XARGS) -r install -m0644 -t "$(DISTDIR)" <<< $${$${(u)files}}
 	local dirs=($(addsuffix ($(hash)qN),$(DISTDIRS)))
-	$(XARGS) -r -I {} cp -a {} "$(DISTDIR)" <<< $${$${(u)dirs}}
+	$(XARGS) -r -I {} cp -a {} "$(DISTDIR)" <<< $${(F)$${(u)dirs}}
 
 .PHONY: debug
 debug:
