@@ -169,6 +169,10 @@ DOCUMENTOPTIONS += binding=$(call unlocalize,$(or $(call parse_binding,$@),$(fir
 CITEMPLATE ?= $(CASILEDIR)/travis.yml
 CICONFIG ?= .travis.yml
 
+# Default templates for zola publishes
+ZOLA_TEMPLATE ?= $(CASILEDIR)/zola_template.html
+ZOLA_STYLE ?= $(CASILEDIR)/zola_style.sass
+
 # List of files that persist across make clean
 PROJECTCONFIGS :=
 
@@ -1230,12 +1234,10 @@ $(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg | $
 		echo "- [online oku](oku)"
 	} > $@
 
-ZOLA_TEMPLATE ?= $(CASILEDIR)/zola_template.html
 $(BUILDDIR)/%.static/templates/index.html: $(ZOLA_TEMPLATE) | $(BUILDDIR)
 	mkdir -p $(@D)
 	cp $< $@
 
-ZOLA_STYLE ?= $(CASILEDIR)/zola_style.sass
 $(BUILDDIR)/%.static/sass/style.sass: $(ZOLA_STYLE) | $(BUILDDIR)
 	mkdir -p $(@D)
 	cp $< $@
