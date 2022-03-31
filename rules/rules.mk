@@ -1193,7 +1193,7 @@ $(BUILDDIR)/%.mdbook/src/SUMMARY.md: $(BUILDDIR)/%-$(_processed).md
 
 $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 	mkdir -p $(@D)
-	yq -t '{"book": {
+	$(YQ) -t '{"book": {
 			"title": .title,
 			"author": .creator[] | select(.role == "author") | .text,
 			"language": .lang
@@ -1211,7 +1211,7 @@ DISTDIRS += *.static
 	cp $${covercandidates} $(<D)/static
 	mv $(<D)/static/{$*.mdbook,oku}
 	rm -rf $@
-	zola -r $(<D) build -o $@
+	$(ZOLA) -r $(<D) build -o $@
 
 ZOLA_TEMPLATE ?= $(CASILEDIR)/zola_template.html
 ZOLA_STYLE ?= $(CASILEDIR)/zola_style.sass
@@ -1221,19 +1221,19 @@ $(BUILDDIR)/%.static/config.toml: %-manifest.yml $(ZOLA_TEMPLATE) $(ZOLA_STYLE) 
 	export VERSION_CONTROL=none
 	local covercandidates=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT)-$(_3d)-$(_front).png )$(filter %.jpg,$|)))
 	mkdir -p $(@D)/{,content,templates,sass}
-	yq -t '{
+	$(YQ) -t '{
 			"title": .title,
 			"base_url": "$(call urlinfo,$*)",
 			"compile_sass": true
 		}' $< > $@
 	{
 		echo "+++"
-		yq -t "{
+		$(YQ) -t "{
 				\"slug\": \"$*\",
 				\"extra\": { \"coverimg\": \"$${covercandidates[1]}\" }
 			}" $<
 		echo -e "+++\n"
-		yq -r '.abstract' $<
+		$(YQ) -r '.abstract' $<
 		echo "- [epub indir]($*.epub)"
 		echo "- [online oku](oku)"
 	} > $(@D)/content/_index.md
