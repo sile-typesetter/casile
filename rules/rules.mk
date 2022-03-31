@@ -1201,31 +1201,23 @@ $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 
 DISTDIRS += *.static
 
-%.static: $(BUILDDIR)/%.static/config.toml | %-epub-$(_poster).jpg %.epub %.mdbook
+%.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg %.epub %.mdbook
 	rm -rf $(<D)/static
 	mkdir -p $(<D)/static
-	cp -r $| $(<D)/static
+	cp -r $(filter $*%,$^) $(<D)/static
 	set -o extendedglob
 	export VERSION_CONTROL=none
-	local covercandidates=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT)-$(_3d)-$(_front).png )$(filter %.jpg,$|)))
+	local covercandidates=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT)-$(_3d)-$(_front).png )$(filter %.jpg,$^)))
 	cp $${covercandidates} $(<D)/static
 	mv $(<D)/static/{$*.mdbook,oku}
 	rm -rf $@
 	$(ZOLA) -r $(<D) build -o $@
 
-ZOLA_TEMPLATE ?= $(CASILEDIR)/zola_template.html
-ZOLA_STYLE ?= $(CASILEDIR)/zola_style.sass
-
-$(BUILDDIR)/%.static/config.toml: %-manifest.yml $(ZOLA_TEMPLATE) $(ZOLA_STYLE) | %-epub-$(_poster).jpg $(BUILDDIR)
+$(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg | $(BUILDDIR)
 	set -o extendedglob
 	export VERSION_CONTROL=none
-	local covercandidates=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT)-$(_3d)-$(_front).png )$(filter %.jpg,$|)))
-	mkdir -p $(@D)/{,content,templates,sass}
-	$(YQ) -t '{
-			"title": .title,
-			"base_url": "$(call urlinfo,$*)",
-			"compile_sass": true
-		}' $< > $@
+	local covercandidates=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT)-$(_3d)-$(_front).png )$(filter %.jpg,$^)))
+	mkdir -p $(@D)
 	{
 		echo "+++"
 		$(YQ) -t "{
@@ -1236,9 +1228,25 @@ $(BUILDDIR)/%.static/config.toml: %-manifest.yml $(ZOLA_TEMPLATE) $(ZOLA_STYLE) 
 		$(YQ) -r '.abstract' $<
 		echo "- [epub indir]($*.epub)"
 		echo "- [online oku](oku)"
-	} > $(@D)/content/_index.md
-	cp $(ZOLA_TEMPLATE) $(@D)/templates/index.html
-	cp $(ZOLA_STYLE) $(@D)/sass/style.sass
+	} > $@
+
+ZOLA_TEMPLATE ?= $(CASILEDIR)/zola_template.html
+$(BUILDDIR)/%.static/templates/index.html: $(ZOLA_TEMPLATE) | $(BUILDDIR)
+	mkdir -p $(@D)
+	cp $< $@
+
+ZOLA_STYLE ?= $(CASILEDIR)/zola_style.sass
+$(BUILDDIR)/%.static/sass/style.sass: $(ZOLA_STYLE) | $(BUILDDIR)
+	mkdir -p $(@D)
+	cp $< $@
+
+$(BUILDDIR)/%.static/config.toml: %-manifest.yml | $(BUILDDIR)
+	mkdir -p $(@D)
+	$(YQ) -t '{
+			"title": .title,
+			"base_url": "$(call urlinfo,$*)",
+			"compile_sass": true
+		}' $< > $@
 
 DISTFILES += *.epub
 
