@@ -1205,10 +1205,13 @@ DISTDIRS += *.static
 %.static: %.static/index.html
 
 %.static/index.html: $(BUILDDIR)/%.static/config.toml | %-epub-$(_poster).jpg %.epub %.mdbook
-	set -x
 	rm -rf $(<D)/static
 	mkdir -p $(<D)/static
 	cp -r $| $(<D)/static
+	set -o extendedglob
+	export VERSION_CONTROL=none
+	local covercandidates=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT)-$(_3d)-$(_front).png )$(filter %.jpg,$|)))
+	cp $${covercandidates} $(<D)/static
 	mv $(<D)/static/{$*.mdbook,oku}
 	rm -rf $(@D)
 	zola -r $(<D) build -o $(@D)
@@ -1217,6 +1220,9 @@ ZOLA_TEMPLATE ?= $(CASILEDIR)/zola_template.html
 ZOLA_STYLE ?= $(CASILEDIR)/zola_style.sass
 
 $(BUILDDIR)/%.static/config.toml: %-manifest.yml $(ZOLA_TEMPLATE) $(ZOLA_STYLE) | %-epub-$(_poster).jpg $(BUILDDIR)
+	set -o extendedglob
+	export VERSION_CONTROL=none
+	local covercandidates=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT)-$(_3d)-$(_front).png )$(filter %.jpg,$|)))
 	mkdir -p $(@D)/{,content,templates,sass}
 	yq -t '{
 			"title": .title,
@@ -1225,10 +1231,10 @@ $(BUILDDIR)/%.static/config.toml: %-manifest.yml $(ZOLA_TEMPLATE) $(ZOLA_STYLE) 
 		}' $< > $@
 	{
 		echo "+++"
-		yq -t '{
-				"slug": "$*",
-				"extra": { "coverimg": "$(filter %.jpg,$|)" }
-			}' $<
+		yq -t "{
+				\"slug\": \"$*\",
+				\"extra\": { \"coverimg\": \"$${covercandidates[1]}\" }
+			}" $<
 		echo -e "+++\n"
 		yq -r '.abstract' $<
 		echo "- [epub indir]($*.epub)"
