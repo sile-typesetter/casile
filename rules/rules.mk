@@ -1403,7 +1403,7 @@ $(BUILDDIR)/%-$(_verses)-$(_sorted).json: $(BUILDDIR)/%-$(_verses).json
 
 $(BUILDDIR)/%-$(_verses)-$(_text).yml: $(BUILDDIR)/%-$(_verses)-$(_sorted).json
 	$(JQ) -M -e -r 'map_values(.osis) | _nwise(100) | join(";")' $< |
-		$(XARGS) -n1 -iX curl -s -L "https://sahneleme.incil.info/api/X" |
+		$(XARGS) -n1 -iX $(CURL) -s -L "https://sahneleme.incil.info/api/X" |
 		# Because yq doesn't --slurp JSON, see https://github.com/kislyuk/yq/issues/56
 		$(JQ) -s '[.]' | $(YQ) -M -e -y ".[0][] | map_values(.scripture)" |
 		$(GREP) -v '^---$$' |

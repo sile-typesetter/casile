@@ -16,6 +16,8 @@ AC_PROG_GREP
 AC_PROG_SED
 
 AX_PROGVAR([cmp])
+AX_PROGVAR([curl])
+AX_PROGVAR([sort])
 AX_PROGVAR([xargs])
 
 AC_ARG_ENABLE([dependency-checks],
@@ -91,6 +93,7 @@ AS_IF([test "x$enable_dependency_checks" != "xno"], [
     AX_PROGVAR([bc])
     AX_PROGVAR([cmp])
     AX_PROGVAR([cut])
+    AX_PROGVAR([curl])
     AX_PROGVAR([entr])
     AX_PROGVAR([epubcheck])
     AX_PROGVAR([fcconflist], [fc-conflist])

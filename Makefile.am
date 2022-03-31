@@ -261,13 +261,14 @@ CLEANFILES += .docker_deps
 .docker_deps: hooks/build
 	$(SHELL) -c 'source <($(SED) -nE "/^(RUN|'"'"')/{s/.*=/echo /;p}" $<)' | \
 		tr ' ' '\n' | \
-		sort > $@
+		$(SORT) > $@
 
 CLEANFILES += .aur_deps
 .aur_deps:
-	curl -Ls 'https://aur.archlinux.org/cgit/aur.git/plain/.SRCINFO?h=casile-git' | \
+	$(CURL) -Ls 'https://aur.archlinux.org/cgit/aur.git/plain/.SRCINFO?h=casile-git' | \
 		$(SED) -nE '/\bdepends =/{s/.*= //;p}' | \
 		$(GREP) -v 'so.$$' | \
+		$(SORT) > $@
 
 define docker_push =
 	test -z "$(DOCKER_PAT)" || \

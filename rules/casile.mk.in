@@ -28,6 +28,7 @@ SHELL := $(CASILEDIR)/make-shell.zsh
 AWK ?= @AWK@
 BC ?= @BC@
 CMP ?= @CMP@
+CURL ?= @CURL@
 CUT ?= @CUT@
 EGREP ?= @EGREP@
 ENTR ?= @ENTR@
