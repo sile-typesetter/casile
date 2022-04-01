@@ -1,4 +1,4 @@
-function remove_attr (element)
+local function remove_attr (element)
   if element.attr then
     element.attr = pandoc.Attr()
     return element

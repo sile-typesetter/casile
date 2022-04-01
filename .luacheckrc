@@ -16,17 +16,19 @@ files["spec"] = {
   std = "+busted"
 }
 files["pandoc-filters"] = {
-	globals = {
-		"Link",
-		"Header",
-		"Note",
-		"Pandoc",
-		"pandoc"
-	},
-	ignore = { "4.2" }
+  globals = {
+    "Block",
+    "Header",
+    "Inline",
+    "Link",
+    "Note",
+    "Pandoc",
+    "pandoc"
+  },
+  ignore = { "4.2" }
 }
 globals = {
-	"CASILE",
+  "CASILE",
   "SILE",
   "SU",
   "std",
