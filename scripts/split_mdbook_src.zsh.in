@@ -15,8 +15,12 @@ function trunc() {
 
 trunc $dir/$of
 
-@PANDOC@ $src --markdown-headings=atx --wrap=none --to=commonmark_x-smart+gfm_auto_identifiers --reference-location=section |
-@PERL@ -pne 's/{osis=".*"}//g' |
+@PANDOC@ $src \
+  --markdown-headings=atx \
+  --wrap=none \
+  --reference-location=section \
+  --to=commonmark_x-smart \
+  --lua-filter=$CASILEDIR/pandoc-filters/strip_for_mdbook.lua |
 while read line; do
   unset title slug
   # Check for chapter header
