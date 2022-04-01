@@ -1205,22 +1205,27 @@ $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 
 DISTDIRS += *.static
 
-%.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg %.epub %.mdbook
-	rm -rf $(<D)/static
-	mkdir -p $(<D)/static
-	cp -r $(filter $*%,$^) $(<D)/static
+%.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg %.pdfs %.epub %.mdbook
 	set -o extendedglob
 	export VERSION_CONTROL=none
+	local zola_src="$(<D)/static"
+	rm -rf "$$zola_src"
+	mkdir -p "$$zola_src"
+	local inputs=($(addsuffix ($(hash)qN),$(filter $*%,$^)))
+	$(XARGS) -r -I {} cp -a {} "$$zola_src" <<< $${(F)$${(u)inputs}}
+	mv $$zola_src/{$*.mdbook,oku}
 	local covercandidates=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT)-$(_3d)-$(_front).png )$(filter %.jpg,$^)))
-	cp $${covercandidates} $(<D)/static
-	mv $(<D)/static/{$*.mdbook,oku}
+	$(XARGS) -r install -m0644 -t "$$zola_src" <<< $${$${(u)covercandidates}}
+	local pdfs=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT).pdf )))
+	$(XARGS) -r install -m0644 -t "$$zola_src" <<< $${$${(u)pdfs}}
 	rm -rf $@
 	$(ZOLA) -r $(<D) build -o $@
 
-$(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg | $(BUILDDIR)
+$(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg %.pdfs | $(BUILDDIR)
 	set -o extendedglob
 	export VERSION_CONTROL=none
 	local covercandidates=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT)-$(_3d)-$(_front).png )$(filter %.jpg,$^)))
+	local pdfs=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT).pdf )))
 	mkdir -p $(@D)
 	{
 		echo "+++"
@@ -1229,9 +1234,12 @@ $(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg | $
 				\"extra\": { \"coverimg\": \"$${covercandidates[1]}\" }
 			}" $<
 		echo -e "+++\n"
-		$(YQ) -r '.abstract' $<
-		echo "- [epub indir]($*.epub)"
-		echo "- [online oku](oku)"
+		$(YQ) -r '.abstract | if . == null then "" else . end' $<
+		echo "- [Online oku](oku)"
+		echo "- EPUB olarak indir: [epub]($*.epub)"
+		for pdf in $$pdfs; do
+		echo "- PDF olarak indir: [$${$${pdf$(hash)$*-}%.pdf}]($$pdf)"
+		done
 	} > $@
 
 $(BUILDDIR)/%.static/templates/index.html: $(ZOLA_TEMPLATE) | $(BUILDDIR)
