@@ -1195,10 +1195,12 @@ DISTFILES += *.epub
 DISTDIRS += *.mdbook
 
 $(BUILDDIR)/%.mdbook/src/SUMMARY.md: $(BUILDDIR)/%-$(_processed).md
+	set -x
 	mkdir -p $(@D)
 	split_mdbook_src.zsh $< $(@D) > $@
 
 $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
+	set -x
 	mkdir -p $(@D)
 	$(YQ) -t '{"book": {
 			"title": .title,
@@ -1207,43 +1209,37 @@ $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 		}}' $< > $@
 
 # Unlike moste other rules, the static site stuff doesn't depend on much being generated, it mostly looks what *has been* generated and goes from there
-_STATIC_RESOURCES = $(filter-out %.static,$(wildcard $(DISTFILES) $(DISTDIRS)))
+list_extant_resources = $(filter $1%,$(filter-out $1.static,$(wildcard $(DISTFILES) $(DISTDIRS))))
 
-%.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg | $$(_STATIC_RESOURCES) $(DISTDIRS)
-	set -o extendedglob
-	export VERSION_CONTROL=none
+%.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg $(call list_extant_resources,$$*) | $(DISTDIRS)
 	local zola_src="$(<D)/static"
 	rm -rf "$$zola_src"
 	mkdir -p "$$zola_src"
-	local resources=($(addsuffix ($(hash)qN),$(filter $*%,$^ $|)))
-	$(XARGS) -r -I {} cp -a {} "$$zola_src" <<< $${(F)$${(u)resources}}
-	$(and $(filter $*.mdbook,$^),ln -Tsf $(<D)/{$*.mdbook,$(_read)})
+	$(and $(filter $*%,$^),cp -a $(filter $*%,$^) "$$zola_src")
+	$(and $(filter $*.mdbook,$^),ln -Tsf $$zola_src/{$*.mdbook,$(_read)})
 	rm -rf $@
 	$(ZOLA) -r $(<D) build -o $@
 
 DISTDIRS += *.static
 
-$(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg | $$(_STATIC_RESOURCES) $(BUILDDIR)
-	set -o extendedglob
-	export VERSION_CONTROL=none
-	local covercandidates=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT)-$(_3d)-$(_front).png )$(filter %.jpg,$^)))
-	local pdfs=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT).pdf )))
+$(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg $(call list_extant_resources,$$*) | $(BUILDDIR)
 	mkdir -p $(@D)
-	{
-		echo "+++"
-		$(YQ) -t "{
-				\"slug\": \"$*\",
-				\"extra\": { \"coverimg\": \"$${covercandidates[1]}\" }
-			}" $<
-		echo -e "+++\n"
-		$(YQ) -r '.abstract | if . == null then "" else . end' $<
-		$(and $(filter $*.mdbook,$|),echo "- [Online oku]($(_read))")
-		$(and $(filter $*.epub,$|),echo "- EPUB olarak indir: [epub]($*.epub)")
-		$(and $(filter $*.mobi,$|),echo "- MOBI olarak indir: [mobi]($*.mobi)")
-		for pdf in $$pdfs; do
+	$(ZSH) << 'EOF' # inception to break out of CaSILE’s make shell wrapper
+	exec > $@ # grey magic to capture output
+	echo "+++"
+	$(YQ) -t "{
+			\"slug\": \"$*\",
+			\"extra\": { \"coverimg\": \"$(firstword $(filter $(call pattern_list,$*,$(LAYOUTS),$(_3b)-$(_on).png),$^) $*-epub-$(_poster).jpg)\" }
+		}" $<
+	echo "+++"
+	$(YQ) -r '.abstract | if . == null then "" else . end' $<
+	$(and $(filter $*.mdbook,$^),echo "- [Online oku]($(_read))")
+	$(and $(filter $*.epub,$^),echo "- EPUB olarak indir: [epub]($*.epub)")
+	$(and $(filter $*.mobi,$^),echo "- MOBI olarak indir: [mobi]($*.mobi)")
+	for pdf in $(filter $(call pattern_list,$*,$(LAYOUTS),.pdf),$^); do
 		echo "- PDF olarak indir: [$${$${pdf$(hash)$*-}%.pdf}]($$pdf)"
-		done
-	} | cat -s > $@
+	done
+	EOF
 
 $(BUILDDIR)/%.static/templates/index.html: $(ZOLA_TEMPLATE) | $(BUILDDIR)
 	mkdir -p $(@D)
