@@ -46,5 +46,6 @@ _withoutfootnotes := withoutfootnotes
 _withverses := withverses
 _withoutlinks := withoutlinks
 _chapters := chapters
+_read := read
 
 # vim: ft=make

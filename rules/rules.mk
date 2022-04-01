@@ -1217,7 +1217,7 @@ _STATIC_RESOURCES = $(filter-out %.static,$(wildcard $(DISTFILES) $(DISTDIRS)))
 	mkdir -p "$$zola_src"
 	local resources=($(addsuffix ($(hash)qN),$(filter $*%,$^ $|)))
 	$(XARGS) -r -I {} cp -a {} "$$zola_src" <<< $${(F)$${(u)resources}}
-	$(and $(filter $*.mdbook,$|),ln -sf $*.mdbook oku)
+	$(and $(filter $*.mdbook,$^),ln -Tsf $(<D)/{$*.mdbook,$(_read)})
 	rm -rf $@
 	$(ZOLA) -r $(<D) build -o $@
 
@@ -1237,7 +1237,7 @@ $(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg | $
 			}" $<
 		echo -e "+++\n"
 		$(YQ) -r '.abstract | if . == null then "" else . end' $<
-		$(and $(filter $*.mdbook,$|),echo "- [Online oku](oku)")
+		$(and $(filter $*.mdbook,$|),echo "- [Online oku]($(_read))")
 		$(and $(filter $*.epub,$|),echo "- EPUB olarak indir: [epub]($*.epub)")
 		$(and $(filter $*.mobi,$|),echo "- MOBI olarak indir: [mobi]($*.mobi)")
 		for pdf in $$pdfs; do

@@ -46,5 +46,6 @@ _withoutfootnotes := dipnotsuz
 _withverses := ayetli
 _withoutlinks := linksiz
 _chapters := bolumler
+_read := oku
 
 # vim: ft=make
