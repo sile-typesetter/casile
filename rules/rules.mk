@@ -1179,20 +1179,22 @@ $(BUILDDIR)/%-epub-metadata.yml: %-manifest.yml %-epub-$(_poster).jpg | $(BUILDD
 	$(YQ) -M -e -y '{title: [ { type: "main", text: .title  }, { type: "subtitle", text: .subtitle } ], creator: .creator, contributor: .contributor, identifier: .identifier, date: .date | last | .text, published: .date | first | .text, lang: .lang, description: .abstract, rights: .rights, publisher: .publisher, source: (if .source then (.source[]? | select(.type == "title").text) else null end), "cover-image": "$(filter %.jpg,$^)" }' < $< >> $@
 	echo '...' >> $@
 
-%.epub: private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/epubclean.lua
-%.epub: $(BUILDDIR)/%-$(_processed).md $(BUILDDIR)/%-epub-metadata.yml
+EPUBS := $(call pattern_list,$(SOURCES),.epub)
+$(EPUBS): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/epubclean.lua
+$(EPUBS): %.epub: $(BUILDDIR)/%-$(_processed).md $(BUILDDIR)/%-epub-metadata.yml
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$(PANDOCFILTERS) \
 		$(filter %-epub-metadata.yml,$^) \
 		$(filter %-$(_processed).md,$^) -o $@
 
-DISTFILES += *.epub
+DISTFILES += $(EPUBS)
 
-%.mdbook: $(BUILDDIR)/%.mdbook/src/SUMMARY.md $(BUILDDIR)/%.mdbook/book.toml
+MDBOOKS := $(call pattern_list,$(SOURCES),.mdbook)
+$(MDBOOKS): %.mdbook: $(BUILDDIR)/%.mdbook/src/SUMMARY.md $(BUILDDIR)/%.mdbook/book.toml
 	$(MDBOOK) build $(<D)/.. --dest-dir ../../$@
 
-DISTDIRS += *.mdbook
+DISTDIRS += $(MDBOOKS)
 
 $(BUILDDIR)/%.mdbook/src/SUMMARY.md: $(BUILDDIR)/%-$(_processed).md
 	set -x
@@ -1211,7 +1213,8 @@ $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 # Unlike moste other rules, the static site stuff doesn't depend on much being generated, it mostly looks what *has been* generated and goes from there
 list_extant_resources = $(filter $1%,$(filter-out $1.static,$(wildcard $(DISTFILES) $(DISTDIRS))))
 
-%.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg $(call list_extant_resources,$$*) | $(DISTDIRS)
+STATICS := $(call pattern_list,$(SOURCES),.static)
+$(STATICS): %.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg $(call list_extant_resources,$$*) | $(BUILDDIR)
 	local zola_src="$(<D)/static"
 	rm -rf "$$zola_src"
 	mkdir -p "$$zola_src"
@@ -1220,7 +1223,7 @@ list_extant_resources = $(filter $1%,$(filter-out $1.static,$(wildcard $(DISTFIL
 	rm -rf $@
 	$(ZOLA) -r $(<D) build -o $@
 
-DISTDIRS += *.static
+DISTDIRS += $(STATICS)
 
 $(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg $(call list_extant_resources,$$*) | $(BUILDDIR)
 	mkdir -p $(@D)
@@ -1257,28 +1260,31 @@ $(BUILDDIR)/%.static/config.toml: %-manifest.yml | $(BUILDDIR)
 			"compile_sass": true
 		}' $< > $@
 
-%.odt: $(BUILDDIR)/%-$(_processed).md %-manifest.yml
+ODTS := $(call pattern_list,$(SOURCES),.odt)
+$(ODTS): %.odt: $(BUILDDIR)/%-$(_processed).md %-manifest.yml
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$(PANDOCFILTERS) \
 		$(filter %-manifest.yml,$^) \
 		$(filter %-$(_processed).md,$^) -o $@
 
-DISTFILES += *.odt
+DISTFILES += $(ODTS)
 
-%.docx: $(BUILDDIR)/%-$(_processed).md %-manifest.yml
+DOCXS := $(call pattern_list,$(SOURCES),.docx)
+$(DOCXS): %.docx: $(BUILDDIR)/%-$(_processed).md %-manifest.yml
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$(PANDOCFILTERS) \
 		$(filter %-manifest.yml,$^) \
 		$(filter %-$(_processed).md,$^) -o $@
 
-DISTFILES += *.docx
+DISTFILES += $(DOCXS)
 
-%.mobi: %.epub
+MOBIS := $(call pattern_list,$(SOURCES),.mobi)
+$(MOBIS): %.mobi: %.epub
 	$(KINDLEGEN) $< ||:
 
-DISTFILES += *.mobi
+DISTFILES += $(MOBIS)
 
 PHONYSCREENS := $(call pattern_list,$(SOURCES),.$(_screen))
 .PHONY: $(PHONYSCREENS)
