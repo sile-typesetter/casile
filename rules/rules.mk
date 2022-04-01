@@ -1214,7 +1214,7 @@ $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 list_extant_resources = $(filter $1%,$(filter-out $1.static,$(wildcard $(DISTFILES) $(DISTDIRS))))
 
 STATICS := $(call pattern_list,$(SOURCES),.static)
-$(STATICS): %.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg $(call list_extant_resources,$$*) | $(BUILDDIR)
+$(STATICS): %.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg $$(call list_extant_resources,$$*) | $(BUILDDIR)
 	local zola_src="$(<D)/static"
 	rm -rf "$$zola_src"
 	mkdir -p "$$zola_src"
@@ -1225,7 +1225,7 @@ $(STATICS): %.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_ind
 
 DISTDIRS += $(STATICS)
 
-$(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg $(call list_extant_resources,$$*) | $(BUILDDIR)
+$(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg $$(call list_extant_resources,$$*) | $(BUILDDIR)
 	mkdir -p $(@D)
 	$(ZSH) << 'EOF' # inception to break out of CaSILE’s make shell wrapper
 	exec > $@ # grey magic to capture output
