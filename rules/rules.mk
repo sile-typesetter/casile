@@ -446,7 +446,7 @@ $(SOURCESWITHOUTFOOTNOTES): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/p
 $(SOURCESWITHOUTFOOTNOTES): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/withoutlinks.lua
 
 SOURCESWITHOUTLINKS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutlinks).md))
-$(SOURCESWITHOUTLINKS): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/.pandoc-filters/withoutlinks.lua
+$(SOURCESWITHOUTLINKS): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/withoutlinks.lua
 
 SOURCESWITHEDITS := $(SOURCESWITHVERSES) $(SOURCESWITHOUTFOOTNOTES) $(SOURCESWITHOUTLINKS)
 $(SOURCESWITHEDITS): $$(call strip_edits,$$@)
