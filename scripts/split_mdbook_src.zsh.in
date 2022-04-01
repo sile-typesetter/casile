@@ -18,14 +18,19 @@ trunc $dir/$of
 @PANDOC@ $src --markdown-headings=atx --wrap=none --to=commonmark_x-smart+gfm_auto_identifiers --reference-location=section |
 @PERL@ -pne 's/{osis=".*"}//g' |
 while read line; do
+  unset title slug
   # Check for chapter header
   if [[ $line =~ "^# .*" ]]; then
     [[ $line =~ ".*unnumbered.*" ]] || let i=$i+1
-    @PERL@ -pne 's/^# (.*) {.*#([-\w]+).*}/\2 \1/' <<< "$line" |
-      read slug title
-    test -n "$slug"
+    @PANDOC@ --to=plain-smart <<< "$line" |
+      read title
     test -n "$title"
-    of=$(printf %02d $i)-$slug.md
+    # https://github.com/jgm/pandoc/issues/8003
+    @PANDOC@ -f markdown+ascii_identifiers -t markdown-auto_identifiers <<< "# ${title//ı/i}" |
+      @PERL@ -pne 's/^.*{.*#([-\w]+).*}/\1/' |
+      read slug
+    test -n "$slug"
+    of="$(printf %02d $i)-$slug.md"
     trunc $dir/$of
     line="# $title"
     echo "[$title](./$of)"
