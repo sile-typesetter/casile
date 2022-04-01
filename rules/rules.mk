@@ -1197,12 +1197,10 @@ $(MDBOOKS): %.mdbook: $(BUILDDIR)/%.mdbook/src/SUMMARY.md $(BUILDDIR)/%.mdbook/b
 DISTDIRS += $(MDBOOKS)
 
 $(BUILDDIR)/%.mdbook/src/SUMMARY.md: $(BUILDDIR)/%-$(_processed).md
-	set -x
 	mkdir -p $(@D)
 	split_mdbook_src.zsh $< $(@D) > $@
 
 $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
-	set -x
 	mkdir -p $(@D)
 	$(YQ) -t '{"book": {
 			"title": .title,
@@ -1214,14 +1212,14 @@ $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 list_extant_resources = $(filter $1%,$(filter-out $1.static,$(wildcard $(DISTFILES) $(DISTDIRS))))
 
 STATICS := $(call pattern_list,$(SOURCES),.static)
-$(STATICS): %.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg $$(call list_extant_resources,$$*) | $(BUILDDIR)
+$(STATICS): %.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg $$(call list_extant_resources,$$*) force | $(BUILDDIR)
 	local zola_src="$(<D)/static"
 	rm -rf "$$zola_src"
 	mkdir -p "$$zola_src"
 	$(and $(filter $*%,$^),cp -a $(filter $*%,$^) "$$zola_src")
-	$(and $(filter $*.mdbook,$^),ln -Tsf $$zola_src/{$*.mdbook,$(_read)})
+	$(and $(filter $*.mdbook,$^),mv $$zola_src/{$*.mdbook,$(_read)})
 	rm -rf $@
-	$(ZOLA) -r $(<D) build -o $@
+	$(ZOLA) -r "$(<D)" build -o "$@"
 
 DISTDIRS += $(STATICS)
 
