@@ -218,6 +218,7 @@ $(foreach SOURCE,$(SOURCES),$(eval TARGETLUAS_$(SOURCE) := $(wildcard $(SOURCE).
 
 # Create list of all possible final outputs for possible distribution
 DISTFILES ?=
+DISTDIRS ?=
 DISTDIR ?= $(PROJECT)-$(call versioninfo,$(PROJECT))
 
 include $(CASILEDIR)/rules/utilities.mk
@@ -1186,10 +1187,12 @@ $(BUILDDIR)/%-epub-metadata.yml: %-manifest.yml %-epub-$(_poster).jpg | $(BUILDD
 		$(filter %-epub-metadata.yml,$^) \
 		$(filter %-$(_processed).md,$^) -o $@
 
-DISTDIRS += *.mdbook
+DISTFILES += *.epub
 
 %.mdbook: $(BUILDDIR)/%.mdbook/src/SUMMARY.md $(BUILDDIR)/%.mdbook/book.toml
 	$(MDBOOK) build $(<D)/.. --dest-dir ../../$@
+
+DISTDIRS += *.mdbook
 
 $(BUILDDIR)/%.mdbook/src/SUMMARY.md: $(BUILDDIR)/%-$(_processed).md
 	mkdir -p $(@D)
@@ -1203,25 +1206,24 @@ $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 			"language": .lang
 		}}' $< > $@
 
-DISTDIRS += *.static
+# Unlike moste other rules, the static site stuff doesn't depend on much being generated, it mostly looks what *has been* generated and goes from there
+_STATIC_RESOURCES = $(filter-out %.static,$(wildcard $(DISTFILES) $(DISTDIRS)))
 
-%.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg %.pdfs %.epub %.mobi %.mdbook
+%.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg | $$(_STATIC_RESOURCES) $(DISTDIRS)
 	set -o extendedglob
 	export VERSION_CONTROL=none
 	local zola_src="$(<D)/static"
 	rm -rf "$$zola_src"
 	mkdir -p "$$zola_src"
-	local inputs=($(addsuffix ($(hash)qN),$(filter $*%,$^)))
-	$(XARGS) -r -I {} cp -a {} "$$zola_src" <<< $${(F)$${(u)inputs}}
-	mv $$zola_src/{$*.mdbook,oku}
-	local covercandidates=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT)-$(_3d)-$(_front).png )$(filter %.jpg,$^)))
-	$(XARGS) -r install -m0644 -t "$$zola_src" <<< $${$${(u)covercandidates}}
-	local pdfs=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT).pdf )))
-	$(XARGS) -r install -m0644 -t "$$zola_src" <<< $${$${(u)pdfs}}
+	local resources=($(addsuffix ($(hash)qN),$(filter $*%,$^ $|)))
+	$(XARGS) -r -I {} cp -a {} "$$zola_src" <<< $${(F)$${(u)resources}}
+	$(and $(filter $*.mdbook,$|),ln -sf $*.mdbook oku)
 	rm -rf $@
 	$(ZOLA) -r $(<D) build -o $@
 
-$(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg %.pdfs | $(BUILDDIR)
+DISTDIRS += *.static
+
+$(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg | $$(_STATIC_RESOURCES) $(BUILDDIR)
 	set -o extendedglob
 	export VERSION_CONTROL=none
 	local covercandidates=($(addsuffix ($(hash)qN),$(foreach LAYOUT,$(LAYOUTS),$*-$(LAYOUT)-$(_3d)-$(_front).png )$(filter %.jpg,$^)))
@@ -1235,13 +1237,13 @@ $(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg %.p
 			}" $<
 		echo -e "+++\n"
 		$(YQ) -r '.abstract | if . == null then "" else . end' $<
-		echo "- [Online oku](oku)"
-		echo "- EPUB olarak indir: [epub]($*.epub)"
-		echo "- MOBI olarak indir: [mobi]($*.mobi)"
+		$(and $(filter $*.mdbook,$|),echo "- [Online oku](oku)")
+		$(and $(filter $*.epub,$|),echo "- EPUB olarak indir: [epub]($*.epub)")
+		$(and $(filter $*.mobi,$|),echo "- MOBI olarak indir: [mobi]($*.mobi)")
 		for pdf in $$pdfs; do
 		echo "- PDF olarak indir: [$${$${pdf$(hash)$*-}%.pdf}]($$pdf)"
 		done
-	} > $@
+	} | cat -s > $@
 
 $(BUILDDIR)/%.static/templates/index.html: $(ZOLA_TEMPLATE) | $(BUILDDIR)
 	mkdir -p $(@D)
@@ -1258,8 +1260,6 @@ $(BUILDDIR)/%.static/config.toml: %-manifest.yml | $(BUILDDIR)
 			"base_url": "$(call urlinfo,$*)",
 			"compile_sass": true
 		}' $< > $@
-
-DISTFILES += *.epub
 
 %.odt: $(BUILDDIR)/%-$(_processed).md %-manifest.yml
 	$(PANDOC) \
