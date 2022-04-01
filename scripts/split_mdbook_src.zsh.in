@@ -36,7 +36,6 @@ while read line; do
     test -n "$slug"
     of="$(printf %02d $i)-$slug.md"
     trunc $dir/$of
-    line="# $title"
     echo "[$title](./$of)"
   fi
   >> $dir/$of <<< $line
