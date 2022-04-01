@@ -1205,7 +1205,7 @@ $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 
 DISTDIRS += *.static
 
-%.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg %.pdfs %.epub %.mdbook
+%.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg %.pdfs %.epub %.mobi %.mdbook
 	set -o extendedglob
 	export VERSION_CONTROL=none
 	local zola_src="$(<D)/static"
@@ -1237,6 +1237,7 @@ $(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg %.p
 		$(YQ) -r '.abstract | if . == null then "" else . end' $<
 		echo "- [Online oku](oku)"
 		echo "- EPUB olarak indir: [epub]($*.epub)"
+		echo "- MOBI olarak indir: [mobi]($*.mobi)"
 		for pdf in $$pdfs; do
 		echo "- PDF olarak indir: [$${$${pdf$(hash)$*-}%.pdf}]($$pdf)"
 		done
