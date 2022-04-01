@@ -1212,12 +1212,13 @@ $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 list_extant_resources = $(filter $1%,$(filter-out $1.static,$(wildcard $(DISTFILES) $(DISTDIRS))))
 
 STATICS := $(call pattern_list,$(SOURCES),.static)
-$(STATICS): %.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg $$(call list_extant_resources,$$*) force | $(BUILDDIR)
-	local zola_src="$(<D)/static"
-	rm -rf "$$zola_src"
-	mkdir -p "$$zola_src"
-	$(and $(filter $*%,$^),cp -a $(filter $*%,$^) "$$zola_src")
-	$(and $(filter $*.mdbook,$^),mv $$zola_src/{$*.mdbook,$(_read)})
+$(STATICS): %.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg $$(call list_extant_resources,$$*) | $(BUILDDIR)
+	:
+	local resourcedir="$(<D)/static"
+	rm -rf "$$resourcedir"
+	mkdir -p "$$resourcedir"
+	$(and $(filter $*%,$^),cp -a $(filter $*%,$^) "$$resourcedir")
+	$(and $(filter $*.mdbook,$^),mv $$resourcedir/$*.mdbook $$resourcedir/$(_read))
 	rm -rf $@
 	$(ZOLA) -r "$(<D)" build -o "$@"
 
