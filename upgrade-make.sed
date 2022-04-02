@@ -892,3 +892,6 @@ s#cilt\([wh]..\)\b#binding\1#g
 s#\(include .*casile/\)makefile#\1rules.mk#
 s#\(include .*casile/\)rules$#\1rules.mk#
 s#\bmagick_sembol_filter\b#magick_emblum_filter#g
+s#\bPHONY\(SCREENS\|PLAYS\)\b#VIRTUAL\1#g
+s#\bPERSOURCE\(PDFS\|RENDERINGS\|PROMOTIONALS\)\b#VIRTUAL\1#g
+s#\b\(APP\)SOURCES\b#VIRTUAL\1S#g

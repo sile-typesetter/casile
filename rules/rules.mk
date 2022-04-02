@@ -233,9 +233,9 @@ endef
 
 $(foreach FORMAT,$(FORMATS),$(eval $(call format_template,$(FORMAT),$(TARGETS))))
 
-PERSOURCEPDFS := $(call pattern_list,$(SOURCES),.pdfs)
-.PHONY: $(PERSOURCEPDFS)
-$(PERSOURCEPDFS): %.pdfs: $(call pattern_list,$$*,$(LAYOUTS),.pdf) $(and $(EDITIONS),$(call pattern_list,$$*,$(EDITIONS),$(LAYOUTS),.pdf))
+VIRTUALPDFS := $(call pattern_list,$(SOURCES),.pdfs)
+.PHONY: $(VIRTUALPDFS)
+$(VIRTUALPDFS): %.pdfs: $(call pattern_list,$$*,$(LAYOUTS),.pdf) $(and $(EDITIONS),$(call pattern_list,$$*,$(EDITIONS),$(LAYOUTS),.pdf))
 
 # Setup target dependencies to mimic stages of a CI pipeline
 ifeq ($(MAKECMDGOALS),ci)
@@ -250,16 +250,16 @@ ci: debug pdfs renderings promotionals
 .PHONY: renderings
 renderings: $(call pattern_list,$(TARGETS),.renderings)
 
-PERSOURCERENDERINGS := $(call pattern_list,$(SOURCES),.renderings)
-.PHONY: $(PERSOURCERENDERINGS)
-$(PERSOURCERENDERINGS): %.renderings: $(call pattern_list,$$*,$(RENDERED),$(RENDERINGS),.jpg) $(and $(EDITIONS),$(call pattern_list,$$*,$(EDITIONS),$(RENDERED),$(RENDERINGS),.jpg))
+VIRTUALRENDERINGS := $(call pattern_list,$(SOURCES),.renderings)
+.PHONY: $(VIRTUALRENDERINGS)
+$(VIRTUALRENDERINGS): %.renderings: $(call pattern_list,$$*,$(RENDERED),$(RENDERINGS),.jpg) $(and $(EDITIONS),$(call pattern_list,$$*,$(EDITIONS),$(RENDERED),$(RENDERINGS),.jpg))
 
 .PHONY: promotionals
 promotionals: $(call pattern_list,$(TARGETS),.promotionals)
 
-PERSOURCEPROMOTIONALS := $(call pattern_list,$(SOURCES),.promotionals)
-.PHONY: $(PERSOURCEPROMOTIONALS)
-$(PERSOURCEPROMOTIONALS): %.promotionals: $(call pattern_list,$$*,$(PLACARDS),-$(_poster).jpg) $$*-icon.png
+VIRTUALPROMOTIONALS := $(call pattern_list,$(SOURCES),.promotionals)
+.PHONY: $(VIRTUALPROMOTIONALS)
+$(VIRTUALPROMOTIONALS): %.promotionals: $(call pattern_list,$$*,$(PLACARDS),-$(_poster).jpg) $$*-icon.png
 
 # If a series, add some extra dependencies to convenience builds
 ifneq ($(words $(TARGETS)),1)
@@ -334,10 +334,10 @@ $(DISTDIR).tar.bz2 $(DISTDIR).tar.gz $(DISTDIR).tar.xz $(DISTDIR).zip $(DISTDIR)
 
 # Some layouts have matching extra resources to build such as covers
 ifneq ($(strip $(COVERS)),false)
-$(PERSOURCEPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_paperback),$(LAYOUTS)),$(_binding),.pdf)
-$(PERSOURCEPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_hardcover),$(LAYOUTS)),$(_case) $(jacket),.pdf)
-$(PERSOURCEPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_coil),$(LAYOUTS)),$(_cover),.pdf)
-$(PERSOURCEPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_stapled),$(LAYOUTS)),$(_binding),.pdf)
+$(VIRTUALPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_paperback),$(LAYOUTS)),$(_binding),.pdf)
+$(VIRTUALPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_hardcover),$(LAYOUTS)),$(_case) $(jacket),.pdf)
+$(VIRTUALPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_coil),$(LAYOUTS)),$(_cover),.pdf)
+$(VIRTUALPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_stapled),$(LAYOUTS)),$(_binding),.pdf)
 endif
 
 # Some layouts have matching resources that need to be built first and included
@@ -540,13 +540,14 @@ $(BUILDDIR)/%.toc: %.pdf | $(BUILDDIR) ;
 
 $(BUILDDIR)/%.tov: %.pdf | $(BUILDDIR) ;
 
-APPSOURCES := $(call pattern_list,$(SOURCES),.app)
-.PHONY: $(APPSOURCES)
-$(APPSOURCES): %.app: %-$(_app).info %.promotionals
+VIRTUALAPPS := $(call pattern_list,$(SOURCES),.app)
+.PHONY: $(VIRTUALAPPS)
+$(VIRTUALAPPS): %.app: %-$(_app).info %.promotionals
 
-WEBSOURCES := $(call pattern_list,$(SOURCES),.web)
-.PHONY: $(WEBSOURCES)
-$(WEBSOURCES): %.web: %-manifest.yml %.promotionals %.renderings %.mdbook
+VIRTUALWEBS := $(call pattern_list,$(SOURCES),.web)
+
+.PHONY: $(VIRTUALWEBS)
+$(VIRTUALWEBS): %.web: %-manifest.yml %.promotionals %.renderings %.mdbook
 
 %-$(_app).pdf: %-$(_app)-$(_print).pdf
 	cp $< $@
@@ -1007,9 +1008,10 @@ $(DOCXS): %.docx: $(BUILDDIR)/%-$(_processed).md %-manifest.yml
 
 DISTFILES += $(DOCXS)
 
-PHONYSCREENS := $(call pattern_list,$(SOURCES),.$(_screen))
-.PHONY: $(PHONYSCREENS)
-$(PHONYSCREENS): %.$(_screen): %-$(_screen).pdf %-manifest.yml
+VIRTUALSCREENS := $(call pattern_list,$(SOURCES),.$(_screen))
+
+.PHONY: $(VIRTUALSCREENS)
+$(VIRTUALSCREENS): %.$(_screen): %-$(_screen).pdf %-manifest.yml
 
 MANIFESTS := $(call pattern_list,$(SOURCES),-manifest.yml)
 $(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML) $$(TARGETYAMLS_$$*)

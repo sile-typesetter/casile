@@ -23,12 +23,12 @@ $(MOBIS): %.mobi: %.epub
 DISTFILES += $(MOBIS)
 
 PLAYSOURCES := $(foreach ISBN,$(ISBNS),$(call isbntouid,$(ISBN)))
-PHONYPLAYS := $(call pattern_list,$(PLAYSOURCES),.play)
+VIRTUALPLAYS := $(call pattern_list,$(PLAYSOURCES),.play)
 
-.PHONY: $(PHONYPLAYS)
-$(PHONYPLAYS): %.play: %_playbooks.csv
-$(PHONYPLAYS): %.play: $$(call pattern_list,$$(call ebookisbn,$$*),.epub _frontcover.jpg _backcover.jpg)
-$(PHONYPLAYS): %.play: $$(call pattern_list,$$(call printisbn,$$*),_interior.pdf _frontcover.jpg _backcover.jpg)
+.PHONY: $(VIRTUALPLAYS)
+$(VIRTUALPLAYS): %.play: %_playbooks.csv
+$(VIRTUALPLAYS): %.play: $$(call pattern_list,$$(call ebookisbn,$$*),.epub _frontcover.jpg _backcover.jpg)
+$(VIRTUALPLAYS): %.play: $$(call pattern_list,$$(call printisbn,$$*),_interior.pdf _frontcover.jpg _backcover.jpg)
 
 PLAYEPUBS := $(call pattern_list,$(ISBNS),.epub)
 
