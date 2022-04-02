@@ -38,7 +38,7 @@ MOCKUPFACTOR ?= 1
 FIGURES ?=
 
 # Default output formats and parameters (often overridden)
-FORMATS ?= pdfs epub mobi odt docx mdbook web static $(and $(ISBNS),play) app
+FORMATS ?= pdfs epub mobi odt docx mdbook zola $(and $(ISBNS),play) app
 BLEED ?= 3
 TRIM ?= 10
 NOBLEED ?= 0
@@ -80,7 +80,7 @@ EDITIONS ?=
 GOALLAYOUTS := $(sort $(filter-out -,$(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL)))))
 LAYOUTS += $(GOALLAYOUTS)
 
-ifneq ($(filter ci %.promotionals %.web %.epub %.play %.app,$(MAKECMDGOALS)),)
+ifneq ($(filter ci %.promotionals %.zola %.epub %.play %.app,$(MAKECMDGOALS)),)
 LAYOUTS += $(call pattern_list,$(PLACARDS),-$(_print))
 endif
 

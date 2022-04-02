@@ -1,13 +1,9 @@
-VIRTUALWEBS := $(call pattern_list,$(SOURCES),.web)
+ZOLAS := $(call pattern_list,$(SOURCES),.zola)
 
-.PHONY: $(VIRTUALWEBS)
-$(VIRTUALWEBS): %.web: %-manifest.yml %.promotionals %.renderings %.mdbook
+# Unlike most other rules, the zola site stuff doesn't depend on much being generated, it mostly looks what *has been* generated and goes from there
+list_extant_resources = $(filter $1%,$(filter-out $1.zola,$(wildcard $(DISTFILES) $(DISTDIRS))))
 
-# Unlike most other rules, the static site stuff doesn't depend on much being generated, it mostly looks what *has been* generated and goes from there
-list_extant_resources = $(filter $1%,$(filter-out $1.static,$(wildcard $(DISTFILES) $(DISTDIRS))))
-
-STATICS := $(call pattern_list,$(SOURCES),.static)
-$(STATICS): %.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg $$(call list_extant_resources,$$*) | $(BUILDDIR)
+$(ZOLAS): %.zola: $(addprefix $(BUILDDIR)/%.zola/,config.toml content/_index.md templates/index.html sass/style.sass) %-epub-$(_poster).jpg $$(call list_extant_resources,$$*) | $(BUILDDIR)
 	:
 	local resourcedir="$(<D)/static"
 	rm -rf "$$resourcedir"
@@ -17,9 +13,9 @@ $(STATICS): %.static: $(addprefix $(BUILDDIR)/%.static/,config.toml content/_ind
 	rm -rf $@
 	$(ZOLA) -r "$(<D)" build -o "$@"
 
-DISTDIRS += $(STATICS)
+DISTDIRS += $(ZOLAS)
 
-$(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg $$(call list_extant_resources,$$*) | $(BUILDDIR)
+$(BUILDDIR)/%.zola/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg $$(call list_extant_resources,$$*) | $(BUILDDIR)
 	mkdir -p $(@D)
 	$(ZSH) << 'EOF' # inception to break out of CaSILE’s make shell wrapper
 	exec > $@ # grey magic to capture output
@@ -38,15 +34,15 @@ $(BUILDDIR)/%.static/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg $$(
 	done
 	EOF
 
-$(BUILDDIR)/%.static/templates/index.html: $(ZOLA_TEMPLATE) | $(BUILDDIR)
+$(BUILDDIR)/%.zola/templates/index.html: $(ZOLA_TEMPLATE) | $(BUILDDIR)
 	mkdir -p $(@D)
 	cp $< $@
 
-$(BUILDDIR)/%.static/sass/style.sass: $(ZOLA_STYLE) | $(BUILDDIR)
+$(BUILDDIR)/%.zola/sass/style.sass: $(ZOLA_STYLE) | $(BUILDDIR)
 	mkdir -p $(@D)
 	cp $< $@
 
-$(BUILDDIR)/%.static/config.toml: %-manifest.yml | $(BUILDDIR)
+$(BUILDDIR)/%.zola/config.toml: %-manifest.yml | $(BUILDDIR)
 	mkdir -p $(@D)
 	$(YQ) -t '{
 			"title": .title,

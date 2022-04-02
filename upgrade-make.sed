@@ -895,3 +895,4 @@ s#\bmagick_sembol_filter\b#magick_emblum_filter#g
 s#\bPHONY\(SCREENS\|PLAYS\)\b#VIRTUAL\1#g
 s#\bPERSOURCE\(PDFS\|RENDERINGS\|PROMOTIONALS\)\b#VIRTUAL\1#g
 s#\b\(APP\)SOURCES\b#VIRTUAL\1S#g
+s#\b\(VIRTUALWEBS\|STATICS\)\b#ZOLAS#g
