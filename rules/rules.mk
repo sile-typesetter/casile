@@ -647,6 +647,7 @@ $(COVERPDFS): $(BUILDDIR)/%-$(_cover).pdf: $(BUILDDIR)/%-$(_cover).png $(BUILDDI
 	$(COVERS) || exit 0
 	text=$$(mktemp kapakXXXXXX.pdf)
 	bg=$$(mktemp kapakXXXXXX.pdf)
+	trap 'rm -rf $$text $$bg' EXIT SIGHUP SIGTERM
 	$(MAGICK) \
 		$(MAGICKARGS) \
 		$< \
@@ -654,10 +655,9 @@ $(COVERPDFS): $(BUILDDIR)/%-$(_cover).pdf: $(BUILDDIR)/%-$(_cover).png $(BUILDDI
 		-compress jpeg \
 		-quality 50 \
 		+repage \
-		$${bg}
-	$(PDFTK) $(filter %.pdf,$^) cat 1 output $${text}
-	$(PDFTK) $${text} background $${bg} output $@
-	rm $${text} $${bg}
+		$$bg
+	$(PDFTK) $(filter %.pdf,$^) cat 1 output $$text
+	$(PDFTK) $$text background $$bg output $@
 
 BINDINGFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_text).pdf))
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml

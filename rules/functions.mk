@@ -290,6 +290,7 @@ endef
 
 define povray ?=
 	headers=$$(mktemp $(BUILDDIR)/povXXXXXX.inc)
+	trap 'rm -rf $$headers' EXIT SIGHUP SIGTERM
 	cat <<- EOF < $2 < $3 > $$headers
 		#version 3.7;
 		#declare SceneLight = $(SCENELIGHT);
@@ -302,7 +303,6 @@ define povray ?=
 	sleep 1.$${RANDOM} # block parallel execution
 	while $(PGREP) povray > /dev/null; do sleep 2.$${RANDOM}; done)
 	$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$5 -H$6 -Q$(call scale,11,4) -O$4
-	rm $$headers
 endef
 
 define pov_crop ?=
