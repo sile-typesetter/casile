@@ -85,6 +85,9 @@ make-error-unknown-code =
 make-error =
   Failed to execute a subprocess for ‘make’.
 
+make-error-oom =
+  Make reported process aborted because system ran out of memory (OOM).
+
 make-error-unfinished =
   Make reported outdated targets were not built.
 

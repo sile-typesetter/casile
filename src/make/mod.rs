@@ -156,6 +156,15 @@ pub fn run(target: Vec<String>) -> Result<()> {
                         LocalText::new("make-error-target").fmt(),
                     )))
                 }
+                137 => {
+                    if !CONF.get_bool("verbose")? {
+                        dump_backlog(&backlog);
+                    }
+                    Err(Box::new(io::Error::new(
+                        io::ErrorKind::InvalidInput,
+                        LocalText::new("make-error-oom").fmt(),
+                    )))
+                }
                 _ => {
                     dump_backlog(&backlog);
                     Err(Box::new(io::Error::new(
