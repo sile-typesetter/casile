@@ -319,7 +319,7 @@ define pov_crop ?=
 	-gravity Center \
 	-extent  "%[fx:asp = (w/h <= 3/4 ? 3/4 : 4/3); w/h <= asp ? h*asp : w]x" \
 	-extent "x%[fx:asp = (w/h <= 3/4 ? 3/4 : 4/3); w/h >= asp ? w/asp : h]" \
-	-resize $1 -resize 50%
+	-resize $1 -resize 75%
 endef
 
 define split_chapters ?=
