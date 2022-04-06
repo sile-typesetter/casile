@@ -13,7 +13,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
     setup::is_setup()?;
     show_header("make-header");
     let mut makeflags: Vec<OsString> = Vec::new();
-    let cpus = num_cpus::get();
+    let cpus = &num_cpus::get().to_string();
     makeflags.push(OsString::from(format!("--jobs={}", cpus)));
     let mut makefiles: Vec<OsString> = Vec::new();
     let rules = status::get_rules()?;
@@ -56,6 +56,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
     let git_version = status::get_git_version();
     process = process
         .env("CASILE_CLI", "true")
+        .env("CASILE_JOBS", cpus)
         .env("CASILEDIR", CONFIGURE_DATADIR)
         .env("CONTAINERIZED", status::is_container().to_string())
         .env("LANGUAGE", lang_to_language(CONF.get_string("language")?))
@@ -154,6 +155,15 @@ pub fn run(target: Vec<String>) -> Result<()> {
                     Err(Box::new(io::Error::new(
                         io::ErrorKind::InvalidInput,
                         LocalText::new("make-error-target").fmt(),
+                    )))
+                }
+                137 => {
+                    if !CONF.get_bool("verbose")? {
+                        dump_backlog(&backlog);
+                    }
+                    Err(Box::new(io::Error::new(
+                        io::ErrorKind::InvalidInput,
+                        LocalText::new("make-error-oom").fmt(),
                     )))
                 }
                 _ => {

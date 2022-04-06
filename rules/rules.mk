@@ -108,10 +108,16 @@ RENDERED += $(GOALLAYOUTS)
 # And -p to wait for activity on first invocation
 ENTRFLAGS := -c -r
 
-# POV-Ray’s progress status output doesn't play nice with Gitlab’s CI logging
+# POV-Ray’s progress status output doesn't play nice with Gitlab’s CI logging or debug output
 ifneq ($(CI),)
 POVFLAGS += -V
 endif
+ifeq ($(DEBUG),true)
+POVFLAGS += -V
+endif
+
+# Tweak POV worker threads to match CASILE job limits, tweak rendering order
+POVFLAGS += +BS128 +RP5 +WT$(CASILE_JOBS)
 
 # List of extra m4 macro files to apply to every source
 M4MACROS ?=

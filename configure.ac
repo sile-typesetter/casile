@@ -117,6 +117,7 @@ AS_IF([test "x$enable_dependency_checks" != "xno"], [
     AX_PROGVAR([pdfjam])
     AX_PROGVAR([pdftk])
     AX_PROGVAR([pgrep])
+    AX_PROGVAR([pwait])
     AX_PROGVAR([podofobox])
     AX_PROGVAR([povray])
     AX_PROGVAR([sile])

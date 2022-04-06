@@ -285,6 +285,7 @@ define pagetopng ?=
 		-flatten \
 		-colorspace RGB \
 		-crop $${pagewpx}x$${pagehpx}+$${trimpx}+$${trimpx}! \
+		-resize 20%x +repage \
 		$@
 endef
 
@@ -300,8 +301,8 @@ define povray ?=
 		#declare MinThickness = 0.005;
 	EOF
 	$(and $(CASILE_SINGLEPOVJOB),
-	sleep 1.$${RANDOM} # block parallel execution
-	while $(PGREP) povray > /dev/null; do sleep 2.$${RANDOM}; done)
+		sleep 1.$${RANDOM} # block parallel execution
+		$(PWAIT) povray ||:)
 	$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$5 -H$6 -Q$(call scale,11,4) -O$4
 endef
 
@@ -318,7 +319,7 @@ define pov_crop ?=
 	-gravity Center \
 	-extent  "%[fx:asp = (w/h <= 3/4 ? 3/4 : 4/3); w/h <= asp ? h*asp : w]x" \
 	-extent "x%[fx:asp = (w/h <= 3/4 ? 3/4 : 4/3); w/h >= asp ? w/asp : h]" \
-	-resize $1 -resize 50%
+	-resize $1 -resize 75%
 endef
 
 define split_chapters ?=
