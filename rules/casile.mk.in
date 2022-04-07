@@ -78,7 +78,7 @@ ZSH ?= @ZSH@
 
 BUILDDIR ?= .casile
 
-CASILE_SINGLEPOVJOB ?= true
+CASILE_SINGLEPOVJOB ?=
 
 .PHONY: default
 default: all
