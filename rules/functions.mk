@@ -37,7 +37,6 @@ isbnmask = $(call cachevar,$1,mask,$(shell $(_ENV) $(PYTHON) -c "import isbnlib;
 ebookisbn = $(call cachevar,$1,ebook,$(or $(shell $(_ENV) $(YQ) -r '.identifier[]? | select(.key == "ebook"    ).text' $1.yml),$(call printisbn,$1)))
 printisbn = $(call cachevar,$1,print,$(shell $(_ENV) $(YQ) -r '.identifier[]? | select(.key == "paperback").text' $1.yml))
 ebooktoprint = $(call cachevar,$1,ep,$(call printisbn,$(call isbntouid,$1)))
-povtomagick = $(subst 1,255,$(subst >,$(rparen),$(subst <,$(lparen),$(1))))
 
 # Utility to modify recursive variables, see http://stackoverflow.com/a/36863261/313192
 prepend = $(eval $(1) = $(2)$(value $(1)))
@@ -274,52 +273,6 @@ endef
 define magick_printcolor ?=
 	-modulate 100,140 \
 	+level 0%,110%,0.7
-endef
-
-define pagetopng ?=
-	$(MAGICK) \
-		$(MAGICKARGS) \
-		-density $(HIDPI) \
-		-background white \
-		"$<[$$(($1-1))]" \
-		-flatten \
-		-colorspace RGB \
-		-crop $${pagewpx}x$${pagehpx}+$${trimpx}+$${trimpx}! \
-		-resize $(POVTEXTURESCALE)x +repage \
-		$@
-endef
-
-define povray ?=
-	headers=$$(mktemp $(BUILDDIR)/povXXXXXX.inc)
-	trap 'rm -rf $$headers' EXIT SIGHUP SIGTERM
-	cat <<- EOF < $2 < $3 > $$headers
-		#version 3.7;
-		#declare SceneLight = $(SCENELIGHT);
-		#declare Rand1 = seed(1234);
-		#declare Rand2 = seed(4123);
-		#declare Rand3 = seed(2134);
-		#declare MinThickness = 0.005;
-	EOF
-	$(and $(CASILE_SINGLEPOVJOB),
-		sleep 1.$${RANDOM} # block parallel execution
-		$(PWAIT) povray ||:)
-	$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$5 -H$6 -Q$(call scale,11,4) -O$4
-endef
-
-define pov_crop ?=
-	\( +clone \
-		-virtual-pixel Edge \
-		-fuzz 1% \
-		-trim \
-		-set option:fuzzy_trim "%[fx:w]x%[fx:h]+%[fx:page.x]+%[fx:page.y]" \
-		+delete \
-	\) \
-	-crop "%[fuzzy_trim]" +repage \
-	-background transparent \
-	-gravity Center \
-	-extent  "%[fx:asp = (w/h <= 3/4 ? 3/4 : 4/3); w/h <= asp ? h*asp : w]x" \
-	-extent "x%[fx:asp = (w/h <= 3/4 ? 3/4 : 4/3); w/h >= asp ? w/asp : h]" \
-	-resize $1 -resize 75%
 endef
 
 define split_chapters ?=

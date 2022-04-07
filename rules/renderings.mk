@@ -1,10 +1,58 @@
+povtomagick = $(subst 1,255,$(subst >,$(rparen),$(subst <,$(lparen),$(1))))
+
+define pagetopovpng ?=
+	$(MAGICK) \
+		$(MAGICKARGS) \
+		-density $(HIDPI) \
+		-background white \
+		"$<[$$(($1-1))]" \
+		-flatten \
+		-colorspace RGB \
+		-crop $${pagewpx}x$${pagehpx}+$${trimpx}+$${trimpx}! \
+		-resize $(POVTEXTURESCALE)x +repage \
+		$@
+endef
+
+define povray ?=
+	headers=$$(mktemp $(BUILDDIR)/povXXXXXX.inc)
+	trap 'rm -rf $$headers' EXIT SIGHUP SIGTERM
+	cat <<- EOF < $2 < $3 > $$headers
+		#version 3.7;
+		#declare SceneLight = $(SCENELIGHT);
+		#declare Rand1 = seed(1234);
+		#declare Rand2 = seed(4123);
+		#declare Rand3 = seed(2134);
+		#declare MinThickness = 0.005;
+	EOF
+	$(and $(CASILE_SINGLEPOVJOB),
+		sleep 1.$${RANDOM} # block parallel execution
+		$(PWAIT) povray ||:)
+	$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$5 -H$6 -Q$(call scale,11,4) -O$4
+endef
+
+define pov_crop ?=
+	\( +clone \
+		-virtual-pixel Edge \
+		-fuzz 1% \
+		-trim \
+		-set option:fuzzy_trim "%[fx:w]x%[fx:h]+%[fx:page.x]+%[fx:page.y]" \
+		+delete \
+	\) \
+	-crop "%[fuzzy_trim]" +repage \
+	-background transparent \
+	-gravity Center \
+	-extent  "%[fx:asp = (w/h <= 3/4 ? 3/4 : 4/3); w/h <= asp ? h*asp : w]x" \
+	-extent "x%[fx:asp = (w/h <= 3/4 ? 3/4 : 4/3); w/h >= asp ? w/asp : h]" \
+	-resize $1 -resize 75%
+endef
+
 $(BUILDDIR)/%-$(_print)-pov-$(_front).png: %-$(_print).pdf $$(geometryfile)
 	$(sourcegeometry)
-	$(call pagetopng,1)
+	$(call pagetopovpng,1)
 
 $(BUILDDIR)/%-$(_print)-pov-$(_back).png: %-$(_print).pdf $$(geometryfile)
 	$(sourcegeometry)
-	$(call pagetopng,$(call pagecount,$<))
+	$(call pagetopovpng,$(call pagecount,$<))
 
 $(BUILDDIR)/%-$(_print)-pov-$(_spine).png: $$(geometryfile)
 	$(sourcegeometry)
