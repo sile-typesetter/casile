@@ -303,12 +303,12 @@ PROJECTCONFIGS += .editorconfig
 	cp $< $@
 
 PROJECTCONFIGS += .gitignore
-.gitignore: $(MAKEFILE_LIST)
+.gitignore: $(lastword $(MAKEFILE_LIST))
 	$(call skip_if_tracked,$@)
 	$(TRUNCATE) -s 0 $@
 	$(foreach IGNORE,$(IGNORES),echo '$(IGNORE)' >> $@;)
 
-.gitattributes: $(MAKEFILE_LIST)
+.gitattributes: $(lastword $(MAKEFILE_LIST))
 	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
 	$(GIT) diff-files --quiet -- $@ || exit 1 # die if this file has uncommitted changes
 	for ft in md yml; do
