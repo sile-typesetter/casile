@@ -99,7 +99,7 @@ UNBOUNDLAYOUTS := $(call pattern_list,$(PAPERSIZES),-$(_print))
 BOUNDLAYOUTS := $(filter-out $(UNBOUNDLAYOUTS),$(ALLLAYOUTS))
 
 RENDERINGS := $(_3d)-$(_front) $(_3d)-$(_back) $(_3d)-$(_pile)
-RENDERED_DEF := $(filter $(call pattern_list,$(filter-out $(_print),$(REALPAPERSIZES)),-%),$(LAYOUTS))
+RENDERED_DEF := $(filter $(call pattern_list,$(REALPAPERSIZES),-%),$(filter-out %-$(_print),$(LAYOUTS)))
 RENDERED ?= $(RENDERED_DEF)
 RENDERED += $(GOALLAYOUTS)
 
