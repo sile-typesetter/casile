@@ -118,6 +118,7 @@ endif
 
 # Tweak POV worker threads to match CASILE job limits, tweak rendering order
 POVFLAGS += +BS128 +RP5 +WT$(CASILE_JOBS)
+POVTEXTURESCALE ?= 15%
 
 # List of extra m4 macro files to apply to every source
 M4MACROS ?=

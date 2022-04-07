@@ -285,7 +285,7 @@ define pagetopng ?=
 		-flatten \
 		-colorspace RGB \
 		-crop $${pagewpx}x$${pagehpx}+$${trimpx}+$${trimpx}! \
-		-resize 20%x +repage \
+		-resize $(POVTEXTURESCALE)x +repage \
 		$@
 endef
 
