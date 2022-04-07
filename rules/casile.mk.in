@@ -4,6 +4,9 @@ MAKEFLAGS += --output-sync=none
 MAKEFLAGS += --silent
 # Disable as many built in file type builds as possible
 MAKEFLAGS += --no-builtin-rules
+# Avoid silent errors to ease debugging
+MAKEFLAGS += --warn-undefined-variables
+
 .SUFFIXES:
 
 # Don't drop intermediate artifacts (saves rebulid time and aids debugging)
