@@ -300,5 +300,3 @@ endef
 
 define geometry_extras ?=
 endef
-
-# vim: ft=make
