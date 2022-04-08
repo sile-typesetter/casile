@@ -23,6 +23,7 @@ define run_povray ?=
 		#declare Rand2 = seed(4123);
 		#declare Rand3 = seed(2134);
 		#declare MinThickness = 0.005;
+		#declare Blowout = 100;
 	EOF
 	$(and $(CASILE_SINGLEPOVJOB),
 		sleep 1.$${RANDOM} # block parallel execution

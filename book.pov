@@ -79,13 +79,14 @@ sky_sphere {
 }
 
 light_source {
-	<-0.2,8,3.0*ViewZ>
+	<-0.2*Blowout,8*Blowout,3.0*ViewZ*Blowout>
 	color rgb<1, 1, 1>
 	// spotlight
 	// radius 10
-	// falloff 14
 	// point_at <BX/4,0,0>
 	area_light <0.4, 0, 0>, <0, 0, 0.4>, Lights, Lights
+	fade_distance 10*Blowout
+	fade_power 10*Blowout
 	circular
 }
 
