@@ -298,5 +298,14 @@ endef
 define magick_binding ?=
 endef
 
+define magick_front ?=
+endef
+
+define magick_back ?=
+endef
+
+define magick_spine ?=
+endef
+
 define geometry_extras ?=
 endef

@@ -154,6 +154,7 @@ SILEPATH += $(CASILEDIR)
 # Extra arguments to pass to Pandoc
 PANDOCARGS ?= --wrap=preserve --markdown-headings=atx --top-level-division=chapter
 PANDOCARGS += --reference-location=section
+PANDOCFILTERS ?=
 PANDOCFILTERARGS ?= --from markdown-space_in_atx_header+ascii_identifiers --to markdown-smart
 
 # For when perl one-liners need Unicode compatibility
@@ -212,6 +213,7 @@ BRANCH := $(subst refs/heads/,,$(or $(CI_COMMIT_REF_NAME),$(GITHUB_HEAD_REF),$(G
 TAG := $(or $(CI_COMMIT_TAG),$(shell $(_ENV) $(GIT) describe --tags --exact-match 2>/dev/null))
 ALLTAGS := $(strip $(CI_COMMIT_TAG) $(shell $(_ENV) $(GIT) tag --points-at HEAD | $(XARGS) echo))
 PARENT := $(shell $(_ENV) $(GIT) merge-base $(or $(CI_MERGE_REQUEST_SOURCE_BRANCH_NAME),$(GITHUB_BASE_REF),master) $(BRANCH) 2>/dev/null)
+HEAD ?=
 
 # Add mock-ups to sources
 ifeq ($(strip $(MOCKUPS)),true)
@@ -390,6 +392,8 @@ DISTFILES += $(FULLPDFS)
 # Apostrophe Hack, see https://github.com/simoncozens/sile/issues/355
 ifeq ($(LANGUAGE),tr)
 ah := $(PERL) $(PERLARGS) -pne '/^\#/ or s/(?<=\p{L})’(?=\p{L})/\\ah{}/g' |
+else
+ah :=
 endif
 
 PANDOCTEMPLATE ?= $(CASILEDIR)/template.sil
