@@ -9,7 +9,7 @@ define pdf_to_pov_texture ?=
 		-flatten \
 		-colorspace RGB \
 		-crop $${pagewpx}x$${pagehpx}+$${trimpx}+$${trimpx}! \
-		-resize $(POVTEXTURESCALE)x +repage \
+		-resize $(POVTEXTURESCALE)x \
 		$@
 endef
 
@@ -60,7 +60,7 @@ $(BUILDDIR)/%-$(_print)-pov-$(_spine).png: $$(geometryfile)
 		$(MAGICKARGS) \
 		-size $${pagewpx}x$${pagehpx} \
 		xc:none \
-		-resize $(POVTEXTURESCALE)x +repage \
+		-resize $(POVTEXTURESCALE)x \
 		$@
 
 $(BUILDDIR)/%-pov-$(_front).png: $(BUILDDIR)/%-$(_binding)-printcolor.png $$(geometryfile)
@@ -70,7 +70,7 @@ $(BUILDDIR)/%-pov-$(_front).png: $(BUILDDIR)/%-$(_binding)-printcolor.png $$(geo
 		$< \
 		-gravity East \
 		-crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! \
-		-resize $(POVTEXTURESCALE)x +repage \
+		-resize $(POVTEXTURESCALE)x \
 		$(call magick_emulateprint) \
 		$(and $(filter $(_paperback),$(call parse_binding,$@)),$(call magick_crease,0+)) \
 		$(call magick_fray) \
@@ -82,7 +82,7 @@ $(BUILDDIR)/%-pov-$(_back).png: $(BUILDDIR)/%-$(_binding)-printcolor.png $$(geom
 		$(MAGICKARGS) \
 		$< \
 		-gravity West -crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! \
-		-resize $(POVTEXTURESCALE)x +repage \
+		-resize $(POVTEXTURESCALE)x \
 		$(call magick_emulateprint) \
 		$(and $(filter $(_paperback),$(call parse_binding,$@)),$(call magick_crease,w-)) \
 		$(call magick_fray) \
@@ -95,7 +95,7 @@ $(BUILDDIR)/%-pov-$(_spine).png: $(BUILDDIR)/%-$(_binding)-printcolor.png $$(geo
 		$< \
 		-gravity Center \
 		-crop $${spinepx}x$${pagehpx}+0+0! \
-		-resize $(POVTEXTURESCALE)x +repage \
+		-resize $(POVTEXTURESCALE)x \
 		-extent 200%x100% \
 		$(call magick_emulateprint) \
 		$@
