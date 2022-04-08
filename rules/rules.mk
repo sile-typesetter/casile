@@ -818,7 +818,7 @@ $(BUILDDIR)/%-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printco
 %-$(_binding).pdf: $(BUILDDIR)/%-$(_binding).svg $(FCCONFIG) $$(geometryfile)
 	$(sourcegeometry)
 	export HOME=$(BUILDDIR)
-	xvfb-run $(INKSCAPE) $< \
+	$(XVFBRUN) $(INKSCAPE) $< \
 		--batch-process \
 		--export-dpi=$${hidpi} \
 		--export-area-page \

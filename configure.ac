@@ -126,6 +126,7 @@ AS_IF([test "x$enable_dependency_checks" != "xno"], [
     AX_PROGVAR([sqlite3])
     AX_PROGVAR([truncate])
     AX_PROGVAR([wc])
+    AX_PROGVAR([xvfbrun], [xvfb-run])
     AX_PROGVAR([yarn])
     AX_PROGVAR([yq])
     AX_PROGVAR([zint])
