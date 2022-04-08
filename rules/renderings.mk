@@ -127,6 +127,7 @@ $(BOOKSCENES): $(BUILDDIR)/%-$(_3d).pov: $$(geometryfile) $(BUILDDIR)/%.inc
 		#declare BookThickness = max($${spinemm} / $${pagewmm} / 2, MinThickness);
 		#declare HalfThick = BookThickness / 2;
 		#declare toMM = 1 / $${pagehmm};
+		#declare MaxPile = $(call scale,25,5);
 	EOF
 
 ifneq ($(strip $(SOURCES)),$(strip $(PROJECT)))

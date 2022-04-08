@@ -2,7 +2,7 @@
 
 #macro Scene ()
 
-#declare Count = BX / BookThickness;
+#declare Count = min(BX / BookThickness, MaxPile);
 
 camera {
 	location < -(BX+BY)*1.25, (BX+BY)*1.75, -(BX+BY)*2.5 >
