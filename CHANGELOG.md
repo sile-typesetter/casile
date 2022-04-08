@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.8.0](https://github.com/sile-typesetter/casile/compare/v0.7.4...v0.8.0) (2022-04-08)
+
+
+### Features
+
+* **mdbook:** Strip out input elements mdbook can't handle ([ec1de6b](https://github.com/sile-typesetter/casile/commit/ec1de6bd445e792628bfe90b89e6295bce7c777d))
+* **pages:** Add default template for static book page ([0cfcd4e](https://github.com/sile-typesetter/casile/commit/0cfcd4e8edd9da520e962d86a8465c4ef243bc52))
+* **pages:** Add mobi output to static site resources ([9ae5846](https://github.com/sile-typesetter/casile/commit/9ae5846a37978971ce31b48a585eb7c47ae61fc7))
+* **pages:** Add PDF outputs to static site resources ([61cf7d3](https://github.com/sile-typesetter/casile/commit/61cf7d3fba9fbcc5a6b65f9c52b2966afdf60a8f))
+* **rules:** Add mdbook output format ([2d326fd](https://github.com/sile-typesetter/casile/commit/2d326fdcaa15b4965df8e2d65686ae3e6fd44a17))
+* **rules:** Add mechanism to output whole dirs to distribution ([838eb6f](https://github.com/sile-typesetter/casile/commit/838eb6fcaf062c1c1ad1f2edfc9e83d94cfaf70e))
+* **rules:** Add target for static html index page for books ([9e43fc1](https://github.com/sile-typesetter/casile/commit/9e43fc139882bfb8beafa1e8125f6da8ce12d014))
+* **scripts:** Add script for generating mdbook src chapters ([5a7f483](https://github.com/sile-typesetter/casile/commit/5a7f483ceed36e58c86571b5495b53afe72b4de1))
+* **utilities:** Automatically migrate more deprecated Lua functions ([48bfb78](https://github.com/sile-typesetter/casile/commit/48bfb78c7e5787128693b60c2f6c9d2022044d54))
+
+
+### Bug Fixes
+
+* **cli:** Default CASILE_SINGLEPOVJOB to true, POV can be a machine killer ([b5e2740](https://github.com/sile-typesetter/casile/commit/b5e2740d639dd28579f0cba7a7e8212f1b21905d))
+* **deps:** Check for required curl dependency on configure ([0322e1e](https://github.com/sile-typesetter/casile/commit/0322e1e06e81c8d5440d431f74e379b13e80582c))
+* **mdbook:** Avoid double-linking TOCs with robust title/slug parsing ([fe2d343](https://github.com/sile-typesetter/casile/commit/fe2d3438f20f7f056556cfc347d2ba0feda1dcb6))
+* **packages:** Correct length math calculation in endnotes package ([1024881](https://github.com/sile-typesetter/casile/commit/1024881c289d6ec401894a350b0b671a27e12dfa))
+* **rules:** Expand array before shell expansion to dedup list ([f6fca73](https://github.com/sile-typesetter/casile/commit/f6fca73ad58981c9f26c516151a6862df87a1c32))
+* **rules:** Fix pandoc filter for link-free processed source variant ([5fe4233](https://github.com/sile-typesetter/casile/commit/5fe42333d8f69aa91fb2b72d3d3c0fd74c966a89))
+* **rules:** Limit forcing rebuilds to when *relevant* makefile changes ([5ff8005](https://github.com/sile-typesetter/casile/commit/5ff80058395543db7b5de0690cc63cb4355a24be))
+
 ### [0.7.4](https://github.com/sile-typesetter/casile/compare/v0.7.3...v0.7.4) (2022-03-17)
 
 
