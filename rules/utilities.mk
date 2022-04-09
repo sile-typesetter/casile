@@ -119,7 +119,7 @@ list:
 upgrade_toolkits: upgrade_casile
 
 .PHONY: upgrade_repository
-upgrade_repository: upgrade_toolkits $(CICONFIG)_current .gitattributes
+upgrade_repository: upgrade_toolkits .gitattributes
 
 .PHONY: upgrade_casile
 upgrade_casile:
