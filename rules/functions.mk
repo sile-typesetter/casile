@@ -46,7 +46,7 @@ reverse = $(if $(wordlist 2,2,$(1)),$(call reverse,$(wordlist 2,$(words $(1)),$(
 
 uniq = $(if $1,$(firstword $1) $(call uniq,$(filter-out $(firstword $1),$1)))
 
-cachevar = $(or $($(1)_$(2)_cache),$(eval $(1)_$(2)_cache := $3),$($(1)_$(2)_cache))
+cachevar = $(eval $(1)_$(2)_cache ?=)$(or $($(1)_$(2)_cache),$(eval $(1)_$(2)_cache := $3),$($(1)_$(2)_cache))
 
 extantfiles = $(sort $(wildcard $1))
 
