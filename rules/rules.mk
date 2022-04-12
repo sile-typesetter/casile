@@ -178,7 +178,8 @@ CITEMPLATE ?= $(CASILEDIR)/travis.yml
 CICONFIG ?= .travis.yml
 
 # Default templates for zola publishes
-ZOLA_TEMPLATE ?= $(CASILEDIR)/zola_template.html
+ZOLA_TEMPLATE_SERIES ?= $(CASILEDIR)/zola_series.html
+ZOLA_TEMPLATE_BOOK ?= $(CASILEDIR)/zola_book.html
 ZOLA_STYLE ?= $(CASILEDIR)/zola_style.sass
 
 # List of files that persist across make clean

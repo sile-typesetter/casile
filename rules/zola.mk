@@ -14,17 +14,27 @@ $(ZOLAS): %.zola: $(addprefix $(BUILDDIR)/%.zola/,config.toml content/_index.md 
 
 DISTDIRS += $(ZOLAS)
 
-$(BUILDDIR)/%.zola/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg | $$(call list_extant_resources,$$*) $(BUILDDIR)
+$(BUILDDIR)/%.zola/content/frontmatter.toml: %-manifest.yml $(BUILDDIR)/%.zola/templates/book.html | $(BUILDDIR)
+	$(YQ) -t "{
+			\"slug\": \"$*\",
+			\"title\": .title,
+			\"template\": \"$(notdir $(lastword $^))\",
+			\"extra\": {
+				\"manifest\": .
+			},
+		}" $< > $@
+
+$(BUILDDIR)/%.zola/content/_index.md: $(BUILDDIR)/%.zola/content/frontmatter.toml %-epub-$(_poster).jpg | $$(call list_extant_resources,$$*) $(BUILDDIR)
 	mkdir -p $(@D)
 	$(ZSH) << 'EOF' # inception to break out of CaSILE’s make shell wrapper
 	exec > $@ # grey magic to capture output
-	echo "+++"
-	$(YQ) -t "{
-			\"slug\": \"$*\",
-			\"extra\": { \"coverimg\": \"$(firstword $(filter $(call pattern_list,$*,$(LAYOUTS),-$(_3d)-$(_front).png),$^ $|) $*-epub-$(_poster).jpg)\" }
-		}" $<
-	echo "+++"
-	$(YQ) -r '.abstract | if . == null then "" else . end' $<
+	cat << FRONTMATTER
+	+++
+	$$(< $<)
+	[extra]
+	coverimg = "$(firstword $(filter $(call pattern_list,$*,$(LAYOUTS),-$(_3d)-$(_front).png),$^ $|) $*-epub-$(_poster).jpg)"
+	+++
+	FRONTMATTER
 	$(and $(filter $*.mdbook,$^ $|),echo "- [Online oku]($(_read))")
 	$(and $(filter $*.epub,$^ $|),echo "- EPUB olarak indir: [epub]($*.epub)")
 	$(and $(filter $*.mobi,$^ $|),echo "- MOBI olarak indir: [mobi]($*.mobi)")
@@ -33,7 +43,11 @@ $(BUILDDIR)/%.zola/content/_index.md: %-manifest.yml %-epub-$(_poster).jpg | $$(
 	done
 	EOF
 
-$(BUILDDIR)/%.zola/templates/index.html: $(ZOLA_TEMPLATE) | $(BUILDDIR)
+$(BUILDDIR)/%.zola/templates/series.html: $(ZOLA_TEMPLATE_SERIES) | $(BUILDDIR)
+	mkdir -p $(@D)
+	cp $< $@
+
+$(BUILDDIR)/%.zola/templates/book.html: $(ZOLA_TEMPLATE_BOOK) | $(BUILDDIR)
 	mkdir -p $(@D)
 	cp $< $@
 
