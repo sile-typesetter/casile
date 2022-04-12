@@ -982,6 +982,9 @@ $(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML)
 
 DISTFILES += $(MANIFESTS)
 
+$(BUILDDIR)/%-manifest.json: %-manifest.yml | $(BUILDDIR)
+	$(YQ) . $< > $@
+
 BIOHTMLS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),-bio.html))
 $(BIOHTMLS): $(BUILDDIR)/%-bio.html: %-manifest.yml
 	$(YQ) -r '.creator[0].about' $(filter %-manifest.yml,$^) |

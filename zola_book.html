@@ -1,8 +1,9 @@
+{% set manifest = load_data(path="manifest.json") %}
 <!DOCTYPE html>
 <html lang="tr">
 	<head>
 		<meta charset="utf-8">
-		<title>{% block title %}{{ config.title }}{% endblock title %}</title>
+		<title>{% block title %}{{ manifest.title }}{% endblock title %}</title>
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
@@ -11,8 +12,23 @@
 				<img src="{{ section.extra.coverimg }}" title="{{ config.title }}" />
 			</div>
 			<article>
-				<h1>{{ config.title }}</h1>
-				{{ section.content | safe }}
+				<h1>{{ manifest.title }}</h1>
+				{%- if manifest.subtitle %}
+					<h2>{{ manifest.subtitle }}</h2>
+				{% endif -%}
+				{%- if manifest.creator %}
+					{% for person in manifest.creator %}
+						<p class="creator"><label>{{ person["file-as"] }}:</label> {{ person.text }}</p>
+					{% endfor %}
+				{% endif -%}
+				{%- if manifest.abstract %}
+					<section name="abstract">
+						{{ manifest.abstract | markdown | safe }}
+					</section>
+				{% endif -%}
+				<section name="resources">
+					{{ section.content | safe }}
+				</section>
 			</article>
 		</main>
 	</body>
