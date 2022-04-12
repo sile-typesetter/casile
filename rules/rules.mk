@@ -141,7 +141,7 @@ FONTDIRS += $(patsubst ./%,%,$(CASILEDIR)/fonts $(wildcard $(PROJECTDIR:./=.)/.f
 
 FCCONFIG := $(BUILDDIR)/fontconfig.conf
 # BUILDDIR would otherwise get created by other rules anyway, but we're dodging race conditions
-export FONTCONFIG_FILE := $(shell test -d "$(BUILDDIR)" || mkdir -p "$(BUILDDIR)" && cd "$(BUILDDIR)" && pwd)/fontconfig.conf
+export FONTCONFIG_FILE := $(shell test -d "$(BUILDDIR)" || $(MKDIR_P) "$(BUILDDIR)" && cd "$(BUILDDIR)" && pwd)/fontconfig.conf
 
 # Extensible list of files for git to ignore
 IGNORES += $(PROJECTCONFIGS)
@@ -337,7 +337,7 @@ $(CICONFIG)_current: $(CICONFIG)
 	$(GIT) diff-files --quiet -- $<
 
 $(BUILDDIR) $(DISTDIR):
-	mkdir -p "$@"
+	$(MKDIR_P) "$@"
 
 $(DISTDIR).tar.bz2 $(DISTDIR).tar.gz $(DISTDIR).tar.xz $(DISTDIR).zip $(DISTDIR).tar.zst: install-dist
 	bsdtar -acf "$@" "$(DISTDIR)"

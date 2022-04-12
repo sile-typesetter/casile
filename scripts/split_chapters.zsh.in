@@ -5,7 +5,7 @@ src=$1
 base=${src/.md}
 dir=${base}-chapters
 
-mkdir -p $dir
+@MKDIR_P@ $dir
 
 i=0
 of=$dir/000.md

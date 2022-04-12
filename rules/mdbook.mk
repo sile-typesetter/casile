@@ -5,11 +5,11 @@ $(MDBOOKS): %.mdbook: $(BUILDDIR)/%.mdbook/src/SUMMARY.md $(BUILDDIR)/%.mdbook/b
 DISTDIRS += $(MDBOOKS)
 
 $(BUILDDIR)/%.mdbook/src/SUMMARY.md: $(BUILDDIR)/%-$(_processed).md
-	mkdir -p $(@D)
+	$(MKDIR_P) $(@D)
 	split_mdbook_src.zsh $< $(@D) > $@
 
 $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
-	mkdir -p $(@D)
+	$(MKDIR_P) $(@D)
 	$(YQ) -t '{"book": {
 			"title": .title,
 			"author": .creator[] | select(.role == "author") | .text,

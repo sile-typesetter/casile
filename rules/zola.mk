@@ -6,7 +6,7 @@ list_extant_resources = $(filter $1%,$(filter-out $1.zola,$(wildcard $(DISTFILES
 $(ZOLAS): %.zola: $(addprefix $(BUILDDIR)/%.zola/,config.toml content/_index.md sass/style.sass) %-epub-$(_poster).jpg | $$(call list_extant_resources,$$*) $(BUILDDIR)
 	local resourcedir="$(<D)/static"
 	rm -rf "$$resourcedir"
-	mkdir -p "$$resourcedir"
+	$(MKDIR_P) "$$resourcedir"
 	$(and $(filter $*%,$^ $|),cp -a $(filter $*%,$^ $|) "$$resourcedir")
 	$(and $(filter $*.mdbook,$^ $|),mv $$resourcedir/$*.mdbook $$resourcedir/$(_read))
 	rm -rf $@
@@ -15,10 +15,10 @@ $(ZOLAS): %.zola: $(addprefix $(BUILDDIR)/%.zola/,config.toml content/_index.md 
 DISTDIRS += $(ZOLAS)
 
 $(BUILDDIR)/%.zola/content/manifest.json: $(BUILDDIR)/%-manifest.json | $(BUILDDIR)
-	install -Dm600 $< $@
+	$(INSTALL) -Dm600 $< $@
 
 $(BUILDDIR)/%.zola/content/_index.md: $(BUILDDIR)/%.zola/content/manifest.json %-epub-$(_poster).jpg $(BUILDDIR)/%.zola/templates/book.html | $$(call list_extant_resources,$$*) $(BUILDDIR)
-	mkdir -p $(@D)
+	$(MKDIR_P) $(@D)
 	$(ZSH) << 'EOF' # inception to break out of CaSILE’s make shell wrapper
 	exec > $@ # grey magic to capture output
 	cat << FRONTMATTER
@@ -37,16 +37,16 @@ $(BUILDDIR)/%.zola/content/_index.md: $(BUILDDIR)/%.zola/content/manifest.json %
 	EOF
 
 $(BUILDDIR)/%.zola/templates/series.html: $(ZOLA_TEMPLATE_SERIES) $(ZOLA_STYLE) | $(BUILDDIR)
-	install -Dm600 $< $@
+	$(INSTALL) -Dm600 $< $@
 
 $(BUILDDIR)/%.zola/templates/book.html: $(ZOLA_TEMPLATE_BOOK) $(ZOLA_STYLE) | $(BUILDDIR)
-	install -Dm600 $< $@
+	$(INSTALL) -Dm600 $< $@
 
 $(BUILDDIR)/%.zola/sass/style.sass: $(ZOLA_STYLE) | $(BUILDDIR)
-	install -Dm600 $< $@
+	$(INSTALL) -Dm600 $< $@
 
 $(BUILDDIR)/%.zola/config.toml: %-manifest.yml | $(BUILDDIR)
-	mkdir -p $(@D)
+	$(MKDIR_P) $(@D)
 	$(YQ) -t '{
 			"title": .title,
 			"base_url": "$(call urlinfo,$*)",

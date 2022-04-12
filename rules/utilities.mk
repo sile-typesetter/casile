@@ -14,7 +14,7 @@ install-dist: $$(or $$(call extantfiles,$$(DISTFILES)),fail)
 	set -o extendedglob
 	export VERSION_CONTROL=none
 	local files=($(addsuffix ($(hash)qN),$(DISTFILES)))
-	$(XARGS) -r install -m0644 -t "$(DISTDIR)" <<< $${$${(u)files}}
+	$(XARGS) -r $(INSTALL) -m0644 -t "$(DISTDIR)" <<< $${$${(u)files}}
 	local dirs=($(addsuffix ($(hash)qN),$(DISTDIRS)))
 	$(XARGS) -r -I {} cp -a {} "$(DISTDIR)" <<< $${(F)$${(u)dirs}}
 

@@ -14,6 +14,7 @@ AC_DEFUN([AX_PROGVAR],
 AC_PROG_AWK
 AC_PROG_GREP
 AC_PROG_SED
+AC_PROG_INSTALL
 
 AX_PROGVAR([cmp])
 AX_PROGVAR([curl])
@@ -89,6 +90,7 @@ AS_IF([test "x$enable_dependency_checks" != "xno"], [
     AX_PROGVAR([rustc])
 
     AC_PROG_EGREP
+    AC_PROG_MKDIR_P
 
     AX_PROGVAR([bc])
     AX_PROGVAR([cmp])
