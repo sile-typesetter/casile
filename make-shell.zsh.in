@@ -53,15 +53,21 @@ local process_shell() {
   )
 }
 
-if [[ $1 =~ "^target=" ]]; then
-  eval $1
-  shift
-fi
-
-if [[ $1 = "-x" ]]; then
-  _debug=true
-  shift
-fi
+while true; do
+  case $1 in
+    '-x')
+      _debug=true
+      shift
+      ;;
+    'target='*)
+      eval $1
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
 
 if [[ -v target && -v MAKELEVEL ]]; then
   process_recipe $@

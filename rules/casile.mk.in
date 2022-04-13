@@ -22,14 +22,16 @@ endif
 # Run complete recipes in wrapper script that facilitates clean CLI output
 SHELL := $(CASILEDIR)/make-shell.zsh
 
-.SHELLFLAGS = $(and $@,target=$@)
-.ONESHELL:
-.SECONDEXPANSION:
+.SHELLFLAGS :=
 
 DEBUG ?= false # also later set in rules.mk just to be visible with other settings
 ifeq ($(DEBUG),true)
 .SHELLFLAGS += -x
 endif
+
+.SHELLFLAGS += $(and $@,target=$@)
+.ONESHELL:
+.SECONDEXPANSION:
 
 # Use paths discovered by autoconf by default, but allow projects to override
 # with paths of their own.
