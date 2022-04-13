@@ -109,8 +109,8 @@ $(shell $(_ENV)
 			-maxdepth 2 \
 			-name '$1' \
 			$(foreach PATH,$(shell $(_ENV) $(GIT) submodule | $(AWK) '{print $$2}'),-not -path '*/$(PATH)/*') |
-			$(SED) -e 's#^./##') |
-			$(GREP) -Fxf <($(GIT) ls-files) |
+		$(SED) -e 's#^./##' |
+		$(GREP) -Fxf <($(GIT) ls-files) |
 		$(XARGS))
 endef
 
