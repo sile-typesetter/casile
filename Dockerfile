@@ -21,7 +21,6 @@ RUN pacman-key --recv-keys 63CC496475267693 && pacman-key --lsign-key 63CC496475
 ARG DOCKER_HUB_CACHE=0
 
 ARG RUNTIME_DEPS
-ARG BUILD_DEPS
 
 # Freshen all base system packages
 RUN pacman --needed --noconfirm -Syuq && yes | pacman -Sccq
@@ -29,8 +28,12 @@ RUN pacman --needed --noconfirm -Syuq && yes | pacman -Sccq
 # Install run-time dependecies
 RUN pacman --needed --noconfirm -Sq $RUNTIME_DEPS && yes | pacman -Sccq
 
+RUN chsh -s /usr/bin/zsh && echo 'autoload -U zmv' >> /etc/zsh/zprofile
+
 # Setup separate image for build so we don’t bloat the final image
 FROM base AS builder
+
+ARG BUILD_DEPS
 
 # Install build time dependecies
 RUN pacman --needed --noconfirm -Sq $BUILD_DEPS && yes | pacman -Sccq
