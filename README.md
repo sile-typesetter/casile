@@ -81,14 +81,14 @@ Note *latest* will be the most recent stable tagged release, or you may substitu
 
 Optionally you may build a docker image yourself.
 From any CasILE source directory (a Git clone extracted source package), configure using `./configure --disable-dependency-checks`, then build using `make docker`.
-The resulting image will be available on your system as `siletypesetter/casile:HEAD`.
+The resulting image will be available on your system as `sile-typesetter/casile:HEAD`.
 
 In order to invoke CasILE from Docker you need to pass it your project files and some information about your system user so it can write it’s output.
 The full Docker run command can be substituted anywhere you would invoke CaSILE.
 For convenience you’ll probably want to give yourself an alias:
 
 ```bash
-alias casile='docker run -it --volume "$(pwd):/data" --user "$(id -u):$(id -g)" siletypesetter/casile:latest
+alias casile='docker run -it --volume "$(pwd):/data" --user "$(id -u):$(id -g)" ghcr.io/sile-typesetter/casile:latest
 ```
 
 Save this in your shell’s rc file (e.g. `~/.bashrc`) to persist the alias.
