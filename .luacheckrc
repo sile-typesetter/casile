@@ -1,4 +1,4 @@
-std = "lua53"
+std = "lua54"
 include_files = {
   "**/*.lua",
   "*.rockspec",
@@ -6,6 +6,7 @@ include_files = {
   ".luacheckrc"
 }
 exclude_files = {
+  "casile-*",
   "lua_modules",
   "lua-libraries",
   ".lua",
