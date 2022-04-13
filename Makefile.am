@@ -243,11 +243,13 @@ casile-%.md: CHANGELOG.md
 	$(SED) -e '/\.\.\.v$*/,/\.\.\.v/!d' $< | \
 		$(SED) -e '1,3d;N;$$!P;$$!D;$$d' > $@
 
-export GHCR_REGISTRY ?= ghcr.io
-export GHCR_REPO ?= sile-typesetter/$(TRANSFORMED_PACKAGE_NAME)
+GHCR_REGISTRY ?= ghcr.io
+GHCR_REPO ?= sile-typesetter/$(TRANSFORMED_PACKAGE_NAME)
 
-export DOCKER_REGISTRY ?= docker.io
-export DOCKER_REPO ?= siletypesetter/$(TRANSFORMED_PACKAGE_NAME)
+HUB_REGISTRY ?= docker.io
+HUB_REPO ?= siletypesetter/$(TRANSFORMED_PACKAGE_NAME)
+
+export DOCKER_REPO ?= $(GHCR_REPO)
 export DOCKER_TAG ?= HEAD
 
 .PHONY: docker
@@ -287,7 +289,7 @@ endef
 .PHONY: docker-ghcr-to-hub
 docker-ghcr-to-hub:
 	docker pull $(GHCR_REGISTRY)/$(GHCR_REPO):$(DOCKER_TAG)
-	docker tag  $(GHCR_REGISTRY)/$(GHCR_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
+	docker tag  $(GHCR_REGISTRY)/$(GHCR_REPO):$(DOCKER_TAG) $(HUB_REGISTRY)/$(HUB_REPO):$(DOCKER_TAG)
 	$(docker_push)
 
 .PHONY: docker-build-push
