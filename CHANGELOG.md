@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.1](https://github.com/sile-typesetter/casile/compare/v0.8.0...v0.8.1) (2022-04-13)
+
+
+### Features
+
+* **build:** Detect xvfb-run at configure time and allow overriding ([4940552](https://github.com/sile-typesetter/casile/commit/4940552c66540461d6c91cbdef40361a9533635d))
+* **build:** Make it possible to override paths to mkdir/install ([e78d253](https://github.com/sile-typesetter/casile/commit/e78d253559837ff2bdcded90e54eb0db6b846199))
+* **covers:** Reduce default resource resolution to 600dpi ([7a75c4d](https://github.com/sile-typesetter/casile/commit/7a75c4d9b7d9dec3210b04bd8ddd691348b782b6))
+* **deps:** Make xcf2png available to all builds ([7ffce9c](https://github.com/sile-typesetter/casile/commit/7ffce9cbbe04d677b6bfc998365f03a14e9c8f75))
+* **docker:** Make zmv available in container root shell ([6b505d2](https://github.com/sile-typesetter/casile/commit/6b505d2d4f87e6bf2bbc9a004d63c0bf86bb8cbd))
+* **pages:** Split series vs. book static site templates ([a8352f0](https://github.com/sile-typesetter/casile/commit/a8352f0b2901a3313763a26ce3aabb7fe7d4a41e))
+* **renderings:** Limit number of books in file renderings ([19bf804](https://github.com/sile-typesetter/casile/commit/19bf8041c1804a7c1639611589897fb649d78d00))
+* **renderings:** Scale POV textures relative to DRAFT mode ([0058dcf](https://github.com/sile-typesetter/casile/commit/0058dcf12c1e1f0a677da62704c995b15af33017))
+
+
+### Bug Fixes
+
+* **covers:** Avoid conflict with existing virtual frame buffers ([90ed2ed](https://github.com/sile-typesetter/casile/commit/90ed2ed63d5dd90b3099483683b30406719d8980))
+* **functions:** Avoid project filenames being parsed as regular expressions ([fbcae80](https://github.com/sile-typesetter/casile/commit/fbcae80b21b3c6ea363426e2132e9afb1b9cc87e))
+* **renderings:** Adjust light fade to blowout plane and avoid background gradient ([d8a5e73](https://github.com/sile-typesetter/casile/commit/d8a5e7395eff583ea2f644bccd7dd8b6700ede06))
+* **rules:** Don't assume travis will be used for CI on all upgrades ([291beaf](https://github.com/sile-typesetter/casile/commit/291beafcc7d5c211befbf01f3c874033a289bf4c))
+
 ## [0.8.0](https://github.com/sile-typesetter/casile/compare/v0.7.4...v0.8.0) (2022-04-08)
 
 
