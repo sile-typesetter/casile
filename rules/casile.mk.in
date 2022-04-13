@@ -26,6 +26,11 @@ SHELL := $(CASILEDIR)/make-shell.zsh
 .ONESHELL:
 .SECONDEXPANSION:
 
+DEBUG ?= false # also later set in rules.mk just to be visible with other settings
+ifeq ($(DEBUG),true)
+.SHELLFLAGS += -x
+endif
+
 # Use paths discovered by autoconf by default, but allow projects to override
 # with paths of their own.
 AWK ?= @AWK@
