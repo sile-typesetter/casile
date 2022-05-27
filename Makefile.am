@@ -34,7 +34,7 @@ EXTRA_DIST += Dockerfile build-aux/bootstrap-docker.sh build-aux/docker-fontconf
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
 luadir = $(datadir)
-dist_lua_DATA = block_styles.lua cabook.lua casile.lua covers.lua endnotes.lua hyphenation_exceptions.lua imprint.lua inline_styles.lua lists.lua readmeta.lua
+dist_lua_DATA = block_styles.lua casile.lua covers.lua endnotes.lua hyphenation_exceptions.lua imprint.lua inline_styles.lua lists.lua readmeta.lua
 
 povdir = $(datadir)
 dist_pov_DATA = back.pov book.pov front.pov montage.pov pile.pov
@@ -76,6 +76,9 @@ dist_fonts_DATA = fonts/Almendra-Bold.otf fonts/Almendra-BoldItalic.otf fonts/Al
 
 filtersdir = $(datadir)/pandoc-filters
 dist_filters_DATA = pandoc-filters/chapterid.lua pandoc-filters/epubclean.lua pandoc-filters/strip_for_mdbook.lua pandoc-filters/svg2pdf.py pandoc-filters/withoutfootnotes.lua pandoc-filters/withoutheadinglinks.lua pandoc-filters/withoutlinks.lua pandoc-filters/withverses.lua
+
+classesdir = $(datadir)/classes
+dist_classes_DATA = classes/cabook.lua
 
 packagesdir = $(datadir)/packages
 dist_packages_DATA = packages/crop.lua packages/markdown.lua packages/verseindex.lua
