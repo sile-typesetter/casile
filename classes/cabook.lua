@@ -1,27 +1,56 @@
-local book = SILE.require("classes/book")
-local plain = SILE.require("classes/plain")
-local cabook = book { id = "cabook" }
+local book = require("classes/book")
+local plain = require("classes/plain")
 
-cabook:declareOption("binding", "print") -- print, paperback, hardcover, coil, stapled
-cabook:declareOption("crop", "true")
-cabook:declareOption("background", "true")
-cabook:declareOption("verseindex", "false")
+local cabook = pl.class(book)
+cabook._name = "cabook"
 
-function cabook:init ()
-  if self.options.crop() == "true" then
+function cabook:_init (options)
+
+  -- print, paperback, hardcover, coil, stapled
+  options.binding = options.binding or "print"
+  local binding
+  self:declareOption("binding", function (_, value)
+      if value then binding = value end
+      return binding
+    end)
+  options.crop = options.crop or true
+  local crop
+  self:declareOption("crop", function (_, value)
+      if value then crop = SU.cast("boolean", value) end
+      return crop
+    end)
+  options.background = options.background or true
+  local background
+  self:declareOption("background", function (_, value)
+      if value then background = SU.cast("boolean", value) end
+      return background
+    end)
+  options.verseindex = options.verseindex or false
+  local verseindex
+  self:declareOption("verseindex", function (_, value)
+      if value then verseindex = SU.cast("boolean", value) end
+      return verseindex
+    end)
+
+  book._init(self, options)
+
+  if self.options.crop then
     self:loadPackage("crop", CASILE.casiledir)
   end
-  if self.options.verseindex() == "true" then
+  if self.options.verseindex then
     self:loadPackage("verseindex", CASILE.casiledir)
   end
   -- CaSILE books sometimes have sections, sometimes don't.
   -- Initialize some sectioning levels to work either way
-  SILE.require("packages/counters")
+  self:loadPackage("counters")
   SILE.scratch.counters["sectioning"] = {
     value =  { 0, 0 },
     display = { "ORDINAL", "STRING" }
   }
-  return book.init(self)
+
+  -- Avoid calling this (yet) if we're the parent of some child class
+  if self._name == "cabook" then self:post_init() end
+  return self
 end
 
 function cabook:endPage ()
