@@ -2,9 +2,14 @@ local bleed = 3 * 2.83465
 local trim = 10 * 2.83465
 local len = trim - bleed
 
-local outcounter = 1
-local cropbinding = SILE.documentState.documentClass.options.binding() == "stapled"
--- cropbinding = false
+local outcounter, cropbinding
+
+local function init (class, _)
+
+  outcounter = 1
+  cropbinding = class.options.binding == "stapled"
+
+end
 
 local outputMarks = function ()
   local page = SILE.getFrame("page")
@@ -64,7 +69,7 @@ local function reconstrainFrameset(fs)
   end
 end
 
-local setup = function (_, args)
+local setupCrop = function (_, args)
   if args then
     bleed = args.bleed or bleed
     trim = args.trim or trim
@@ -92,23 +97,20 @@ local setup = function (_, args)
   if SILE.typesetter.frame then SILE.typesetter.frame:init() end
 end
 
-local init = function (_)
-
-	-- luacheck: ignore outcounter
-  local outcounter = 1
+local function registerCommands (_)
 
   SILE.registerCommand("crop:header", function (_, _)
     SILE.call("meta:surum")
     SILE.typesetter:typeset(" (" .. outcounter .. ") " .. os.getenv("HOSTNAME") .. " / " .. os.date("%Y-%m-%d, %X"))
-    outcounter = outcounter + 1
   end)
 
 end
 
 return {
+  init = init,
+  registerCommands = registerCommands,
   exports =  {
     outputCropMarks = outputMarks,
-    setupCrop = setup
-  },
-  init = init
+    setupCrop = setupCrop
+  }
 }

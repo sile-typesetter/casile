@@ -5,33 +5,6 @@ local cabook = pl.class(book)
 cabook._name = "cabook"
 
 function cabook:_init (options)
-
-  -- print, paperback, hardcover, coil, stapled
-  options.binding = options.binding or "print"
-  local binding
-  self:declareOption("binding", function (_, value)
-      if value then binding = value end
-      return binding
-    end)
-  options.crop = options.crop or true
-  local crop
-  self:declareOption("crop", function (_, value)
-      if value then crop = SU.cast("boolean", value) end
-      return crop
-    end)
-  options.background = options.background or true
-  local background
-  self:declareOption("background", function (_, value)
-      if value then background = SU.cast("boolean", value) end
-      return background
-    end)
-  options.verseindex = options.verseindex or false
-  local verseindex
-  self:declareOption("verseindex", function (_, value)
-      if value then verseindex = SU.cast("boolean", value) end
-      return verseindex
-    end)
-
   book._init(self, options)
 
   if self.options.crop then

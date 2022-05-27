@@ -171,7 +171,9 @@ endif
 
 # Set default document class
 DOCUMENTCLASS ?= cabook
+
 DOCUMENTOPTIONS += binding=$(call unlocalize,$(or $(call parse_binding,$@),$(firstword $(BINDINGS))))
+DOCUMENTOPTIONS += layout=$(call unlocalize,$(or $(call parse_papersize,$@),$(firstword $(PAPERSIZES))))
 
 # Default template for setting up Gitlab CI runners
 CITEMPLATE ?= $(CASILEDIR)/travis.yml
@@ -354,7 +356,7 @@ endif
 coverpreq = $(and $(filter true,$(COVERS)),$(filter $(_print),$(call parse_binding,$1)),$(filter-out $(DISPLAYS) $(PLACARDS),$(call parse_papersize,$1)),$(BUILDDIR)/$(basename $1)-$(_cover).pdf)
 
 # Order is important here, these are included in reverse order so early supersedes late
-onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(CASILEDIR)/layouts/$(call unlocalize,$(call parse_papersize,$1)).lua $(LUALIBS)
+onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(LUALIBS)
 
 MOCKUPPDFS := $(call pattern_list,$(MOCKUPSOURCES),$(REALLAYOUTS),.pdf)
 $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
