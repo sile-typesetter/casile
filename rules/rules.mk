@@ -430,7 +430,7 @@ $(FULLSILS): $(BUILDDIR)/%.sil:
 # Send some environment data to a common Lua file to be pulled into all SILE runs
 $(BUILDDIR)/.casile.lua: | $(BUILDDIR)
 	cat <<- EOF > $@
-		package.path = package.path .. ";?.lua;?/init.lua;$(BUILDDIR)/?.lua"
+		package.path = "$(BUILDDIR)/?.lua;$(CASILEDIR)/?.lua;$(CASILEDIR)/?/init.lua" .. package.path
 		CASILE = {}
 		CASILE.project = "$(PROJECT)"
 		CASILE.casiledir = "$(CASILEDIR)"
