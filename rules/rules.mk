@@ -133,8 +133,8 @@ PROJECTYAML ?= $(PROJECTYAML_DEF)
 LUAINCLUDES += $(BUILDDIR)/.casile.lua
 PROJECTLUA := $(wildcard $(PROJECT).lua)
 
-# Primary libraries to include (loaded in reverse order so this one is first)
-LUALIBS += $(CASILEDIR)/casile.lua
+# Extra libraries to include (later ones can override earlier ones)
+LUALIBS +=
 
 # Add a place where project local fonts can live
 FONTDIRS += $(patsubst ./%,%,$(CASILEDIR)/fonts $(wildcard $(PROJECTDIR:./=.)/.fonts)))
