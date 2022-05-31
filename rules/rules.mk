@@ -675,16 +675,19 @@ $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(CASILEDIR)/bindin
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(LUAINCLUDES) $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@))
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $$(subst $(BUILDDIR)/,,$$(subst -$(_binding)-$(_text),,$$@))
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(FCCONFIG)
-$(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: | $(CASILEDIR)/layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS) $(BUILDDIR)
+$(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: | $(LUALIBS) $(BUILDDIR)
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf:
 	cat <<- EOF > $(BUILDDIR)/$*.lua
-		versioninfo = "$(call versioninfo,$@)"
-		metadatafile = "$(filter %-manifest.yml,$^)"
-		spine = "$(call spinemm,$(filter %.pdf,$^))mm"
-		SILE.call("language", { main = "$(LANGUAGE)" })
-		SILE.call("font", { language = "$(LANGUAGE)" })
+		CASILE.versioninfo = "$(call versioninfo,$@)"
+		local metadatafile = "$(filter %-manifest.yml,$^)"
+		CASILE.metadata = require("readmeta").load(metadatafile)
+		CASILE.layout = "$(call parse_papersize,$@)"
+		CASILE.language = "$(LANGUAGE)"
+		CASILE.spine = "$(call spinemm,$(filter %.pdf,$^))mm"
+		CASILE.load = function ()
 		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
 		SILE.require("$(basename $(LUA))"))
+		end
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
@@ -728,15 +731,18 @@ COVERFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(UNBO
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(LUAINCLUDES) $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@))
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(FCCONFIG)
-$(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: | $(CASILEDIR)/layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS) $(BUILDDIR)
+$(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: | $(LUALIBS) $(BUILDDIR)
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf:
 	cat <<- EOF > $*.lua
-		versioninfo = "$(call versioninfo,$@)"
-		metadatafile = "$(filter %-manifest.yml,$^)"
-		SILE.call("language", { main = "$(LANGUAGE)" })
-		SILE.call("font", { language = "$(LANGUAGE)" })
+		CASILE.versioninfo = "$(call versioninfo,$@)"
+		local metadatafile = "$(filter %-manifest.yml,$^)"
+		CASILE.metadata = require("readmeta").load(metadatafile)
+		CASILE.layout = "$(call parse_papersize,$@)"
+		CASILE.language = "$(LANGUAGE)"
+		CASILE.load = function ()
 		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
 		SILE.require("$(basename $(LUA))"))
+		end
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
@@ -840,10 +846,17 @@ $(UNBOUNDGEOMETRIES): private TRIM = $(NOTRIM)
 # page geometry, so generate a single page PDF to measure with no binding scenario
 EMPTYGEOMETRIES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(_geometry),$(PAPERSIZES),.pdf))
 $(EMPTYGEOMETRIES): $(BUILDDIR)/$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(LUAINCLUDES) | $(BUILDDIR)
+	cat <<- EOF > $(BUILDDIR)/$*.lua
+		CASILE.versioninfo = "$(call versioninfo,$@)"
+		CASILE.layout = "$(call parse_papersize,$@)"
+		CASILE.language = "$(LANGUAGE)"
+		CASILE.load = function ()
+		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
+		SILE.require("$(basename $(LUA))"))
+		end
+	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) \
-		-e "papersize = '$(call unlocalize,$*)'" \
-		$< -o $@
+	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(ALLLAYOUTS),-$(_geometry).sh))

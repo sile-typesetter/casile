@@ -85,21 +85,20 @@ local function registerCommands (_)
   SILE.registerCommand("spine", function (options)
     options["first-content-frame"] = "spine1"
     SILE.call("pagetemplate", options, function ()
-      -- luacheck: ignore spine
       SILE.call("frame", {
           id = "spine1",
-          top = "-" .. spine,
-          height = spine,
-          left = spine,
+          top = "-" .. CASILE.spine,
+          height = CASILE.spine,
+          left = CASILE.spine,
           width = "46%ph",
           next = "spine2",
           rotate = 90
         })
       SILE.call("frame", {
           id = "spine2",
-          top = "-50%ph-" .. spine,
-          height = spine,
-          left = spine,
+          top = "-50%ph-" .. CASILE.spine,
+          height = CASILE.spine,
+          left = CASILE.spine,
           width = "30%ph",
           rotate = 90
         })
