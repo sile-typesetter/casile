@@ -1,92 +1,93 @@
-CASILE.layout = "screen"
+return function (class)
 
-local class = SILE.documentState.documentClass
+  class.options.papersize = 1920 / 192 .. "in x " .. 1080 / 192 .. "in"
 
-SILE.documentState.paperSize = SILE.paperSizeParser(1920 / 192 .. "in x " .. 1080 / 192 .. "in")
-SILE.documentState.orgPaperSize = SILE.documentState.paperSize
-
-class:defineMaster({
-    id = "right",
-    firstContentFrame = "content",
-    frames = {
-      page = {
-        left = "0",
-        right = "100%pw",
-        top = "0",
-        bottom = "100%ph"
-      },
-      content = {
-        left = "10%pw",
-        right = "100%pw-10%pw",
-        top = "bottom(runningHead)+1%ph",
-        bottom = "top(footnotes)-1%ph"
-      },
-      runningHead = {
-        left = "left(content)",
-        right = "right(content)",
-        top = "2%ph",
-        bottom = "10%ph"
-      },
-      footnotes = {
-        left = "left(content)",
-        right = "right(content)",
-        height = "0",
-        bottom = "100%ph-3%ph"
+  class:loadPackage("masters", {{
+      id = "right",
+      firstContentFrame = "content",
+      frames = {
+        page = {
+          left = "0",
+          right = "100%pw",
+          top = "0",
+          bottom = "100%ph"
+        },
+        content = {
+          left = "10%pw",
+          right = "100%pw-10%pw",
+          top = "bottom(runningHead)+1%ph",
+          bottom = "top(footnotes)-1%ph"
+        },
+        runningHead = {
+          left = "left(content)",
+          right = "right(content)",
+          top = "2%ph",
+          bottom = "10%ph"
+        },
+        footnotes = {
+          left = "left(content)",
+          right = "right(content)",
+          height = "0",
+          bottom = "100%ph-3%ph"
+        }
       }
-    }
-  })
-class:mirrorMaster("right", "left")
-SILE.call("switch-master-one-page", { id = "right" })
+    }})
+  class:loadPackage("twoside", {
+      oddPageMaster = "right",
+      evenPageMaster = "left"
+    })
 
-SILE.registerCommand("output-right-running-head", function (_, _)
-  if not SILE.scratch.headers.right then return end
-  SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
-    SILE.settings.set("current.parindent", SILE.nodefactory.glue())
-    SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.glue())
-    SILE.settings.set("document.lskip", SILE.nodefactory.glue())
-    SILE.settings.set("document.rskip", SILE.nodefactory.glue())
-    SILE.call("cabook:font:right-header", {}, function ()
-      SILE.call("center", {}, function ()
-        SILE.call("meta:title")
+  SILE.registerCommand("output-right-running-head", function (_, _)
+    if not SILE.scratch.headers.right then return end
+    SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
+      SILE.settings.set("current.parindent", SILE.nodefactory.glue())
+      SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.glue())
+      SILE.settings.set("document.lskip", SILE.nodefactory.glue())
+      SILE.settings.set("document.rskip", SILE.nodefactory.glue())
+      SILE.call("cabook:font:right-header", {}, function ()
+        SILE.call("center", {}, function ()
+          SILE.call("meta:title")
+        end)
       end)
+      SILE.call("skip", { height = "2pt" })
+      SILE.call("cabook:font:right-header", {}, SILE.scratch.headers.right)
+      SILE.call("hfill")
+      SILE.call("cabook:font:folio", {},  { SILE.formatCounter(SILE.scratch.counters.folio) })
+      SILE.call("skip", { height = "-8pt" })
+      SILE.call("fullrule", { raise = 0 })
     end)
-    SILE.call("skip", { height = "2pt" })
-    SILE.call("cabook:font:right-header", {}, SILE.scratch.headers.right)
-    SILE.call("hfill")
-    SILE.call("cabook:font:folio", {},  { SILE.formatCounter(SILE.scratch.counters.folio) })
-    SILE.call("skip", { height = "-8pt" })
-    SILE.call("fullrule", { raise = 0 })
   end)
-end)
 
-SILE.registerCommand("output-left-running-head", function (_, _)
-  SILE.call("output-right-running-head")
-end)
+  SILE.registerCommand("output-left-running-head", function (_, _)
+    SILE.call("output-right-running-head")
+  end)
 
-local oldImprintFont = SILE.Commands["imprint:font"]
-SILE.registerCommand("imprint:font", function (options, content)
-  options.size = options.size or "6.5pt"
-  oldImprintFont(options, content)
-end)
+  local oldImprintFont = SILE.Commands["imprint:font"]
+  SILE.registerCommand("imprint:font", function (options, content)
+    options.size = options.size or "6.5pt"
+    oldImprintFont(options, content)
+  end)
 
--- Screen based PDF readers don't need blank even numbered pages ;)
-SILE.registerCommand("open-double-page", function ()
-  SILE.typesetter:leaveHmode()
-  SILE.call("supereject")
-  SILE.typesetter:leaveHmode()
-end)
+  -- Screen based PDF readers don't need blank even numbered pages ;)
+  SILE.registerCommand("open-double-page", function ()
+    SILE.typesetter:leaveHmode()
+    SILE.call("supereject")
+    SILE.typesetter:leaveHmode()
+  end)
 
-local origToc = SILE.Commands["tableofcontents"]
-SILE.registerCommand("tableofcontents", function (options, content)
-  SILE.scratch.headers.skipthispage = true
-  origToc(options, content)
-  SILE.scratch.headers.right = {}
-end)
+  local origToc = SILE.Commands["tableofcontents"]
+  SILE.registerCommand("tableofcontents", function (options, content)
+    SILE.scratch.headers.skipthispage = true
+    origToc(options, content)
+    SILE.scratch.headers.right = {}
+  end)
 
-if SILE.documentState.documentClass.options.background() == "true" then
-  SILE.require("packages/background")
-  SILE.call("background", { color = "#efe6bf" })
+  if SILE.documentState.documentClass.options.background() == "true" then
+    SILE.require("packages/background")
+    SILE.call("background", { color = "#efe6bf" })
 
-  local inkColor = SILE.colorparser("#262d2c")
-  SILE.outputter:pushColor(inkColor)
+    local inkColor = SILE.colorparser("#262d2c")
+    SILE.outputter:pushColor(inkColor)
+  end
+
 end

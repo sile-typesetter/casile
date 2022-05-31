@@ -1,21 +1,7 @@
-<sile class="cabook" crop="false" background="false">
-  <script>
-    SILE.require(CASILE.include)
-    SILE.documentState.documentClass.writeToc = function () end
-    SILE.registerCommand("meta:surum", function ()
-      SILE.typesetter:typeset(versioninfo)
-    end)
-    CASILE.metadata = require("readmeta").load(metadatafile)
-    SILE.registerCommand("output-right-running-head", function () end)
-  </script>
-  <script src="packages/rotate" />
-  <script src="packages/frametricks" />
+<sile class="cabinding" crop="false" background="false">
   <nofolios />
-
+  <script>CASILE.load()</script>
   <frontcover />
-
   <backcover />
-
   <spine />
-
 </sile>

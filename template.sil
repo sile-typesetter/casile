@@ -107,7 +107,7 @@ $if(versecredits)$
 \define[command=meta:versecredits]{$versecredits$}
 $endif$
 \script[src=packages/pandoc]
-\script[src=lists]
+\script[src=packages/lists]
 \begin{script}
 qrimg = "$qrimg$"
 SILE.registerCommand("label", function()

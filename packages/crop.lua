@@ -2,9 +2,53 @@ local bleed = 3 * 2.83465
 local trim = 10 * 2.83465
 local len = trim - bleed
 
-local outcounter = 1
-local cropbinding = SILE.documentState.documentClass.options.binding() == "stapled"
--- cropbinding = false
+local outcounter, cropbinding
+
+local function reconstrainFrameset(fs)
+  for n,f in pairs(fs) do
+    if n ~= "page" then
+      if f:isAbsoluteConstraint("right") then
+        f.constraints.right = "left(page) + (" .. f.constraints.right .. ")"
+      end
+      if f:isAbsoluteConstraint("left") then
+        f.constraints.left = "left(page) + (" .. f.constraints.left .. ")"
+      end
+      if f:isAbsoluteConstraint("top") then
+        f.constraints.top = "top(page) + (" .. f.constraints.top .. ")"
+      end
+      if f:isAbsoluteConstraint("bottom") then
+        f.constraints.bottom = "top(page) + (" .. f.constraints.bottom .. ")"
+      end
+      f:invalidate()
+    end
+  end
+end
+
+local setupCrop = function (_, args)
+  if args then
+    bleed = args.bleed or bleed
+    trim = args.trim or trim
+    len = trim - bleed
+  end
+  local papersize = SILE.documentState.paperSize
+  local w = papersize[1] + (trim * (cropbinding and 2 or 2))
+  local h = papersize[2] + (trim * 2)
+  local oldsize = SILE.documentState.paperSize
+  SILE.documentState.paperSize = SILE.paperSizeParser(w .. "pt x " .. h .. "pt")
+  local page = SILE.getFrame("page")
+  page:constrain("right", oldsize[1] + trim)
+  page:constrain("left", trim)
+  page:constrain("bottom", oldsize[2] + trim)
+  page:constrain("top", trim)
+  if SILE.scratch.masters then
+    for _, v in pairs(SILE.scratch.masters) do
+      reconstrainFrameset(v.frames)
+    end
+  else
+    reconstrainFrameset(SILE.documentState.documentClass.pageTemplate.frames)
+  end
+  if SILE.typesetter and SILE.typesetter.frame then SILE.typesetter.frame:init() end
+end
 
 local outputMarks = function ()
   local page = SILE.getFrame("page")
@@ -44,71 +88,28 @@ local outputMarks = function ()
   end
 end
 
-local function reconstrainFrameset(fs)
-  for n,f in pairs(fs) do
-    if n ~= "page" then
-      if f:isAbsoluteConstraint("right") then
-        f.constraints.right = "left(page) + (" .. f.constraints.right .. ")"
-      end
-      if f:isAbsoluteConstraint("left") then
-        f.constraints.left = "left(page) + (" .. f.constraints.left .. ")"
-      end
-      if f:isAbsoluteConstraint("top") then
-        f.constraints.top = "top(page) + (" .. f.constraints.top .. ")"
-      end
-      if f:isAbsoluteConstraint("bottom") then
-        f.constraints.bottom = "top(page) + (" .. f.constraints.bottom .. ")"
-      end
-      f:invalidate()
-    end
-  end
+local function init (class, args)
+
+  outcounter = 1
+  cropbinding = class.options.binding == "stapled"
+  setupCrop(args)
+
 end
 
-local setup = function (_, args)
-  if args then
-    bleed = args.bleed or bleed
-    trim = args.trim or trim
-    len = trim - bleed
-  end
-
-  local papersize = SILE.documentState.paperSize
-  local w = papersize[1] + (trim * (cropbinding and 2 or 2))
-  local h = papersize[2] + (trim * 2)
-  local oldsize = SILE.documentState.paperSize
-  SILE.documentState.paperSize = SILE.paperSizeParser(w .. "pt x " .. h .. "pt")
-  local page = SILE.getFrame("page")
-  page:constrain("right", oldsize[1] + trim)
-  page:constrain("left", trim)
-  page:constrain("bottom", oldsize[2] + trim)
-  page:constrain("top", trim)
-  if SILE.scratch.masters then
-		-- TODO: should this be ipairs()?
-    for _, v in pairs(SILE.scratch.masters) do
-      reconstrainFrameset(v.frames)
-    end
-  else
-    reconstrainFrameset(SILE.documentState.documentClass.pageTemplate.frames)
-  end
-  if SILE.typesetter.frame then SILE.typesetter.frame:init() end
-end
-
-local init = function (_)
-
-	-- luacheck: ignore outcounter
-  local outcounter = 1
+local function registerCommands (_)
 
   SILE.registerCommand("crop:header", function (_, _)
     SILE.call("meta:surum")
     SILE.typesetter:typeset(" (" .. outcounter .. ") " .. os.getenv("HOSTNAME") .. " / " .. os.date("%Y-%m-%d, %X"))
-    outcounter = outcounter + 1
   end)
 
 end
 
 return {
+  init = init,
+  registerCommands = registerCommands,
   exports =  {
     outputCropMarks = outputMarks,
-    setupCrop = setup
-  },
-  init = init
+    setupCrop = setupCrop
+  }
 }

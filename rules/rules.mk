@@ -133,8 +133,8 @@ PROJECTYAML ?= $(PROJECTYAML_DEF)
 LUAINCLUDES += $(BUILDDIR)/.casile.lua
 PROJECTLUA := $(wildcard $(PROJECT).lua)
 
-# Primary libraries to include (loaded in reverse order so this one is first)
-LUALIBS += $(CASILEDIR)/casile.lua
+# Extra libraries to include (later ones can override earlier ones)
+LUALIBS +=
 
 # Add a place where project local fonts can live
 FONTDIRS += $(patsubst ./%,%,$(CASILEDIR)/fonts $(wildcard $(PROJECTDIR:./=.)/.fonts)))
@@ -171,7 +171,9 @@ endif
 
 # Set default document class
 DOCUMENTCLASS ?= cabook
+
 DOCUMENTOPTIONS += binding=$(call unlocalize,$(or $(call parse_binding,$@),$(firstword $(BINDINGS))))
+DOCUMENTOPTIONS += layout=$(call unlocalize,$(or $(call parse_papersize,$@),$(firstword $(PAPERSIZES))))
 
 # Default template for setting up Gitlab CI runners
 CITEMPLATE ?= $(CASILEDIR)/travis.yml
@@ -354,7 +356,7 @@ endif
 coverpreq = $(and $(filter true,$(COVERS)),$(filter $(_print),$(call parse_binding,$1)),$(filter-out $(DISPLAYS) $(PLACARDS),$(call parse_papersize,$1)),$(BUILDDIR)/$(basename $1)-$(_cover).pdf)
 
 # Order is important here, these are included in reverse order so early supersedes late
-onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(CASILEDIR)/layouts/$(call unlocalize,$(call parse_papersize,$1)).lua $(LUALIBS)
+onpaperlibs = $(TARGETLUAS_$(call parse_bookid,$1)) $(PROJECTLUA) $(LUALIBS)
 
 MOCKUPPDFS := $(call pattern_list,$(MOCKUPSOURCES),$(REALLAYOUTS),.pdf)
 $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
@@ -430,11 +432,12 @@ $(FULLSILS): $(BUILDDIR)/%.sil:
 # Send some environment data to a common Lua file to be pulled into all SILE runs
 $(BUILDDIR)/.casile.lua: | $(BUILDDIR)
 	cat <<- EOF > $@
-		package.path = package.path .. ";?.lua;?/init.lua;$(BUILDDIR)/?.lua"
+		package.path = "$(BUILDDIR)/?.lua;$(CASILEDIR)/?.lua;$(CASILEDIR)/?/init.lua" .. package.path
 		CASILE = {}
 		CASILE.project = "$(PROJECT)"
 		CASILE.casiledir = "$(CASILEDIR)"
 		CASILE.publisher = "casile"
+		require("casile")
 	EOF
 
 $(FCCONFIG): FCDEFAULT ?= $(shell env -u FONTCONFIG_FILE $(FCCONFLIST) | $(AWK) -F'[ :]' '/Default configuration file/ { print $$2 }')
@@ -672,16 +675,19 @@ $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(CASILEDIR)/bindin
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(LUAINCLUDES) $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@))
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $$(subst $(BUILDDIR)/,,$$(subst -$(_binding)-$(_text),,$$@))
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(FCCONFIG)
-$(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: | $(CASILEDIR)/layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS) $(BUILDDIR)
+$(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: | $(LUALIBS) $(BUILDDIR)
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf:
 	cat <<- EOF > $(BUILDDIR)/$*.lua
-		versioninfo = "$(call versioninfo,$@)"
-		metadatafile = "$(filter %-manifest.yml,$^)"
-		spine = "$(call spinemm,$(filter %.pdf,$^))mm"
-		SILE.call("language", { main = "$(LANGUAGE)" })
-		SILE.call("font", { language = "$(LANGUAGE)" })
+		CASILE.versioninfo = "$(call versioninfo,$@)"
+		local metadatafile = "$(filter %-manifest.yml,$^)"
+		CASILE.metadata = require("readmeta").load(metadatafile)
+		CASILE.layout = "$(call parse_papersize,$@)"
+		CASILE.language = "$(LANGUAGE)"
+		CASILE.spine = "$(call spinemm,$(filter %.pdf,$^))mm"
+		CASILE.load = function ()
 		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
 		SILE.require("$(basename $(LUA))"))
+		end
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
@@ -725,15 +731,18 @@ COVERFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(UNBO
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(LUAINCLUDES) $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@))
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(FCCONFIG)
-$(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: | $(CASILEDIR)/layouts/$$(call unlocalize,$$(call parse_papersize,$$@)).lua $(LUALIBS) $(BUILDDIR)
+$(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: | $(LUALIBS) $(BUILDDIR)
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf:
 	cat <<- EOF > $*.lua
-		versioninfo = "$(call versioninfo,$@)"
-		metadatafile = "$(filter %-manifest.yml,$^)"
-		SILE.call("language", { main = "$(LANGUAGE)" })
-		SILE.call("font", { language = "$(LANGUAGE)" })
+		CASILE.versioninfo = "$(call versioninfo,$@)"
+		local metadatafile = "$(filter %-manifest.yml,$^)"
+		CASILE.metadata = require("readmeta").load(metadatafile)
+		CASILE.layout = "$(call parse_papersize,$@)"
+		CASILE.language = "$(LANGUAGE)"
+		CASILE.load = function ()
 		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
 		SILE.require("$(basename $(LUA))"))
+		end
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
 	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
@@ -837,10 +846,17 @@ $(UNBOUNDGEOMETRIES): private TRIM = $(NOTRIM)
 # page geometry, so generate a single page PDF to measure with no binding scenario
 EMPTYGEOMETRIES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(_geometry),$(PAPERSIZES),.pdf))
 $(EMPTYGEOMETRIES): $(BUILDDIR)/$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(LUAINCLUDES) | $(BUILDDIR)
+	cat <<- EOF > $(BUILDDIR)/$*.lua
+		CASILE.versioninfo = "$(call versioninfo,$@)"
+		CASILE.layout = "$(call parse_papersize,$@)"
+		CASILE.language = "$(LANGUAGE)"
+		CASILE.load = function ()
+		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
+		SILE.require("$(basename $(LUA))"))
+		end
+	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) \
-		-e "papersize = '$(call unlocalize,$*)'" \
-		$< -o $@
+	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(ALLLAYOUTS),-$(_geometry).sh))
