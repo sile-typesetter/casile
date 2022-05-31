@@ -14,14 +14,6 @@ end
 
 local function registerCommands (class)
 
-  SILE.registerCommand("book:chapter:pre:en", function ()
-    SILE.typesetter:typeset("CHAPTER ")
-  end)
-
-  SILE.registerCommand("book:chapter:pre:tr", function ()
-    SILE.typesetter:typeset("BÖLÜM ")
-  end)
-
   SILE.registerCommand("cabook:chapter:post", function (options, _)
     options.weight = SU.boolean(options.decorate, true)
     SILE.call("novbreak")
@@ -41,8 +33,8 @@ local function registerCommands (class)
 
   SILE.registerCommand("cabook:part:pre", function () end)
 
-  SILE.registerCommand("cabook:part:post:tr", function ()
-    SILE.typesetter:typeset(" KISIM")
+  SILE.registerCommand("cabook:part:post", function ()
+    SILE.call("fluent", {}, { "cabook-part-post" })
     SILE.call("par")
   end)
 
@@ -54,7 +46,7 @@ local function registerCommands (class)
       SILE.call("hbox", {}, function ()
         SILE.call("skip", { height = "12ex" })
         SILE.call("tableofcontents:headerfont", { height = "12ex" }, function ()
-          SILE.call("tableofcontents:title")
+          SILE.call("fluent", {}, { "toc-title "})
         end)
       end)
     end)
@@ -156,13 +148,11 @@ local function registerCommands (class)
         toc_content[1] = val .. ". " .. content[1]
       end
       if options.prenumber then
-        if SILE.Commands[options.prenumber..":"..lang] then options.prenumber = options.prenumber..":"..lang end
         if SILE.Commands["book:chapter:precounter"] then SILE.call("book:chapter:precounter") end
         SILE.call(options.prenumber)
       end
       SILE.call("show-multilevel-counter", { id = "sectioning", display = options.display, minlevel = level, level = level })
       if options.postnumber then
-        if SILE.Commands[options.postnumber..":"..lang] then options.postnumber = options.postnumber..":"..lang end
         SILE.call(options.postnumber)
       end
       local number = SILE.formatCounter({ display = "arabic", value = counters.value[level] })

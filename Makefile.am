@@ -86,8 +86,8 @@ dist_packages_DATA = packages/covers.lua packages/crop.lua packages/imprint.lua 
 layoutsdir = $(datadir)/layouts
 dist_layouts_DATA = layouts/a4.lua layouts/a4ciltli.lua layouts/a5trim.lua layouts/a6.lua layouts/a6trim.lua layouts/a7.lua layouts/a7kart.lua layouts/a7trimkart.lua layouts/app.lua layouts/banner.lua layouts/businesscard.lua layouts/cep.lua layouts/ekran.lua layouts/epub.lua layouts/halfletter.lua layouts/octavo.lua layouts/royaloctavo.lua layouts/square.lua layouts/wide.lua
 
-assetsdir = $(datadir)/assets
-dist_assets_DATA =
+assetsdir = $(datadir)
+nobase_dist_assets_DATA = assets/en-US/casile.ftl assets/tr-TR/casile.ftl
 
 BUILT_SOURCES = .version
 CLEANFILES = $(BUILT_SOURCES) .version-prev $(bin_PROGRAMS) $(dist_scripts_SCRIPTS)
