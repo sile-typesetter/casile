@@ -18,11 +18,8 @@ function cabook:_init (options)
   self:loadPackage("textcase")
   self:loadPackage("frametricks")
 
-  if self.options.crop then
-    self:loadPackage("crop", CASILE.casiledir)
-  end
   if self.options.verseindex then
-    self:loadPackage("verseindex", CASILE.casiledir)
+    self:loadPackage("verseindex")
   end
   -- CaSILE books sometimes have sections, sometimes don't.
   -- Initialize some sectioning levels to work either way

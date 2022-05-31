@@ -2,7 +2,7 @@ return function (class)
 
   class.options.papersize = "135mm x 195mm"
 
-  class:defineMaster({
+  class:loadPackage("masters", {{
       id = "right",
       firstContentFrame = "content",
       frames = {
@@ -31,11 +31,15 @@ return function (class)
           height = "6mm"
         }
       }
+    }})
+  class:loadPackage("twoside", {
+      oddPageMaster = "right",
+      evenPageMaster = "left"
     })
-  class:mirrorMaster("right", "left")
-  SILE.call("switch-master-one-page", { id = "right" })
 
-  if class.options.crop then class:setupCrop() end
+  if class.options.crop then
+    class:loadPackage("crop")
+  end
 
   SILE.setCommandDefaults("imprint:font", { size = "8.5pt" })
 
