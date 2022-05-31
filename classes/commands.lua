@@ -147,7 +147,6 @@ local function registerCommands (class)
       for k, v in pairs(content) do
         toc_content[k] = v
       end
-      local lang = SILE.settings.get("document.language")
       local counters = SILE.scratch.counters["sectioning"]
       if level == 1 then
         local val = SILE.formatCounter({ display = "ORDINAL", value = counters.value[level] })
@@ -617,4 +616,6 @@ local function registerCommands (class)
 
 end
 
-return registerCommands
+return {
+  registerCommands = registerCommands
+}

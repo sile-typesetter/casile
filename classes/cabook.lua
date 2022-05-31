@@ -33,8 +33,6 @@ function cabook:_init (options)
 
   self:loadPackage("imprint")
   self:loadPackage("covers")
-  self:loadPackage("inline_styles")
-  self:loadPackage("block_styles")
 
   self:registerPostinit(function ()
     require("casile")(self)
@@ -98,7 +96,9 @@ function cabook:registerCommands ()
 
   book.registerCommands(self)
 
-  require("classes.cabook-commands")()
+  SILE.require("classes.commands", CASILE.casiledir, true)
+  SILE.require("classes.inline-styles", CASILE.casiledir, true)
+  SILE.require("classes.block-styles", CASILE.casiledir, true)
 
 end
 
