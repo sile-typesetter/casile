@@ -17,6 +17,8 @@ function cabook:_init (options)
   self:loadPackage("date")
   self:loadPackage("textcase")
   self:loadPackage("frametricks")
+  self:loadPackage("inputfilter")
+  self:loadPackage("linespacing")
 
   if self.options.verseindex then
     self:loadPackage("verseindex")
@@ -31,13 +33,35 @@ function cabook:_init (options)
   self:loadPackage("imprint")
   self:loadPackage("covers")
 
-  self:registerPostinit(function ()
-    require("casile")(self)
-    require("hyphenation_exceptions")
-  end)
+  self:registerPostinit(function (class)
 
-  -- Avoid calling this (yet) if we're the parent of some child class
-  if self._name == "cabook" then self:post_init() end
+    require("hyphenation_exceptions")
+
+    SILE.settings.set("typesetter.underfulltolerance", SILE.length("6ex"))
+    SILE.settings.set("typesetter.overfulltolerance", SILE.length("0.2ex"))
+
+    SILE.call("footnote:separator", {}, function ()
+      SILE.call("rebox", { width = "6em", height = "2ex" }, function ()
+        SILE.call("hrule", { width = "5em", height = "0.2pt" })
+      end)
+      SILE.call("medskip")
+    end)
+
+    SILE.call("cabook:font:serif", { size = "11.5pt" })
+
+    SILE.settings.set("linespacing.method", "fit-font")
+    SILE.settings.set("linespacing.fit-font.extra-space", SILE.length("0.6ex plus 0.2ex minus 0.2ex"))
+    SILE.settings.set("linebreak.hyphenPenalty", 300)
+
+    SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length("0.7ex plus 0 minus 0")
+
+    SILE.scratch.last_was_ref = false
+    class:registerPostinit(function ()
+      SILE.typesetter:registerPageEndHook(function ()
+        SILE.scratch.last_was_ref = false
+      end)
+    end)
+  end)
   return self
 end
 
@@ -93,9 +117,10 @@ function cabook:registerCommands ()
 
   book.registerCommands(self)
 
-  SILE.require("classes.commands", CASILE.casiledir, true)
-  SILE.require("classes.inline-styles", CASILE.casiledir, true)
-  SILE.require("classes.block-styles", CASILE.casiledir, true)
+  -- SILE's loadPackage assumes a "packages" path, this just side steps that naming requirement
+  self:initPackage(require("classes.commands"))
+  self:initPackage(require("classes.inline-styles"))
+  self:initPackage(require("classes.block-styles"))
 
 end
 
@@ -114,7 +139,7 @@ function cabook:endPage ()
   end
   SILE.scratch.headers.skipthispage = false
   local ret = plain.endPage(self)
-  if self.options.crop() == "true" then self:outputCropMarks() end
+  if self.options.crop then self:outputCropMarks() end
   return ret
 end
 

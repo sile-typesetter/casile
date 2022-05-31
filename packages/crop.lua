@@ -41,7 +41,6 @@ local setupCrop = function (_, args)
   page:constrain("bottom", oldsize[2] + trim)
   page:constrain("top", trim)
   if SILE.scratch.masters then
-		-- TODO: should this be ipairs()?
     for _, v in pairs(SILE.scratch.masters) do
       reconstrainFrameset(v.frames)
     end
@@ -96,6 +95,7 @@ local function init (class, args)
   setupCrop(args)
 
 end
+
 local function registerCommands (_)
 
   SILE.registerCommand("crop:header", function (_, _)

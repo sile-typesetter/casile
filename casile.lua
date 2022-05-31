@@ -1,143 +1,113 @@
-return function (class)
-
-  SILE.settings.set("typesetter.underfulltolerance", SILE.length("6ex"))
-  SILE.settings.set("typesetter.overfulltolerance", SILE.length("0.2ex"))
-
-  SILE.call("footnote:separator", {}, function ()
-    SILE.call("rebox", { width = "6em", height = "2ex" }, function ()
-      SILE.call("hrule", { width = "5em", height = "0.2pt" })
-    end)
-    SILE.call("medskip")
-  end)
-
-  SILE.call("cabook:font:serif", { size = "11.5pt" })
-
-  SILE.require("packages/linespacing")
-  SILE.settings.set("linespacing.method", "fit-font")
-  SILE.settings.set("linespacing.fit-font.extra-space", SILE.length("0.6ex plus 0.2ex minus 0.2ex"))
-  SILE.settings.set("linebreak.hyphenPenalty", 300)
-
-  SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length("0.7ex plus 0 minus 0")
-
-  SILE.scratch.last_was_ref = false
-  class:registerPostinit(function ()
-    SILE.typesetter:registerPageEndHook(function ()
-      SILE.scratch.last_was_ref = false
-    end)
-  end)
-
-  local inputfilter = SILE.require("packages/inputfilter").exports
-  local discressionaryBreaksFilter = function (content, _, options)
-    local currentText = ""
-    local result = {}
-    local process
-    local function insertText()
-      if (#currentText>0) then
-        table.insert(result, currentText)
-        currentText = ""
-      end
-    end
-    local function insertPenalty()
-      table.insert(result, inputfilter.createCommand(
-        content.pos, content.col, content.line, options.breakwith, options.breakopts
-      ))
-      if not options.breakall then
-        process = function (separator) currentText = currentText..separator end
-      end
-    end
-    process = function (separator)
-      if options.replace then
-        insertText()
-        insertPenalty()
-      elseif options.breakbefore == true then
-        insertText()
-        insertPenalty()
-        currentText = currentText .. separator
-      else
-        currentText = currentText .. separator
-        insertText()
-        insertPenalty()
-      end
-    end
-    for token in SU.gtoke(content, options.breakat) do
-      if(token.string) then
-        currentText = currentText .. token.string
-      else
-        process(token.separator)
-      end
-    end
-    insertText()
-    return result
-  end
-
-  CASILE.addDiscressionaryBreaks = function (options, content)
-    if type(options[1]) ~= "table" then options = { options } end
-    for _, opts in pairs(options) do
-      if not opts.breakat then opts.breakat = "[:]" end
-      if not opts.breakwith then opts.breakwith = "aki" end
-      if not opts.breakopts then opts.breakopts = {} end
-      if not opts.breakall then opts.breakall = false end
-      if not opts.breakbefore then opts.breakbefore = false end
-      if not opts.replace then opts.replace = false end
-      content = inputfilter.transformContent(content, discressionaryBreaksFilter, opts)
-    end
-    return content
-  end
-
-  local isolateDropcapLetter = function (str)
-    local lpeg = require("lpeg")
-    local R, P, C, S = lpeg.R, lpeg.P, lpeg.C, lpeg.S
-    local letter = P"Ü" + P"Ö" + P"Ş" + P"Ç" + P"İ" + P"Â" + R"AZ" + R"09"
-    local lpunct = P"'" + P'"' + P"‘" + P"“"
-    local tpunct = P"'" + P'"' + P"’" + P"”" + P"."
-    local whitespace = S"\r\n\f\t "
-    local grp = whitespace^0 * C(lpunct^0 * letter * tpunct^0) * C(P(1)^1) * P(-1)
-    return grp:match(str)
-  end
-
-  local originalTypeset
-  CASILE.dropcapNextLetter = function ()
-    SILE.require("packages/dropcaps")
-    originalTypeset = SILE.typesetter.typeset
-    SILE.typesetter.typeset = function (self, text)
-      local first, rest = isolateDropcapLetter(text)
-      if first and rest then
-        SILE.typesetter.typeset = originalTypeset
-        SILE.call("dropcap", {}, { first })
-        SILE.typesetter.typeset(self, rest)
-      else
-        originalTypeset(self, text)
-      end
+local inputfilter = require("packages/inputfilter").exports
+local discressionaryBreaksFilter = function (content, _, options)
+  local currentText = ""
+  local result = {}
+  local process
+  local function insertText()
+    if (#currentText>0) then
+      table.insert(result, currentText)
+      currentText = ""
     end
   end
-
-  SILE.registerUnit("%pmed", { relative = true, definition = function (v)
-    return v / 100 * (SILE.documentState.orgPaperSize[1] + SILE.documentState.orgPaperSize[2]) / 2
-  end})
-
-  local parseSize = function (size)
-    return SILE.length(size):absolute().length
-  end
-
-  CASILE.constrainSize = function (ideal, max, min)
-    local idealSize = parseSize(ideal)
-    if max then
-      local maxSize = parseSize(max)
-      if idealSize > maxSize then return max end
+  local function insertPenalty()
+    table.insert(result, inputfilter.createCommand(
+      content.pos, content.col, content.line, options.breakwith, options.breakopts
+    ))
+    if not options.breakall then
+      process = function (separator) currentText = currentText..separator end
     end
-    if min then
-      local minSize = parseSize(min)
-      if idealSize < minSize then return min end
+  end
+  process = function (separator)
+    if options.replace then
+      insertText()
+      insertPenalty()
+    elseif options.breakbefore == true then
+      insertText()
+      insertPenalty()
+      currentText = currentText .. separator
+    else
+      currentText = currentText .. separator
+      insertText()
+      insertPenalty()
     end
-    return ideal
   end
-
-  CASILE.isWideLayout = function ()
-    return CASILE.layout == "banner" or CASILE.layout == "wide" or CASILE.layout == "screen"
+  for token in SU.gtoke(content, options.breakat) do
+    if(token.string) then
+      currentText = currentText .. token.string
+    else
+      process(token.separator)
+    end
   end
+  insertText()
+  return result
+end
 
-  CASILE.isScreenLayout = function ()
-    return CASILE.layout == "app" or CASILE.layout == "screen"
+CASILE.addDiscressionaryBreaks = function (options, content)
+  if type(options[1]) ~= "table" then options = { options } end
+  for _, opts in pairs(options) do
+    if not opts.breakat then opts.breakat = "[:]" end
+    if not opts.breakwith then opts.breakwith = "aki" end
+    if not opts.breakopts then opts.breakopts = {} end
+    if not opts.breakall then opts.breakall = false end
+    if not opts.breakbefore then opts.breakbefore = false end
+    if not opts.replace then opts.replace = false end
+    content = inputfilter.transformContent(content, discressionaryBreaksFilter, opts)
   end
+  return content
+end
 
+local isolateDropcapLetter = function (str)
+  local lpeg = require("lpeg")
+  local R, P, C, S = lpeg.R, lpeg.P, lpeg.C, lpeg.S
+  local letter = P"Ü" + P"Ö" + P"Ş" + P"Ç" + P"İ" + P"Â" + R"AZ" + R"09"
+  local lpunct = P"'" + P'"' + P"‘" + P"“"
+  local tpunct = P"'" + P'"' + P"’" + P"”" + P"."
+  local whitespace = S"\r\n\f\t "
+  local grp = whitespace^0 * C(lpunct^0 * letter * tpunct^0) * C(P(1)^1) * P(-1)
+  return grp:match(str)
+end
+
+local originalTypeset
+CASILE.dropcapNextLetter = function ()
+  SILE.require("packages/dropcaps")
+  originalTypeset = SILE.typesetter.typeset
+  SILE.typesetter.typeset = function (self, text)
+    local first, rest = isolateDropcapLetter(text)
+    if first and rest then
+      SILE.typesetter.typeset = originalTypeset
+      SILE.call("dropcap", {}, { first })
+      SILE.typesetter.typeset(self, rest)
+    else
+      originalTypeset(self, text)
+    end
+  end
+end
+
+SILE.registerUnit("%pmed", { relative = true, definition = function (v)
+  return v / 100 * (SILE.documentState.orgPaperSize[1] + SILE.documentState.orgPaperSize[2]) / 2
+end})
+
+local parseSize = function (size)
+  return SILE.length(size):absolute().length
+end
+
+CASILE.constrainSize = function (ideal, max, min)
+  local idealSize = parseSize(ideal)
+  if max then
+    local maxSize = parseSize(max)
+    if idealSize > maxSize then return max end
+  end
+  if min then
+    local minSize = parseSize(min)
+    if idealSize < minSize then return min end
+  end
+  return ideal
+end
+
+CASILE.isWideLayout = function ()
+  return CASILE.layout == "banner" or CASILE.layout == "wide" or CASILE.layout == "screen"
+end
+
+CASILE.isScreenLayout = function ()
+  return CASILE.layout == "app" or CASILE.layout == "screen"
 end
