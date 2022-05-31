@@ -31,14 +31,14 @@ function cabook:_init (options)
     display = { "ORDINAL", "STRING" }
   }
 
-  SILE.require("imprint", CASILE.casiledir)
-  SILE.require("covers", CASILE.casiledir)
-  SILE.require("hyphenation_exceptions", CASILE.casiledir)
-  SILE.require("inline_styles", CASILE.casiledir)
-  SILE.require("block_styles", CASILE.casiledir)
+  self:loadPackage("imprint")
+  self:loadPackage("covers")
+  self:loadPackage("inline_styles")
+  self:loadPackage("block_styles")
 
   self:registerPostinit(function ()
-    require("casile", CASILE.casiledir)(self)
+    require("casile")(self)
+    require("hyphenation_exceptions")
   end)
 
   -- Avoid calling this (yet) if we're the parent of some child class

@@ -34,7 +34,7 @@ EXTRA_DIST += Dockerfile build-aux/bootstrap-docker.sh build-aux/docker-fontconf
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
 luadir = $(datadir)
-dist_lua_DATA = block_styles.lua casile.lua covers.lua endnotes.lua hyphenation_exceptions.lua imprint.lua inline_styles.lua lists.lua readmeta.lua
+dist_lua_DATA = casile.lua endnotes.lua hyphenation_exceptions.lua readmeta.lua
 
 povdir = $(datadir)
 dist_pov_DATA = back.pov book.pov front.pov montage.pov pile.pov
@@ -78,10 +78,10 @@ filtersdir = $(datadir)/pandoc-filters
 dist_filters_DATA = pandoc-filters/chapterid.lua pandoc-filters/epubclean.lua pandoc-filters/strip_for_mdbook.lua pandoc-filters/svg2pdf.py pandoc-filters/withoutfootnotes.lua pandoc-filters/withoutheadinglinks.lua pandoc-filters/withoutlinks.lua pandoc-filters/withverses.lua
 
 classesdir = $(datadir)/classes
-dist_classes_DATA = classes/cabook.lua classes/cabook-commands.lua
+dist_classes_DATA = classes/cabook.lua classes/cabook-commands.lua classes/inline_styles.lua classes/block_styles.lua
 
 packagesdir = $(datadir)/packages
-dist_packages_DATA = packages/crop.lua packages/markdown.lua packages/verseindex.lua
+dist_packages_DATA = packages/covers.lua packages/crop.lua packages/imprint.lua packages/lists.lua packages/markdown.lua packages/verseindex.lua
 
 layoutsdir = $(datadir)/layouts
 dist_layouts_DATA = layouts/a4.lua layouts/a4ciltli.lua layouts/a5trim.lua layouts/a6.lua layouts/a6trim.lua layouts/a7.lua layouts/a7kart.lua layouts/a7trimkart.lua layouts/app.lua layouts/banner.lua layouts/businesscard.lua layouts/cep.lua layouts/ekran.lua layouts/epub.lua layouts/halfletter.lua layouts/octavo.lua layouts/royaloctavo.lua layouts/square.lua layouts/wide.lua
@@ -169,7 +169,7 @@ $(_RUST_OUT) $(RUST_BIN): $(casile_SOURCES) $(EXTRA_casile_SOURCES) clean-embedd
 
 .PHONY: clean-embedded-assets
 clean-embedded-assets:
-	[[ ! -e .git  ]] || $(GIT) clean -dxf assets
+	[[ ! -e .git ]] || $(GIT) clean -dxf assets
 
 dist: casile-$(VERSION).md
 
