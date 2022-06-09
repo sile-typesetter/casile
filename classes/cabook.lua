@@ -23,17 +23,18 @@ function cabook:_init (options)
   if self.options.verseindex then
     self:loadPackage("verseindex")
   end
-  -- CaSILE books sometimes have sections, sometimes don't.
-  -- Initialize some sectioning levels to work either way
-  SILE.scratch.counters["sectioning"] = {
-    value =  { 0, 0 },
-    display = { "ORDINAL", "STRING" }
-  }
 
   self:loadPackage("imprint")
   self:loadPackage("covers")
 
   self:registerPostinit(function (class)
+
+    -- CaSILE books sometimes have sections, sometimes don't.
+    -- Initialize some sectioning levels to work either way
+    SILE.scratch.counters["sectioning"] = {
+      value =  { 0, 0 },
+      display = { "ORDINAL", "STRING" }
+    }
 
     require("hyphenation_exceptions")
 
