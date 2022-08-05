@@ -27,7 +27,7 @@ function cabook:_init (options)
   self:loadPackage("imprint")
   self:loadPackage("covers")
 
-  self:registerPostinit(function (class)
+  self:registerPostinit(function (_)
 
     -- CaSILE books sometimes have sections, sometimes don't.
     -- Initialize some sectioning levels to work either way
@@ -57,13 +57,11 @@ function cabook:_init (options)
     SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length("0.7ex plus 0 minus 0")
 
     SILE.scratch.last_was_ref = false
-    class:registerPostinit(function ()
-      SILE.typesetter:registerPageEndHook(function ()
-        SILE.scratch.last_was_ref = false
-      end)
+
+    SILE.typesetter:registerPageEndHook(function ()
+      SILE.scratch.last_was_ref = false
     end)
   end)
-  return self
 end
 
 function cabook:declareSettings ()
