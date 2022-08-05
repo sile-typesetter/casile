@@ -38,8 +38,8 @@ function cabook:_init (options)
 
     require("hyphenation_exceptions")
 
-    SILE.settings.set("typesetter.underfulltolerance", SILE.length("6ex"))
-    SILE.settings.set("typesetter.overfulltolerance", SILE.length("0.2ex"))
+    SILE.settings:set("typesetter.underfulltolerance", SILE.length("6ex"))
+    SILE.settings:set("typesetter.overfulltolerance", SILE.length("0.2ex"))
 
     SILE.call("footnote:separator", {}, function ()
       SILE.call("rebox", { width = "6em", height = "2ex" }, function ()
@@ -50,9 +50,9 @@ function cabook:_init (options)
 
     SILE.call("cabook:font:serif", { size = "11.5pt" })
 
-    SILE.settings.set("linespacing.method", "fit-font")
-    SILE.settings.set("linespacing.fit-font.extra-space", SILE.length("0.6ex plus 0.2ex minus 0.2ex"))
-    SILE.settings.set("linebreak.hyphenPenalty", 300)
+    SILE.settings:set("linespacing.method", "fit-font")
+    SILE.settings:set("linespacing.fit-font.extra-space", SILE.length("0.6ex plus 0.2ex minus 0.2ex"))
+    SILE.settings:set("linebreak.hyphenPenalty", 300)
 
     SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length("0.7ex plus 0 minus 0")
 
@@ -129,14 +129,14 @@ function cabook:endPage ()
   self:moveTocNodes()
   if self.moveTovNodes then self:moveTovNodes() end
   if not SILE.scratch.headers.skipthispage then
-    SILE.settings.pushState()
-    SILE.settings.reset()
+    SILE.settings:pushState()
+    SILE.settings:reset()
     if self:oddPage() then
       SILE.call("output-right-running-head")
     else
       SILE.call("output-left-running-head")
     end
-    SILE.settings.popState()
+    SILE.settings:popState()
   end
   SILE.scratch.headers.skipthispage = false
   local ret = plain.endPage(self)

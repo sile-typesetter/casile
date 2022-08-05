@@ -20,8 +20,8 @@ end)
 
 SILE.registerCommand("endnotes", function (_, _)
   local indent = "1.5em"
-  SILE.settings.temporarily(function ()
-    SILE.settings.set("document.lskip", SILE.nodefactory.glue(indent))
+  SILE.settings:temporarily(function ()
+    SILE.settings:set("document.lskip", SILE.nodefactory.glue(indent))
     for i = 1, #SILE.scratch.endnotes do
       local counter, material = SILE.scratch.endnotes[i]()
       SILE.call("footnote:font", {}, function ()

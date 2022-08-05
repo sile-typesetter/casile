@@ -11,14 +11,14 @@ local function registerCommands (_)
 
   SILE.registerCommand("listarea", function (options, content)
     nestedlist = nestedlist + 1
-    if nestedlist == 1 then listarealskip = SILE.settings.get("document.parindent").width end
+    if nestedlist == 1 then listarealskip = SILE.settings:get("document.parindent").width end
     liststyles[nestedlist] = { options.numberstyle }
     SILE.call("set-counter", { id = "listarea" .. nestedlist, value = 1, display = options.numberstyle or "arabic" })
-    SILE.settings.temporarily(function ()
-      SILE.settings.set("document.parindent", SILE.nodefactory.glue())
+    SILE.settings:temporarily(function ()
+      SILE.settings:set("document.parindent", SILE.nodefactory.glue())
       local factor = nestedlist == 1 and 0 or nestedlist / 2
-      SILE.settings.set("document.lskip", SILE.nodefactory.glue(options.lskip or tostring(listarealskip + listarealskip * factor)))
-    SILE.settings.set("document.rskip", SILE.nodefactory.glue(options.rskip or "0pt"))
+      SILE.settings:set("document.lskip", SILE.nodefactory.glue(options.lskip or tostring(listarealskip + listarealskip * factor)))
+    SILE.settings:set("document.rskip", SILE.nodefactory.glue(options.rskip or "0pt"))
       SILE.process(content)
     end)
     SILE.call("noindent")
