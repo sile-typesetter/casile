@@ -40,7 +40,7 @@ impl CONF {
         let mut config = self.write().expect(ERROR_CONFIG_WRITE);
         for (_, conf) in confs.iter().enumerate() {
             let f = File::new(conf.to_str().unwrap(), FileFormat::Yaml);
-            config.merge(f).unwrap();
+            config.merge(f)?;
         }
         Ok(())
     }
