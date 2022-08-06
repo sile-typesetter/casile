@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.10.0](https://github.com/sile-typesetter/casile/compare/v0.9.0...v0.10.0) (2022-08-06)
+
+
+### Features
+
+* **utilities:** Add new SILE API updates to Lua upgrader ([9c0eb8d](https://github.com/sile-typesetter/casile/commit/9c0eb8d43c7d745bdcdcc9f2974fbd2bb119e2cd))
+
+
+### Bug Fixes
+
+* **classes:** Setup cabook class to be minimally v0.14.x compliant ([37b5f94](https://github.com/sile-typesetter/casile/commit/37b5f9462e207df9e5f62ee5c2b89df9603f2bb5))
+* **class:** Work around classes not being able to stuff content ([e64bdf1](https://github.com/sile-typesetter/casile/commit/e64bdf1dc4fe46aa93076260b84dfb0763956647))
+
 ## [0.9.0](https://github.com/sile-typesetter/casile/compare/v0.8.1...v0.9.0) (2022-06-09)
 
 
