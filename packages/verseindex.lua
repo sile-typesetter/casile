@@ -11,7 +11,7 @@ SILE.scratch.tableofverses = {}
 local orig_href = SILE.Commands["href"]
 
 local function _writeTov ()
-  local contents = "return " .. std.string.pickle(SILE.scratch.tableofverses)
+  local contents = "return " .. pl.pretty.write(SILE.scratch.tableofverses)
   local tovfile, err = io.open(SILE.masterFilename .. '.tov', "w")
   if not tovfile then return SU.error(err) end
   tovfile:write(contents)
