@@ -13,7 +13,7 @@ function package:_init ()
   SILE.scratch.liststyle = nil
 end
 
-local function registerCommands (_)
+function package:registerCommands ()
 
   self:registerCommand("listarea", function (options, content)
     nestedlist = nestedlist + 1

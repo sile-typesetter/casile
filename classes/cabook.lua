@@ -23,6 +23,9 @@ function cabook:_init (options)
   end
   self:loadPackage("imprint")
   self:loadPackage("covers")
+  self:loadPackage("cabook-commands")
+  self:loadPackage("cabook-inline-styles")
+  self:loadPackage("cabook-block-styles")
   self:registerPostinit(function (_)
     -- CaSILE books sometimes have sections, sometimes don't.
     -- Initialize some sectioning levels to work either way
@@ -98,10 +101,6 @@ end
 
 function cabook:registerCommands ()
   book.registerCommands(self)
-  -- SILE's loadPackage assumes a "packages" path, this just side steps that naming requirement
-  self:initPackage(require("classes.commands"))
-  self:initPackage(require("classes.inline-styles"))
-  self:initPackage(require("classes.block-styles"))
 end
 
 function cabook:endPage ()
