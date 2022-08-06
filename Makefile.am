@@ -78,10 +78,11 @@ filtersdir = $(datadir)/pandoc-filters
 dist_filters_DATA = pandoc-filters/chapterid.lua pandoc-filters/epubclean.lua pandoc-filters/strip_for_mdbook.lua pandoc-filters/svg2pdf.py pandoc-filters/withoutfootnotes.lua pandoc-filters/withoutheadinglinks.lua pandoc-filters/withoutlinks.lua pandoc-filters/withverses.lua
 
 classesdir = $(datadir)/classes
-dist_classes_DATA = classes/cabook.lua classes/cabinding.lua classes/commands.lua classes/inline-styles.lua classes/block-styles.lua
+dist_classes_DATA = classes/cabook.lua classes/cabinding.lua
 
 packagesdir = $(datadir)/packages
 dist_packages_DATA = packages/covers.lua packages/crop.lua packages/imprint.lua packages/lists.lua packages/markdown.lua packages/verseindex.lua
+dist_packages_DATA += packages/cabook-commands.lua packages/cabook-inline-styles.lua packages/cabook-block-styles.lua
 
 layoutsdir = $(datadir)/layouts
 dist_layouts_DATA = layouts/a4.lua layouts/a4ciltli.lua layouts/a5trim.lua layouts/a6.lua layouts/a6trim.lua layouts/a7.lua layouts/a7kart.lua layouts/a7trimkart.lua layouts/app.lua layouts/banner.lua layouts/businesscard.lua layouts/cep.lua layouts/ekran.lua layouts/epub.lua layouts/halfletter.lua layouts/octavo.lua layouts/royaloctavo.lua layouts/square.lua layouts/wide.lua

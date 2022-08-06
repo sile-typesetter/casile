@@ -1,15 +1,21 @@
+local base = require("packages.base")
+
+local package = pl.class(base)
+package._name = "lists"
+
 local nestedlist = 0
 local liststyles = {}
 local listarealskip = nil
 
-local function init (class, _)
-  class:loadPackage("counters")
+function package:_init ()
+  base._init(self)
+  self.class:loadPackage("counters")
   SILE.scratch.liststyle = nil
 end
 
-local function registerCommands (_)
+function package:registerCommands ()
 
-  SILE.registerCommand("listarea", function (options, content)
+  self:registerCommand("listarea", function (options, content)
     nestedlist = nestedlist + 1
     if nestedlist == 1 then listarealskip = SILE.settings:get("document.parindent").width end
     liststyles[nestedlist] = { options.numberstyle }
@@ -25,7 +31,7 @@ local function registerCommands (_)
     nestedlist = nestedlist - 1
   end)
 
-  SILE.registerCommand("listitem", function (_, content)
+  self:registerCommand("listitem", function (_, content)
     local markerwidth = SILE.length("1.5em")
     SILE.call("kern", { width = tostring(markerwidth:negate()) })
     SILE.call("rebox", { width = tostring(markerwidth) }, function ()
@@ -43,7 +49,4 @@ local function registerCommands (_)
 
 end
 
-return {
-  init = init,
-  registerCommands = registerCommands
-}
+return package

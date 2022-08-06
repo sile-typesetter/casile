@@ -1,15 +1,20 @@
+local base = require("packages.base")
+
+local package = pl.class(base)
+package._name = "cabook-block-styles"
+
 -- luacheck: ignore loadstring
 local loadstring = loadstring or load
 
-local function registerCommands (_)
+function package:registerCommands ()
 
-  SILE.registerCommand("foliostyle", function (_, content)
+  self:registerCommand("foliostyle", function (_, content)
     SILE.call("center", {}, function ()
       SILE.call("cabook:font:folio", {}, content)
     end)
   end)
 
-  SILE.registerCommand("titlepage", function (_, _)
+  self:registerCommand("titlepage", function (_, _)
     if not SILE.Commands["meta:title"] then return end
     SILE.call("nofolios")
     if not CASILE.isScreenLayout() then
@@ -45,7 +50,7 @@ local function registerCommands (_)
     SILE.call("break")
   end)
 
-  SILE.registerCommand("halftitlepage", function (_, _)
+  self:registerCommand("halftitlepage", function (_, _)
     if CASILE.isScreenLayout() then return end
     if not SILE.Commands["meta:title"] then return end
     SILE.call("nofolios")
@@ -60,7 +65,7 @@ local function registerCommands (_)
     end)
   end)
 
-  SILE.registerCommand("tableofcontents", function (_, _)
+  self:registerCommand("tableofcontents", function (_, _)
     local f, _ = io.open(SILE.masterFilename .. '.toc')
     if not f then return end
     local doc = f:read("*all")
@@ -78,7 +83,7 @@ local function registerCommands (_)
     SILE.call("tableofcontents:footer")
   end)
 
-  SILE.registerCommand("cabook:chapter:before", function (options, _)
+  self:registerCommand("cabook:chapter:before", function (options, _)
     SILE.call("open-double-page")
     SILE.call("noindent")
     -- If Sectioning doesn't output numbering, the chapter starts too high on the page
@@ -89,7 +94,7 @@ local function registerCommands (_)
     SILE.call("skip", { height = "10%ph" })
   end)
 
-  SILE.registerCommand("cabook:chapter:after", function (options, _)
+  self:registerCommand("cabook:chapter:after", function (options, _)
     SILE.call("bigskip")
     SILE.call("noindent")
     SILE.call("fullrule")
@@ -100,7 +105,7 @@ local function registerCommands (_)
     --SILE.call("nofoliosthispage")
   end)
 
-  SILE.registerCommand("chapter", function (options, content)
+  self:registerCommand("chapter", function (options, content)
     options.display = options.display or "STRING"
     options.numbering = SU.boolean(options.numbering, true)
     SILE.call("set-counter", { id = "footnote", value = 1 })
@@ -126,7 +131,7 @@ local function registerCommands (_)
     SILE.call("cabook:chapter:after", options, content)
   end, "Begin a new chapter");
 
-  SILE.registerCommand("section", function (_, content)
+  self:registerCommand("section", function (_, content)
     SILE.call("goodbreak")
     SILE.call("ifnotattop", {}, function ()
       SILE.call("skip", { height = "12pt plus 6pt minus 4pt" })
@@ -142,7 +147,7 @@ local function registerCommands (_)
     SILE.call("novbreak")
   end, "Begin a new section")
 
-  SILE.registerCommand("subsection", function (_, content)
+  self:registerCommand("subsection", function (_, content)
     SILE.call("goodbreak")
     SILE.call("ifnotattop", {}, function ()
       SILE.call("skip", { height = "12pt plus 6pt minus 4pt" })
@@ -158,7 +163,7 @@ local function registerCommands (_)
     SILE.call("novbreak")
   end, "Begin a new section")
 
-  SILE.registerCommand("subsubsection", function (_, content)
+  self:registerCommand("subsubsection", function (_, content)
     SILE.call("goodbreak")
     SILE.call("ifnotattop", {}, function ()
       SILE.call("skip", { height = "12pt plus 6pt minus 4pt" })
@@ -174,7 +179,7 @@ local function registerCommands (_)
     SILE.call("novbreak")
   end, "Begin a new section")
 
-  SILE.registerCommand("part", function (options, content)
+  self:registerCommand("part", function (options, content)
     SILE.call("open-double-page")
     SILE.call("noindent")
     SILE.call("set-counter", { id = "footnote", value = 1})
@@ -201,7 +206,7 @@ local function registerCommands (_)
     SILE.scratch.headers.skipthispage = true
   end, "Begin a new part");
 
-  SILE.registerCommand("subparagraph", function (_, content)
+  self:registerCommand("subparagraph", function (_, content)
     SILE.typesetter:leaveHmode()
     SILE.call("novbreak")
     -- Backtracking to approximate the skip after quotations
@@ -222,6 +227,4 @@ local function registerCommands (_)
 
 end
 
-return {
-  registerCommands = registerCommands
-}
+return package

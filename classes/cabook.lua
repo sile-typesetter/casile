@@ -6,7 +6,6 @@ cabook._name = "cabook"
 
 function cabook:_init (options)
   book._init(self, options)
-
   self:loadPackage("color")
   self:loadPackage("ifattop")
   self:loadPackage("leaders")
@@ -19,28 +18,24 @@ function cabook:_init (options)
   self:loadPackage("frametricks")
   self:loadPackage("inputfilter")
   self:loadPackage("linespacing")
-
   if self.options.verseindex then
     self:loadPackage("verseindex")
   end
-
   self:loadPackage("imprint")
   self:loadPackage("covers")
-
+  self:loadPackage("cabook-commands")
+  self:loadPackage("cabook-inline-styles")
+  self:loadPackage("cabook-block-styles")
   self:registerPostinit(function (_)
-
     -- CaSILE books sometimes have sections, sometimes don't.
     -- Initialize some sectioning levels to work either way
     SILE.scratch.counters["sectioning"] = {
       value =  { 0, 0 },
       display = { "ORDINAL", "STRING" }
     }
-
     require("hyphenation_exceptions")
-
     SILE.settings:set("typesetter.underfulltolerance", SILE.length("6ex"))
     SILE.settings:set("typesetter.overfulltolerance", SILE.length("0.2ex"))
-
     table.insert(SILE.input.preambles, function ()
       SILE.call("footnote:separator", {}, function ()
         SILE.call("rebox", { width = "6em", height = "2ex" }, function ()
@@ -48,18 +43,13 @@ function cabook:_init (options)
         end)
         SILE.call("medskip")
       end)
-
       SILE.call("cabook:font:serif", { size = "11.5pt" })
     end)
-
     SILE.settings:set("linespacing.method", "fit-font")
     SILE.settings:set("linespacing.fit-font.extra-space", SILE.length("0.6ex plus 0.2ex minus 0.2ex"))
     SILE.settings:set("linebreak.hyphenPenalty", 300)
-
     SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length("0.7ex plus 0 minus 0")
-
     SILE.scratch.last_was_ref = false
-
     SILE.typesetter:registerPageEndHook(function ()
       SILE.scratch.last_was_ref = false
     end)
@@ -67,11 +57,7 @@ function cabook:_init (options)
 end
 
 function cabook:declareSettings ()
-
   book.declareSettings(self)
-
-  -- require("classes.cabook-settings")()
-
 end
 
 function cabook:declareOptions ()
@@ -93,7 +79,6 @@ function cabook:declareOptions ()
       if value then verseindex = SU.cast("boolean", value) end
       return verseindex
     end)
-    -- SU.error("ga cl 2.5")
   self:declareOption("layout", function (_, value)
     if value then
       layout = value
@@ -115,19 +100,10 @@ function cabook:setOptions (options)
 end
 
 function cabook:registerCommands ()
-
   book.registerCommands(self)
-
-  -- SILE's loadPackage assumes a "packages" path, this just side steps that naming requirement
-  self:initPackage(require("classes.commands"))
-  self:initPackage(require("classes.inline-styles"))
-  self:initPackage(require("classes.block-styles"))
-
 end
 
 function cabook:endPage ()
-  self:moveTocNodes()
-  if self.moveTovNodes then self:moveTovNodes() end
   if not SILE.scratch.headers.skipthispage then
     SILE.settings:pushState()
     SILE.settings:reset()
@@ -139,17 +115,7 @@ function cabook:endPage ()
     SILE.settings:popState()
   end
   SILE.scratch.headers.skipthispage = false
-  local ret = plain.endPage(self)
-  if self.options.crop then self:outputCropMarks() end
-  return ret
-end
-
-function cabook:finish ()
-  if self.moveTovNodes then
-    self:writeTov()
-    SILE.call("tableofverses")
-  end
-  return book.finish(self)
+  return plain.endPage(self)
 end
 
 return cabook

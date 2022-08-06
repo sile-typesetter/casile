@@ -1,17 +1,23 @@
+local base = require("packages.base")
+
+local package = pl.class(base)
+package._name = "verseindex"
+
+
 SILE.require("packages/url")
 
 SILE.scratch.tableofverses = {}
 
 local orig_href = SILE.Commands["href"]
 
-local writeTov = function (_)
-  local contents = "return " .. std.string.pickle(SILE.scratch.tableofverses)
+local function _writeTov ()
+  local contents = "return " .. pl.pretty.write(SILE.scratch.tableofverses)
   local tovfile, err = io.open(SILE.masterFilename .. '.tov', "w")
   if not tovfile then return SU.error(err) end
   tovfile:write(contents)
 end
 
-local moveNodes = function (_)
+local function _moveTovNodes ()
   local node = SILE.scratch.info.thispage.tov
   if node then
     for i = 1, #node do
@@ -21,14 +27,15 @@ local moveNodes = function (_)
   end
 end
 
-local init = function (self)
+local inpair = nil
+local repairbreak = function () end
+local defaultparskip = SILE.settings:get("typesetter.parfillskip")
 
-  self:loadPackage("infonode")
-  self:loadPackage("leaders")
+function package:_init ()
+  base._init(self)
 
-  local inpair = nil
-  local repairbreak = function () end
-  local defaultparskip = SILE.settings:get("typesetter.parfillskip")
+  self.class:loadPackage("infonode")
+  self.class:loadPackage("leaders")
 
   local continuepair = function (args)
     if not args then return end
@@ -47,6 +54,16 @@ local init = function (self)
     repairbreak()
   end
 
+  self.class:registerHook("endpage", _moveTovNodes)
+  self.class:registerHook("finish", _writeTov)
+  self.class:registerHook("finish", function ()
+    SILE.call("tableofverses")
+  end)
+
+end
+
+function package:registerCommands ()
+
   local startpair = function (pair)
     -- Temporarily disable columns pending upstream bugfix
     -- https://github.com/sile-typesetter/sile/issues/891
@@ -61,12 +78,12 @@ local init = function (self)
     SILE.settings:set("typesetter.parfillskip", defaultparskip)
   end
 
-  SILE.registerCommand("href", function (options, content)
+  self:registerCommand("href", function (options, content)
     SILE.call("markverse", options, content)
     return orig_href(options, content)
   end)
 
-  SILE.registerCommand("tableofverses:book", function (_, content)
+  self:registerCommand("tableofverses:book", function (_, content)
     SILE.call("requireSpace", { height = "4em" })
     SILE.settings:set("typesetter.parfillskip", defaultparskip)
     SILE.call("hbox")
@@ -76,7 +93,7 @@ local init = function (self)
     startpair(content[1])
   end)
 
-  SILE.registerCommand("tableofverses:reference", function (options, content)
+  self:registerCommand("tableofverses:reference", function (options, content)
     if #options.pages < 1 then
       SU.warn("Verse in index doesn't have page marker")
       options.pages = { "0" }
@@ -97,7 +114,7 @@ local init = function (self)
     SILE.call("par")
   end)
 
-  SILE.registerCommand("markverse", function (options, content)
+  self:registerCommand("markverse", function (options, content)
     SILE.typesetter:typeset("​") -- Protect hbox location from getting discarded
     SILE.call("info", {
         category = "tov",
@@ -108,7 +125,7 @@ local init = function (self)
       })
   end)
 
-  SILE.registerCommand("tableofverses", function (_, _)
+  self:registerCommand("tableofverses", function (_, _)
     SILE.call("chapter", { numbering = false, appendix = true }, { "Ayet Referans İndeksi" })
     SILE.call("cabook:font:serif", { size = "0.95em" })
     local origmethod = SILE.settings:get("linespacing.method")
@@ -157,10 +174,4 @@ local init = function (self)
 
 end
 
-return {
-  exports = {
-    writeTov = writeTov,
-    moveTovNodes = moveNodes
-  },
-  init = init
-}
+return package

@@ -1,8 +1,13 @@
+local base = require("packages.base")
+
+local package = pl.class(base)
+package._name = "covers"
+
 local color = "#FFFFFF"
 
-local function registerCommands (_)
+function package:registerCommands ()
 
-  SILE.registerCommand("frontcover", function ()
+  self:registerCommand("frontcover", function ()
     local options = {}
     options["first-content-frame"] = "front"
     SILE.call("pagetemplate", options, function ()
@@ -37,7 +42,7 @@ local function registerCommands (_)
     end)
   end)
 
-  SILE.registerCommand("backcover", function ()
+  self:registerCommand("backcover", function ()
     local options = {}
     options["first-content-frame"] = "front"
     SILE.call("pagetemplate", options, function ()
@@ -82,7 +87,7 @@ local function registerCommands (_)
     end)
   end)
 
-  SILE.registerCommand("spine", function (options)
+  self:registerCommand("spine", function (options)
     options["first-content-frame"] = "spine1"
     SILE.call("pagetemplate", options, function ()
       SILE.call("frame", {
@@ -127,6 +132,4 @@ local function registerCommands (_)
 
 end
 
-return {
-  registerCommands = registerCommands
-}
+return package
