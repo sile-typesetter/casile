@@ -70,7 +70,7 @@ local outputMarks = function ()
   SILE.outputter:drawRule(page:right(), page:bottom() + bleed, 0.5, len)
 
   SILE.call("hbox", {}, function ()
-    SILE.settings.temporarily(function ()
+    SILE.settings:temporarily(function ()
       SILE.call("noindent")
       SILE.call("font", { family = "Libertinus Serif", size = bleed * 0.8,  weight = 400, style = nil, features = nil })
       SILE.call("crop:header")

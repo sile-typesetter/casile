@@ -28,7 +28,7 @@ local init = function (self)
 
   local inpair = nil
   local repairbreak = function () end
-  local defaultparskip = SILE.settings.get("typesetter.parfillskip")
+  local defaultparskip = SILE.settings:get("typesetter.parfillskip")
 
   local continuepair = function (args)
     if not args then return end
@@ -51,14 +51,14 @@ local init = function (self)
     -- Temporarily disable columns pending upstream bugfix
     -- https://github.com/sile-typesetter/sile/issues/891
     -- SILE.call("makecolumns", { gutter = "4%pw" })
-    SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.glue())
+    SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue())
     inpair = pair
   end
 
   local endpair = function (_)
     inpair = nil
     SILE.call("mergecolumns")
-    SILE.settings.set("typesetter.parfillskip", defaultparskip)
+    SILE.settings:set("typesetter.parfillskip", defaultparskip)
   end
 
   SILE.registerCommand("href", function (options, content)
@@ -68,7 +68,7 @@ local init = function (self)
 
   SILE.registerCommand("tableofverses:book", function (_, content)
     SILE.call("requireSpace", { height = "4em" })
-    SILE.settings.set("typesetter.parfillskip", defaultparskip)
+    SILE.settings:set("typesetter.parfillskip", defaultparskip)
     SILE.call("hbox")
     SILE.call("skip", { height = "1ex" })
     SILE.call("section", { numbering = false, skiptoc = true }, content)
@@ -111,12 +111,12 @@ local init = function (self)
   SILE.registerCommand("tableofverses", function (_, _)
     SILE.call("chapter", { numbering = false, appendix = true }, { "Ayet Referans İndeksi" })
     SILE.call("cabook:font:serif", { size = "0.95em" })
-    local origmethod = SILE.settings.get("linespacing.method")
-    local origleader = SILE.settings.get("linespacing.fixed.baselinedistance")
-    local origparskip = SILE.settings.get("document.parskip")
-    SILE.settings.set("linespacing.method", "fixed")
-    SILE.settings.set("linespacing.fixed.baselinedistance", SILE.length("1.1em"))
-    SILE.settings.set("document.parskip", SILE.nodefactory.vglue({}))
+    local origmethod = SILE.settings:get("linespacing.method")
+    local origleader = SILE.settings:get("linespacing.fixed.baselinedistance")
+    local origparskip = SILE.settings:get("document.parskip")
+    SILE.settings:set("linespacing.method", "fixed")
+    SILE.settings:set("linespacing.fixed.baselinedistance", SILE.length("1.1em"))
+    SILE.settings:set("document.parskip", SILE.nodefactory.vglue({}))
     local refshash = {}
     local lastbook = nil
     local seq = 1
@@ -150,9 +150,9 @@ local init = function (self)
     end
     if inpair then endpair(seq) end
     inpair = nil
-    SILE.settings.set("linespacing.fixed.baselinedistance", origleader)
-    SILE.settings.set("linespacing.method", origmethod)
-    SILE.settings.set("document.parskip", origparskip)
+    SILE.settings:set("linespacing.fixed.baselinedistance", origleader)
+    SILE.settings:set("linespacing.method", origmethod)
+    SILE.settings:set("document.parskip", origparskip)
   end)
 
 end

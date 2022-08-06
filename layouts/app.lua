@@ -38,10 +38,10 @@ return function (class)
   SILE.registerCommand("output-right-running-head", function (_, _)
     if not SILE.scratch.headers.right then return end
     SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
-      SILE.settings.set("current.parindent", SILE.nodefactory.glue())
-      SILE.settings.set("typesetter.parfillskip", SILE.nodefactory.glue())
-      SILE.settings.set("document.lskip", SILE.nodefactory.glue())
-      SILE.settings.set("document.rskip", SILE.nodefactory.glue())
+      SILE.settings:set("current.parindent", SILE.nodefactory.glue())
+      SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue())
+      SILE.settings:set("document.lskip", SILE.nodefactory.glue())
+      SILE.settings:set("document.rskip", SILE.nodefactory.glue())
       SILE.call("cabook:font:right-header", {}, function ()
         SILE.call("center", {}, function ()
           SILE.call("meta:title")
@@ -93,6 +93,6 @@ return function (class)
     SILE.outputter:pushColor(inkColor)
   end
 
-  SILE.settings.set("linebreak.emergencyStretch", SILE.length("3em"))
+  SILE.settings:set("linebreak.emergencyStretch", SILE.length("3em"))
 
 end
