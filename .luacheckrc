@@ -29,13 +29,11 @@ files["pandoc-filters"] = {
   ignore = { "4.2" }
 }
 globals = {
-  "CASILE",
   "SILE",
   "SU",
-  "std",
+  "luautf8",
   "pl",
-  "SYSTEM_SILE_PATH",
-  "SHARED_LIB_EXT",
-  "ProFi"
+  "fluent",
+  "CASILE"
 }
 max_line_length = false
