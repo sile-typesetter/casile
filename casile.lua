@@ -118,31 +118,34 @@ local cldr = require("cldr")
 loadkit.register("ftl", function (file)
   local contents = assert(file:read("*a"))
   file:close()
-  return assert(SILE.fluent:add_messages(contents))
+  return assert(fluent:add_messages(contents))
 end)
+
+local loadonce = {}
+
+-- Patch SILE's language loader to also try loading our assets
 SILE.languageSupport.loadLanguage = function (language)
   language = language or SILE.settings:get("document.language")
   language = cldr.locales[language] and language or "und"
-  if SILE.languageSupport.languages[language] then return end
-  if SILE.hyphenator.languages[language] then return end
+  if loadonce[language] then return end
+  loadonce[language] = true
   local langresource = string.format("languages.%s", language)
   local gotlang, lang = pcall(require, langresource)
   if not gotlang then
-    if lang:match("not found") then lang = "no support for this language" end
-    SU.warn("Error loading language " .. language .. ": " .. lang)
-    SILE.languageSupport.languages[language] = {} -- Don't try again
+      SU.warn(("Unable to load language feature support (e.g. hyphenation rules) for %s: %s")
+        :format(language, lang:gsub(":.*", "")))
   end
   local ftlresource = string.format("i18n.%s", language)
   SU.debug("fluent", "Loading FTL resource", ftlresource, "into locale", language)
-  SILE.fluent:set_locale(language)
+  fluent:set_locale(language)
   local gotftl, ftl = pcall(require, ftlresource)
-  if not gotftl then
-    if ftl:match("not found") then ftl = "no localizations for this language" end
-    SU.warn("Error loading localizations " .. language .. ": " .. ftl)
-  end
   local ftlresource2 = string.format("assets.%s-%s.casile", language, string.upper(language))
   SU.debug("fluent", "Loading CaSILE FTL resource", ftlresource2, "into locale", language)
-  local _, _ = pcall(require, ftlresource2)
+  local gotftl2, _ = pcall(require, ftlresource2)
+  if not gotftl and not gotftl2 then
+      SU.warn(("Unable to load localized strings (e.g. table of contents header text) for %s: %s")
+        :format(language, ftl:gsub(":.*", "")))
+  end
   if type(lang) == "table" and lang.init then
     lang.init()
   end
