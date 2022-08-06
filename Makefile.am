@@ -29,7 +29,7 @@ EXTRA_casile_SOURCES = Cargo.lock tests/cli.rs
 bin_PROGRAMS = casile
 EXTRA_DIST = package.json yarn.lock requirements.txt
 EXTRA_DIST += build-aux/action-updater.js build-aux/cargo-updater.js build-aux/git-version-gen
-EXTRA_DIST += Dockerfile build-aux/bootstrap-docker.sh build-aux/docker-fontconfig.conf build-aux/docker-glibc-workaround.sh hooks/build
+EXTRA_DIST += Dockerfile build-aux/bootstrap-docker.sh build-aux/docker-fontconfig.conf hooks/build
 
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
