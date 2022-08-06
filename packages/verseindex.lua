@@ -10,14 +10,14 @@ SILE.scratch.tableofverses = {}
 
 local orig_href = SILE.Commands["href"]
 
-function package:writeTov ()
+local function _writeTov ()
   local contents = "return " .. std.string.pickle(SILE.scratch.tableofverses)
   local tovfile, err = io.open(SILE.masterFilename .. '.tov', "w")
   if not tovfile then return SU.error(err) end
   tovfile:write(contents)
 end
 
-function package:moveTovNodes ()
+local function _moveTovNodes ()
   local node = SILE.scratch.info.thispage.tov
   if node then
     for i = 1, #node do
@@ -53,6 +53,12 @@ function package:_init ()
     pushBack(current_typesetter)
     repairbreak()
   end
+
+  self.class:registerHook("endpage", _moveTovNodes)
+  self.class:registerHook("finish", _writeTov)
+  self.class:registerHook("finish", function ()
+    SILE.call("tableofverses")
+  end)
 
 end
 

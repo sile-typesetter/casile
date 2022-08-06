@@ -9,7 +9,7 @@ local len = trim - bleed
 
 local outcounter, cropbinding
 
-local function reconstrainFrameset(fs)
+local function reconstrainFrameset (fs)
   for n,f in pairs(fs) do
     if n ~= "page" then
       if f:isAbsoluteConstraint("right") then
@@ -29,7 +29,7 @@ local function reconstrainFrameset(fs)
   end
 end
 
-function package:setupCrop (args)
+local function _setupCrop (args)
   if args then
     bleed = args.bleed or bleed
     trim = args.trim or trim
@@ -55,7 +55,7 @@ function package:setupCrop (args)
   if SILE.typesetter and SILE.typesetter.frame then SILE.typesetter.frame:init() end
 end
 
-function package:outputCropMarks ()
+local function _outputCropMarks ()
   local page = SILE.getFrame("page")
 
   -- Top left
@@ -98,7 +98,9 @@ function package:_init (args)
 
   outcounter = 1
   cropbinding = self.class.options.binding == "stapled"
-  self:setupCrop(args)
+  _setupCrop(args)
+
+  self.class:registerHook("endpage", _outputCropMarks)
 
 end
 
