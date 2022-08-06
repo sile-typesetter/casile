@@ -1,3 +1,8 @@
+local base = require("packages.base")
+
+local package = pl.class(base)
+package._name = "crop"
+
 local bleed = 3 * 2.83465
 local trim = 10 * 2.83465
 local len = trim - bleed
@@ -24,7 +29,7 @@ local function reconstrainFrameset(fs)
   end
 end
 
-local setupCrop = function (_, args)
+function package:setupCrop (args)
   if args then
     bleed = args.bleed or bleed
     trim = args.trim or trim
@@ -50,7 +55,7 @@ local setupCrop = function (_, args)
   if SILE.typesetter and SILE.typesetter.frame then SILE.typesetter.frame:init() end
 end
 
-local outputMarks = function ()
+function package:outputCropMarks ()
   local page = SILE.getFrame("page")
 
   -- Top left
@@ -88,28 +93,22 @@ local outputMarks = function ()
   end
 end
 
-local function init (class, args)
+function package:_init (args)
+  base._init(self, args)
 
   outcounter = 1
-  cropbinding = class.options.binding == "stapled"
-  setupCrop(args)
+  cropbinding = self.class.options.binding == "stapled"
+  self:setupCrop(args)
 
 end
 
-local function registerCommands (_)
+function package:registerCommands ()
 
-  SILE.registerCommand("crop:header", function (_, _)
+  self:registerCommand("crop:header", function (_, _)
     SILE.call("meta:surum")
     SILE.typesetter:typeset(" (" .. outcounter .. ") " .. os.getenv("HOSTNAME") .. " / " .. os.date("%Y-%m-%d, %X"))
   end)
 
 end
 
-return {
-  init = init,
-  registerCommands = registerCommands,
-  exports =  {
-    outputCropMarks = outputMarks,
-    setupCrop = setupCrop
-  }
-}
+return package

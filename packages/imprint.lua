@@ -1,10 +1,16 @@
-local function init (class, _)
-  class:loadPackage("markdown")
+local base = require("packages.base")
+
+local package = pl.class(base)
+package._name = "imprint"
+
+function package:_init ()
+  base._init(self)
+  self.class:loadPackage("markdown")
 end
 
-local function registerCommands (_)
+function package:registerCommands ()
 
-  SILE.registerCommand("imprint:font", function (options, content)
+  self:registerCommand("imprint:font", function (options, content)
     options.weight = options.weight or 400
     options.size = options.size or "9pt"
     options.language = options.language or "und"
@@ -12,7 +18,7 @@ local function registerCommands (_)
     SILE.call("font", options, content)
   end)
 
-  SILE.registerCommand("imprint", function (_, _)
+  self:registerCommand("imprint", function (_, _)
     SILE.settings:temporarily(function ()
       local imgUnit = SILE.length("1em")
       SILE.settings:set("document.lskip", SILE.nodefactory.glue())
@@ -115,7 +121,7 @@ local function registerCommands (_)
     SILE.call("break")
   end)
 
-  SILE.registerCommand("meta:distribution", function (_, _)
+  self:registerCommand("meta:distribution", function (_, _)
     local layout = CASILE.layout
     local distros = CASILE.metadata.distribution
     local text = nil
@@ -136,7 +142,4 @@ local function registerCommands (_)
 
 end
 
-return {
-  init = init,
-  registerCommands = registerCommands
-}
+return package

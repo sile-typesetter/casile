@@ -127,7 +127,7 @@ end
 
 function cabook:endPage ()
   self:moveTocNodes()
-  if self.moveTovNodes then self:moveTovNodes() end
+  if self.packages.verseindex then self.packages.verseindex:moveTovNodes() end
   if not SILE.scratch.headers.skipthispage then
     SILE.settings:pushState()
     SILE.settings:reset()
@@ -140,13 +140,13 @@ function cabook:endPage ()
   end
   SILE.scratch.headers.skipthispage = false
   local ret = plain.endPage(self)
-  if self.options.crop then self:outputCropMarks() end
+  if self.options.crop then self.packages.crop:outputCropMarks() end
   return ret
 end
 
 function cabook:finish ()
-  if self.moveTovNodes then
-    self:writeTov()
+  if self.packages.verseindex then
+    self.packages.verseindex:writeTov()
     SILE.call("tableofverses")
   end
   return book.finish(self)
