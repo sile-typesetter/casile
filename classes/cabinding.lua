@@ -7,8 +7,6 @@ function cabinding:_init (options)
 
   cabook._init(self, options)
 
-  require(CASILE.include)
-
   self:loadPackage("rotate")
 
   self.writeToc = function () end
