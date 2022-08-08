@@ -130,7 +130,7 @@ PROJECTYAML_DEF := $(wildcard $(PROJECT).yml)
 PROJECTYAML ?= $(PROJECTYAML_DEF)
 
 # Extra Lua files to include before processing documents
-LUAINCLUDES += $(BUILDDIR)/.casile.lua
+LUAINCLUDES += $(BUILDDIR)/casile.lua
 PROJECTLUA := $(wildcard $(PROJECT).lua)
 
 # Extra libraries to include (later ones can override earlier ones)
@@ -430,7 +430,7 @@ $(FULLSILS): $(BUILDDIR)/%.sil:
 		$(call sile_hook) > $@
 
 # Send some environment data to a common Lua file to be pulled into all SILE runs
-$(BUILDDIR)/.casile.lua: | $(BUILDDIR)
+$(BUILDDIR)/casile.lua: | $(BUILDDIR)
 	cat <<- EOF > $@
 		package.path = "$(BUILDDIR)/?.lua;$(CASILEDIR)/?.lua;$(CASILEDIR)/?/init.lua" .. package.path
 		CASILE = {}
