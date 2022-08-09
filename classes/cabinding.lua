@@ -7,6 +7,8 @@ function cabinding:_init (options)
 
   cabook._init(self, options)
 
+  self:loadPackage("casile")
+
   require(CASILE.include)
 
   self:loadPackage("rotate")

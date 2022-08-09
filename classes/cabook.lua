@@ -6,6 +6,7 @@ cabook._name = "cabook"
 
 function cabook:_init (options)
   book._init(self, options)
+  self:loadPackage("casile")
   self:loadPackage("color")
   self:loadPackage("ifattop")
   self:loadPackage("leaders")

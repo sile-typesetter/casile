@@ -437,7 +437,6 @@ $(BUILDDIR)/casile.lua: | $(BUILDDIR)
 		CASILE.project = "$(PROJECT)"
 		CASILE.casiledir = "$(CASILEDIR)"
 		CASILE.publisher = "casile"
-		require("casile")
 	EOF
 
 $(FCCONFIG): FCDEFAULT ?= $(shell env -u FONTCONFIG_FILE $(FCCONFLIST) | $(AWK) -F'[ :]' '/Default configuration file/ { print $$2 }')
