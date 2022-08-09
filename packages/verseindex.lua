@@ -17,11 +17,11 @@ local function _writeTov ()
   tovfile:write(contents)
 end
 
-local function _moveTovNodes ()
+local function _moveTovNodes (class)
   local node = SILE.scratch.info.thispage.tov
   if node then
     for i = 1, #node do
-      node[i].pageno = SILE.formatCounter(SILE.scratch.counters.folio)
+      node[i].pageno = class.packages.counters:formatCounter(SILE.scratch.counters.folio)
       SILE.scratch.tableofverses[#(SILE.scratch.tableofverses)+1] = node[i]
     end
   end
