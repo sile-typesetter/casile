@@ -5,6 +5,9 @@ local class = pl.class(book)
 class._name = "cabook"
 
 function class:_init (options)
+  if not CASILE then
+    SU.error("Cannot run without CASILE global instantiated")
+  end
   book._init(self, options)
   self:loadPackage("casile")
   self:loadPackage("color")
@@ -27,6 +30,9 @@ function class:_init (options)
   self:loadPackage("cabook-commands")
   self:loadPackage("cabook-inline-styles")
   self:loadPackage("cabook-block-styles")
+  if CASILE.language then
+    SILE.settings:set("document.language", CASILE.language, true)
+  end
   self:registerPostinit(function (_)
     -- CaSILE books sometimes have sections, sometimes don't.
     -- Initialize some sectioning levels to work either way

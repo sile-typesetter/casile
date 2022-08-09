@@ -1,4 +1,4 @@
-local cabook = require("classes/cabook")
+local cabook = require("classes.cabook")
 
 local class = pl.class(cabook)
 class._name = "cabinding"
@@ -7,15 +7,10 @@ function class:_init (options)
 
   cabook._init(self, options)
 
-  self:loadPackage("casile")
-
-  require(CASILE.include)
-
   self:loadPackage("rotate")
 
-  self.writeToc = function () end
-
-  SILE.settings:set("document.language", CASILE.language, true)
+  self.packages.tableofcontents.writeToc = function () end
+  self.packages.verseindex.writeTov = function () end
 
   return self
 
