@@ -10,7 +10,6 @@ function class:_init (options)
   self:loadPackage("rotate")
 
   self.packages.tableofcontents.writeToc = function () end
-  self.packages.verseindex.writeTov = function () end
 
   return self
 
