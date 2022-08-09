@@ -32,6 +32,7 @@ return function (class)
         }
       }
     }})
+
   class:loadPackage("twoside", {
       oddPageMaster = "right",
       evenPageMaster = "left"
@@ -45,7 +46,7 @@ return function (class)
 
   -- Hack to avoid SILE bug in print editions
   -- See https://github.com/simoncozens/sile/issues/355
-  SILE.registerCommand("href", function (options, content)
+  class:registerCommand("href", function (options, content)
     if class.options.verseindex() == "true" then
       SILE.call("markverse", options, content)
     end

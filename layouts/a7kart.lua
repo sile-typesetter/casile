@@ -14,17 +14,18 @@ return function (class)
         }
       }
     }})
+
   class:loadPackage("twoside", {
       oddPageMaster = "right",
       evenPageMaster = "left"
     })
 
-  SILE.registerCommand("output-right-running-head", function () end)
+  class:registerCommand("output-right-running-head", function () end)
 
-  SILE.registerCommand("output-left-running-head", function () end)
+  class:registerCommand("output-left-running-head", function () end)
 
   -- Card layouts don’t need blanks of any kind.
-  SILE.registerCommand("open-double-page", function ()
+  class:registerCommand("open-double-page", function ()
     SILE.typesetter:leaveHmode()
     SILE.call("supereject")
     SILE.typesetter:leaveHmode()

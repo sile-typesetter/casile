@@ -30,13 +30,14 @@ return function (class)
         }
       }
     }})
+
   class:loadPackage("twoside", {
       oddPageMaster = "right",
       evenPageMaster = "left"
     })
 
   -- We have a bound A4 format too, but this one doesn't need double-page openers
-  SILE.registerCommand("open-double-page", function ()
+  class:registerCommand("open-double-page", function ()
     SILE.typesetter:leaveHmode()
     SILE.call("supereject")
     SILE.typesetter:leaveHmode()

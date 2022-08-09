@@ -32,12 +32,13 @@ return function (class)
         }
       }
     }})
+
   class:loadPackage("twoside", {
       oddPageMaster = "right",
       evenPageMaster = "left"
     })
 
-  SILE.registerCommand("output-right-running-head", function (_, _)
+  class:registerCommand("output-right-running-head", function (_, _)
     if not SILE.scratch.headers.right then return end
     SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
       SILE.settings:set("current.parindent", SILE.nodefactory.glue())
@@ -58,31 +59,31 @@ return function (class)
     end)
   end)
 
-  SILE.registerCommand("output-left-running-head", function (_, _)
+  class:registerCommand("output-left-running-head", function (_, _)
     SILE.call("output-right-running-head")
   end)
 
   local oldImprintFont = SILE.Commands["imprint:font"]
-  SILE.registerCommand("imprint:font", function (options, content)
+  class:registerCommand("imprint:font", function (options, content)
     options.size = options.size or "6.5pt"
     oldImprintFont(options, content)
   end)
 
   -- Screen based PDF readers don't need blank even numbered pages ;)
-  SILE.registerCommand("open-double-page", function ()
+  class:registerCommand("open-double-page", function ()
     SILE.typesetter:leaveHmode()
     SILE.call("supereject")
     SILE.typesetter:leaveHmode()
   end)
 
   local origToc = SILE.Commands["tableofcontents"]
-  SILE.registerCommand("tableofcontents", function (options, content)
+  class:registerCommand("tableofcontents", function (options, content)
     SILE.scratch.headers.skipthispage = true
     origToc(options, content)
     SILE.scratch.headers.right = {}
   end)
 
-  if SILE.documentState.documentClass.options.background() == "true" then
+  if class.options.background() == "true" then
     SILE.require("packages/background")
     SILE.call("background", { color = "#efe6bf" })
 

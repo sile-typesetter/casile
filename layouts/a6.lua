@@ -14,11 +14,11 @@ return function (class)
         }
       }
     }})
+
   class:loadPackage("twoside", {
       oddPageMaster = "right",
       evenPageMaster = "left"
     })
-
 
   if class.options.crop then
     class:loadPackage("crop")
