@@ -1,9 +1,9 @@
 local cabook = require("classes/cabook")
 
-local cabinding = pl.class(cabook)
-cabinding._name = "cabinding"
+local class = pl.class(cabook)
+class._name = "cabinding"
 
-function cabinding:_init (options)
+function class:_init (options)
 
   cabook._init(self, options)
 
@@ -15,29 +15,27 @@ function cabinding:_init (options)
 
   self.writeToc = function () end
 
-  cabinding:registerPostinit(function ()
-    SILE.call("language", { main = CASILE.language })
-  end)
+  SILE.settings:set("document.language", CASILE.language, true)
 
   return self
 
 end
 
-function cabinding:setOptions (options)
+function class:setOptions (options)
   options.layout = options.layout or CASILE.layout
   cabook.setOptions(self, options)
 end
 
-function cabinding:registerCommands ()
+function class:registerCommands ()
 
   cabook.registerCommands(self)
 
-  SILE.registerCommand("meta:surum", function (_, _)
+  self:registerCommand("meta:surum", function (_, _)
     SILE.typesetter:typeset(CASILE.versioninfo)
   end)
 
-  SILE.registerCommand("output-right-running-head", function (_, _) end)
+  self:registerCommand("output-right-running-head", function (_, _) end)
 
 end
 
-return cabinding
+return class

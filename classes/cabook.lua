@@ -1,10 +1,10 @@
 local book = require("classes/book")
 local plain = require("classes/plain")
 
-local cabook = pl.class(book)
-cabook._name = "cabook"
+local class = pl.class(book)
+class._name = "cabook"
 
-function cabook:_init (options)
+function class:_init (options)
   book._init(self, options)
   self:loadPackage("casile")
   self:loadPackage("color")
@@ -57,11 +57,7 @@ function cabook:_init (options)
   end)
 end
 
-function cabook:declareSettings ()
-  book.declareSettings(self)
-end
-
-function cabook:declareOptions ()
+function class:declareOptions ()
   book.declareOptions(self)
   local binding, crop, background, verseindex, layout
   self:declareOption("binding", function (_, value)
@@ -91,7 +87,7 @@ function cabook:declareOptions ()
     end)
 end
 
-function cabook:setOptions (options)
+function class:setOptions (options)
   options.binding = options.binding or "print" -- print, paperback, hardcover, coil, stapled
   options.crop = options.crop or true
   options.background = options.background or true
@@ -100,11 +96,7 @@ function cabook:setOptions (options)
   book.setOptions(self, options)
 end
 
-function cabook:registerCommands ()
-  book.registerCommands(self)
-end
-
-function cabook:endPage ()
+function class:endPage ()
   if not SILE.scratch.headers.skipthispage then
     SILE.settings:pushState()
     SILE.settings:reset()
@@ -119,4 +111,4 @@ function cabook:endPage ()
   return plain.endPage(self)
 end
 
-return cabook
+return class
