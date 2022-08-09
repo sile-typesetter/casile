@@ -683,13 +683,9 @@ $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf:
 		CASILE.layout = "$(call parse_papersize,$@)"
 		CASILE.language = "$(LANGUAGE)"
 		CASILE.spine = "$(call spinemm,$(filter %.pdf,$^))mm"
-		CASILE.load = function ()
-		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
-		SILE.require("$(basename $(LUA))"))
-		end
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
+	$(SILE) $(SILEFLAGS) -I $(BUILDDIR)/$*.lua $(call use_luas,$^ $|) $< -o $@
 
 FRONTFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_front).png))
 $(FRONTFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_front).png: $(BUILDDIR)/%-$(_text).pdf
@@ -738,13 +734,9 @@ $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf:
 		CASILE.metadata = require("readmeta").load(metadatafile)
 		CASILE.layout = "$(call parse_papersize,$@)"
 		CASILE.language = "$(LANGUAGE)"
-		CASILE.load = function ()
-		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
-		SILE.require("$(basename $(LUA))"))
-		end
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
+	$(SILE) $(SILEFLAGS) -I $(BUILDDIR)/$*.lua $(call use_luas,$^ $|) $< -o $@
 
 FRONTFRAGMENTIMAGES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_fragment).png))
 $(FRONTFRAGMENTIMAGES): $(BUILDDIR)/%-$(_fragment).png: $(BUILDDIR)/%-$(_text).pdf
@@ -849,13 +841,9 @@ $(EMPTYGEOMETRIES): $(BUILDDIR)/$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(
 		CASILE.versioninfo = "$(call versioninfo,$@)"
 		CASILE.layout = "$(call parse_papersize,$@)"
 		CASILE.language = "$(LANGUAGE)"
-		CASILE.load = function ()
-		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
-		SILE.require("$(basename $(LUA))"))
-		end
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
+	$(SILE) $(SILEFLAGS) -I $(BUILDDIR)/$*.lua $(call use_luas,$^ $|) $< -o $@
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(ALLLAYOUTS),-$(_geometry).sh))
