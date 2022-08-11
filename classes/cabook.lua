@@ -33,6 +33,8 @@ function class:_init (options)
   if CASILE.language then
     SILE.settings:set("document.language", CASILE.language, true)
   end
+  SILE.settings:set("font.family", "Libertinus Serif", true)
+  SILE.settings:set("font.size", "11.5", true)
   self:registerPostinit(function (_)
     -- CaSILE books sometimes have sections, sometimes don't.
     -- Initialize some sectioning levels to work either way
@@ -50,7 +52,6 @@ function class:_init (options)
         end)
         SILE.call("medskip")
       end)
-      SILE.call("cabook:font:serif", { size = "11.5pt" })
     end)
     SILE.settings:set("linespacing.method", "fit-font")
     SILE.settings:set("linespacing.fit-font.extra-space", SILE.length("0.6ex plus 0.2ex minus 0.2ex"))
