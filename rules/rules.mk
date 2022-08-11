@@ -370,16 +370,17 @@ $(FULLPDFS): %.pdf: $(BUILDDIR)/%.sil $$(call coverpreq,$$@) $$(call onpaperlibs
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
 	# account for TOC $(_issue): https://github.com/simoncozens/sile/issues/230
+	runsile="$(SILE) $(SILEFLAGS) $< -o $@"
 	if $(DRAFT); then
-		$(SILE) $(SILEFLAGS) $< -o $@
+		$${(z)runsile}
 	else
 		export pg0=$(call pagecount,$@)
-		$(SILE) $(SILEFLAGS) $< -o $@
+		$${(z)runsile}
 		# Note this page count can't be in Make because of expansion order
 		export pg1=$$($(PDFINFO) $@ | $(AWK) '$$1 == "Pages:" {print $$2}' || echo 0)
-		[[ $${pg0} -ne $${pg1} ]] && $(SILE) $(SILEFLAGS) $< -o $@ ||:
+		[[ $${pg0} -ne $${pg1} ]] && $${(z)runsile} ||:
 		export pg2=$$($(PDFINFO) $@ | $(AWK) '$$1 == "Pages:" {print $$2}' || echo 0)
-		[[ $${pg1} -ne $${pg2} ]] && $(SILE) $(SILEFLAGS) $< -o $@ ||:
+		[[ $${pg1} -ne $${pg2} ]] && $${(z)runsile} ||:
 	fi
 	# If we have a special cover page for this format, swap it out for the half title page
 	coverfile=$(filter %-$(_cover).pdf,$^)
