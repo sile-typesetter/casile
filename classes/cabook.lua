@@ -86,9 +86,7 @@ function class:declareOptions ()
   self:declareOption("layout", function (_, value)
     if value then
       layout = value
-      self:registerPostinit(function (_)
-          require("layouts."..layout)(self)
-        end)
+      require("layouts."..layout)(self)
     end
     return layout
     end)

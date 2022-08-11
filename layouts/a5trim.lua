@@ -2,7 +2,8 @@ return function (class)
 
   class.options.papersize = "135mm x 195mm"
 
-  class:loadPackage("masters", {{
+  if class._name == "cabook" then
+    class:loadPackage("masters", {{
       id = "right",
       firstContentFrame = "content",
       frames = {
@@ -33,24 +34,26 @@ return function (class)
       }
     }})
 
-  class:loadPackage("twoside", {
+    class:loadPackage("twoside", {
       oddPageMaster = "right",
       evenPageMaster = "left"
     })
 
-  if class.options.crop then
-    class:loadPackage("crop")
-  end
-
-  SILE.setCommandDefaults("imprint:font", { size = "8.5pt" })
-
-  -- Hack to avoid SILE bug in print editions
-  -- See https://github.com/simoncozens/sile/issues/355
-  class:registerCommand("href", function (options, content)
-    if class.options.verseindex() == "true" then
-      SILE.call("markverse", options, content)
+    if class.options.crop then
+      class:loadPackage("crop")
     end
-    SILE.process(content)
-  end)
+
+    SILE.setCommandDefaults("imprint:font", { size = "8.5pt" })
+
+    -- Hack to avoid SILE bug in print editions
+    -- See https://github.com/simoncozens/sile/issues/355
+    class:registerCommand("href", function (options, content)
+      if class.options.verseindex then
+        SILE.call("markverse", options, content)
+      end
+      SILE.process(content)
+    end)
+
+  end
 
 end
