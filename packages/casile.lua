@@ -103,12 +103,13 @@ function package:_init (_)
     end
   end
 
-  SILE.units["%pmed"] = {
+  SILE.registerUnit("%pmed", {
     relative = true,
-    definition = function (v)
-      return v / 100 * (SILE.documentState.orgPaperSize[1] + SILE.documentState.orgPaperSize[2]) / 2
+    definition = function (value)
+      local med =  (SILE.documentState.orgPaperSize[1] + SILE.documentState.orgPaperSize[2]) / 2
+      return value / 100 * med
     end
-  }
+  })
 
   CASILE.constrainSize = function (ideal, max, min)
     local idealSize = parseSize(ideal)

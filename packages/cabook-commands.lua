@@ -19,9 +19,6 @@ end
 
 function package:_init ()
   base._init(self)
-  SILE.registerUnit("%pmed", { relative = true, definition = function (v)
-    return v / 100 * (SILE.documentState.orgPaperSize[1] + SILE.documentState.orgPaperSize[2]) / 2
-  end})
 end
 
 function package:registerCommands ()
