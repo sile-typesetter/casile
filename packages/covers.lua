@@ -7,62 +7,43 @@ local color = "#FFFFFF"
 
 function package:registerCommands ()
 
-  self:registerCommand("frontcover", function ()
-    local options = {}
-    options["first-content-frame"] = "front"
-    SILE.call("pagetemplate", options, function ()
-      SILE.call("frame", {
-          id = "front",
-          top = "0",
-          bottom = "100%ph",
-          left = "15%pw",
-          right = "85%pw"
-        })
-    end)
+  self:registerCommand("frontcover", function (_, _)
     SILE.call("color", { color = color }, function ()
       SILE.call("center", {}, function ()
-        SILE.call("hbox")
-        SILE.call("vfill")
-        SILE.call("cabook:font:title", { size = "7%pmed" }, function ()
+        SILE.call("topfill")
+        SILE.call("cabook:font:title", { size = "8%fmed" }, function ()
           SILE.call("wraptitle", {}, { CASILE.metadata.title })
         end)
         SILE.call("skip", { height = "7%pmin" })
-        SILE.call("cabook:font:subtitle", { size = "5%pmed" }, function ()
+        SILE.call("cabook:font:subtitle", { size = "5%fmed" }, function ()
           SILE.call("wrapsubtitle", {}, { CASILE.metadata.subtitle })
         end)
         SILE.call("vfill")
         SILE.call("vfill")
         if CASILE.metadata.creator then
-          SILE.call("cabook:font:author", { size = "6%pmed", weight = 300 }, { CASILE.metadata.creator[1].text })
+          SILE.call("cabook:font:author", { size = "6%fmed", weight = 300 }, { CASILE.metadata.creator[1].text })
         end
       end)
       SILE.call("par")
       SILE.call("vfill")
-      SILE.call("break")
+      SILE.call("framebreak")
     end)
   end)
 
-  self:registerCommand("backcover", function ()
-    local options = {}
-    options["first-content-frame"] = "front"
-    SILE.call("pagetemplate", options, function ()
-      SILE.call("frame", {
-          id = "front",
-          top = "15%pw",
-          bottom = "100%ph - 15%pw",
-          left = "15%pw",
-          right = "85%pw"
-        })
-    end)
+  self:registerCommand("backcover", function (_, _)
     SILE.call("noindent")
     SILE.call("color", { color = color }, function ()
+    SILE.typesetter:leaveHmode()
       SILE.settings:set("linebreak.emergencyStretch", SILE.length("2spc"))
+      SILE.settings:set("document.lskip", "7%ph")
+      SILE.settings:set("document.rskip", "7%ph")
+      SILE.call("skip", { height = "7%ph" })
       SILE.settings:temporarily(function ()
         SILE.call("font", { size = "5.2%fw", weight = "600" })
         SILE.settings:set("linespacing.method", "fit-font")
         SILE.settings:set("linespacing.fit-font.extra-space", SILE.length("0.6ex"))
         CASILE.dropcapNextLetter()
-        SILE.process({ CASILE.metadata.abstract })
+        SILE.processMarkdown(CASILE.metadata.abstract)
         SILE.call("par")
         if CASILE.metadata.creator then
           SILE.call("raggedleft", {}, function ()
@@ -82,52 +63,30 @@ function package:registerCommands ()
         end
         SILE.call("par")
       end)
-      SILE.call("skip", { height = "1cm" })
-      SILE.call("break")
+      SILE.call("par")
+      SILE.call("vfill")
+      SILE.call("framebreak")
     end)
   end)
 
-  self:registerCommand("spine", function (options)
-    options["first-content-frame"] = "spine1"
-    SILE.call("pagetemplate", options, function ()
-      SILE.call("frame", {
-          id = "spine1",
-          top = "-" .. CASILE.spine,
-          height = CASILE.spine,
-          left = CASILE.spine,
-          width = "46%ph",
-          next = "spine2",
-          rotate = 90
-        })
-      SILE.call("frame", {
-          id = "spine2",
-          top = "-50%ph-" .. CASILE.spine,
-          height = CASILE.spine,
-          left = CASILE.spine,
-          width = "30%ph",
-          rotate = 90
-        })
-    end)
+  self:registerCommand("spine", function (_, _)
     SILE.call("noindent")
     SILE.call("color", { color = color }, function ()
-      SILE.call("center", {}, function ()
-          SILE.call("topfill")
-          SILE.call("skip", { height = "-10%fh" })
-          SILE.call("cabook:font:title", { size = "60%fh" }, { CASILE.metadata.title })
-          SILE.call("par")
+      SILE.call("topfill")
+      SILE.settings:set("current.parindent", 0)
+      SILE.settings:set("document.lskip", "5%ph")
+      SILE.settings:set("document.rskip", "10%ph")
+      SILE.call("raise", { height = ".18bs" }, function() -- Balance visual center of assenders
+        SILE.call("cabook:font:title", { size = "80%fh" }, { CASILE.metadata.title })
+        SILE.call("hfill")
+        if CASILE.metadata.creator then
+          SILE.call("cabook:font:author", { size = "50%fh" },  { CASILE.metadata.creator[1].text })
+        end
       end)
+      SILE.call("par")
     end)
     SILE.call("framebreak")
-    SILE.call("color", { color = color }, function ()
-      SILE.call("center", {}, function ()
-        SILE.call("topfill")
-        SILE.call("skip", { height = "10%fh" })
-        if CASILE.metadata.creator then
-          SILE.call("cabook:font:author", { size = "30%fh" },  { CASILE.metadata.creator[1].text })
-        end
-        SILE.call("par")
-      end)
-    end)
+    SILE.typesetter:leaveHmode()
   end)
 
 end

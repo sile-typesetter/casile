@@ -111,6 +111,14 @@ function package:_init (_)
     end
   })
 
+  SILE.registerUnit("%fmed", {
+    relative = true,
+    definition = function (value)
+      local med =  (SILE.measurement("100%fw"):tonumber() + SILE.measurement("100%fh"):tonumber()) / 2
+      return value / 100 * med
+    end
+  })
+
   CASILE.constrainSize = function (ideal, max, min)
     local idealSize = parseSize(ideal)
     if max then

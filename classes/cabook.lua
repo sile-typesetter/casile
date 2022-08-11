@@ -1,5 +1,5 @@
-local book = require("classes/book")
-local plain = require("classes/plain")
+local book = require("classes.book")
+local plain = require("classes.plain")
 
 local class = pl.class(book)
 class._name = "cabook"
@@ -83,6 +83,10 @@ function class:declareOptions ()
       if value then verseindex = SU.cast("boolean", value) end
       return verseindex
     end)
+  self:declareOption("verseindex", function (_, value)
+      if value then verseindex = SU.cast("boolean", value) end
+      return verseindex
+    end)
   self:declareOption("layout", function (_, value)
     if value then
       layout = value
@@ -97,7 +101,13 @@ function class:setOptions (options)
   options.crop = options.crop or true
   options.background = options.background or true
   options.verseindex = options.verseindex or false
-  options.layout = options.layout or "a4"
+  options.layout = options.layout or CASILE.layout or "a4"
+  -- Set layout first because it resets paper size. If we don't a random race
+  -- condition picks the default papersize *or* our layout to be set first.
+  self.options.layout = options.layout
+  -- Now set the rest but with the papersize reset to whatever layout wanted
+  options.papersize = self.options.papersize
+  options.layout = nil
   book.setOptions(self, options)
 end
 

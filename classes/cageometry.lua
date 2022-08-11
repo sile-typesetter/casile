@@ -1,5 +1,5 @@
-local plain = require("classes/plain")
-local cabinding = require("classes/cabinding")
+local plain = require("classes.plain")
+local cabook = require("classes.cabook")
 
 local class = pl.class(plain)
 class._name = "cageometry"
@@ -11,12 +11,7 @@ function class:_init (options)
   plain._init(self, options)
 end
 
-function class:declareOptions ()
-  cabinding.declareOptions(self)
-end
-
-function class:setOptions (options)
-  cabinding.setOptions(self, options)
-end
+class.declareOptions = cabook.declareOptions
+class.setOptions = cabook.setOptions
 
 return class

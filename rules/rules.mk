@@ -686,26 +686,32 @@ $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf:
 		CASILE.spine = "$(call spinemm,$(filter %.pdf,$^))mm"
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) -I $(BUILDDIR)/$*.lua $(call use_luas,$^ $|) $< -o $@
+	$(SILE) $(SILEFLAGS) -I $(BUILDDIR)/$*.lua $(call use_luas,$^ $|) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
 
 FRONTFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_front).png))
-$(FRONTFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_front).png: $(BUILDDIR)/%-$(_text).pdf
+$(FRONTFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_front).png: $(BUILDDIR)/%-$(_text).pdf | $$(geometryfile)
+	$(sourcegeometry)
 	$(MAGICK) \
 		$(MAGICKARGS) \
 		-density $(HIDPI) \
 		"$<[0]" \
 		-colorspace sRGB \
+		-gravity East \
+		-crop $${pagewpx}x+0+0 +repage \
 		$(call magick_fragment_front) +repage \
 		-compose Copy -layers Flatten +repage \
 		$@
 
 BACKFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_back).png))
-$(BACKFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_back).png: $(BUILDDIR)/%-$(_text).pdf
+$(BACKFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_back).png: $(BUILDDIR)/%-$(_text).pdf | $$(geometryfile)
+	$(sourcegeometry)
 	$(MAGICK) \
 		$(MAGICKARGS) \
 		-density $(HIDPI) \
-		"$<[1]" \
+		"$<[0]" \
 		-colorspace sRGB \
+		-gravity West \
+		-crop $${pagewpx}x+0+0 +repage \
 		$(call magick_fragment_back) +repage \
 		-compose Copy -layers Flatten +repage \
 		$@
@@ -716,8 +722,9 @@ $(SPINEFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_spine).png: $(BUILDDIR)/%-$(_te
 	$(MAGICK) \
 		$(MAGICKARGS) \
 		-density $(HIDPI) \
-		"$<[2]" \
+		"$<[0]" \
 		-colorspace sRGB \
+		-gravity Center \
 		-crop $${spinepx}x+0+0 +repage \
 		$(call magick_fragment_spine) \
 		-compose Copy -layers Flatten +repage \
