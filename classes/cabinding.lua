@@ -3,6 +3,15 @@ local cabook = require("classes.cabook")
 local class = pl.class(cabook)
 class._name = "cabinding"
 
+class.defaultFrameset = {
+  content = {
+    left = "left(page)",
+    right = "right(page)",
+    top = "top(page)",
+    bottom = "bottom(page)"
+  }
+}
+
 function class:_init (options)
 
   cabook._init(self, options)
