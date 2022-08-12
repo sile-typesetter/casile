@@ -89,14 +89,14 @@ function package:_init (_)
     return content
   end
 
-  CASILE.dropcapNextLetter = function ()
+  CASILE.dropcapNextLetter = function (options)
     originalTypeset = SILE.typesetter.typeset
     SILE.typesetter.typeset = function (self_, text)
       local first, rest = isolateDropcapLetter(text)
       if first and rest then
         SILE.typesetter.typeset = originalTypeset
-        SILE.call("dropcap", {}, { first })
-        SILE.typesetter.typeset(self, rest)
+        SILE.call("dropcap", options or {}, { first })
+        SILE.typesetter.typeset(self_, rest)
       else
         originalTypeset(self_, text)
       end
