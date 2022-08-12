@@ -2,7 +2,9 @@ return function (class)
 
   class.options.papersize = "105mm x 74mm"
 
-  class:loadPackage("masters", {{
+  if class._name == "cabook" then
+
+    class:loadPackage("masters", {{
       id = "right",
       firstContentFrame = "content",
       frames = {
@@ -14,22 +16,25 @@ return function (class)
         }
       }
     }})
-  class:loadPackage("twoside", {
+
+    class:loadPackage("twoside", {
       oddPageMaster = "right",
       evenPageMaster = "left"
     })
 
-  SILE.registerCommand("output-right-running-head", function () end)
+    class:registerCommand("output-right-running-head", function () end)
 
-  SILE.registerCommand("output-left-running-head", function () end)
+    class:registerCommand("output-left-running-head", function () end)
 
-  -- Card layouts don’t need blanks of any kind.
-  SILE.registerCommand("open-double-page", function ()
-    SILE.typesetter:leaveHmode()
-    SILE.call("supereject")
-    SILE.typesetter:leaveHmode()
-  end)
+    -- Card layouts don’t need blanks of any kind.
+    class:registerCommand("open-double-page", function ()
+      SILE.typesetter:leaveHmode()
+      SILE.call("supereject")
+      SILE.typesetter:leaveHmode()
+    end)
 
-  SILE.setCommandDefaults("imprint:font", { size = "7pt" })
+    SILE.setCommandDefaults("imprint:font", { size = "7pt" })
+
+  end
 
 end

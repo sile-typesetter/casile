@@ -34,7 +34,7 @@ EXTRA_DIST += Dockerfile build-aux/bootstrap-docker.sh build-aux/docker-fontconf
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
 luadir = $(datadir)
-dist_lua_DATA = casile.lua endnotes.lua hyphenation_exceptions.lua readmeta.lua
+dist_lua_DATA = hyphenation_exceptions.lua readmeta.lua
 
 povdir = $(datadir)
 dist_pov_DATA = back.pov book.pov front.pov montage.pov pile.pov
@@ -81,7 +81,7 @@ classesdir = $(datadir)/classes
 dist_classes_DATA = classes/cabook.lua classes/cabinding.lua
 
 packagesdir = $(datadir)/packages
-dist_packages_DATA = packages/covers.lua packages/crop.lua packages/imprint.lua packages/lists.lua packages/markdown.lua packages/verseindex.lua
+dist_packages_DATA = packages/casile.lua packages/covers.lua packages/crop.lua packages/endnotes.lua packages/imprint.lua packages/lists.lua packages/markdown.lua packages/verseindex.lua
 dist_packages_DATA += packages/cabook-commands.lua packages/cabook-inline-styles.lua packages/cabook-block-styles.lua
 
 layoutsdir = $(datadir)/layouts

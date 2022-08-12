@@ -2,7 +2,9 @@ return function (class)
 
   class.options.papersize = "74mm x 105mm"
 
-  class:loadPackage("masters", {{
+  if class._name == "cabook" then
+
+    class:loadPackage("masters", {{
       id = "right",
       firstContentFrame = "content",
       frames = {
@@ -14,15 +16,18 @@ return function (class)
         }
       }
     }})
-  class:loadPackage("twoside", {
+
+    class:loadPackage("twoside", {
       oddPageMaster = "right",
       evenPageMaster = "left"
     })
 
-  if class.options.crop then
-    class:loadPackage("crop")
-  end
+    if class.options.crop then
+      class:loadPackage("crop")
+    end
 
-  SILE.setCommandDefaults("imprint:font", { size = "7pt" })
+    SILE.setCommandDefaults("imprint:font", { size = "7pt" })
+
+  end
 
 end

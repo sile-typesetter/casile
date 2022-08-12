@@ -10,18 +10,18 @@ SILE.scratch.tableofverses = {}
 
 local orig_href = SILE.Commands["href"]
 
-local function _writeTov ()
+function package.writeTov ()
   local contents = "return " .. pl.pretty.write(SILE.scratch.tableofverses)
   local tovfile, err = io.open(SILE.masterFilename .. '.tov', "w")
   if not tovfile then return SU.error(err) end
   tovfile:write(contents)
 end
 
-local function _moveTovNodes ()
+function package.moveTovNodes (class)
   local node = SILE.scratch.info.thispage.tov
   if node then
     for i = 1, #node do
-      node[i].pageno = SILE.formatCounter(SILE.scratch.counters.folio)
+      node[i].pageno = class.packages.counters:formatCounter(SILE.scratch.counters.folio)
       SILE.scratch.tableofverses[#(SILE.scratch.tableofverses)+1] = node[i]
     end
   end
@@ -54,8 +54,8 @@ function package:_init ()
     repairbreak()
   end
 
-  self.class:registerHook("endpage", _moveTovNodes)
-  self.class:registerHook("finish", _writeTov)
+  self.class:registerHook("endpage", self.moveTovNodes)
+  self.class:registerHook("finish", self.writeTov)
   self.class:registerHook("finish", function ()
     SILE.call("tableofverses")
   end)

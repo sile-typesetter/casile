@@ -130,7 +130,7 @@ PROJECTYAML_DEF := $(wildcard $(PROJECT).yml)
 PROJECTYAML ?= $(PROJECTYAML_DEF)
 
 # Extra Lua files to include before processing documents
-LUAINCLUDES += $(BUILDDIR)/.casile.lua
+LUAINCLUDES += $(BUILDDIR)/casile.lua
 PROJECTLUA := $(wildcard $(PROJECT).lua)
 
 # Extra libraries to include (later ones can override earlier ones)
@@ -370,16 +370,17 @@ $(FULLPDFS): %.pdf: $(BUILDDIR)/%.sil $$(call coverpreq,$$@) $$(call onpaperlibs
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
 	# account for TOC $(_issue): https://github.com/simoncozens/sile/issues/230
+	runsile="$(SILE) $(SILEFLAGS) $< -o $@"
 	if $(DRAFT); then
-		$(SILE) $(SILEFLAGS) $< -o $@
+		$${(z)runsile}
 	else
 		export pg0=$(call pagecount,$@)
-		$(SILE) $(SILEFLAGS) $< -o $@
+		$${(z)runsile}
 		# Note this page count can't be in Make because of expansion order
 		export pg1=$$($(PDFINFO) $@ | $(AWK) '$$1 == "Pages:" {print $$2}' || echo 0)
-		[[ $${pg0} -ne $${pg1} ]] && $(SILE) $(SILEFLAGS) $< -o $@ ||:
+		[[ $${pg0} -ne $${pg1} ]] && $${(z)runsile} ||:
 		export pg2=$$($(PDFINFO) $@ | $(AWK) '$$1 == "Pages:" {print $$2}' || echo 0)
-		[[ $${pg1} -ne $${pg2} ]] && $(SILE) $(SILEFLAGS) $< -o $@ ||:
+		[[ $${pg1} -ne $${pg2} ]] && $${(z)runsile} ||:
 	fi
 	# If we have a special cover page for this format, swap it out for the half title page
 	coverfile=$(filter %-$(_cover).pdf,$^)
@@ -430,14 +431,13 @@ $(FULLSILS): $(BUILDDIR)/%.sil:
 		$(call sile_hook) > $@
 
 # Send some environment data to a common Lua file to be pulled into all SILE runs
-$(BUILDDIR)/.casile.lua: | $(BUILDDIR)
+$(BUILDDIR)/casile.lua: | $(BUILDDIR)
 	cat <<- EOF > $@
 		package.path = "$(BUILDDIR)/?.lua;$(CASILEDIR)/?.lua;$(CASILEDIR)/?/init.lua" .. package.path
 		CASILE = {}
 		CASILE.project = "$(PROJECT)"
 		CASILE.casiledir = "$(CASILEDIR)"
 		CASILE.publisher = "casile"
-		require("casile")
 	EOF
 
 $(FCCONFIG): FCDEFAULT ?= $(shell env -u FONTCONFIG_FILE $(FCCONFLIST) | $(AWK) -F'[ :]' '/Default configuration file/ { print $$2 }')
@@ -684,32 +684,34 @@ $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf:
 		CASILE.layout = "$(call parse_papersize,$@)"
 		CASILE.language = "$(LANGUAGE)"
 		CASILE.spine = "$(call spinemm,$(filter %.pdf,$^))mm"
-		CASILE.load = function ()
-		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
-		SILE.require("$(basename $(LUA))"))
-		end
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
+	$(SILE) $(SILEFLAGS) -I $(BUILDDIR)/$*.lua $(call use_luas,$^ $|) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
 
 FRONTFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_front).png))
-$(FRONTFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_front).png: $(BUILDDIR)/%-$(_text).pdf
+$(FRONTFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_front).png: $(BUILDDIR)/%-$(_text).pdf | $$(geometryfile)
+	$(sourcegeometry)
 	$(MAGICK) \
 		$(MAGICKARGS) \
 		-density $(HIDPI) \
 		"$<[0]" \
 		-colorspace sRGB \
+		-gravity East \
+		-crop $${pagewpx}x+0+0 +repage \
 		$(call magick_fragment_front) +repage \
 		-compose Copy -layers Flatten +repage \
 		$@
 
 BACKFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_back).png))
-$(BACKFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_back).png: $(BUILDDIR)/%-$(_text).pdf
+$(BACKFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_back).png: $(BUILDDIR)/%-$(_text).pdf | $$(geometryfile)
+	$(sourcegeometry)
 	$(MAGICK) \
 		$(MAGICKARGS) \
 		-density $(HIDPI) \
-		"$<[1]" \
+		"$<[0]" \
 		-colorspace sRGB \
+		-gravity West \
+		-crop $${pagewpx}x+0+0 +repage \
 		$(call magick_fragment_back) +repage \
 		-compose Copy -layers Flatten +repage \
 		$@
@@ -720,8 +722,9 @@ $(SPINEFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_spine).png: $(BUILDDIR)/%-$(_te
 	$(MAGICK) \
 		$(MAGICKARGS) \
 		-density $(HIDPI) \
-		"$<[2]" \
+		"$<[0]" \
 		-colorspace sRGB \
+		-gravity Center \
 		-crop $${spinepx}x+0+0 +repage \
 		$(call magick_fragment_spine) \
 		-compose Copy -layers Flatten +repage \
@@ -739,13 +742,9 @@ $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf:
 		CASILE.metadata = require("readmeta").load(metadatafile)
 		CASILE.layout = "$(call parse_papersize,$@)"
 		CASILE.language = "$(LANGUAGE)"
-		CASILE.load = function ()
-		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
-		SILE.require("$(basename $(LUA))"))
-		end
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
+	$(SILE) $(SILEFLAGS) -I $(BUILDDIR)/$*.lua $(call use_luas,$^ $|) $< -o $@
 
 FRONTFRAGMENTIMAGES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_fragment).png))
 $(FRONTFRAGMENTIMAGES): $(BUILDDIR)/%-$(_fragment).png: $(BUILDDIR)/%-$(_text).pdf
@@ -850,13 +849,9 @@ $(EMPTYGEOMETRIES): $(BUILDDIR)/$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(
 		CASILE.versioninfo = "$(call versioninfo,$@)"
 		CASILE.layout = "$(call parse_papersize,$@)"
 		CASILE.language = "$(LANGUAGE)"
-		CASILE.load = function ()
-		$(foreach LUA,$(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$^ $|))),
-		SILE.require("$(basename $(LUA))"))
-		end
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) -I <(echo "CASILE.include = '$*'") $< -o $@
+	$(SILE) $(SILEFLAGS) -I $(BUILDDIR)/$*.lua $(call use_luas,$^ $|) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(ALLLAYOUTS),-$(_geometry).sh))

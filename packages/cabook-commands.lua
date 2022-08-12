@@ -19,9 +19,6 @@ end
 
 function package:_init ()
   base._init(self)
-  SILE.registerUnit("%pmed", { relative = true, definition = function (v)
-    return v / 100 * (SILE.documentState.orgPaperSize[1] + SILE.documentState.orgPaperSize[2]) / 2
-  end})
 end
 
 function package:registerCommands ()
@@ -101,7 +98,7 @@ function package:registerCommands ()
         SILE.process(SILE.scratch.headers.right)
         SILE.call("hfill")
         SILE.call("cabook:font:folio", {}, function ()
-          SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
+          SILE.typesetter:typeset(self.class.packages.counters:formatCounter(SILE.scratch.counters.folio))
         end)
       end)
       SILE.typesetter:leaveHmode()
@@ -119,7 +116,7 @@ function package:registerCommands ()
       SILE.settings:set("document.rskip", SILE.nodefactory.glue())
       SILE.call("cabook:font:left-header", {}, function ()
         SILE.call("cabook:font:folio", {}, function ()
-          SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.folio))
+          SILE.typesetter:typeset(self.class.packages.counters:formatCounter(SILE.scratch.counters.folio))
         end)
         SILE.call("hfill")
         SILE.call("meta:title")
@@ -153,10 +150,10 @@ function package:registerCommands ()
       end
       local counters = SILE.scratch.counters["sectioning"]
       if level == 1 then
-        local val = SILE.formatCounter({ display = "ORDINAL", value = counters.value[level] })
+        local val = self.class.packages.counters:formatCounter({ display = "ORDINAL", value = counters.value[level] })
         toc_content[1] = val .. " KISIM: " .. self.class.uppercase(content[1] or "")
       elseif level == 2 then
-        local val = SILE.formatCounter({ display = "arabic", value = counters.value[level] })
+        local val = self.class.packages.counters:formatCounter({ display = "arabic", value = counters.value[level] })
         toc_content[1] = val .. ". " .. content[1]
       end
       if options.prenumber then
@@ -167,7 +164,7 @@ function package:registerCommands ()
       if options.postnumber then
         SILE.call(options.postnumber)
       end
-      local number = SILE.formatCounter({ display = "arabic", value = counters.value[level] })
+      local number = self.class.packages.counters:formatCounter({ display = "arabic", value = counters.value[level] })
       if not options.skiptoc then SILE.call("tocentry", { level = options.level, number = tonumber(number) }, toc_content) end
     else
       if not options.skiptoc then SILE.call("tocentry", { level = options.level, number = false }, content) end
@@ -370,7 +367,7 @@ function package:registerCommands ()
     local width = SILE.length(options.indent)
     SILE.typesetter:pushGlue({ width = width:negate() })
     SILE.call("rebox", { width = tostring(width) }, function ()
-      SILE.typesetter:typeset(SILE.formatCounter(SILE.scratch.counters.footnote) .. ".")
+      SILE.typesetter:typeset(self.class.packages.counters:formatCounter(SILE.scratch.counters.footnote) .. ".")
     end)
   end)
 

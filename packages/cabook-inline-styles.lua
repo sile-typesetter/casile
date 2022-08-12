@@ -6,9 +6,10 @@ package._name = "cabook-inline-styles"
 function package:registerCommands ()
 
   -- General purpose font families (no sizes)
+  local defaultfont = SILE.settings:get("font.family")
 
   self:registerCommand("cabook:font:serif", function (options, content)
-    options.family = options.family or "Libertinus Serif"
+    options.family = options.family or defaultfont
     SILE.call("font", options, content)
   end)
 

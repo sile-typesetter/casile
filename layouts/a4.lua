@@ -1,6 +1,7 @@
 return function (class)
 
-  class:loadPackage("masters", {{
+  if class._name == "cabook" then
+    class:loadPackage("masters", {{
       id = "right",
       firstContentFrame = "content",
       frames = {
@@ -30,16 +31,19 @@ return function (class)
         }
       }
     }})
-  class:loadPackage("twoside", {
+
+    class:loadPackage("twoside", {
       oddPageMaster = "right",
       evenPageMaster = "left"
     })
 
-  -- We have a bound A4 format too, but this one doesn't need double-page openers
-  SILE.registerCommand("open-double-page", function ()
-    SILE.typesetter:leaveHmode()
-    SILE.call("supereject")
-    SILE.typesetter:leaveHmode()
-  end)
+    -- We have a bound A4 format too, but this one doesn't need double-page openers
+    class:registerCommand("open-double-page", function ()
+      SILE.typesetter:leaveHmode()
+      SILE.call("supereject")
+      SILE.typesetter:leaveHmode()
+    end)
+
+  end
 
 end

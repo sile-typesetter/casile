@@ -2,7 +2,9 @@ return function (class)
 
   class.options.papersize = "halfletter"
 
-  class:loadPackage("masters", {{
+  if class._name == "cabook" then
+
+    class:loadPackage("masters", {{
       id = "right",
       firstContentFrame = "content",
       frames = {
@@ -26,13 +28,16 @@ return function (class)
         }
       }
     }})
-  class:loadPackage("twoside", {
+
+    class:loadPackage("twoside", {
       oddPageMaster = "right",
       evenPageMaster = "left"
     })
 
-  if class.options.crop then
-    class:loadPackage("crop")
+    if class.options.crop then
+      class:loadPackage("crop")
+    end
+
   end
 
 end
