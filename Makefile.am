@@ -78,10 +78,10 @@ filtersdir = $(datadir)/pandoc-filters
 dist_filters_DATA = pandoc-filters/chapterid.lua pandoc-filters/epubclean.lua pandoc-filters/strip_for_mdbook.lua pandoc-filters/svg2pdf.py pandoc-filters/withoutfootnotes.lua pandoc-filters/withoutheadinglinks.lua pandoc-filters/withoutlinks.lua pandoc-filters/withverses.lua
 
 classesdir = $(datadir)/classes
-dist_classes_DATA = classes/cabook.lua classes/cabinding.lua
+dist_classes_DATA = classes/cabook.lua classes/cabinding.lua classes/cageometry.lua
 
 packagesdir = $(datadir)/packages
-dist_packages_DATA = packages/casile.lua packages/covers.lua packages/crop.lua packages/endnotes.lua packages/imprint.lua packages/lists.lua packages/markdown.lua packages/verseindex.lua
+dist_packages_DATA = packages/casile.lua packages/covers.lua packages/crop.lua packages/dumpframes.lua packages/endnotes.lua packages/imprint.lua packages/lists.lua packages/markdown.lua packages/verseindex.lua
 dist_packages_DATA += packages/cabook-commands.lua packages/cabook-inline-styles.lua packages/cabook-block-styles.lua
 
 layoutsdir = $(datadir)/layouts
