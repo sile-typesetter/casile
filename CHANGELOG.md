@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.2](https://github.com/sile-typesetter/casile/compare/v0.10.1...v0.10.2) (2022-08-12)
+
+
+### Bug Fixes
+
+* **build:** Package missing Lua files ([98cf1d7](https://github.com/sile-typesetter/casile/commit/98cf1d76f9176330c1d8a7a5a67acf99d821302a))
+
 ### [0.10.1](https://github.com/sile-typesetter/casile/compare/v0.10.0...v0.10.1) (2022-08-12)
 
 
