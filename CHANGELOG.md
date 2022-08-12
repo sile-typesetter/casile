@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.1](https://github.com/sile-typesetter/casile/compare/v0.10.0...v0.10.1) (2022-08-12)
+
+
+### Features
+
+* **packages:** Add package to dump frame info ([6a4730f](https://github.com/sile-typesetter/casile/commit/6a4730f278c3bfa8eb8e6e53237d89098d913589))
+* **packages:** Allow passing options through to dropcap package ([4e6c721](https://github.com/sile-typesetter/casile/commit/4e6c7218fde7a817fcd8f1ec24cde9f16da7f632))
+* **packages:** Facilitate parsing or processing of markdown in stages ([29f101e](https://github.com/sile-typesetter/casile/commit/29f101e571f2789bcb59dad84d7588c43f686f12))
+
+
+### Bug Fixes
+
+* **classes:** Stop duplicate unit registration ([a7d8ad5](https://github.com/sile-typesetter/casile/commit/a7d8ad55531bdd3e898e1c762d573bb626e0d457))
+
 ## [0.10.0](https://github.com/sile-typesetter/casile/compare/v0.9.0...v0.10.0) (2022-08-06)
 
 
