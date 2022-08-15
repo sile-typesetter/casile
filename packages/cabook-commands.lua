@@ -595,11 +595,6 @@ function package:registerCommands ()
     return hbox
   end)
 
-  -- Apostrophe Hack, see https://github.com/sile-typesetter/sile/issues/355
-  self:registerCommand("ah", function ()
-    SILE.call("discretionary", { prebreak = "-", replacement = "’" })
-  end)
-
   self:registerCommand("skipto", function (options, _)
     local targetHeight = SU.cast("measurement", options.height):tonumber()
     SILE.call("hbox")

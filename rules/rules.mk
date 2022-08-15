@@ -395,13 +395,6 @@ $(FULLPDFS): %.pdf: $(BUILDDIR)/%.sil $$(call coverpreq,$$@) $$(call onpaperlibs
 
 DISTFILES += $(FULLPDFS)
 
-# Apostrophe Hack, see https://github.com/simoncozens/sile/issues/355
-ifeq ($(LANGUAGE),tr)
-ah := $(PERL) $(PERLARGS) -pne '/^\#/ or s/(?<=\p{L})’(?=\p{L})/\\ah{}/g' |
-else
-ah :=
-endif
-
 PANDOCTEMPLATE ?= $(CASILEDIR)/template.sil
 
 FULLSILS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil))
@@ -429,7 +422,7 @@ $(FULLSILS): $(BUILDDIR)/%.sil:
 			--template=$(filter %.sil,$^) \
 			--from=markdown \
 			--to=sile \
-			$(filter %-manifest.yml,$^) =(< $< $(call ah) $(call pre_sile_markdown_hook)) |
+			$(filter %-manifest.yml,$^) =(< $< $(call pre_sile_markdown_hook)) |
 		$(call sile_hook) > $@
 
 # Send some environment data to a common Lua file to be pulled into all SILE runs
