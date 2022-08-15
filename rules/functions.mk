@@ -71,7 +71,7 @@ dump = $(warning DUMP: $1)
 
 urlinfo ?= https://example.com/$1
 
-use_luas = $(foreach LUA,$(subst /,.,$(basename $(call reverse,$(filter-out $(LUAINCLUDES),$(filter %.lua,$1))))),--use $(LUA))
+use_luas = $(foreach LUA,$(subst /,.,$(basename $(call reverse,$(filter %.lua,$1)))),--use $(LUA))
 
 define ci_setup ?=
 	cat -

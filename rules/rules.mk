@@ -365,7 +365,8 @@ $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
 
 FULLPDFS := $(call pattern_list,$(REALSOURCES),$(REALLAYOUTS),.pdf)
 FULLPDFS += $(call pattern_list,$(REALSOURCES),$(EDITS),$(REALLAYOUTS),.pdf)
-$(FULLPDFS): %.pdf: $(BUILDDIR)/%.sil $$(call coverpreq,$$@) $$(call onpaperlibs,$$@) $(LUAINCLUDES) $(FCCONFIG)
+$(FULLPDFS): .EXTRA_PREREQS = $(LUAINCLUDES)
+$(FULLPDFS): %.pdf: $(BUILDDIR)/%.sil $$(call coverpreq,$$@) $$(call onpaperlibs,$$@) $(FCCONFIG)
 	$(call skip_if_lazy,$@)
 	$(DIFF) && $(SED) -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
@@ -672,8 +673,9 @@ $(COVERPDFS): $(BUILDDIR)/%-$(_cover).pdf: $(BUILDDIR)/%-$(_cover).png $(BUILDDI
 	$(PDFTK) $$text background $$bg output $@
 
 BINDINGFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_text).pdf))
+$(BINDINGFRAGMENTS): .EXTRA_PREREQS = $(LUAINCLUDES)
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml
-$(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(LUAINCLUDES) $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@))
+$(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@))
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $$(subst $(BUILDDIR)/,,$$(subst -$(_binding)-$(_text),,$$@))
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(FCCONFIG)
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: | $(LUALIBS) $(BUILDDIR)
@@ -732,8 +734,9 @@ $(SPINEFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_spine).png: $(BUILDDIR)/%-$(_te
 		$@
 
 COVERFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_text).pdf))
+$(COVERFRAGMENTS): .EXTRA_PREREQS = $(LUAINCLUDES)
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml
-$(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(LUAINCLUDES) $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@))
+$(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@))
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(FCCONFIG)
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: | $(LUALIBS) $(BUILDDIR)
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf:
@@ -845,7 +848,8 @@ $(UNBOUNDGEOMETRIES): private TRIM = $(NOTRIM)
 # Some output formats don't have PDF content, but we still need to calculate the
 # page geometry, so generate a single page PDF to measure with no binding scenario
 EMPTYGEOMETRIES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(_geometry),$(PAPERSIZES),.pdf))
-$(EMPTYGEOMETRIES): $(BUILDDIR)/$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml $(LUAINCLUDES) | $(BUILDDIR)
+$(EMPTYGEOMETRIES): .EXTRA_PREREQS = $(LUAINCLUDES)
+$(EMPTYGEOMETRIES): $(BUILDDIR)/$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml | $(BUILDDIR)
 	cat <<- EOF > $(BUILDDIR)/$*.lua
 		CASILE.versioninfo = "$(call versioninfo,$@)"
 		CASILE.layout = "$(call parse_papersize,$@)"
