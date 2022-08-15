@@ -252,6 +252,7 @@ $(VIRTUALPDFS): %.pdfs: $(call pattern_list,$$*,$(LAYOUTS),.pdf) $(and $(EDITION
 # Setup target dependencies to mimic stages of a CI pipeline
 ifeq ($(MAKECMDGOALS),ci)
 CI ?= 1
+.PHONY: pdfs
 pdfs: debug
 renderings promotionals: pdfs
 endif
