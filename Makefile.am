@@ -201,7 +201,7 @@ installcheck-local:
 	./$(TRANSFORMED_PACKAGE_NAME) --version
 
 .PHONY: lint
-lint: clippy luacheck rustfmt
+lint: clippy luacheck rustfmt checkmake
 
 .PHONY: rustfmt
 rustfmt:
@@ -210,6 +210,10 @@ rustfmt:
 .PHONY: luacheck
 luacheck:
 	luacheck .
+
+.PHONY: checkmake
+checkmake:
+	git ls-files '*.mk' | $(XARGS) -n1 checkmake
 
 .PHONY: clippy
 clippy:
