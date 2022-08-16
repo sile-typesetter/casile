@@ -76,8 +76,8 @@ function package:registerCommands ()
       local item = toc[i]
       SILE.call("tableofcontents:item", {
         level = item.level,
-        numbering = item.numbering,
-        pageno = item.pageno
+        pageno = item.pageno,
+        number = item.number
       }, item.label)
     end
     SILE.call("tableofcontents:footer")
