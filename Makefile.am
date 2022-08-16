@@ -34,7 +34,7 @@ EXTRA_DIST += Dockerfile build-aux/bootstrap-docker.sh build-aux/docker-fontconf
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
 luadir = $(datadir)
-dist_lua_DATA = hyphenation_exceptions.lua readmeta.lua
+dist_lua_DATA = readmeta.lua
 
 povdir = $(datadir)
 dist_pov_DATA = back.pov book.pov front.pov montage.pov pile.pov

@@ -42,7 +42,6 @@ function class:_init (options)
       value =  { 0, 0 },
       display = { "ORDINAL", "STRING" }
     }
-    require("hyphenation_exceptions")
     SILE.settings:set("typesetter.underfulltolerance", SILE.length("6ex"))
     SILE.settings:set("typesetter.overfulltolerance", SILE.length("0.2ex"))
     table.insert(SILE.input.preambles, function ()
