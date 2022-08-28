@@ -17,8 +17,14 @@ local precalcheight = function()
   return totalHeight
 end
 
+local spread_counter = 0
+local spreadHook = function ()
+  spread_counter = spread_counter + 1
+end
+
 function package:_init ()
   base._init(self)
+  self.class:registerHook("newpage", spreadHook)
 end
 
 function package:registerCommands ()
@@ -188,12 +194,10 @@ function package:registerCommands ()
   self:registerCommand("open-spread", function (options)
     local odd = SU.boolean(options.odd, not CASILE.isScreenLayout())
     local double = SU.boolean(options.double, not CASILE.isScreenLayout())
-    local count = 0
-    local pageHook = function () count = count + 1 end
-    SILE.typesetter:registerPageEndHook(pageHook)
+    spread_counter = 0
     repeat
       SILE.typesetter:leaveHmode()
-      if count > 0 then
+      if spread_counter > 0 then
         SILE.call("hbox")
         SILE.typesetter:leaveHmode()
         SILE.scratch.headers.skipthispage = true
@@ -201,7 +205,7 @@ function package:registerCommands ()
       end
       SILE.call("supereject")
       SILE.typesetter:leaveHmode()
-    until (not double or count > 1) and (odd and self.class:oddPage()) or (not odd and not self.class:oddPage())
+    until (not double or spread_counter > 1) and (odd and self.class:oddPage()) or (not odd and not self.class:oddPage())
     table.remove(SILE.typesetter.hooks.pageend)
   end)
 
