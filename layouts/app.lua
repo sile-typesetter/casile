@@ -4,30 +4,33 @@ return function (class)
 
   if class._name == "cabook" then
 
+    class.defaultFrameset = {
+      content = {
+        left = "2mm",
+        right = "100%pw-2mm",
+        top = "bottom(runningHead)+2mm",
+        bottom = "top(footnotes)"
+      },
+      runningHead = {
+        left = "left(content)",
+        right = "right(content)",
+        top = "2mm",
+        bottom = "14mm"
+      },
+      footnotes = {
+        left = "left(content)",
+        right = "right(content)",
+        height = "0",
+        bottom = "100%ph-2mm"
+      }
+    }
+
     class:loadPackage("masters", {{
       id = "right",
       firstContentFrame = "content",
-      frames = {
-        content = {
-          left = "2mm",
-          right = "100%pw-2mm",
-          top = "bottom(runningHead)+2mm",
-          bottom = "top(footnotes)"
-        },
-        runningHead = {
-          left = "left(content)",
-          right = "right(content)",
-          top = "2mm",
-          bottom = "14mm"
-        },
-        footnotes = {
-          left = "left(content)",
-          right = "right(content)",
-          height = "0",
-          bottom = "100%ph-2mm"
-        }
-      }
+      frames = class.defaultFrameset
     }})
+
     class:loadPackage("twoside", {
       oddPageMaster = "right",
       evenPageMaster = "left"

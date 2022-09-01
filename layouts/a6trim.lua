@@ -4,17 +4,19 @@ return function (class)
 
   if class._name == "cabook" then
 
+    class.defaultFrameset = {
+      content = {
+        left = "12mm",
+        right = "100%pw-12mm",
+        top = "12mm",
+        bottom = "100%ph-12mm"
+      }
+    }
+
     class:loadPackage("masters", {{
       id = "right",
       firstContentFrame = "content",
-      frames = {
-        content = {
-          left = "12mm",
-          right = "100%pw-12mm",
-          top = "12mm",
-          bottom = "100%ph-12mm"
-        }
-      }
+      frames = class.defaultFrameset
     }})
 
     class:loadPackage("twoside", {
