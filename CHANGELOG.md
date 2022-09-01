@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.3](https://github.com/sile-typesetter/casile/compare/v0.10.2...v0.10.3) (2022-09-01)
+
+
+### Features
+
+* **functions:** Use new SILE Turkish apostrophe hyphenation support ([739c3f6](https://github.com/sile-typesetter/casile/commit/739c3f607486d45ed5447260e469c68476e0c86c))
+
+
+### Bug Fixes
+
+* **classes:** Sync toc function with upstream to get numbering right again ([3b984ee](https://github.com/sile-typesetter/casile/commit/3b984eec0a41ea637ddaa13bb81f933595775f4c))
+* **class:** Reconnect our layout option to upstream masters package ([0fc1ff8](https://github.com/sile-typesetter/casile/commit/0fc1ff8276fb0bd6f263cfd24a14bb83770bb484))
+* **packages:** Correct odd page miss-match after first-use ([8c1e57a](https://github.com/sile-typesetter/casile/commit/8c1e57a414a86d389b6867d51b152d8c1f109107))
+
 ### [0.10.2](https://github.com/sile-typesetter/casile/compare/v0.10.1...v0.10.2) (2022-08-12)
 
 
