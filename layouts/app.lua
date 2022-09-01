@@ -69,7 +69,7 @@ return function (class)
     end)
 
     -- Mobile device PDF readers don't need blank even numbered pages ;)
-    class:registerCommand("open-double-page", function ()
+    class:registerCommand("open-spread", function ()
       SILE.typesetter:leaveHmode()
       SILE.call("supereject")
       SILE.typesetter:leaveHmode()

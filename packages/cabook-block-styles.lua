@@ -18,7 +18,7 @@ function package:registerCommands ()
     if not SILE.Commands["meta:title"] then return end
     SILE.call("nofolios")
     if not CASILE.isScreenLayout() then
-      SILE.call("open-double-page")
+      SILE.call("open-spread")
     end
     SILE.call("center", {}, function ()
       SILE.call("topfill")
@@ -84,7 +84,7 @@ function package:registerCommands ()
   end)
 
   self:registerCommand("cabook:chapter:before", function (options, _)
-    SILE.call("open-double-page")
+    SILE.call("open-spread")
     SILE.call("noindent")
     -- If Sectioning doesn't output numbering, the chapter starts too high on the page
     if (options.numbering == false or options.numbering == "false") then
@@ -180,7 +180,7 @@ function package:registerCommands ()
   end, "Begin a new section")
 
   self:registerCommand("part", function (options, content)
-    SILE.call("open-double-page")
+    SILE.call("open-spread")
     SILE.call("noindent")
     SILE.call("set-counter", { id = "footnote", value = 1})
     SILE.call("center", {}, function ()

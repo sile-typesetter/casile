@@ -27,7 +27,7 @@ return function (class)
     class:registerCommand("output-left-running-head", function () end)
 
     -- Card layouts don’t need blanks of any kind.
-    class:registerCommand("open-double-page", function ()
+    class:registerCommand("open-spread", function ()
       SILE.typesetter:leaveHmode()
       SILE.call("supereject")
       SILE.typesetter:leaveHmode()

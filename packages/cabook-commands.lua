@@ -189,24 +189,13 @@ function package:registerCommands ()
     })
   end)
 
-  -- This is similar to SILE's open-double-page, but disables headers and folios
-  -- on blank pages and allows opening the even side (with or without a leading blank)
-  self:registerCommand("open-spread", function (options)
-    local odd = SU.boolean(options.odd, not CASILE.isScreenLayout())
-    local double = SU.boolean(options.double, not CASILE.isScreenLayout())
-    spread_counter = 0
-    repeat
-      SILE.typesetter:leaveHmode()
-      if spread_counter > 0 then
-        SILE.call("hbox")
-        SILE.typesetter:leaveHmode()
-        SILE.scratch.headers.skipthispage = true
-        SILE.scratch.counters.folio.off = 2
-      end
-      SILE.call("supereject")
-      SILE.typesetter:leaveHmode()
-    until (not double or spread_counter > 1) and (odd and self.class:oddPage()) or (not odd and not self.class:oddPage())
-    table.remove(SILE.typesetter.hooks.pageend)
+  -- CaSILE's original open-spead is now upstreamed minus the layout based defaults,
+  -- so just wrapper those bits.
+  local orig_open_spread = SILE.Commands["open-spread"]
+  self:registerCommand("open-spread", function (options, _)
+    options.odd = SU.boolean(options.odd, not CASILE.isScreenLayout())
+    options.double = SU.boolean(options.double, not CASILE.isScreenLayout())
+    orig_open_spread(options, _)
   end)
 
   self:registerCommand("chaptertoc", function (_, _)
