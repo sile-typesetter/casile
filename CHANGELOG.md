@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.4](https://github.com/sile-typesetter/casile/compare/v0.10.3...v0.10.4) (2022-09-01)
+
+
+### Features
+
+* **docker:** Make luarocks available at runtime for package installation in CI ([fd10b5d](https://github.com/sile-typesetter/casile/commit/fd10b5ddbdff979c034bfe5029a697593fd56958))
+* **rules:** Make configured lua & luarocks paths available to targets ([aa6131b](https://github.com/sile-typesetter/casile/commit/aa6131b5cfbec3fbe97db725333d71c7fca4524c))
+
 ### [0.10.3](https://github.com/sile-typesetter/casile/compare/v0.10.2...v0.10.3) (2022-09-01)
 
 

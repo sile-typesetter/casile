@@ -103,7 +103,7 @@ checksum = "37ccbd214614c6783386c1af30caf03192f17891059cecc394b4fb119e363de3"
 
 [[package]]
 name = "casile"
-version = "0.10.3"
+version = "0.10.4"
 dependencies = [
  "Inflector",
  "assert_cmd",
