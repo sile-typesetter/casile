@@ -733,7 +733,7 @@ $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(PROJECTLUA) $$(TARGETLUAS_$$(ca
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(FCCONFIG)
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: | $(LUALIBS) $(BUILDDIR)
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf:
-	cat <<- EOF > $*.lua
+	cat <<- EOF > $(BUILDDIR)/$*.lua
 		CASILE.versioninfo = "$(call versioninfo,$@)"
 		local metadatafile = "$(filter %-manifest.yml,$^)"
 		CASILE.metadata = require("readmeta").load(metadatafile)
