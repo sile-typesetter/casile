@@ -78,6 +78,6 @@ impl CONF {
     }
 
     pub fn get_string(&self, key: &str) -> Result<String> {
-        Ok(self.read().expect(ERROR_CONFIG_READ).get_str(key)?)
+        Ok(self.read().expect(ERROR_CONFIG_READ).get_string(key)?)
     }
 }

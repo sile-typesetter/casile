@@ -23,12 +23,12 @@ subprocess = "0.2.9"
 unic-langid = "0.9.0"
 
   [dependencies.config]
-  version = "0.11.0"
+  version = "0.13.2"
   default-features = false
   features = [ "yaml" ]
 
   [dependencies.clap]
-  version = "3.1.18"
+  version = "3.2.20"
   features = [ "derive", "wrap_help" ]
 
   [dependencies.git2]
@@ -44,16 +44,16 @@ unic-langid = "0.9.0"
   default-features = false
 
   [dependencies.regex]
-  version = "1.5.6"
+  version = "1.6.0"
   default-features = false
   features = [ "std" ]
 
 [build-dependencies]
-clap = "3.1.18"
-clap_complete = "3.1.4"
+clap = "3.2.20"
+clap_complete = "3.2.4"
 
   [build-dependencies.vergen]
-  version = "7.2.1"
+  version = "7.4.2"
   default-features = false
   features = [ "build", "git" ]
 
