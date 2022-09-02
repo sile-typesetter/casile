@@ -387,9 +387,9 @@ $(FULLPDFS): %.pdf: $(BUILDDIR)/%.sil $$(call coverpreq,$$@) $$(call onpaperlibs
 	# If we have a special cover page for this format, swap it out for the half title page
 	coverfile=$(filter %-$(_cover).pdf,$^)
 	if $(COVERS) && [[ -f $${coverfile} ]]; then
-		$(PDFTK) $@ dump_data_utf8 output $*.dat
+		$(PDFTK) $@ dump_data_utf8 output $(BUILDDIR)/$*.dat
 		$(PDFTK) C=$${coverfile} B=$@ cat C1 B2-end output $*.tmp.pdf
-		$(PDFTK) $*.tmp.pdf update_info_utf8 $*.dat output $@
+		$(PDFTK) $*.tmp.pdf update_info_utf8 $(BUILDDIR)/$*.dat output $@
 		rm $*.tmp.pdf
 	fi
 
