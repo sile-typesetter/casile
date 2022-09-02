@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.6](https://github.com/sile-typesetter/casile/compare/v0.10.5...v0.10.6) (2022-09-02)
+
+
+### Bug Fixes
+
+* **cli:** Avoid panic on invalid UTF-8 (sometimes thrown by kindlegen) ([b69612d](https://github.com/sile-typesetter/casile/commit/b69612daf32cdf888771ef33f2102f518a67d920))
+
 ### [0.10.5](https://github.com/sile-typesetter/casile/compare/v0.10.4...v0.10.5) (2022-09-02)
 
 
