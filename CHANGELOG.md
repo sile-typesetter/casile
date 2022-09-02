@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.5](https://github.com/sile-typesetter/casile/compare/v0.10.4...v0.10.5) (2022-09-02)
+
+
+### Features
+
+* **rules:** Allow for localized layout names ([bc3fea8](https://github.com/sile-typesetter/casile/commit/bc3fea855a25c5ff7ca9959985d4932478ce0e2b))
+
+
+### Bug Fixes
+
+* **build:** Fixup GHCR to Docker Hub image shuffle ([7b3022d](https://github.com/sile-typesetter/casile/commit/7b3022db19a38747b0a2ba7b39eb7cdce875e771))
+* **classes:** More effectively disable TOC write attempts in cabinding class ([a7183a8](https://github.com/sile-typesetter/casile/commit/a7183a8488f7231fe82c6bd2cf3a5e8da8cecef1))
+* **rules:** Correct location of intermediate artifact ([d843373](https://github.com/sile-typesetter/casile/commit/d843373b31e89210bc1536daf8ad648c18902114))
+
 ### [0.10.4](https://github.com/sile-typesetter/casile/compare/v0.10.3...v0.10.4) (2022-09-01)
 
 
