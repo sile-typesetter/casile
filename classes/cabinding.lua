@@ -46,7 +46,13 @@ function class:_init (options)
   SILE.settings:set("document.lskip", 0, true)
   SILE.settings:set("document.rskip", 0, true)
 
+  local writeToc = self.packages.tableofcontents.writeToc
   self.packages.tableofcontents.writeToc = function () end
+  for i, func in ipairs(self.hooks.finish) do
+    if func == writeToc then
+      self.hooks.finish[i] = nil
+    end
+  end
 
   return self
 
