@@ -677,7 +677,7 @@ $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf:
 		CASILE.versioninfo = "$(call versioninfo,$@)"
 		local metadatafile = "$(filter %-manifest.yml,$^)"
 		CASILE.metadata = require("readmeta").load(metadatafile)
-		CASILE.layout = "$(call parse_papersize,$@)"
+		CASILE.layout = "$(or $(__$(call parse_papersize,$@)),$(call parse_papersize,$@))"
 		CASILE.language = "$(LANGUAGE)"
 		CASILE.spine = "$(call spinemm,$(filter %.pdf,$^))mm"
 	EOF
@@ -737,7 +737,7 @@ $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf:
 		CASILE.versioninfo = "$(call versioninfo,$@)"
 		local metadatafile = "$(filter %-manifest.yml,$^)"
 		CASILE.metadata = require("readmeta").load(metadatafile)
-		CASILE.layout = "$(call parse_papersize,$@)"
+		CASILE.layout = "$(or $(__$(call parse_papersize,$@)),$(call parse_papersize,$@))"
 		CASILE.language = "$(LANGUAGE)"
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
@@ -845,7 +845,7 @@ $(EMPTYGEOMETRIES): .EXTRA_PREREQS = $(LUAINCLUDES)
 $(EMPTYGEOMETRIES): $(BUILDDIR)/$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml | $(BUILDDIR)
 	cat <<- EOF > $(BUILDDIR)/$*.lua
 		CASILE.versioninfo = "$(call versioninfo,$@)"
-		CASILE.layout = "$(call parse_papersize,$@)"
+		CASILE.layout = "$(or $(__$(call parse_papersize,$@)),$(call parse_papersize,$@))"
 		CASILE.language = "$(LANGUAGE)"
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
