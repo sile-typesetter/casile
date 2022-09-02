@@ -82,7 +82,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
     let seps = Regex::new(r"").unwrap();
     let mut ret: u32 = 0;
     for line in buf.lines() {
-        let text: &str = &line.unwrap();
+        let text: &str = &line.unwrap_or(String::from("INVALID UTF-8 FROM CHILD PROCESS STREAM"));
         let fields: Vec<&str> = seps.splitn(text, 4).collect();
         match fields[0] {
             "CASILE" => match fields[1] {
