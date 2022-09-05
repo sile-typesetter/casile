@@ -24,12 +24,10 @@ return function (class)
       evenPageMaster = "left"
     })
 
-    if class.options.crop then
-      class:loadPackage("crop", {
-        bleed = SILE.length("2.5mm").length,
-        trim = SILE.length("5mm").length
-      })
-    end
+    class:loadPackage("crop", {
+      bleed = SILE.length("2.5mm").length,
+      trim = SILE.length("5mm").length
+    })
 
     class:registerCommand("output-right-running-head", function () end)
 

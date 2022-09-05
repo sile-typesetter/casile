@@ -34,10 +34,6 @@ return function (class)
       evenPageMaster = "left"
     })
 
-    if class.options.crop then
-      class:loadPackage("crop")
-    end
-
   end
 
 end

@@ -42,10 +42,6 @@ return function (class)
       evenPageMaster = "left"
     })
 
-    if class.options.crop then
-      class:loadPackage("crop")
-    end
-
     SILE.setCommandDefaults("imprint:font", { size = "8.5pt" })
 
     -- Hack to avoid SILE bug in print editions

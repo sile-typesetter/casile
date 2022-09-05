@@ -24,10 +24,6 @@ return function (class)
       evenPageMaster = "left"
     })
 
-    if class.options.crop then
-      class:loadPackage("crop")
-    end
-
     SILE.setCommandDefaults("imprint:font", { size = "6.5pt" })
 
   end

@@ -9,6 +9,9 @@ function class:_init (options)
     SU.error("Cannot run without CASILE global instantiated")
   end
   book._init(self, options)
+  if self.options.crop then
+    self:loadPackage("crop")
+  end
   self:loadPackage("casile")
   self:loadPackage("color")
   self:loadPackage("ifattop")

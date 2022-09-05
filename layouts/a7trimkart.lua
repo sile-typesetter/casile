@@ -24,10 +24,6 @@ return function (class)
       evenPageMaster = "left"
     })
 
-    if class.options.crop then
-      class:loadPackage("crop")
-    end
-
     class:registerCommand("output-right-running-head", function () end)
 
     class:registerCommand("output-left-running-head", function () end)
