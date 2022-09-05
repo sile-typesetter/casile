@@ -93,7 +93,7 @@ endef
 
 define versioninfo ?=
 $(shell $(_ENV)
-	echo -en "$(call parse_bookid,$1)@$(subst $(call parse_bookid,$1)/,,$(or $(TAG),$(BRANCH)))-"
+	echo -en "$(and $(word 2,$(SOURCES)),$(call parse_bookid,$1)/)$(subst $(call parse_bookid,$1)/,,$(if $(TAG),$(TAG)-,$(BRANCH)@))"
 	if [[ -n "$(TAG)" ]]; then
 		$(GIT) describe --always --dirty='*' | $(CUT) -d/ -f2 | sed 's/^/g/' | $(XARGS) echo -en
 	elif [[ "$(BRANCH)" == master ]]; then
