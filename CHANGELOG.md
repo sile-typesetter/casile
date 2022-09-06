@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.7](https://github.com/sile-typesetter/casile/compare/v0.10.6...v0.10.7) (2022-09-06)
+
+
+### Bug Fixes
+
+* **layouts:** Fixup setting command defaults from layouts again ([5f92dd6](https://github.com/sile-typesetter/casile/commit/5f92dd63baae3e6675142036f8869f622f540c21))
+* **layouts:** Initialize crop package after layout is known ([e958e5b](https://github.com/sile-typesetter/casile/commit/e958e5bb25512af45e7ab34aa68daac14d1b8781))
+* **packages:** Redo how mirror & crop work (at least for a5trim so far) ([bbad2c5](https://github.com/sile-typesetter/casile/commit/bbad2c54a13401e2559725269614ef4e9837a2ed))
+* **packages:** Redo how mirror & crop work (at least for rest of layouts) ([6bdf239](https://github.com/sile-typesetter/casile/commit/6bdf239909d38aee5c7058b249aa60cf93cf2048))
+
 ### [0.10.6](https://github.com/sile-typesetter/casile/compare/v0.10.5...v0.10.6) (2022-09-02)
 
 
