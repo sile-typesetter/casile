@@ -35,11 +35,6 @@ return function (class)
       }
     }})
 
-    class:loadPackage("twoside", {
-      oddPageMaster = "right",
-      evenPageMaster = "left"
-    })
-
     class:registerCommand("output-right-running-head", function (_, _)
       if not SILE.scratch.headers.right then return end
       SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
