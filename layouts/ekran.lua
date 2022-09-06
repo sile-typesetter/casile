@@ -65,10 +65,8 @@ return function (class)
       SILE.call("output-right-running-head")
     end)
 
-    local oldImprintFont = SILE.Commands["imprint:font"]
-    class:registerCommand("imprint:font", function (options, content)
-      options.size = options.size or "6.5pt"
-      oldImprintFont(options, content)
+    class:registerPostinit(function (class)
+      SILE.setCommandDefaults("imprint:font", { size = "6.5pt" })
     end)
 
     -- Screen based PDF readers don't need blank even numbered pages ;)

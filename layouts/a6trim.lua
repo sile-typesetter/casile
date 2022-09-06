@@ -24,7 +24,9 @@ return function (class)
       evenPageMaster = "left"
     })
 
-    SILE.setCommandDefaults("imprint:font", { size = "6.5pt" })
+    class:registerPostinit(function (class)
+      SILE.setCommandDefaults("imprint:font", { size = "6.5pt" })
+    end)
 
   end
 

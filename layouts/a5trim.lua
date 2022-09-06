@@ -31,7 +31,9 @@ return function (class)
       }
     }
 
-    SILE.setCommandDefaults("imprint:font", { size = "6.5pt" })
+    class:registerPostinit(function (class)
+      SILE.setCommandDefaults("imprint:font", { size = "8.5pt" })
+    end)
 
     -- Hack to avoid SILE bug in print editions
     -- See https://github.com/simoncozens/sile/issues/355
