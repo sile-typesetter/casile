@@ -4,41 +4,30 @@ return function (class)
 
     class.defaultFrameset = {
         content = {
-          left = "32mm",
-          right = "100%pw-32mm",
-          top = "34mm",
+          left = "left(page) + 32mm",
+          right = "right(page) - 32mm",
+          top = "top(page) + 34mm",
           bottom = "top(footnotes)"
         },
         runningHead = {
           left = "left(content)",
           right = "right(content)",
-          top = "24mm",
-          bottom = "30mm"
+          top = "top(page) + 24mm",
+          bottom = "top(page) + 30mm"
         },
         footnotes = {
           left = "left(content)",
           right = "right(content)",
           height = "0",
-          bottom = "100%ph-34mm"
+          bottom = "bottom(page) - 34mm"
         },
         folio = {
           left = "left(content)",
           right = "right(content)",
-          top = "100%ph-32mm",
-          bottom = "100%ph-26mm"
+          top = "bottom(page) - 32mm",
+          height = "6mm"
         }
       }
-
-    class:loadPackage("masters", {{
-      id = "right",
-      firstContentFrame = "content",
-      frames = class.defaultFrameset
-    }})
-
-    class:loadPackage("twoside", {
-      oddPageMaster = "right",
-      evenPageMaster = "left"
-    })
 
     -- We have a bound A4 format too, but this one doesn't need double-page openers
     class:registerCommand("open-spread", function ()

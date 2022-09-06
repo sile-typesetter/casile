@@ -3,55 +3,50 @@ local base = require("packages.base")
 local package = pl.class(base)
 package._name = "crop"
 
-local bleed = 3 * 2.83465
-local trim = 10 * 2.83465
-local len = trim - bleed
+local mm = 2.83465
+local bleed = 3 * mm
+local trim = 10 * mm
+local len
 
 local outcounter, cropbinding
 
-local function reconstrainFrameset (fs)
-  for n,f in pairs(fs) do
-    if n ~= "page" then
-      if f:isAbsoluteConstraint("right") then
-        f.constraints.right = "left(page) + (" .. f.constraints.right .. ")"
-      end
-      if f:isAbsoluteConstraint("left") then
-        f.constraints.left = "left(page) + (" .. f.constraints.left .. ")"
-      end
-      if f:isAbsoluteConstraint("top") then
-        f.constraints.top = "top(page) + (" .. f.constraints.top .. ")"
-      end
-      if f:isAbsoluteConstraint("bottom") then
-        f.constraints.bottom = "top(page) + (" .. f.constraints.bottom .. ")"
-      end
-      f:invalidate()
+-- See https://github.com/sile-typesetter/sile/pull/1470#discussion_r964040477
+function package.mirrorMaster (_, existing, new)
+  if not SILE.scratch.masters[new] then SILE.scratch.masters[new] = { frames = {} } end
+  if not SILE.scratch.masters[existing] then
+    SU.error("Can't find master "..existing)
+  end
+  for name, frame in pairs(SILE.scratch.masters[existing].frames) do
+    local newframe = pl.tablex.deepcopy(frame)
+    if frame:isAbsoluteConstraint("right") then
+      newframe.constraints.left = "2 * left(page) + 100%pw-("..frame.constraints.right..")"
+    end
+    if frame:isAbsoluteConstraint("left") then
+      newframe.constraints.right = "2 * left(page) + 100%pw-("..frame.constraints.left..")"
+    end
+    SILE.scratch.masters[new].frames[name] = newframe
+    if frame == SILE.scratch.masters[existing].firstContentFrame then
+      SILE.scratch.masters[new].firstContentFrame = newframe
     end
   end
 end
 
-local function _setupCrop (args)
+function package:_setupCrop (args)
   if args then
     bleed = args.bleed or bleed
     trim = args.trim or trim
-    len = trim - bleed
   end
+  len = trim - bleed
   local papersize = SILE.documentState.paperSize
   local w = papersize[1] + (trim * (cropbinding and 2 or 2))
   local h = papersize[2] + (trim * 2)
-  local oldsize = SILE.documentState.paperSize
   SILE.documentState.paperSize = SILE.paperSizeParser(w .. "pt x " .. h .. "pt")
   local page = SILE.getFrame("page")
-  page:constrain("right", oldsize[1] + trim)
   page:constrain("left", trim)
-  page:constrain("bottom", oldsize[2] + trim)
+  page:constrain("right", page.constraints.right + trim)
   page:constrain("top", trim)
-  if SILE.scratch.masters then
-    for _, v in pairs(SILE.scratch.masters) do
-      reconstrainFrameset(v.frames)
-    end
-  else
-    reconstrainFrameset(SILE.documentState.documentClass.pageTemplate.frames)
-  end
+  page:constrain("bottom", page.constraints.bottom + trim)
+  page:invalidate()
   if SILE.typesetter and SILE.typesetter.frame then SILE.typesetter.frame:init() end
 end
 
@@ -96,9 +91,12 @@ end
 function package:_init (args)
   base._init(self, args)
 
+  -- See https://github.com/sile-typesetter/sile/pull/1470#discussion_r964040477
+  self:export("mirrorMaster", self.mirrorMaster)
+
   outcounter = 1
   cropbinding = self.class.options.binding == "stapled"
-  _setupCrop(args)
+  self:_setupCrop(args)
 
   self.class:registerHook("endpage", _outputCropMarks)
 

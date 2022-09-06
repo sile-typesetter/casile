@@ -6,23 +6,12 @@ return function (class)
 
     class.defaultFrameset = {
       content = {
-        left = "5mm",
-        right = "100%pw-5mm",
-        top = "5mm",
-        bottom = "100%ph-5mm"
+        left = "left(page) + 5mm",
+        right = "right(page) - 5mm",
+        top = "top(page) + 5mm",
+        bottom = "bottom(page) - 5mm"
       }
     }
-
-    class:loadPackage("masters", {{
-      id = "right",
-      firstContentFrame = "content",
-      frames = class.defaultFrameset
-    }})
-
-    class:loadPackage("twoside", {
-      oddPageMaster = "right",
-      evenPageMaster = "left"
-    })
 
     class:loadPackage("crop", {
       bleed = SILE.length("2.5mm").length,

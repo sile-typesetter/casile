@@ -6,35 +6,24 @@ return function (class)
 
     class.defaultFrameset = {
       content = {
-        left = "2mm",
-        right = "100%pw-2mm",
-        top = "bottom(runningHead)+2mm",
+        left = "left(page) + 2mm",
+        right = "rigt(page) - 2mm",
+        top = "bottom(runningHead) + 2mm",
         bottom = "top(footnotes)"
       },
       runningHead = {
         left = "left(content)",
         right = "right(content)",
-        top = "2mm",
-        bottom = "14mm"
+        top = "top(page) + 2mm",
+        height = "12mm"
       },
       footnotes = {
         left = "left(content)",
         right = "right(content)",
         height = "0",
-        bottom = "100%ph-2mm"
+        bottom = "bottom(page) - 2mm"
       }
     }
-
-    class:loadPackage("masters", {{
-      id = "right",
-      firstContentFrame = "content",
-      frames = class.defaultFrameset
-    }})
-
-    class:loadPackage("twoside", {
-      oddPageMaster = "right",
-      evenPageMaster = "left"
-    })
 
     class:registerCommand("output-right-running-head", function (_, _)
       if not SILE.scratch.headers.right then return end

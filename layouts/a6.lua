@@ -6,25 +6,16 @@ return function (class)
 
     class.defaultFrameset = {
       content = {
-        left = "12mm",
-        right = "100%pw-12mm",
-        top = "12mm",
-        bottom = "100%ph-12mm"
+        left = "left(page) + 12mm",
+        right = "right(page) - 12mm",
+        top = "top(page) + 12mm",
+        bottom = "bottom(page) - 12mm"
       }
     }
 
-    class:loadPackage("masters", {{
-      id = "right",
-      firstContentFrame = "content",
-      frames = class.defaultFrameset
-    }})
-
-    class:loadPackage("twoside", {
-      oddPageMaster = "right",
-      evenPageMaster = "left"
-    })
-
-    SILE.setCommandDefaults("imprint:font", { size = "6.5pt" })
+    class:registerPostinit(function (class)
+      SILE.setCommandDefaults("imprint:font", { size = "6.5pt" })
+    end)
 
   end
 

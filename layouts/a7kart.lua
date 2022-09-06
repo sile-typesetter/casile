@@ -6,23 +6,12 @@ return function (class)
 
     class.defaultFrameset = {
       content = {
-        left = "8mm",
-        right = "100%pw-8mm",
-        top = "8mm",
-        bottom = "100%ph-8mm"
+        left = "left(page) + 8mm",
+        right = "right(page) - 8mm",
+        top = "top(page) + 8mm",
+        bottom = "bottom(page) - 8mm"
       }
     }
-
-    class:loadPackage("masters", {{
-      id = "right",
-      firstContentFrame = "content",
-      frames = class.defaultFrameset
-    }})
-
-    class:loadPackage("twoside", {
-      oddPageMaster = "right",
-      evenPageMaster = "left"
-    })
 
     class:registerCommand("output-right-running-head", function () end)
 
@@ -35,7 +24,9 @@ return function (class)
       SILE.typesetter:leaveHmode()
     end)
 
-    SILE.setCommandDefaults("imprint:font", { size = "7pt" })
+    class:registerPostinit(function (class)
+      SILE.setCommandDefaults("imprint:font", { size = "7pt" })
+    end)
 
   end
 
