@@ -22,7 +22,7 @@ function package:registerCommands ()
     local material = function ()
       SILE.process(content)
     end
-    local counter = self.class.packages:formatCounter(SILE.scratch.counters.footnote)
+    local counter = self.class.packages.counters:formatCounter(SILE.scratch.counters.footnote)
     SILE.scratch.endnotes[#SILE.scratch.endnotes+1] = function ()
       return counter, material
     end
