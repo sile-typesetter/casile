@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.8](https://github.com/sile-typesetter/casile/compare/v0.10.7...v0.10.8) (2022-11-03)
+
+
+### Bug Fixes
+
+* **packages:** Correct endnotes usage of counters package ([8235283](https://github.com/sile-typesetter/casile/commit/82352839b2071c6f4e6bce8692f3c46ee06cbc38))
+* **rules:** Scale ISBN label to match resolution ([15a2530](https://github.com/sile-typesetter/casile/commit/15a25300e7174f85eb80d34da30dbf8cf73b4324))
+
 ### [0.10.7](https://github.com/sile-typesetter/casile/compare/v0.10.6...v0.10.7) (2022-09-06)
 
 
