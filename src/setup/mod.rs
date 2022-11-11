@@ -14,7 +14,7 @@ use subprocess::{Exec, NullFile, Redirection};
 pub fn run() -> Result<()> {
     show_header("setup-header");
     let path = &CONF.get_string("path")?;
-    let metadata = fs::metadata(&path)?;
+    let metadata = fs::metadata(path)?;
     match metadata.is_dir() {
         true => match is_repo()? {
             true => {
