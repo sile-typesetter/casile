@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.9](https://github.com/sile-typesetter/casile/compare/v0.10.8...v0.10.9) (2022-11-11)
+
+
+### Bug Fixes
+
+* **docker:** Force rebuild to get fixed ImageMagick packages ([fb7a270](https://github.com/sile-typesetter/casile/commit/fb7a2703f24d662be46aaebd5033eeaff45e9b09))
+
 ### [0.10.8](https://github.com/sile-typesetter/casile/compare/v0.10.7...v0.10.8) (2022-11-03)
 
 
