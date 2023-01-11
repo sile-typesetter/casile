@@ -16,11 +16,11 @@ fluent-fallback = "0.0.4"
 fluent-langneg = "0.13.0"
 itertools = "0.10.3"
 lazy_static = "1.4.0"
-num_cpus = "1.13.1"
-rayon = "1.5.3"
-rust-embed = "6.4.0"
+num_cpus = "1.15.0"
+rayon = "1.6.1"
+rust-embed = "6.4.2"
 subprocess = "0.2.9"
-unic-langid = "0.9.0"
+unic-langid = "0.9.1"
 
   [dependencies.config]
   version = "0.13.2"
@@ -32,11 +32,11 @@ unic-langid = "0.9.0"
   features = [ "derive", "wrap_help" ]
 
   [dependencies.git2]
-  version = "0.14.4"
+  version = "0.16.0"
   default-features = false
 
   [dependencies.git-warp-time]
-  version = "0.4.5"
+  version = "0.4.9"
   default-features = false
 
   [dependencies.Inflector]
@@ -44,7 +44,7 @@ unic-langid = "0.9.0"
   default-features = false
 
   [dependencies.regex]
-  version = "1.6.0"
+  version = "1.7.1"
   default-features = false
   features = [ "std" ]
 
@@ -58,8 +58,8 @@ clap_complete = "3.2.4"
   features = [ "build", "git" ]
 
 [dev-dependencies]
-assert_cmd = "2.0.4"
-predicates = "2.1.1"
+assert_cmd = "2.0.8"
+predicates = "2.1.5"
 
 [profile.release]
 lto = true
