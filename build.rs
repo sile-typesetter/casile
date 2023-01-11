@@ -1,4 +1,4 @@
-use clap::IntoApp;
+use clap::Command;
 use clap_complete::generator::generate_to;
 use clap_complete::shells::{Bash, Elvish, Fish, PowerShell, Zsh};
 use std::{collections, env, fs};
@@ -27,20 +27,18 @@ fn generate_shell_completions() {
     let completions_dir = path::Path::new(&out_dir).join("completions");
     fs::create_dir_all(&completions_dir)
         .expect("Could not create directory in which to place completions");
-    let app = Cli::command();
-    let bin_name: &str = app
-        .get_bin_name()
-        .expect("Could not retrieve bin-name from generated Clap app");
-    let mut app = Cli::command();
-    generate_to(Bash, &mut app, bin_name, &completions_dir)
+    let bin_name: &str = "casile";
+    let cli = Command::new("casile");
+    let mut cli = Cli::augment_args(cli);
+    generate_to(Bash, &mut cli, bin_name, &completions_dir)
         .expect("Unable to generate bash completions");
-    generate_to(Elvish, &mut app, bin_name, &completions_dir)
+    generate_to(Elvish, &mut cli, bin_name, &completions_dir)
         .expect("Unable to generate elvish completions");
-    generate_to(Fish, &mut app, bin_name, &completions_dir)
+    generate_to(Fish, &mut cli, bin_name, &completions_dir)
         .expect("Unable to generate fish completions");
-    generate_to(PowerShell, &mut app, bin_name, &completions_dir)
+    generate_to(PowerShell, &mut cli, bin_name, &completions_dir)
         .expect("Unable to generate powershell completions");
-    generate_to(Zsh, &mut app, bin_name, &completions_dir)
+    generate_to(Zsh, &mut cli, bin_name, &completions_dir)
         .expect("Unable to generate zsh completions");
 }
 

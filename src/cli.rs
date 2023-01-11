@@ -1,11 +1,12 @@
-use clap::{Parser, Subcommand};
+// use clap::FromArgMatches as _;
+use clap::{Args, Subcommand};
 use std::path;
 
 // FTL: help-description
 /// The command line interface to the CaSILE toolkit,
 /// a publishing workflow employing SILE and other wizardry.
-#[derive(Parser, Debug)]
-#[clap(bin_name = "casile")]
+#[derive(Args, Debug)]
+#[clap(author)]
 pub struct Cli {
     // FTL: help-flags-debug
     /// Enable extra debug output from tooling
