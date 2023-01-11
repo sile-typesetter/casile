@@ -13,6 +13,7 @@ lazy_static! {
 }
 
 impl CONF {
+    #[allow(deprecated)]
     pub fn defaults(&self) -> Result<()> {
         let mut config = self.write().expect(ERROR_CONFIG_WRITE);
         config
@@ -24,6 +25,7 @@ impl CONF {
         Ok(())
     }
 
+    #[allow(deprecated)]
     pub fn merge_env(&self) -> Result<()> {
         let mut config = self.write().expect(ERROR_CONFIG_WRITE);
         if let Some(lang) = env::var_os("LANG") {
@@ -35,6 +37,7 @@ impl CONF {
         Ok(())
     }
 
+    #[allow(deprecated)]
     pub fn merge_files(&self) -> Result<()> {
         let confs = status::get_confs()?;
         let mut config = self.write().expect(ERROR_CONFIG_WRITE);
@@ -63,6 +66,7 @@ impl CONF {
         Ok(())
     }
 
+    #[allow(deprecated)]
     pub fn set_bool(&self, key: &str, val: bool) -> Result<()> {
         self.write().expect(ERROR_CONFIG_WRITE).set(key, val)?;
         Ok(())
@@ -72,6 +76,7 @@ impl CONF {
         Ok(self.read().expect(ERROR_CONFIG_READ).get_bool(key)?)
     }
 
+    #[allow(deprecated)]
     pub fn set_str(&self, key: &str, val: &str) -> Result<()> {
         self.write().expect(ERROR_CONFIG_WRITE).set(key, val)?;
         Ok(())
