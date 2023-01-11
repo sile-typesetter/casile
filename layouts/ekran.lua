@@ -60,7 +60,7 @@ return function (class)
       SILE.call("output-right-running-head")
     end)
 
-    class:registerPostinit(function (class)
+    class:registerPostinit(function (_)
       SILE.setCommandDefaults("imprint:font", { size = "6.5pt" })
     end)
 

@@ -31,7 +31,7 @@ function package.mirrorMaster (_, existing, new)
   end
 end
 
-function package:_setupCrop (args)
+function package._setupCrop (_, args)
   if args then
     bleed = args.bleed or bleed
     trim = args.trim or trim

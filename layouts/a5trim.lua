@@ -31,7 +31,7 @@ return function (class)
       }
     }
 
-    class:registerPostinit(function (class)
+    class:registerPostinit(function (_)
       SILE.setCommandDefaults("imprint:font", { size = "8.5pt" })
     end)
 
