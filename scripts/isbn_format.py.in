@@ -1,8 +1,7 @@
 #!@PYTHON@
 
 import sys
-import os
-import ruamel.yaml as yaml
+from ruamel import yaml
 import isbnlib
 
 metafile = sys.argv[1]
