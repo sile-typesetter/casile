@@ -987,6 +987,7 @@ $(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML)
 	$(PERL) -MYAML::Merge::Simple=merge_files \
 			-MYAML -E 'say Dump merge_files(@ARGV)' \
 			$(filter %.yml,$^) \
+			<(echo 'layouts: [$(subst $( ),$(,),$(strip $(LAYOUTS)))]') \
 			<(echo 'versioninfo: "$(call versioninfo,$@)"') \
 			<(echo 'urlinfo: "$(call urlinfo,$@)"') |
 		$(SED) -e 's/~$$/nil/g;/^--- |/d;$$a...' \
