@@ -1,10 +1,10 @@
 # CaSILE toolkit
 
-[![Rust Test Status](https://img.shields.io/github/workflow/status/sile-typesetter/casile/Rust%20Test?label=Rust+Test&logo=Rust)](https://github.com/sile-typesetter/casile/actions?workflow=Rust+Test)
-[![Docker Build Status](https://img.shields.io/docker/cloud/build/siletypesetter/casile?label=Docker+Build&logo=Docker)](https://hub.docker.com/repository/docker/siletypesetter/casile/builds)
-[![Rust Lint Status](https://img.shields.io/github/workflow/status/sile-typesetter/casile/Rust%20Lint?label=Rust+Lint&logo=Rust)](https://github.com/sile-typesetter/casile/actions?workflow=Rust+Lint)
-[![Lua Lint Status](https://img.shields.io/github/workflow/status/sile-typesetter/casile/Luacheck?label=Luacheck&logo=Lua)](https://github.com/sile-typesetter/casile/actions?workflow=Luacheck)
-![Reviewdog Lint Status](https://img.shields.io/github/workflow/status/sile-typesetter/casile/Reviewdog?label=Reviewdog&logo=eslint)<br />
+[![Rust Test Status](https://img.shields.io/github/actions/workflow/status/sile-typesetter/casile/rust_test.yml?branch=master&label=Rust+Test&logo=Rust)](https://github.com/sile-typesetter/casile/actions?workflow=Rust+Test)
+[![Docker Build Status](https://img.shields.io/github/actions/workflow/status/sile-typesetter/casile/deploy.yml?branch=master&label=Docker+Build&logo=Docker)](https://github.com/sile-typesetter/casile/pkgs/container/casile)
+[![Rust Lint Status](https://img.shields.io/github/actions/workflow/status/sile-typesetter/casile/rust_lint.yml?branch=master&label=Rust+Lint&logo=Rust)](https://github.com/sile-typesetter/casile/actions?workflow=Rust+Lint)
+[![Lua Lint Status](https://img.shields.io/github/actions/workflow/status/sile-typesetter/casile/luacheck.yml?branch=master&label=Luacheck&logo=Lua)](https://github.com/sile-typesetter/casile/actions?workflow=Luacheck)
+![Reviewdog Lint Status](https://img.shields.io/github/actions/workflow/status/sile-typesetter/casile/shellcheck.yml?branch=master&label=Reviewdog&logo=eslint)<br />
 [![Chat on Gitter](https://img.shields.io/gitter/room/sile-typesetter/casile?color=blue&label=Chat&logo=Gitter)](https://gitter.im/sile-typesetter/casile?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-blue.svg)](https://conventionalcommits.org)
 [![Commitizen Friendly](https://img.shields.io/badge/Commitizen-friendly-blue.svg)](http://commitizen.github.io/cz-cli/)
