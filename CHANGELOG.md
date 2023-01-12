@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.10](https://github.com/sile-typesetter/casile/compare/v0.10.9...v0.10.10) (2023-01-12)
+
+
+### Features
+
+* **rules:** Include layouts data in manifests ([21acdc4](https://github.com/sile-typesetter/casile/commit/21acdc48a4bb27b579dc025e4bd0ea6fc422cd6d))
+* **rules:** Include version and url info in manifest files ([bcee49e](https://github.com/sile-typesetter/casile/commit/bcee49e9ddbf4ce7e6f006c5e9a9dcd4c7811728))
+
 ### [0.10.9](https://github.com/sile-typesetter/casile/compare/v0.10.8...v0.10.9) (2022-11-11)
 
 
