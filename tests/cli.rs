@@ -17,9 +17,9 @@ fn outputs_version() -> Result<()> {
 #[test]
 fn ouput_is_localized() -> Result<()> {
     let mut cmd = Command::cargo_bin(BIN_NAME)?;
-    cmd.arg("-l").arg("tr").arg("setup");
+    cmd.arg("-l").arg("tr").arg("status");
     cmd.assert()
-        .stderr(predicate::str::contains("yapılandırılıyor"));
+        .stderr(predicate::str::contains("hoş geldiniz"));
     Ok(())
 }
 

@@ -12,6 +12,8 @@ fn main() -> Result<()> {
     let cli = Command::new("casile").version(VERSION);
     let cli = Cli::augment_args(cli);
     let matches = cli.get_matches();
+    let args = Cli::from_arg_matches(&matches).expect("Unable to parse arguments");
+    CONF.merge_args(&args)?;
     casile::show_welcome();
     let subcommand = Commands::from_arg_matches(&matches)?;
     let ret = match subcommand {
