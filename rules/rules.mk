@@ -321,8 +321,8 @@ PROJECTCONFIGS += .editorconfig
 PROJECTCONFIGS += .gitignore
 .gitignore: $(lastword $(MAKEFILE_LIST))
 	$(call skip_if_tracked,$@)
-	$(TRUNCATE) -s 0 $@
-	$(foreach IGNORE,$(IGNORES),echo '$(IGNORE)' >> $@;)
+	echo '$(IGNORES)' |
+		$(SED) -e 's/ /\n/g' > $@
 
 .gitattributes: $(lastword $(MAKEFILE_LIST))
 	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
