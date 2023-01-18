@@ -17,6 +17,14 @@ LANGUAGE ?= en
 # Empty recipes for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;
 
+export PATH := $(CASILEDIR)/scripts:$(PATH):$(shell $(PYTHON) -c "import site; print(site.getsitepackages()[0]+'/scripts')")
+export HOSTNAME := $(shell $(HOSTNAMEBIN))
+export PROJECT := $(PROJECT)
+
+# Make’s shell function doesn't pass environment variables
+# See https://stackoverflow.com/q/65553367/313192
+_ENV := PATH=$(PATH) HOSTNAME=$(HOSTNAME) PROJECT=$(PROJECT) BUILDDIR=$(BUILDDIR)
+
 MARKDOWNSOURCES := $(patsubst ./%,%,$(call find,*.md))
 LUASOURCES := $(patsubst ./%,%,$(call find,*.lua))
 MAKESOURCES := $(patsubst ./%,%,$(call find,[Mm]akefile*))
@@ -76,14 +84,6 @@ SORTORDER ?= meta # Sort series by: none, alphabetical, date, meta, manual
 LAYOUTS ?= a4-$(_print)
 EDITIONS ?=
 
-# Add any specifically targeted output layouts
-GOALLAYOUTS := $(sort $(filter-out -,$(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL)))))
-LAYOUTS += $(GOALLAYOUTS)
-
-ifneq ($(filter ci %.promotionals %.zola %.epub %.play %.app,$(MAKECMDGOALS)),)
-LAYOUTS += $(call pattern_list,$(PLACARDS),-$(_print))
-endif
-
 # Categorize supported outputs
 PAPERSIZES := $(call localize,$(subst layouts/,,$(notdir $(basename $(wildcard $(CASILEDIR)/layouts/*.lua)))))
 BINDINGS = $(call localize,print paperback hardcover coil stapled)
@@ -98,6 +98,14 @@ ALLLAYOUTS := $(REALLAYOUTS) $(FAKELAYOUTS)
 UNBOUNDLAYOUTS := $(call pattern_list,$(PAPERSIZES),-$(_print))
 BOUNDLAYOUTS := $(filter-out $(UNBOUNDLAYOUTS),$(ALLLAYOUTS))
 
+# Add any specifically targeted output layouts
+GOALLAYOUTS := $(sort $(filter-out -,$(foreach GOAL,$(MAKECMDGOALS),$(call parse_layout,$(GOAL)))))
+LAYOUTS += $(GOALLAYOUTS)
+
+ifneq ($(filter ci %.promotionals %.zola %.epub %.play %.app,$(MAKECMDGOALS)),)
+LAYOUTS += $(call pattern_list,$(PLACARDS),-$(_print))
+endif
+
 RENDERINGS := $(_3d)-$(_front) $(_3d)-$(_back) $(_3d)-$(_pile)
 RENDERED_DEF := $(filter $(call pattern_list,$(REALPAPERSIZES),-%),$(filter-out %-$(_print),$(LAYOUTS)))
 RENDERED ?= $(RENDERED_DEF)
@@ -107,6 +115,7 @@ RENDERED += $(GOALLAYOUTS)
 # Add -r to kill and restart jobs on activity
 # And -p to wait for activity on first invocation
 ENTRFLAGS := -c -r
+CI ?=
 
 # POV-Ray’s progress status output doesn't play nice with Gitlab’s CI logging or debug output
 ifneq ($(CI),)
@@ -193,14 +202,6 @@ WATCHARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 $(eval $(WATCHARGS):;@:)
 endif
 
-export PATH := $(CASILEDIR)/scripts:$(PATH):$(shell $(PYTHON) -c "import site; print(site.getsitepackages()[0]+'/scripts')")
-export HOSTNAME := $(shell $(HOSTNAMEBIN))
-export PROJECT := $(PROJECT)
-
-# Make’s shell function doesn't pass environment variables
-# See https://stackoverflow.com/q/65553367/313192
-_ENV := PATH=$(PATH) HOSTNAME=$(HOSTNAME) PROJECT=$(PROJECT) BUILDDIR=$(BUILDDIR)
-
 ifeq ($(DEBUG),true)
 SILEFLAGS += -t
 .SHELLFLAGS += -x
@@ -210,6 +211,15 @@ endif
 ifdef DEBUGTAGS
 SILEFLAGS += -d $(subst $( ),$(,),$(strip $(DEBUGTAGS)))
 endif
+
+# Combad undefined variable warnings for things sometimes set externally
+CI_COMMIT_REF_NAME ?=
+GITHUB_HEAD_REF ?=
+GITHUB_REF ?=
+CI_COMMIT_TAG ?=
+CI_MERGE_REQUEST_SOURCE_BRANCH_NAME ?=
+GITHUB_BASE_REF ?=
+CI_JOB_NAME ?=
 
 # Most CI runners need help getting the branch name because of sparse checkouts
 BRANCH := $(subst refs/heads/,,$(or $(CI_COMMIT_REF_NAME),$(GITHUB_HEAD_REF),$(GITHUB_REF),$(shell $(_ENV) $(GIT) rev-parse --abbrev-ref HEAD)))
@@ -1127,8 +1137,12 @@ $(BUILDDIR)/%-$(_verses)-$(_text).yml: $(BUILDDIR)/%-$(_verses)-$(_sorted).json
 		$(SED) -e '/^[^ ]/s/^\([^:]\+\):/"\1":/' \
 			> $@
 
+POSTCASILEEVAL ?=
 ifneq (,$(POSTCASILEEVAL))
 $(eval $(POSTCASILEEVAL))
 endif
 
+POSTCASILEINCLUDE ?=
+ifneq (,$(POSTCASILEINCLUDE))
 -include $(POSTCASILEINCLUDE)
+endif

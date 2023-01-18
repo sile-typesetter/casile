@@ -1,7 +1,8 @@
 # Utility variables for later, http://blog.jgc.org/2007/06/escaping-comma-and-space-in-gnu-make.html
 , := ,
-space := $() $()
-$(space) := $() $()
+empty :=
+space := $(empty) $(empty)
+$(space) := $(empty) $(empty)
 lparen := (
 rparen := )
 hash := \#
@@ -58,7 +59,7 @@ pattern_list = $(eval 3?=)$(eval 4?=)$(eval 5?=)$(call uniq,$(and $(or $(and $5,
 join_with = $(subst $(space),$1,$(strip $2))
 
 # String i18n l10n functions
-localize = $(foreach WORD,$1,$(or $(_$(WORD)),$(WORD)))
+localize = $(foreach WORD,$1,$(eval _$(WORD)?=)$(or $(_$(WORD)),$(WORD)))
 unlocalize = $(foreach WORD,$1,$(eval __$(WORD) ?=)$(or $(__$(WORD)),$(WORD)))
 
 # Geometry file dependency functions

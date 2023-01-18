@@ -29,7 +29,7 @@ ifeq ($(DEBUG),true)
 .SHELLFLAGS += -x
 endif
 
-.SHELLFLAGS += $(and $@,target=$@)
+.SHELLFLAGS += $(eval @?=)$(and $@,target=$@)
 .ONESHELL:
 .SECONDEXPANSION:
 
