@@ -40,7 +40,7 @@ function package:registerCommands ()
       SILE.settings:set("document.lskip", SILE.nodefactory.glue(indent))
       for i = 1, #SILE.scratch.endnotes do
         local counter, material = SILE.scratch.endnotes[i]()
-        SILE.call("footnote:font", {}, function ()
+        SILE.call("cabook:font:footnote", {}, function ()
           SILE.typesetter:pushGlue({ width = -SILE.length(indent) })
           SILE.call("rebox", { width = indent }, function ()
             SILE.call("endnote:counter", { value = counter })
