@@ -100,7 +100,7 @@ end
 
 function class:setOptions (options)
   options.binding = options.binding or "print" -- print, paperback, hardcover, coil, stapled
-  options.crop = options.crop or true
+  options.crop = options.crop or (options.binding ~= "print")
   options.background = options.background or true
   options.verseindex = options.verseindex or false
   options.layout = options.layout or CASILE.layout or "a4"
