@@ -571,7 +571,7 @@ function package:registerCommands ()
     SILE.typesetter:leaveHmode()
     SILE.call("hbox", {}, content) -- push content we want to fit
     local heightOfPageSoFar = SILE.pagebuilder:collateVboxes(SILE.typesetter.state.outputQueue).height
-    local heightOfFrame = SILE.typesetter.frame:height()
+    local heightOfFrame = SU.cast("length", SILE.typesetter.frame:height())
     table.remove(SILE.typesetter.state.nodes) -- steal it back
     if heightOfFrame - heightOfPageSoFar < required then
       SILE.call("supereject")
