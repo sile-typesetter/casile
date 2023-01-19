@@ -1,7 +1,7 @@
 local base = require("packages.base")
 
 local package = pl.class(base)
-package._name = "lists"
+package._name = "calists"
 
 local nestedlist = 0
 local liststyles = {}
