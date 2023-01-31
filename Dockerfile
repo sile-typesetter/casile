@@ -61,6 +61,9 @@ ARG VERSION
 # Allow `su` with no root password so non-priv users can install dependencies
 RUN sed -i -e '/.so$/s/$/ nullok/' /etc/pam.d/su
 
+# Make sure project volumes are allowed to be manipulated inside Docker
+RUN git config --global --add safe.directory /data
+
 LABEL org.opencontainers.image.title="CaSILE"
 LABEL org.opencontainers.image.description="A containerized version of the CaSILE toolkit, a book publishing workflow employing SILE and other wizardry"
 LABEL org.opencontainers.image.authors="Caleb Maclennan <caleb@alerque.com>"
