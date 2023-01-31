@@ -162,12 +162,12 @@ function package:registerCommands ()
         local val = self.class.packages.counters:formatCounter({ display = "arabic", value = counters.value[level] })
         toc_content[1] = val .. ". " .. SU.contentToString(content[1])
       end
-      if options.prenumber then
+      if options.prenumber and SILE.Commands[options.prenumber] then
         if SILE.Commands["book:chapter:precounter"] then SILE.call("book:chapter:precounter") end
         SILE.call(options.prenumber)
       end
       SILE.call("show-multilevel-counter", { id = "sectioning", display = options.display, minlevel = level, level = level })
-      if options.postnumber then
+      if options.postnumber and SILE.Commands[options.postnumber] then
         SILE.call(options.postnumber)
       end
       local number = self.class.packages.counters:formatCounter({ display = "arabic", value = counters.value[level] })

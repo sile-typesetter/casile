@@ -118,8 +118,8 @@ function package:registerCommands ()
               level = 2,
               reset = false,
               display = options.display,
-              prenumber = "book:chapter:pre",
-              postnumber = "book:chapter:post"
+              prenumber = "cabook:chapter:pre",
+              postnumber = "cabook:chapter:post"
             }, content)
         end)
         SILE.call("cabook:font:chaptertitle", {}, content)
