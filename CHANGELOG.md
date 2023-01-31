@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.12](https://github.com/sile-typesetter/casile/compare/v0.10.11...v0.10.12) (2023-01-31)
+
+
+### Bug Fixes
+
+* **build:** Fixup missing utility dependencies ([1fc998f](https://github.com/sile-typesetter/casile/commit/1fc998fea5102ecd20ab430a5e11170f0a7f501a))
+* **cabook:** Only attempt to run numbering :pre & :post hooks if they exist ([9fb57c4](https://github.com/sile-typesetter/casile/commit/9fb57c48d1e89c09c646dbe328f92b6924c24bb7))
+* **ci:** Fix Docker deploy ([f9d0645](https://github.com/sile-typesetter/casile/commit/f9d064541fbed6a8b2f35231a3c9fcb26b2c23bf))
+* **covers:** Don't fail to render covers if no abstract is present ([533f621](https://github.com/sile-typesetter/casile/commit/533f6212251827a14d42097f5928d569a61552ea))
+* **imprint:** Pass string not table to processMarkdown() ([e1c57b3](https://github.com/sile-typesetter/casile/commit/e1c57b3122ad7113562a726fd0c35ea7d32a4b43))
+
 ### [0.10.11](https://github.com/sile-typesetter/casile/compare/v0.10.10...v0.10.11) (2023-01-31)
 
 
