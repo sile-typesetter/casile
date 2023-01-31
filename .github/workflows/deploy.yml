@@ -32,7 +32,7 @@ jobs:
             --without-{bash,fish,zsh}-completion-dir \
             --enable-developer \
             --disable-dependency-checks \
-            DOCKER=docker DIFF=diff CURL=curl SORT=sort \
+            CURL=curl DOCKER=docker DIFF=diff TR=tr SORT=sort \
       - name: Publish Docker Image to GH Container Registry
         run: |
           make docker-build-push

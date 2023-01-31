@@ -167,6 +167,7 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
         AX_PROGVAR([luacheck])
         AX_PROGVAR([ruff])
         AX_PROGVAR([rustfmt])
+        AX_PROGVAR([tr])
     ])
 ])
 

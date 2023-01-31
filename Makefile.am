@@ -200,6 +200,22 @@ check-version: $(PACKAGE_NAME)$(EXEEXT) | .version
 installcheck-local:
 	./$(TRANSFORMED_PACKAGE_NAME) --version
 
+all: init
+
+.PHONY:
+init: node_modules
+
+node_modules: yarn.lock
+	$(YARN) install --frozen-lockfile
+
+yarn.lock: package.json
+	$(YARN) install
+
+PHONY_DEVELOPER_TARGETS = lint rustfmt luacheck checkmake ruff clippy tagrelease release-preview release docker docker-build-push docker-dep-check docker-ghcr-to-hub
+.PHONY: $(PHONY_DEVELOPER_TARGETS)
+
+if DEVELOPER
+
 .PHONY: lint
 lint: clippy luacheck rustfmt checkmake ruff
 
@@ -223,17 +239,6 @@ ruff:
 clippy:
 	cd $(srcdir)
 	$(CARGO_ENV) $(CARGO) clippy -- -D warnings
-
-all: init
-
-.PHONY:
-init: node_modules
-
-node_modules: yarn.lock
-	$(YARN) install --frozen-lockfile
-
-yarn.lock: package.json
-	$(YARN) install
 
 RELTYPE ?=
 
@@ -273,7 +278,7 @@ docker-dep-check: .docker_deps .aur_deps
 CLEANFILES += .docker_deps
 .docker_deps: hooks/build
 	$(SHELL) -c 'source <($(SED) -nE "/^(RUN|'"'"')/{s/.*=/echo /;p}" $<)' | \
-		tr ' ' '\n' | \
+		$(TR) ' ' '\n' | \
 		$(SORT) > $@
 
 CLEANFILES += .aur_deps
@@ -286,7 +291,7 @@ CLEANFILES += .aur_deps
 define docker_push =
 	test -z "$(DOCKER_PAT)" || \
 		$(DOCKER) login https://$(DOCKER_REGISTRY) -u $(DOCKER_USERNAME) -p $(DOCKER_PAT)
-	$(DOCKER) push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
+		$(DOCKER) push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
 	if [[ "$(DOCKER_TAG)" == v*.*.* ]]; then \
 		tag=$(DOCKER_TAG) ; \
 		$(DOCKER) tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):latest ; \
@@ -306,3 +311,10 @@ docker-ghcr-to-hub:
 docker-build-push: docker
 	$(DOCKER) tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
 	$(docker_push)
+
+else
+
+$(PHONY_DEVELOPER_TARGETS):
+	@: $(error "Please reconfigure using --enable-developer to use developer tooling")
+
+endif
