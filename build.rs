@@ -11,7 +11,7 @@ fn main() {
     // If passed a version, use that instead of vergen's formatting
     if let Ok(val) = env::var("CASILE_VERSION") {
         *flags.git_mut().enabled_mut() = false;
-        println!("cargo:rustc-env=VERGEN_GIT_SEMVER={}", val)
+        println!("cargo:rustc-env=VERGEN_GIT_SEMVER={val}")
     };
     vergen(flags).expect("Unable to generate the cargo keys!");
     pass_on_configure_details();
@@ -51,6 +51,6 @@ fn pass_on_configure_details() {
     autoconf_vars.insert("CONFIGURE_DATADIR", String::from("./"));
     for (var, default) in autoconf_vars {
         let val = env::var(var).unwrap_or(default);
-        println!("cargo:rustc-env={}={}", var, val);
+        println!("cargo:rustc-env={var}={val}");
     }
 }

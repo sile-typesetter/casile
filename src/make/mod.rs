@@ -14,7 +14,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
     show_header("make-header");
     let mut makeflags: Vec<OsString> = Vec::new();
     let cpus = &num_cpus::get().to_string();
-    makeflags.push(OsString::from(format!("--jobs={}", cpus)));
+    makeflags.push(OsString::from(format!("--jobs={cpus}")));
     let mut makefiles: Vec<OsString> = Vec::new();
     let rules = status::get_rules()?;
     makefiles.push(OsString::from("-f"));
@@ -187,7 +187,7 @@ fn dump_backlog(backlog: &[String]) {
     let start = LocalText::new("make-backlog-start").fmt();
     eprintln!("{} {}", "┖┄".cyan(), start);
     for line in backlog.iter() {
-        eprintln!("{}", line);
+        eprintln!("{line}");
     }
     let end = LocalText::new("make-backlog-end").fmt();
     eprintln!("{} {}", "┎┄".cyan(), end);
