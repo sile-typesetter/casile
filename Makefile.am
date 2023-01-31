@@ -211,49 +211,40 @@ node_modules: yarn.lock
 yarn.lock: package.json
 	$(YARN) install
 
-PHONY_DEVELOPER_TARGETS = lint rustfmt luacheck checkmake ruff clippy tagrelease release-preview release docker docker-build-push docker-dep-check docker-ghcr-to-hub
+PHONY_DEVELOPER_TARGETS = lint rustfmt luacheck checkmake ruff clippy tagrelease release-preview release docker docker-dep-check docker-ghcr-to-hub docker-build-push
 .PHONY: $(PHONY_DEVELOPER_TARGETS)
 
 if DEVELOPER
 
-.PHONY: lint
 lint: clippy luacheck rustfmt checkmake ruff
 
-.PHONY: rustfmt
 rustfmt:
 	$(GIT) ls-files '*.rs' | $(XARGS) $(RUSTFMT) --check
 
-.PHONY: luacheck
 luacheck:
 	$(LUACHECK) .
 
-.PHONY: checkmake
 checkmake:
 	$(GIT) ls-files '*.mk' | $(XARGS) -n1 checkmake
 
-.PHONY: ruff
 ruff:
 	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(RUFF)
 
-.PHONY: clippy
 clippy:
 	cd $(srcdir)
 	$(CARGO_ENV) $(CARGO) clippy -- -D warnings
 
 RELTYPE ?=
 
-.PHONY: tagrelease
 tagrelease:
 	test -z $$($(GIT) tag --points-at HEAD) || \
 	$(GIT) diff-index --quiet --cached HEAD && \
 	$(GIT) diff-files --quiet && \
 	$(YARN) run release $(and $(RELTYPE),--release-as $(RELTYPE))
 
-.PHONY: release-preview
 release-preview:
 	$(YARN) run release --dry-run $(and $(RELTYPE),--release-as $(RELTYPE))
 
-.PHONY: release
 release: tagrelease
 
 casile-%.md: CHANGELOG.md
@@ -267,11 +258,9 @@ export DOCKER_REGISTRY ?= docker.io
 export DOCKER_REPO ?= siletypesetter/$(TRANSFORMED_PACKAGE_NAME)
 export DOCKER_TAG ?= HEAD
 
-.PHONY: docker
-$(DOCKER): Dockerfile hooks/build .version
+docker: Dockerfile hooks/build .version
 	./hooks/build $(VERSION)
 
-.PHONY: docker-dep-check
 docker-dep-check: .docker_deps .aur_deps
 	$(DIFF) -u $^
 
@@ -301,13 +290,11 @@ define docker_push =
 	fi
 endef
 
-.PHONY: docker-ghcr-to-hub
 docker-ghcr-to-hub:
 	$(DOCKER) pull $(GHCR_REGISTRY)/$(GHCR_REPO):$(DOCKER_TAG)
 	$(DOCKER) tag  $(GHCR_REGISTRY)/$(GHCR_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
 	$(docker_push)
 
-.PHONY: docker-build-push
 docker-build-push: docker
 	$(DOCKER) tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
 	$(docker_push)
