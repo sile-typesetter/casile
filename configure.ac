@@ -12,6 +12,7 @@ AC_PROG_INSTALL
 AC_PROG_SED
 AX_PROGVAR([cargo])
 AX_PROGVAR([cmp])
+AX_PROGVAR([stat])
 AX_PROGVAR([rustc])
 AX_PROGVAR([xargs])
 
