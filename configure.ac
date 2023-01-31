@@ -183,6 +183,7 @@ AC_DEFUN([AX_SCRIPT], [AC_CONFIG_FILES([scripts/$1], [chmod +x scripts/$1])])
 
 # cd scripts; git ls-files '*.in' | sed -e 's/\.in$//'
 AX_SCRIPT([branch2criticmark.zsh])
+AX_SCRIPT([casile-entry.zsh])
 AX_SCRIPT([cover_title.py])
 AX_SCRIPT([diff2marked.zsh])
 AX_SCRIPT([extract_references.js])

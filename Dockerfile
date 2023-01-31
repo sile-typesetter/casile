@@ -80,7 +80,8 @@ LABEL org.opencontainers.image.revision="$REVISION"
 COPY build-aux/docker-fontconfig.conf /etc/fonts/conf.d/99-docker.conf
 
 COPY --from=builder /pkgdir /
+COPY --from=builder /src/scripts/casile-entry.zsh /usr/bin
 RUN casile --version
 
 WORKDIR /data
-ENTRYPOINT ["casile"]
+ENTRYPOINT [ "casile-entry.zsh" ]
