@@ -34,7 +34,7 @@ function package:registerCommands ()
           SILE.settings:set("linespacing.fixed.baselinedistance", SILE.length("2.8ex plus 1pt minus 0.5pt"))
 
           if CASILE.metadata.publisher and CASILE.layout ~= "app" then
-            SILE.processMarkdown({SU.contentToString(CASILE.metadata.publisher)})
+            SILE.processMarkdown(SU.contentToString(CASILE.metadata.publisher))
             SILE.call("par")
           end
 

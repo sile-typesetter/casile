@@ -43,7 +43,7 @@ function package:registerCommands ()
         SILE.settings:set("linespacing.method", "fit-font")
         SILE.settings:set("linespacing.fit-font.extra-space", SILE.length("0.6ex"))
         CASILE.dropcapNextLetter()
-        SILE.processMarkdown(CASILE.metadata.abstract)
+        SILE.processMarkdown(SU.contentToString(CASILE.metadata.abstract))
         SILE.call("par")
         if CASILE.metadata.creator then
           SILE.call("raggedleft", {}, function ()
