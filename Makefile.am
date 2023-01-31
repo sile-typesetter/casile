@@ -205,19 +205,19 @@ lint: clippy luacheck rustfmt checkmake ruff
 
 .PHONY: rustfmt
 rustfmt:
-	$(GIT) ls-files '*.rs' | $(XARGS) rustfmt --check
+	$(GIT) ls-files '*.rs' | $(XARGS) $(RUSTFMT) --check
 
 .PHONY: luacheck
 luacheck:
-	luacheck .
+	$(LUACHECK) .
 
 .PHONY: checkmake
 checkmake:
-	git ls-files '*.mk' | $(XARGS) -n1 checkmake
+	$(GIT) ls-files '*.mk' | $(XARGS) -n1 checkmake
 
 .PHONY: ruff
 ruff:
-	git ls-files '*.py' '*.py.in' | $(XARGS) ruff
+	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(RUFF)
 
 .PHONY: clippy
 clippy:
@@ -263,7 +263,7 @@ export DOCKER_REPO ?= siletypesetter/$(TRANSFORMED_PACKAGE_NAME)
 export DOCKER_TAG ?= HEAD
 
 .PHONY: docker
-docker: Dockerfile hooks/build .version
+$(DOCKER): Dockerfile hooks/build .version
 	./hooks/build $(VERSION)
 
 .PHONY: docker-dep-check
@@ -285,24 +285,24 @@ CLEANFILES += .aur_deps
 
 define docker_push =
 	test -z "$(DOCKER_PAT)" || \
-		docker login https://$(DOCKER_REGISTRY) -u $(DOCKER_USERNAME) -p $(DOCKER_PAT)
-	docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
+		$(DOCKER) login https://$(DOCKER_REGISTRY) -u $(DOCKER_USERNAME) -p $(DOCKER_PAT)
+	$(DOCKER) push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
 	if [[ "$(DOCKER_TAG)" == v*.*.* ]]; then \
 		tag=$(DOCKER_TAG) ; \
-		docker tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):latest ; \
-		docker tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$${tag//.*} ; \
-		docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO):latest ; \
-		docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$${tag//.*} ; \
+		$(DOCKER) tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):latest ; \
+		$(DOCKER) tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$${tag//.*} ; \
+		$(DOCKER) push $(DOCKER_REGISTRY)/$(DOCKER_REPO):latest ; \
+		$(DOCKER) push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$${tag//.*} ; \
 	fi
 endef
 
 .PHONY: docker-ghcr-to-hub
 docker-ghcr-to-hub:
-	docker pull $(GHCR_REGISTRY)/$(GHCR_REPO):$(DOCKER_TAG)
-	docker tag  $(GHCR_REGISTRY)/$(GHCR_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
+	$(DOCKER) pull $(GHCR_REGISTRY)/$(GHCR_REPO):$(DOCKER_TAG)
+	$(DOCKER) tag  $(GHCR_REGISTRY)/$(GHCR_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
 	$(docker_push)
 
 .PHONY: docker-build-push
 docker-build-push: docker
-	docker tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
+	$(DOCKER) tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
 	$(docker_push)

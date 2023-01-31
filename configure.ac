@@ -5,20 +5,25 @@ AC_CONFIG_MACRO_DIR([build-aux])
 AM_INIT_AUTOMAKE([foreign tar-pax dist-xz dist-zip no-dist-gzip color-tests subdir-objects])
 AM_SILENT_RULES([yes])
 
+# Build time deps
 AC_PROG_AWK
 AC_PROG_GREP
-AC_PROG_SED
 AC_PROG_INSTALL
-
+AC_PROG_SED
+AX_PROGVAR([cargo])
 AX_PROGVAR([cmp])
-AX_PROGVAR([curl])
-AX_PROGVAR([sort])
+AX_PROGVAR([rustc])
 AX_PROGVAR([xargs])
 
 AC_ARG_ENABLE([dependency-checks],
               AS_HELP_STRING([--disable-dependency-checks],
                              [Disable dependency checks]))
 AM_CONDITIONAL([DEPENDENCY_CHECKS], [test "x$enable_dependency_checks" != "xno"])
+
+AC_ARG_ENABLE([developer],
+              AS_HELP_STRING([--enable-developer],
+                             [Check for and enable tooling required only for developers]))
+AM_CONDITIONAL([DEVELOPER], [test "x$enable_developer" = "xyes"])
 
 # Add --enable-debug flag to change Rust build mode
 AC_ARG_ENABLE(debug,
@@ -81,15 +86,12 @@ AM_CONDITIONAL([ENABLE_ZSH_COMPLETION],[test "x$with_zsh_completion_dir" != "xno
 
 AC_SUBST([RUST_TARGET_SUBDIR])
 
-AS_IF([test "x$enable_dependency_checks" != "xno"], [
-    AX_PROGVAR([cargo])
-    AX_PROGVAR([rustc])
+AM_COND_IF([DEPENDENCY_CHECKS], [
 
+    # Run time deps
     AC_PROG_EGREP
     AC_PROG_MKDIR_P
-
     AX_PROGVAR([bc])
-    AX_PROGVAR([cmp])
     AX_PROGVAR([cut])
     AX_PROGVAR([curl])
     AX_PROGVAR([entr])
@@ -156,6 +158,16 @@ AS_IF([test "x$enable_dependency_checks" != "xno"], [
     AX_FONT(Libertinus Serif)
     AX_FONT(Libertinus Serif Display)
     AX_FONT(Libertinus Sans)
+
+    # Developer tooling deps
+    AM_COND_IF([DEVELOPER], [
+        AX_PROGVAR([checkmake])
+        AX_PROGVAR([docker])
+        AX_PROGVAR([luacheck])
+        AX_PROGVAR([ruff])
+        AX_PROGVAR([ruff])
+        AX_PROGVAR([rustfmt])
+    ])
 ])
 
 TRANSFORMED_PACKAGE_NAME="$(printf "$PACKAGE_NAME" | $SED -e "${program_transform_name//\$\$/\$}")"
