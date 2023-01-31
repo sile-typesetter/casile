@@ -30,7 +30,7 @@ debug:
 	echo "CITEMPLATE = $(CITEMPLATE)"
 	echo "DEBUG = $(DEBUG)"
 	echo "DEBUGTAGS = $(DEBUGTAGS)"
-	echo "DIFF = $(DIFF)"
+	echo "HIGHLIGHT_DIFF = $(HIGHLIGHT_DIFF)"
 	echo "DISTFILES = $(DISTFILES)"
 	echo "DISTDIR = $(DISTDIR)"
 	echo "DOCUMENTCLASS = $(DOCUMENTCLASS)"

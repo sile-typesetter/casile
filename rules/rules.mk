@@ -67,7 +67,7 @@ EDITS ?= $(_withverses) $(_withoutfootnotes) $(_withoutlinks)
 # Build mode flags
 DRAFT ?= false # Take shortcuts, scale things down, be quick about it
 LAZY ?= false # Pretend to do things we didn't
-DIFF ?= false # Show differences to parent branch in build
+HIGHLIGHT_DIFF ?= false # Show differences to parent branch in build
 STATSMONTHS ?= 1 # How far back to look for commits when building stats
 DEBUG ?= false # Use SILE debug flags, set -x, and the like (previously also set in casile.mk)
 DEBUGTAGS ?= casile $(PROJECT) # Specific debug flags to set
@@ -378,7 +378,7 @@ FULLPDFS += $(call pattern_list,$(REALSOURCES),$(EDITS),$(REALLAYOUTS),.pdf)
 $(FULLPDFS): .EXTRA_PREREQS = $(LUAINCLUDES)
 $(FULLPDFS): %.pdf: $(BUILDDIR)/%.sil $$(call coverpreq,$$@) $$(call onpaperlibs,$$@) $(FCCONFIG)
 	$(call skip_if_lazy,$@)
-	$(DIFF) && $(SED) -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
+	$(HIGHLIGHT_DIFF) && $(SED) -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
 	# account for TOC $(_issue): https://github.com/simoncozens/sile/issues/230
@@ -481,7 +481,7 @@ SILEFLAGS += $(foreach LUAINCLUDE,$(call reverse,$(LUAINCLUDES)),-I $(LUAINCLUDE
 preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(PROJECTMACRO) $(TARGETMACROS_$1)
 
 $(BUILDDIR)/%-$(_processed).md: %.md $$(wildcard $(PROJECT)*.md $$*-$(_chapters)/*.md) $$(call preprocess_macros,$$*) | $(BUILDDIR) figures
-	if $(DIFF) && $(if $(PARENT),true,false); then
+	if $(HIGHLIGHT_DIFF) && $(if $(PARENT),true,false); then
 		branch2criticmark.zsh $(PARENT) $<
 	else
 		$(M4) $(filter %.m4,$^) $<

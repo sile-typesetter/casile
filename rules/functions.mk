@@ -101,7 +101,7 @@ $(shell $(_ENV)
 		$(GIT) describe --always --tags --dirty='*' | $(CUT) -d/ -f2 | sed 's/^/g/' | $(XARGS) echo -en
 	else
 		$(GIT) rev-list --boundary $(PARENT)..HEAD | $(GREP) -v - | $(WC) -l | $(XARGS) -I{} echo -en '{}-'
-		$(DIFF) && echo -en "$$($(GIT) rev-parse --short $(PARENT))→"
+		$(HIGHLIGHT_DIFF) && echo -en "$$($(GIT) rev-parse --short $(PARENT))→"
 		$(GIT) describe --always --dirty='*' | $(CUT) -d/ -f2 | sed 's/^/g/' | $(XARGS) echo -en
 	fi)
 endef

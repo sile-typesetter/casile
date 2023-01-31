@@ -484,7 +484,7 @@ You _may_ set them in your rules file such as `casile.mk` but they would typical
 
     Note that `casile make -- watch ...` automatically enables this mode.
 
-* `DIFF` enables highlighting differences between git branches.
+* `HIGHLIGHT_DIFF` enables highlighting differences between git branches.READ
 
     Defaults to false.
 
