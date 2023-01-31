@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.13](https://github.com/sile-typesetter/casile/compare/v0.10.12...v0.10.13) (2023-01-31)
+
+
+### Features
+
+* **docker:** Switch effective user to owner of directory ([f3881ac](https://github.com/sile-typesetter/casile/commit/f3881ace6926becd3a33e4977d872557be59abc6))
+
+
+### Bug Fixes
+
+* **docker:** Add workaround new Git security policy ([79d6249](https://github.com/sile-typesetter/casile/commit/79d62498fab4e034b4be3c4ed213f041e81ec966))
+* **docker:** Set system level Git safe directory to our working dir ([0d1f4b8](https://github.com/sile-typesetter/casile/commit/0d1f4b8190fa75091f0766fb79cd92b00611e26c))
+* **docker:** Update workaround for new Git safe.diroctory restrictions ([a18f752](https://github.com/sile-typesetter/casile/commit/a18f752d4e2503f4017579b502279046e6c81b8c))
+
 ### [0.10.12](https://github.com/sile-typesetter/casile/compare/v0.10.11...v0.10.12) (2023-01-31)
 
 
