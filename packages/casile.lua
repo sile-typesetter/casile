@@ -27,8 +27,8 @@ local loadonce = {}
 function package:_init (_)
   base._init(self)
 
-  self.class:loadPackage("inputfilter")
-  self.class:loadPackage("dropcaps")
+  self:loadPackage("inputfilter")
+  self:loadPackage("dropcaps")
 
   local discressionaryBreaksFilter = function (content, _, options)
     local currentText = ""

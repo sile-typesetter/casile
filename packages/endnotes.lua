@@ -7,7 +7,7 @@ SILE.scratch.endnotes = {}
 
 function package:_init ()
   base._init(self)
-  self.class:loadPackage("footnotes")
+  self:loadPackage("footnotes")
   self.class:registerHook("finish", function ()
     if #SILE.scratch.endnotes >= 1 then
       SILE.call("endnotes")

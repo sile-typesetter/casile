@@ -5,7 +5,7 @@ package._name = "imprint"
 
 function package:_init ()
   base._init(self)
-  self.class:loadPackage("markdown")
+  self:loadPackage("markdown")
 end
 
 function package:registerCommands ()

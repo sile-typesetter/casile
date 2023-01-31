@@ -34,8 +34,8 @@ local defaultparskip = SILE.settings:get("typesetter.parfillskip")
 function package:_init ()
   base._init(self)
 
-  self.class:loadPackage("infonode")
-  self.class:loadPackage("leaders")
+  self:loadPackage("infonode")
+  self:loadPackage("leaders")
 
   local continuepair = function (args)
     if not args then return end

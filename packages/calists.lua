@@ -9,7 +9,7 @@ local listarealskip = nil
 
 function package:_init ()
   base._init(self)
-  self.class:loadPackage("counters")
+  self:loadPackage("counters")
   SILE.scratch.liststyle = nil
 end
 
