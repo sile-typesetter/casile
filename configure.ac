@@ -92,6 +92,7 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     AC_PROG_EGREP
     AC_PROG_MKDIR_P
     AX_PROGVAR([bc])
+    AX_PROGVAR([diff])
     AX_PROGVAR([cut])
     AX_PROGVAR([curl])
     AX_PROGVAR([entr])
@@ -164,7 +165,6 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
         AX_PROGVAR([checkmake])
         AX_PROGVAR([docker])
         AX_PROGVAR([luacheck])
-        AX_PROGVAR([ruff])
         AX_PROGVAR([ruff])
         AX_PROGVAR([rustfmt])
     ])

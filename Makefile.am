@@ -268,7 +268,7 @@ $(DOCKER): Dockerfile hooks/build .version
 
 .PHONY: docker-dep-check
 docker-dep-check: .docker_deps .aur_deps
-	diff -u $^
+	$(DIFF) -u $^
 
 CLEANFILES += .docker_deps
 .docker_deps: hooks/build
