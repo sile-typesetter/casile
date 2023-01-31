@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.11](https://github.com/sile-typesetter/casile/compare/v0.10.10...v0.10.11) (2023-01-31)
+
+
+### Features
+
+* **rules:** Include project and publisher directory vars in debug output ([7537474](https://github.com/sile-typesetter/casile/commit/7537474d6ea31e5bcc881d7fc436d426f1c0b4b2))
+
+
+### Bug Fixes
+
+* **layouts:** Default crop to off for printout layouts ([9038364](https://github.com/sile-typesetter/casile/commit/90383641ec6b1c3182b896e8e7e7c841b105a647))
+* **packages:** Cast TOC entries to strings ([6f52662](https://github.com/sile-typesetter/casile/commit/6f5266259ee20bafade768f535845b5742647c4b))
+* **packages:** Don't occlude SILE's lists package ([a81586d](https://github.com/sile-typesetter/casile/commit/a81586d58db4bf21b3af57799ebf04e06769bd07))
+* **packages:** Fixup requireSpace() to properly compare measurements ([871d8a6](https://github.com/sile-typesetter/casile/commit/871d8a6d789584fbf2973b8fb8038f32a30d785e))
+* **packages:** Use cabook class font styling in endnotes package ([35ac6c2](https://github.com/sile-typesetter/casile/commit/35ac6c2f5900bd1380fd2f9651f50fb578703bf0))
+* **rules:** Handle explosion of ignores in larger projects ([b326121](https://github.com/sile-typesetter/casile/commit/b326121493141bea9d17854bd716548ba1590d7d))
+
 ### [0.10.10](https://github.com/sile-typesetter/casile/compare/v0.10.9...v0.10.10) (2023-01-12)
 
 
