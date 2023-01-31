@@ -61,8 +61,12 @@ ARG VERSION
 # Allow `su` with no root password so non-priv users can install dependencies
 RUN sed -i -e '/.so$/s/$/ nullok/' /etc/pam.d/su
 
-# Make sure project volumes are allowed to be manipulated inside Docker
-RUN git config --global --add safe.directory '*'
+# Make sure the current project volume can be manipulated inside Docker in
+# spite of new default Git safety restrictions. We default the workdir to /data
+# and suggest that to users but they are free to rearrange. More notably GH
+# Actions injects a workdir of its choice externally at runtime and is subject
+# to change, so we have to cover our bases.
+RUN git config --system --add safe.directory '*'
 
 LABEL org.opencontainers.image.title="CaSILE"
 LABEL org.opencontainers.image.description="A containerized version of the CaSILE toolkit, a book publishing workflow employing SILE and other wizardry"
