@@ -61,6 +61,10 @@ ARG VERSION
 # Allow `su` with no root password so non-priv users can install dependencies
 RUN sed -i -e '/.so$/s/$/ nullok/' /etc/pam.d/su
 
+# Set system locale to something other than 'C' that resolves to a language
+RUN echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen && locale-gen
+ENV LANG=en_US.UTF-8
+
 # Make sure the current project volume can be manipulated inside Docker in
 # spite of new default Git safety restrictions. We default the workdir to /data
 # and suggest that to users but they are free to rearrange. More notably GH
