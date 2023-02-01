@@ -65,7 +65,8 @@ RUN sed -i -e '/.so$/s/$/ nullok/' /etc/pam.d/su
 # spite of new default Git safety restrictions. We default the workdir to /data
 # and suggest that to users but they are free to rearrange. More notably GH
 # Actions injects a workdir of its choice externally at runtime and is subject
-# to change, so we have to cover our bases.
+# to change, so we have to cover our bases. Everything inside the container has
+# root permissions anyway so we're not really adding insecure surface area here.
 RUN git config --system --add safe.directory '*'
 
 LABEL org.opencontainers.image.title="CaSILE"

@@ -1,12 +1,5 @@
 #!@ZSH@
 
-# Make sure the current project volume can be manipulated inside Docker in
-# spite of new default Git safety restrictions. We default the workdir to /data
-# and suggest that to users but they are free to rearrange. More notably GH
-# Actions injects a workdir of its choice externally at runtime and is subject
-# to change, so we have to cover our bases.
-@GIT@ config --system --add safe.directory "$(pwd)"
-
 # This entire entry point script is only necessary because GitHub
 # actions insists on checking out the project as a non-privileged user,
 # running Docker as root, and not allowing us to pass a user argument
