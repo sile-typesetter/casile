@@ -59,7 +59,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
         .env("CASILE_JOBS", cpus)
         .env("CASILEDIR", CONFIGURE_DATADIR)
         .env("CONTAINERIZED", status::is_container().to_string())
-        .env("LANGUAGE", lang_to_language(CONF.get_string("language")?))
+        .env("LANGUAGE", locale_to_language(CONF.get_string("language")?))
         .env("PROJECT", gitname)
         .env("PROJECTDIR", CONF.get_string("path")?)
         .env("PROJECTVERSION", git_version);

@@ -84,9 +84,14 @@ pub fn commit(repo: Repository, oid: Oid, msg: &str) -> result::Result<Oid, git2
     )
 }
 
-pub fn lang_to_language(lang: String) -> String {
-    let re = Regex::new(r"_.*$").unwrap();
-    String::from(re.replace(lang.as_str(), ""))
+pub fn locale_to_language(lang: String) -> String {
+    let re = Regex::new(r"[-_\.].*$").unwrap();
+    let locale_frag = lang.as_str().to_lowercase();
+    let lang = re.replace(&locale_frag, "");
+    match &lang[..] {
+        "c" => String::from("en"),
+        _ => String::from(lang),
+    }
 }
 
 /// Output welcome header at start of run before moving on to actual commands
