@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.14](https://github.com/sile-typesetter/casile/compare/v0.10.13...v0.10.14) (2023-02-01)
+
+
+### Features
+
+* **cli:** Handle cases where system has the 'c' locale as 'en' ([15a081b](https://github.com/sile-typesetter/casile/commit/15a081bc15d2ca13decf7373da3f084ed4124308))
+
+
+### Bug Fixes
+
+* **cli:** Correct env variable typo ([3d0027e](https://github.com/sile-typesetter/casile/commit/3d0027eecbda5083c21ccbe6f5814822e85baa79))
+* **docker:** Set a sane default system language in container ([7e0ac93](https://github.com/sile-typesetter/casile/commit/7e0ac93dc3b3260c8686ae7236cbf9af675f3d41))
+* **rules:** Correct location of jacket artifacts ([c95c2c8](https://github.com/sile-typesetter/casile/commit/c95c2c8c4e06b7ac2b572655ca3d6e31806edc2f))
+
 ### [0.10.13](https://github.com/sile-typesetter/casile/compare/v0.10.12...v0.10.13) (2023-01-31)
 
 
