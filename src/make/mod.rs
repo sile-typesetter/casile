@@ -36,13 +36,15 @@ pub fn run(target: Vec<String>) -> Result<()> {
     if targets.is_empty() {
         targets.push(String::from("default"));
     }
-    if status::is_gha()? {
+    let is_gha = status::is_gha()?;
+    let is_glc = status::is_glc()?;
+    if is_gha {
         targets.push(String::from("_gha"));
     }
-    if status::is_glc()? {
+    if is_glc {
         targets.push(String::from("_glc"));
     }
-    if (status::is_gha()? || status::is_glc()?)
+    if (is_gha || is_glc)
         && targets.first().unwrap() != "debug"
         && targets.first().unwrap() != ".gitignore"
     {
@@ -89,7 +91,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
             "CASILE" => match fields[1] {
                 "PRE" => report_start(fields[2]),
                 "STDOUT" => {
-                    if status::is_gha()? || status::is_glc()? {
+                    if is_gha || is_glc {
                         println!("{}", fields[3]);
                     } else if CONF.get_bool("verbose")? {
                         report_line(fields[3]);
