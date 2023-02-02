@@ -100,7 +100,9 @@ pub fn run(target: Vec<String>) -> Result<()> {
                     }
                 }
                 "STDERR" => {
-                    if CONF.get_bool("verbose")? {
+                    if is_gha || is_glc {
+                        eprintln!("{}", fields[3]);
+                    } else if CONF.get_bool("verbose")? {
                         report_line(fields[3]);
                     } else {
                         backlog.push(String::from(fields[3]));
