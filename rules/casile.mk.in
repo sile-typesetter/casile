@@ -22,7 +22,7 @@ endif
 # Run complete recipes in wrapper script that facilitates clean CLI output
 SHELL := $(CASILEDIR)/make-shell.zsh
 
-.SHELLFLAGS :=
+.SHELLFLAGS =
 
 DEBUG ?= false # also later set in rules.mk just to be visible with other settings
 ifeq ($(DEBUG),true)
