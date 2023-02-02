@@ -16,17 +16,15 @@ local post_hook() {
 }
 
 local report_stdout() {
-  cat - |
-    while read line; do
-      echo -e "CASILESTDOUT$target$line"
-    done
+  while read line; do
+    echo -e "CASILESTDOUT$target$line"
+  done
 }
 
 local report_stderr() {
-  cat - |
-    while read line; do
-      echo -e "CASILESTDERR$target$line" >&2
-    done
+  while read line; do
+    echo -e "CASILESTDERR$target$line" >&2
+  done
 }
 
 local process_recipe() {
