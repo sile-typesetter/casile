@@ -73,6 +73,14 @@ ENV LANG=en_US.UTF-8
 # root permissions anyway so we're not really adding insecure surface area here.
 RUN git config --system --add safe.directory '*'
 
+# ImageMagick has started aggressively adding -dSAFER (also the default since
+# Ghostscript 9.5) to callouts to `gs`. This works if the processes inside
+# Docker are running as root, but we're often using setpriv to match file
+# ownerships. Postscript files can read and write arbitrary files in this
+# configuration so this would be unsafe to use on unknown content, but in our
+# case the only content on the entire system (in the container) is our project.
+RUN sed -i -e 's/dSAFER/dNOSAFER/g' /etc/ImageMagick-7/delegates.xml
+
 LABEL org.opencontainers.image.title="CaSILE"
 LABEL org.opencontainers.image.description="A containerized version of the CaSILE toolkit, a book publishing workflow employing SILE and other wizardry"
 LABEL org.opencontainers.image.authors="Caleb Maclennan <caleb@alerque.com>"

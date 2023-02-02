@@ -152,6 +152,10 @@ FCCONFIG := $(BUILDDIR)/fontconfig.conf
 # BUILDDIR would otherwise get created by other rules anyway, but we're dodging race conditions
 export FONTCONFIG_FILE := $(shell test -d "$(BUILDDIR)" || $(MKDIR_P) "$(BUILDDIR)" && cd "$(BUILDDIR)" && pwd)/fontconfig.conf
 
+# ImageMagick security policy steps on Ghostscript's toes when running under
+# setpriv (which we do in Docker), so just keep it all local.
+export MAGICK_TEMPORARY_PATH := $(shell test -d "$(BUILDDIR)" || $(MKDIR_P) "$(BUILDDIR)" && cd "$(BUILDDIR)" && pwd)
+
 # Extensible list of files for git to ignore
 IGNORES += $(PROJECTCONFIGS)
 IGNORES += $(BUILDDIR)
