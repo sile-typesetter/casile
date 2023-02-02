@@ -33,6 +33,9 @@ impl CONF {
                 env::set_var("CASILE_LANGUAGE", lang)
             }
         }
+        if env::var("RUNNER_DEBUG").is_ok() {
+            env::set_var("CASILE_DEBUG", env::var("RUNNER_DEBUG")?)
+        }
         config.merge(Environment::with_prefix("casile"))?;
         Ok(())
     }
