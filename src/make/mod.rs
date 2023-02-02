@@ -89,7 +89,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
             "CASILE" => match fields[1] {
                 "PRE" => report_start(fields[2]),
                 "STDOUT" => {
-                    if status::is_gha()? {
+                    if status::is_gha()? || status::is_glc()? {
                         println!("{}", fields[3]);
                     } else if CONF.get_bool("verbose")? {
                         report_line(fields[3]);
