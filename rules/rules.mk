@@ -176,12 +176,6 @@ PERLARGS ?= -Mutf8 -CS
 # Extra arguments for Image Magick
 MAGICKARGS ?= -define profile:skip="*"
 
-# Figure out if we're being run from
-ATOM != env | $(GREP) -l ATOM_
-ifneq ($(ATOM),)
-DRAFT = true
-endif
-
 # Set default document class
 DOCUMENTCLASS ?= cabook
 
