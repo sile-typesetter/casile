@@ -22,12 +22,16 @@ endif
 # Run complete recipes in wrapper script that facilitates clean CLI output
 SHELL := $(CASILEDIR)/make-shell.zsh
 
-.SHELLFLAGS =
+.SHELLFLAGS = -w
 
 DEBUG ?= false # also later set in rules.mk just to be visible with other settings
 ifeq ($(DEBUG),true)
 .SHELLFLAGS += -x
 endif
+
+# We *must* pass at least one argument to our custom shell before make adds the
+# shell code it wants to execute. We use this one because the 
+.SHELLFLAGS += _WRAPTARGET=true
 
 .SHELLFLAGS += $(eval @?=)$(and $@,target=$@)
 .ONESHELL:
@@ -90,7 +94,7 @@ ZINT ?= @ZINT@
 ZOLA ?= @ZOLA@
 ZSH ?= @ZSH@
 
-BUILDDIR ?= .casile
+export BUILDDIR ?= .casile
 
 CASILE_SINGLEPOVJOB ?=
 

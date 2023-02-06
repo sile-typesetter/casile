@@ -36,6 +36,7 @@ local process_recipe() {
       [[ ! -v _debug ]] || set -x
       exec > >(report_stdout) 2> >(report_stderr)
       eval "$@"
+      set +x
     )
   } always {
     post_hook $target $?
@@ -48,16 +49,38 @@ local process_shell() {
     set -o nobadpattern
     [[ ! -v _debug ]] || set -x
     eval "$@"
+    set +x
   )
 }
 
+# GNU Make 4.4 started passing shell args as a single argument no matter how
+# they are quoted. Since we want to process them ourselves, explode them here.
+# for the purposes of our parsing off wrapper arguments, then use the final
+# argument as the only one to be eval()'ed.
+final=$argv[$#]
+shift -p
+argv=(${(z)argv} ${(z)final})
+
 while true; do
   case $1 in
+    '/bin/sh'|'-c')
+      shift
+      ;;
     '-x')
       _debug=true
       shift
       ;;
     'target='*)
+      eval $1
+      shift
+      ;;
+      # Bogus filler flag to force make to have at least one flag even if debug
+      # isn't set hence forcing it to quote the actual shell code argument.
+      '-w')
+      shift
+      ;;
+    '_WRAPTARGET='*)
+      final=${final##$1 }
       eval $1
       shift
       ;;
@@ -67,8 +90,8 @@ while true; do
   esac
 done
 
-if [[ -v target && -v MAKELEVEL ]]; then
-  process_recipe $@
+if ${_WRAPTARGET:-false} && [[ -v target ]]; then
+  process_recipe $final
 else
-  process_shell $@
+  process_shell $final
 fi

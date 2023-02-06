@@ -17,13 +17,13 @@ LANGUAGE ?= en
 # Empty recipes for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;
 
-export PATH := $(CASILEDIR)/scripts:$(PATH):$(shell $(PYTHON) -c "import site; print(site.getsitepackages()[0]+'/scripts')")
-export HOSTNAME := $(shell $(HOSTNAMEBIN))
-export PROJECT := $(PROJECT)
-
-# Make’s shell function doesn't pass environment variables
+# Differentiate shells used to run recipies vs. shell wrapper function
 # See https://stackoverflow.com/q/65553367/313192
-_ENV := PATH=$(PATH) HOSTNAME=$(HOSTNAME) PROJECT=$(PROJECT) BUILDDIR=$(BUILDDIR)
+_ENV := _WRAPTARGET=false
+
+export PATH := $(CASILEDIR)/scripts:$(PATH):$(shell $(_ENV) $(PYTHON) -c "import site; print(site.getsitepackages()[0]+'/scripts')")
+export HOSTNAME := $(shell $(_ENV) $(HOSTNAMEBIN))
+export PROJECT := $(PROJECT)
 
 MARKDOWNSOURCES := $(patsubst ./%,%,$(call find,*.md))
 LUASOURCES := $(patsubst ./%,%,$(call find,*.lua))
@@ -150,11 +150,11 @@ FONTDIRS += $(patsubst ./%,%,$(CASILEDIR)/fonts $(wildcard $(PROJECTDIR:./=.)/.f
 
 FCCONFIG := $(BUILDDIR)/fontconfig.conf
 # BUILDDIR would otherwise get created by other rules anyway, but we're dodging race conditions
-export FONTCONFIG_FILE := $(shell test -d "$(BUILDDIR)" || $(MKDIR_P) "$(BUILDDIR)" && cd "$(BUILDDIR)" && pwd)/fontconfig.conf
+export FONTCONFIG_FILE := $(shell $(_ENV) test -d "$(BUILDDIR)" || $(MKDIR_P) "$(BUILDDIR)" && cd "$(BUILDDIR)" && pwd)/fontconfig.conf
 
 # ImageMagick security policy steps on Ghostscript's toes when running under
 # setpriv (which we do in Docker), so just keep it all local.
-export MAGICK_TEMPORARY_PATH := $(shell test -d "$(BUILDDIR)" || $(MKDIR_P) "$(BUILDDIR)" && cd "$(BUILDDIR)" && pwd)
+export MAGICK_TEMPORARY_PATH := $(shell $(_ENV) test -d "$(BUILDDIR)" || $(MKDIR_P) "$(BUILDDIR)" && cd "$(BUILDDIR)" && pwd)
 
 # Extensible list of files for git to ignore
 IGNORES += $(PROJECTCONFIGS)
@@ -443,13 +443,13 @@ $(BUILDDIR)/casile.lua: | $(BUILDDIR)
 		CASILE.publisher = "casile"
 	EOF
 
-$(FCCONFIG): FCDEFAULT ?= $(shell env -u FONTCONFIG_FILE $(FCCONFLIST) | $(AWK) -F'[ :]' '/Default configuration file/ { print $$2 }')
+$(FCCONFIG): FCDEFAULT ?= $(shell $(_ENV) env -u FONTCONFIG_FILE $(FCCONFLIST) | $(AWK) -F'[ :]' '/Default configuration file/ { print $$2 }')
 $(FCCONFIG): | $(BUILDDIR)
 	cat <<- EOF > $@
 		<?xml version="1.0"?>
 		<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
 		<fontconfig>$(foreach DIR,$(FONTDIRS),
-		    <dir>$(shell cd "$(shell dirname $(DIR))" && pwd)</dir>)
+		    <dir>$(shell $(_ENV) cd "$(shell $(_ENV) dirname $(DIR))" && pwd)</dir>)
 		    <include ignore_missing="no">$(FCDEFAULT)</include>
 		</fontconfig>
 	EOF
