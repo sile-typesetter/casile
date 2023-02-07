@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.15](https://github.com/sile-typesetter/casile/compare/v0.10.14...v0.10.15) (2023-02-07)
+
+
+### Features
+
+* **cli:** Enable CaSILE debug mode if GH Actions debug logging is enabled ([24a41c5](https://github.com/sile-typesetter/casile/commit/24a41c5790e81fcb7b04d7f171b2fb8e92482d3a))
+* **rules:** Redo make target shell wrapper to be GNU Make 4.4+ compatible ([73933dd](https://github.com/sile-typesetter/casile/commit/73933dd96c45302c2c84e1d7bba58f4b1d557aa7))
+
+
+### Bug Fixes
+
+* **cli:** Surface STDERR in CI runners when verbose enabled ([aff9dc7](https://github.com/sile-typesetter/casile/commit/aff9dc7cfe5987b9d4d5757e836fb3f2819e231e))
+* **docker:** Avoid tripping on new Ghostscript safety restrictions ([51403f6](https://github.com/sile-typesetter/casile/commit/51403f69f4ccfa7576365383ea583c3a25e3d6a5))
+* **rules:** Avoid multiple shell runs to calculate ISBNs ([e073fdd](https://github.com/sile-typesetter/casile/commit/e073fdd2c651fc49d5b1c9c66e641b53bfcebcc3))
+* **rules:** Drop draft builds being forced when run from editor ([9015aca](https://github.com/sile-typesetter/casile/commit/9015acae87bcb73e6c796935b513f7914a1fc0b7))
+* **rules:** Make .SHELLFLAGS usage compatible with GNU Make 4.4 ([cbb7aa8](https://github.com/sile-typesetter/casile/commit/cbb7aa80b24221e0dfbc1d9c6ee38f7e05d30dac))
+
 ### [0.10.14](https://github.com/sile-typesetter/casile/compare/v0.10.13...v0.10.14) (2023-02-01)
 
 
