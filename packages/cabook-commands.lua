@@ -160,7 +160,7 @@ function package:registerCommands ()
         toc_content[1] = val .. " KISIM: " .. self.class.uppercase(content[1] or "")
       elseif level == 2 then
         local val = self.class.packages.counters:formatCounter({ display = "arabic", value = counters.value[level] })
-        toc_content[1] = val .. ". " .. SU.contentToString(content[1])
+        toc_content[1] = val .. ". " .. SU.contentToString(content)
       end
       if options.prenumber and SILE.Commands[options.prenumber] then
         if SILE.Commands["book:chapter:precounter"] then SILE.call("book:chapter:precounter") end
