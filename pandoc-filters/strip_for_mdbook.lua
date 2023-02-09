@@ -13,8 +13,8 @@ Header = function (element)
       Note = function (_)
         return {}
       end,
-      Link = function (element)
-        return element.content
+      Link = function (element_)
+        return element_.content
       end
     })
 end

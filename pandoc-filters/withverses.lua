@@ -8,18 +8,18 @@ Pandoc = function (document)
   document.blocks = pandoc.walk_block(pandoc.Div(document.blocks), {
       Note = function (element)
         return pandoc.walk_inline(element, {
-            Str = function (element)
-              if element.text:match("^[;,]$") then
+            Str = function (element_)
+              if element_.text:match("^[;,]$") then
                 return pandoc.Space()
               end
             end,
-            Link = function (element)
-              local osis = element.attr.attributes.osis
+            Link = function (element_)
+              local osis = element_.attr.attributes.osis
               local versecontent = tostring(versedata[osis]):gsub("\n", "")
               if #versecontent < 1 or versecontent == "nil" then
                 error("Verse content for "..osis.." not found")
               end
-              return versecontent and { pandoc.Strong(element), pandoc.Space(), pandoc.Str(versecontent)} or element
+              return versecontent and { pandoc.Strong(element_), pandoc.Space(), pandoc.Str(versecontent)} or element_
             end
           })
       end
