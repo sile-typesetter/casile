@@ -9,7 +9,8 @@
         "pl",
         "fluent",
         "SYSTEM_SILE_PATH",
-        "SHARED_LIB_EXT"
+        "SHARED_LIB_EXT",
+        "pandoc"
     ],
     "Lua.workspace.preloadFileSize": 5120,
     "Lua.workspace.checkThirdParty": false
