@@ -97,6 +97,7 @@ ZSH ?= @ZSH@
 export BUILDDIR ?= .casile
 
 CASILE_SINGLEPOVJOB ?=
+CASILE_SINGLEXVFBJOB ?= true
 
 .PHONY: default
 default: all
