@@ -100,6 +100,7 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     AX_PROGVAR([epubcheck])
     AX_PROGVAR([fcconflist], [fc-conflist])
     AX_PROGVAR([find])
+    AX_PROGVAR([flock])
     AX_PROGVAR([git])
     AX_PROGVAR([gitwarptime], [git-warp-time])
     AX_PROGVAR([gs])

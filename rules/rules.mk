@@ -831,11 +831,8 @@ $(BUILDDIR)/%-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printco
 
 %-$(_binding).pdf: $(BUILDDIR)/%-$(_binding).svg $(FCCONFIG) $$(geometryfile)
 	$(sourcegeometry)
-	$(and $(CASILE_SINGLEXVFBJOB),
-		trap 'rm -f $(BUILDDIR)/lock-xvfb' EXIT SIGHUP SIGTERM
-		until ! test -e $(BUILDDIR)/lock-xvfb; do sleep 1; done
-		touch $(BUILDDIR)/lock-xvfb)
 	env HOME=$(BUILDDIR) \
+		$(and $(CASILE_SINGLEXVFBJOB),$(FLOCK) $(BUILDDIR)/lock-xvfb) \
 		$(XVFBRUN) -d $(INKSCAPE) $< \
 		--batch-process \
 		--export-dpi=$${hidpi} \

@@ -25,10 +25,9 @@ define run_povray ?=
 		#declare MinThickness = 0.005;
 		#declare Blowout = 100;
 	EOF
-	$(and $(CASILE_SINGLEPOVJOB),
-		sleep 1.$${RANDOM} # block parallel execution
-		$(PWAIT) povray ||:)
-	$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$5 -H$6 -Q$(call scale,11,4) -O$4
+	env HOME=$(BUILDDIR) \
+		$(and $(CASILE_SINGLEPOVJOB),$(FLOCK) $(BUILDDIR)/lock-povray) \
+		$(POVRAY) $(POVFLAGS) -I$1 -HI$$headers -W$5 -H$6 -Q$(call scale,11,4) -O$4
 endef
 
 define crop_pov ?=
