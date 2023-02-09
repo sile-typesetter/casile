@@ -9,14 +9,14 @@ end
 Header = function (element)
   element = remove_attr(element)
   return pandoc.walk_block(element, {
-      -- c.f. pandoc-filters/epubclean.lua
-      Note = function (_)
-        return {}
-      end,
-      Link = function (element_)
-        return element_.content
-      end
-    })
+    -- c.f. pandoc-filters/epubclean.lua
+    Note = function (_)
+      return {}
+    end,
+    Link = function (element_)
+      return element_.content
+    end
+  })
 end
 
 Inline = remove_attr
