@@ -25,6 +25,6 @@ Pandoc = function (document)
     end
   })
 
-  return pandoc.Doc(document.blocks, document.meta)
+  return pandoc.Pandoc(document.blocks, document.meta)
 end
 
