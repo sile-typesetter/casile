@@ -11,6 +11,15 @@ outro =
 make-header =
   ‘make’ aracılığıyla hedef(ler) oluşturuluyor
 
+make-report-start =
+  Hedef için işlemeri başlatırılıyor: { $target }
+
+make-report-end =
+  Hedef işlemi başarıyla bittirilmiş: { $target }
+
+make-report-fail =
+  Hedef işlemi başarsız sonlandırmış: { $target }
+
 setup-header =
   Depoyu CaSILE ile kullanılmak üzere yapılandırılıyor
 
