@@ -68,7 +68,7 @@ end
 
 function class:declareOptions ()
   book.declareOptions(self)
-  local binding, crop, background, verseindex, layout
+  local binding, crop, edition, background, verseindex, layout
   self:declareOption("binding", function (_, value)
       if value then binding = value end
       return binding
@@ -76,6 +76,10 @@ function class:declareOptions ()
   self:declareOption("crop", function (_, value)
       if value then crop = SU.cast("boolean", value) end
       return crop
+    end)
+  self:declareOption("edition", function (_, value)
+      if value then edition = value end
+      return edition
     end)
   self:declareOption("background", function (_, value)
       if value then background = SU.cast("boolean", value) end
@@ -96,6 +100,7 @@ end
 
 function class:setOptions (options)
   options.binding = options.binding or "print" -- print, paperback, hardcover, coil, stapled
+  options.edition = options.edition
   options.crop = options.crop or (options.binding ~= "print")
   options.background = options.background or true
   options.verseindex = options.verseindex or false
