@@ -85,10 +85,6 @@ function class:declareOptions ()
       if value then verseindex = SU.cast("boolean", value) end
       return verseindex
     end)
-  self:declareOption("verseindex", function (_, value)
-      if value then verseindex = SU.cast("boolean", value) end
-      return verseindex
-    end)
   self:declareOption("layout", function (_, value)
     if value then
       layout = value
