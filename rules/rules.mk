@@ -183,6 +183,7 @@ DOCUMENTCLASS ?= cabook
 
 DOCUMENTOPTIONS += binding=$(call unlocalize,$(or $(call parse_binding,$@),$(firstword $(BINDINGS))))
 DOCUMENTOPTIONS += layout=$(call unlocalize,$(or $(call parse_papersize,$@),$(firstword $(PAPERSIZES))))
+DOCUMENTOPTIONS += edition=$(call unlocalize,$(or $(call parse_edition,$@),$(firstword $(EDITIONS))))
 
 # Default template for setting up Gitlab CI runners
 CITEMPLATE ?= $(CASILEDIR)/travis.yml
