@@ -82,6 +82,8 @@ SORTORDER ?= meta # Sort series by: none, alphabetical, date, meta, manual
 
 # Set default output format(s)
 LAYOUTS ?= a4-$(_print)
+
+# Sometimes the same content, edits and target papersize and bindings might be presented in more than one variant
 EDITIONS ?=
 
 # Categorize supported outputs
@@ -255,7 +257,10 @@ $(foreach FORMAT,$(FORMATS),$(eval $(call format_template,$(FORMAT),$(TARGETS)))
 
 VIRTUALPDFS := $(call pattern_list,$(SOURCES),.pdfs)
 .PHONY: $(VIRTUALPDFS)
-$(VIRTUALPDFS): %.pdfs: $(call pattern_list,$$*,$(LAYOUTS),.pdf) $(and $(EDITIONS),$(call pattern_list,$$*,$(EDITIONS),$(LAYOUTS),.pdf))
+$(VIRTUALPDFS): %.pdfs: $(call pattern_list,$$*,$(LAYOUTS),.pdf)
+$(VIRTUALPDFS): %.pdfs: $(and $(EDITIONS),$(call pattern_list,$$*,$(EDITIONS),$(LAYOUTS),.pdf))
+$(VIRTUALPDFS): %.pdfs: $(and $(EDITS),$(call pattern_list,$$*,$(EDITS),$(LAYOUTS),.pdf))
+$(VIRTUALPDFS): %.pdfs: $(and $(EDITIONS),$(EDITS),$(call pattern_list,$$*,$(EDITIONS),$(EDITS),$(LAYOUTS),.pdf))
 
 # Setup target dependencies to mimic stages of a CI pipeline
 ifeq ($(MAKECMDGOALS),ci)
@@ -273,7 +278,10 @@ renderings: $(call pattern_list,$(TARGETS),.renderings)
 
 VIRTUALRENDERINGS := $(call pattern_list,$(SOURCES),.renderings)
 .PHONY: $(VIRTUALRENDERINGS)
-$(VIRTUALRENDERINGS): %.renderings: $(call pattern_list,$$*,$(RENDERED),$(RENDERINGS),.jpg) $(and $(EDITIONS),$(call pattern_list,$$*,$(EDITIONS),$(RENDERED),$(RENDERINGS),.jpg))
+$(VIRTUALRENDERINGS): %.renderings: $(call pattern_list,$$*,$(RENDERED),$(RENDERINGS),.jpg)
+$(VIRTUALRENDERINGS): %.renderings: $(and $(EDITIONS),$(call pattern_list,$$*,$(EDITIONS),$(RENDERED),$(RENDERINGS),.jpg))
+$(VIRTUALRENDERINGS): %.renderings: $(and $(EDITS),$(call pattern_list,$$*,$(EDITS),$(RENDERED),$(RENDERINGS),.jpg))
+$(VIRTUALRENDERINGS): %.renderings: $(and $(EDITIONS),$(EDITS),$(call pattern_list,$$*,$(EDITIONS),$(EDITS),$(RENDERED),$(RENDERINGS),.jpg))
 
 .PHONY: promotionals
 promotionals: $(call pattern_list,$(TARGETS),.promotionals)
@@ -372,7 +380,9 @@ $(MOCKUPPDFS): %.pdf: $$(call mockupbase,$$@)
 	$(PDFTK) A=$(filter %.pdf,$^) cat $(foreach P,$(shell $(_ENV) seq 1 $(call pagecount,$@)),A2-2) output $@
 
 FULLPDFS := $(call pattern_list,$(REALSOURCES),$(REALLAYOUTS),.pdf)
-FULLPDFS += $(call pattern_list,$(REALSOURCES),$(EDITS),$(REALLAYOUTS),.pdf)
+FULLPDFS += $(and $(EDITIONS),$(call pattern_list,$(REALSOURCES),$(EDITIONS),$(REALLAYOUTS),.pdf))
+FULLPDFS += $(and $(EDITS),$(call pattern_list,$(REALSOURCES),$(EDITS),$(REALLAYOUTS),.pdf))
+FULLPDFS += $(and $(EDITIONS),$(EDITS),$(call pattern_list,$(REALSOURCES),$(EDITIONS),$(EDITS),$(REALLAYOUTS),.pdf))
 $(FULLPDFS): .EXTRA_PREREQS = $(LUAINCLUDES)
 $(FULLPDFS): %.pdf: $(BUILDDIR)/%.sil $$(call coverpreq,$$@) $$(call onpaperlibs,$$@) $(FCCONFIG)
 	$(call skip_if_lazy,$@)
@@ -406,7 +416,9 @@ DISTFILES += $(FULLPDFS)
 PANDOCTEMPLATE ?= $(CASILEDIR)/template.sil
 
 FULLSILS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(REALLAYOUTS),.sil))
-FULLSILS += $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil))
+FULLSILS += $(and $(EDITIONS),$(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(EDITIONS),$(REALLAYOUTS),.sil)))
+FULLSILS += $(and $(EDITS),$(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil)))
+FULLSILS += $(and $(EDITIONS),$(EDITS),$(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(EDITIONS),$(EDITS),$(REALLAYOUTS),.sil)))
 $(FULLSILS): private PANDOCFILTERS += --filter=$(CASILEDIR)/pandoc-filters/svg2pdf.py
 $(FULLSILS): private THISEDITS = $(call parse_edits,$@)
 $(FULLSILS): private PROCESSEDSOURCE = $(addprefix $(BUILDDIR)/,$(call pattern_list,$(call parse_bookid,$@),$(_processed),$(and $(THISEDITS),-$(THISEDITS)).md))
