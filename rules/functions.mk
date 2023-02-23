@@ -57,7 +57,7 @@ extantfiles = $(sort $(wildcard $1))
 # rules means the targets are not extendible. By dynamically generating names by
 # iterating over all possible combinations of an arbitrary sequence of lists
 # we get a lot more flexibility and keeps the lists easy to write.
-pattern_list = $(eval 3?=)$(eval 4?=)$(eval 5?=)$(call uniq,$(and $(or $(and $5,$4,$3,$2,$1),$(and $(4),$(3),$(2),$(1)),$(and $(3),$(2),$(1)),$(and $(2),$(1))),$(if $(and $(1),$(2)),,$(foreach A,$(1),$(A)))$(if $(and $(2),$(3)),,$(foreach A,$(1),$(foreach B,$(2),$(A)$(B))))$(if $(and $(3),$(4)),,$(foreach A,$(1),$(foreach B,$(2),$(foreach C,$(3),$(A)-$(B)$(C)))))$(if $(and $(4),$(5)),,$(foreach A,$(1),$(foreach B,$(2),$(foreach C,$(3),$(foreach D,$(4),$(A)-$(B)-$(C)$(D))))))))
+pattern_list = $(eval 1?=)$(eval 2?=)$(eval 3?=)$(eval 4?=)$(eval 5?=)$(call uniq,$(and $(or $(and $(5),$(4),$(3),$(2),$(1)),$(and $(4),$(3),$(2),$(1)),$(and $(3),$(2),$(1)),$(and $(2),$(1)),$(1)),$(or $(and $(5),$(foreach A,$(1),$(foreach B,$(2),$(foreach C,$(3),$(foreach D,$(4),$(foreach E,$(5),$(A)-$(B)-$(C)-$(D)$(E))))))),$(and $(4),$(foreach A,$(1),$(foreach B,$(2),$(foreach C,$(3),$(foreach D,$(4),$(A)-$(B)-$(C)$(D)))))),$(and $(3),$(foreach A,$(1),$(foreach B,$(2),$(foreach C,$(3),$(A)-$(B)$(C))))),$(and $(2),$(foreach A,$(1),$(foreach B,$(2),$(A)$(B)))))))
 join_with = $(subst $(space),$1,$(strip $2))
 
 # String i18n l10n functions
