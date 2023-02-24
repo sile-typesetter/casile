@@ -122,6 +122,7 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     AX_PROGVAR([pwait])
     AX_PROGVAR([podofobox])
     AX_PROGVAR([povray])
+    AX_PROGVAR([sassc])
     AX_PROGVAR([sile])
     AX_PROGVAR([sort])
     AX_PROGVAR([sponge])
