@@ -81,6 +81,9 @@ RUN git config --system --add safe.directory '*'
 # case the only content on the entire system (in the container) is our project.
 RUN sed -i -e 's/dSAFER/dNOSAFER/g' /etc/ImageMagick-7/delegates.xml
 
+# Makeup for our Pandoc fork being sideloaded by giving it access to system Lua stuff
+RUN ln -s /usr/{,/local}/lib/lua && ln -s /usr/{,local/}share/lua
+
 LABEL org.opencontainers.image.title="CaSILE"
 LABEL org.opencontainers.image.description="A containerized version of the CaSILE toolkit, a book publishing workflow employing SILE and other wizardry"
 LABEL org.opencontainers.image.authors="Caleb Maclennan <caleb@alerque.com>"
