@@ -421,8 +421,8 @@ FULLSILS += $(and $(EDITIONS),$(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOU
 FULLSILS += $(and $(EDITS),$(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(EDITS),$(REALLAYOUTS),.sil)))
 FULLSILS += $(and $(EDITIONS),$(EDITS),$(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(EDITIONS),$(EDITS),$(REALLAYOUTS),.sil)))
 $(FULLSILS): private PANDOCFILTERS += --filter=$(CASILEDIR)/pandoc-filters/svg2pdf.py
-$(FULLSILS): private THISEDITS = $(call parse_edits,$@)
-$(FULLSILS): private PROCESSEDSOURCE = $(addprefix $(BUILDDIR)/,$(call pattern_list,$(call parse_bookid,$@),$(and $(THISEDITS),-$(THISEDITS)),$(_processed).md))
+$(FULLSILS): private THISEDIT = $(call parse_edits,$@)
+$(FULLSILS): private PROCESSEDSOURCE = $(addprefix $(BUILDDIR)/,$(call pattern_list,$(call parse_bookid,$@),$(and $(THISEDIT),$(THISEDIT)-)$(_processed),.md))
 $(FULLSILS): $(BUILDDIR)/%.sil: $$(PROCESSEDSOURCE)
 $(FULLSILS): $(BUILDDIR)/%.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-manifest.yml)
 $(FULLSILS): $(BUILDDIR)/%.sil: $$(addprefix $(BUILDDIR)/,$$(call pattern_list,$$(call parse_bookid,$$@),-$(_verses)-$(_sorted).json -url.png))
@@ -468,16 +468,16 @@ $(FCCONFIG): | $(BUILDDIR)
 	EOF
 
 WITHVERSEFILTER := $(CASILEDIR)/pandoc-filters/withverses.lua
-SOURCESWITHVERSES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),-$(_withverses)-$(_processed).md))
+SOURCESWITHVERSES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(_withverses),$(_processed),.md))
 $(SOURCESWITHVERSES): private PANDOCFILTERS += --lua-filter=$(WITHVERSEFILTER)
 $(SOURCESWITHVERSES): private PANDOCFILTERS += -M versedatafile="$(filter %-$(_verses)-$(_text).yml,$^)"
 $(SOURCESWITHVERSES): $(BUILDDIR)/$$(call parse_bookid,$$@)-$(_verses)-$(_text).yml $(WITHVERSEFILTER)
 
-SOURCESWITHOUTFOOTNOTES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(_withoutfootnotes)-$(_processed)-.md))
+SOURCESWITHOUTFOOTNOTES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(_withoutfootnotes),$(_processed),.md))
 $(SOURCESWITHOUTFOOTNOTES): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/withoutfootnotes.lua
 $(SOURCESWITHOUTFOOTNOTES): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/withoutlinks.lua
 
-SOURCESWITHOUTLINKS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(_withoutlinks)-$(_processed)-.md))
+SOURCESWITHOUTLINKS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(_withoutlinks),$(_processed),.md))
 $(SOURCESWITHOUTLINKS): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/withoutlinks.lua
 
 SOURCESWITHEDITS := $(SOURCESWITHVERSES) $(SOURCESWITHOUTFOOTNOTES) $(SOURCESWITHOUTLINKS)
