@@ -12,6 +12,6 @@ $(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
 	$(MKDIR_P) $(@D)
 	$(YQ) -t '{"book": {
 			"title": .title,
-			"author": .creator[] | select(.role == "author") | .text,
+			"author": (try (.creator[] | select(.role == "author") | .text) catch ""),
 			"language": .lang
 		}}' $< > $@
