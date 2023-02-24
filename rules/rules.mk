@@ -46,7 +46,7 @@ MOCKUPFACTOR ?= 1
 FIGURES ?=
 
 # Default output formats and parameters (often overridden)
-FORMATS ?= pdfs epub mobi odt docx mdbook zola $(and $(ISBNS),play) app
+FORMATS ?= pdfs epub mobi odt docx mdbook zola $(and $(ISBNS),play) app html
 BLEED ?= 3
 TRIM ?= 10
 NOBLEED ?= 0
@@ -997,6 +997,17 @@ $(DOCXS): %.docx: $(BUILDDIR)/%-$(_processed).md %-manifest.yml
 		$(filter %-$(_processed).md,$^) -o $@
 
 DISTFILES += $(DOCXS)
+
+HTMLS := $(call pattern_list,$(SOURCES),.html)
+$(HTMLS): PANDOCARGS += --standalone
+$(HTMLS): %.html: $(BUILDDIR)/%-$(_processed).md %-manifest.yml
+	$(PANDOC) \
+		$(PANDOCARGS) \
+		$(PANDOCFILTERS) \
+		$(filter %-manifest.yml,$^) \
+		$(filter %-$(_processed).md,$^) -o $@
+
+DISTFILES += $(HTMLS)
 
 VIRTUALSCREENS := $(call pattern_list,$(SOURCES),.$(_screen))
 
