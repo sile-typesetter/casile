@@ -422,7 +422,7 @@ FULLSILS += $(and $(EDITS),$(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCE
 FULLSILS += $(and $(EDITIONS),$(EDITS),$(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(EDITIONS),$(EDITS),$(REALLAYOUTS),.sil)))
 $(FULLSILS): private PANDOCFILTERS += --filter=$(CASILEDIR)/pandoc-filters/svg2pdf.py
 $(FULLSILS): private THISEDITS = $(call parse_edits,$@)
-$(FULLSILS): private PROCESSEDSOURCE = $(addprefix $(BUILDDIR)/,$(call pattern_list,$(call parse_bookid,$@),$(_processed),$(and $(THISEDITS),-$(THISEDITS)).md))
+$(FULLSILS): private PROCESSEDSOURCE = $(addprefix $(BUILDDIR)/,$(call pattern_list,$(call parse_bookid,$@),$(and $(THISEDITS),-$(THISEDITS)),$(_processed).md))
 $(FULLSILS): $(BUILDDIR)/%.sil: $$(PROCESSEDSOURCE)
 $(FULLSILS): $(BUILDDIR)/%.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-manifest.yml)
 $(FULLSILS): $(BUILDDIR)/%.sil: $$(addprefix $(BUILDDIR)/,$$(call pattern_list,$$(call parse_bookid,$$@),-$(_verses)-$(_sorted).json -url.png))
@@ -468,16 +468,16 @@ $(FCCONFIG): | $(BUILDDIR)
 	EOF
 
 WITHVERSEFILTER := $(CASILEDIR)/pandoc-filters/withverses.lua
-SOURCESWITHVERSES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),-$(_processed)-$(_withverses).md))
+SOURCESWITHVERSES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),-$(_withverses)-$(_processed).md))
 $(SOURCESWITHVERSES): private PANDOCFILTERS += --lua-filter=$(WITHVERSEFILTER)
 $(SOURCESWITHVERSES): private PANDOCFILTERS += -M versedatafile="$(filter %-$(_verses)-$(_text).yml,$^)"
 $(SOURCESWITHVERSES): $(BUILDDIR)/$$(call parse_bookid,$$@)-$(_verses)-$(_text).yml $(WITHVERSEFILTER)
 
-SOURCESWITHOUTFOOTNOTES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutfootnotes).md))
+SOURCESWITHOUTFOOTNOTES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(_withoutfootnotes)-$(_processed)-.md))
 $(SOURCESWITHOUTFOOTNOTES): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/withoutfootnotes.lua
 $(SOURCESWITHOUTFOOTNOTES): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/withoutlinks.lua
 
-SOURCESWITHOUTLINKS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),-$(_processed)-$(_withoutlinks).md))
+SOURCESWITHOUTLINKS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(_withoutlinks)-$(_processed)-.md))
 $(SOURCESWITHOUTLINKS): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/withoutlinks.lua
 
 SOURCESWITHEDITS := $(SOURCESWITHVERSES) $(SOURCESWITHOUTFOOTNOTES) $(SOURCESWITHOUTLINKS)
@@ -979,7 +979,8 @@ include $(CASILEDIR)/rules/mdbook.mk
 include $(CASILEDIR)/rules/zola.mk
 
 ODTS := $(call pattern_list,$(SOURCES),.odt)
-$(ODTS): %.odt: $(BUILDDIR)/%-$(_processed).md %-manifest.yml
+ODTS += $(and $(EDITS),$(call pattern_list,$(SOURCES),$(EDITS),.odt))
+$(ODTS): %.odt: $(BUILDDIR)/%-$(_processed).md $$(call parse_bookid,$$*)-manifest.yml
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$(PANDOCFILTERS) \
@@ -989,7 +990,8 @@ $(ODTS): %.odt: $(BUILDDIR)/%-$(_processed).md %-manifest.yml
 DISTFILES += $(ODTS)
 
 DOCXS := $(call pattern_list,$(SOURCES),.docx)
-$(DOCXS): %.docx: $(BUILDDIR)/%-$(_processed).md %-manifest.yml
+DOCXS += $(and $(EDITS),$(call pattern_list,$(SOURCES),$(EDITS),.docx))
+$(DOCXS): %.docx: $(BUILDDIR)/%-$(_processed).md $$(call parse_bookid,$$*)-manifest.yml
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$(PANDOCFILTERS) \
@@ -999,8 +1001,9 @@ $(DOCXS): %.docx: $(BUILDDIR)/%-$(_processed).md %-manifest.yml
 DISTFILES += $(DOCXS)
 
 HTMLS := $(call pattern_list,$(SOURCES),.html)
-$(HTMLS): PANDOCARGS += --standalone
-$(HTMLS): %.html: $(BUILDDIR)/%-$(_processed).md %-manifest.yml
+HTMLS += $(and $(EDITS),$(call pattern_list,$(SOURCES),$(EDITS),.html))
+$(HTMLS): PANDOCARGS += --standalone --reference-location=document
+$(HTMLS): %.html: $(BUILDDIR)/%-$(_processed).md $$(call parse_bookid,$$*)-manifest.yml
 	$(PANDOC) \
 		$(PANDOCARGS) \
 		$(PANDOCFILTERS) \
