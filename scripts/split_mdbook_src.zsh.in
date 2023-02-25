@@ -40,3 +40,8 @@ while read line; do
   fi
   >> $dir/$of <<< $line
 done
+
+# Some "books" have no chapters. If we didn't find any, at least list the blob
+if [[ ! -v title ]]; then
+  echo -e "[](./$of)"
+fi
