@@ -7,7 +7,9 @@ end
 
 -- c.f. pandoc-filters/withoutheadinglinks.lua
 Header = function (element)
-  element = remove_attr(element)
+  if element.level ~= 1 then
+    element = remove_attr(element)
+  end
   return pandoc.walk_block(element, {
     -- c.f. pandoc-filters/epubclean.lua
     Note = function (_)

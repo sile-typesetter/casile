@@ -24,8 +24,8 @@ trunc $dir/$of
 while read line; do
   unset title slug
   # Check for chapter header
-  if [[ $line =~ "^# .*" ]]; then
-    [[ $line =~ ".*unnumbered.*" ]] || let i=$i+1
+  if [[ $line =~ "^# " ]]; then
+    [[ $line =~ "\.unnumbered\b" ]] || let i=$i+1
     @PANDOC@ --to=plain-smart <<< "$line" |
       read title
     test -n "$title"
@@ -36,12 +36,16 @@ while read line; do
     test -n "$slug"
     of="$(printf %02d $i)-$slug.md"
     trunc $dir/$of
+    [[ $line =~ "\.unnumbered\b" ]] || echo -n "- "
     echo "[$title](./$of)"
+    # Strip attrs we *used* via commonmark_x for our own use from markup going to mdbook
+    @PANDOC@ --to=commonmark-smart <<< "$line" |
+      read line
   fi
   >> $dir/$of <<< $line
 done
 
 # Some "books" have no chapters. If we didn't find any, at least list the blob
-if [[ ! -v title ]]; then
-  echo -e "[](./$of)"
+if [[ $of = "00.md" ]]; then
+  echo "[](./$of)"
 fi
