@@ -15,12 +15,6 @@ function trunc() {
 
 trunc $dir/$of
 
-@PANDOC@ $src \
-  --markdown-headings=atx \
-  --wrap=none \
-  --reference-location=section \
-  --to=commonmark_x-smart \
-  --lua-filter=$CASILEDIR/pandoc-filters/strip_for_mdbook.lua |
 while read line; do
   unset title slug
   # Check for chapter header
@@ -49,7 +43,7 @@ while read line; do
       read line
   fi
   >> $dir/$of <<< $line
-done
+done < $src
 
 # Some "books" have no chapters. If we didn't find any, at least list the blob
 if [[ $of = "00.md" ]]; then

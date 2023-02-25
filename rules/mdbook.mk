@@ -4,7 +4,14 @@ $(MDBOOKS): %.mdbook: $(BUILDDIR)/%.mdbook/src/SUMMARY.md $(BUILDDIR)/%.mdbook/b
 
 DISTDIRS += $(MDBOOKS)
 
-$(BUILDDIR)/%.mdbook/src/SUMMARY.md: $(BUILDDIR)/%-$(_processed).md
+$(BUILDDIR)/%-mdbook.md: private PANDOCFILTERARGS = --markdown-headings=atx --wrap=none --reference-location=section --to=commonmark_x-smart
+$(BUILDDIR)/%-mdbook.md: private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/strip_for_mdbook.lua
+$(BUILDDIR)/%-mdbook.md: $(BUILDDIR)/%-$(_processed).md
+	$(PANDOC) --standalone \
+		$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) \
+		$(filter %.md,$^) -o $@
+
+$(BUILDDIR)/%.mdbook/src/SUMMARY.md: $(BUILDDIR)/%-mdbook.md
 	$(MKDIR_P) $(@D)
 	split_mdbook_src.zsh $< $(@D) > $@
 
