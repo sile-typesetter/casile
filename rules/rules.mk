@@ -482,7 +482,7 @@ $(SOURCESWITHOUTLINKS): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pando
 
 SOURCESWITHEDITS := $(SOURCESWITHVERSES) $(SOURCESWITHOUTFOOTNOTES) $(SOURCESWITHOUTLINKS)
 $(SOURCESWITHEDITS): $$(call strip_edits,$$@)
-	$(PANDOC) --standalone \
+	$(PANDOC) \
 		$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) \
 		$(filter %.md,$^) -o $@
 
@@ -502,7 +502,8 @@ $(BUILDDIR)/%-$(_processed).md: %.md $$(wildcard $(PROJECT)*.md $$*-$(_chapters)
 		$(call link_verses) |
 		$(PERL) $(PERLARGS) -pne "s/(?<=[\)\}])'/’/g" | # Work around Pandoc bug, see https://github.com/jgm/pandoc/issues/5385
 		$(call criticToSile) |
-		$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) |
+		$(PANDOC) \
+			$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) |
 		$(call markdown_hook) > $@
 
 %-$(_booklet).pdf: $(BUILDDIR)/%-$(_spineless).pdf

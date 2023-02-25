@@ -8,7 +8,7 @@ DISTDIRS += $(MDBOOKS)
 $(BUILDDIR)/%-mdbook.md: private PANDOCFILTERARGS = --wrap=none --to=commonmark_x-smart
 $(BUILDDIR)/%-mdbook.md: private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/strip_for_mdbook.lua
 $(BUILDDIR)/%-mdbook.md: $(BUILDDIR)/%-$(_processed).md
-	$(PANDOC) --standalone \
+	$(PANDOC) \
 		$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) \
 		$(filter %.md,$^) -o $@
 

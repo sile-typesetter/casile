@@ -3,11 +3,9 @@ local yaml = require("yaml")
 Pandoc = function (document)
   local versedata = yaml.loadpath(document.meta.versedatafile)
 
-  document.meta.versedatafile = nil
-
-  document.blocks = pandoc.walk_block(pandoc.Div(document.blocks), {
+  local blocks = document.blocks:walk {
     Note = function (element)
-      return pandoc.walk_inline(element, {
+      return element:walk {
         Str = function (element_)
           if element_.text:match("^[;,]$") then
             return pandoc.Space()
@@ -21,10 +19,12 @@ Pandoc = function (document)
           end
           return versecontent and { pandoc.Strong(element_), pandoc.Space(), pandoc.Str(versecontent)} or element_
         end
-      })
+      }
     end
-  })
+  }
 
-  return pandoc.Pandoc(document.blocks, document.meta)
+  document.meta.versedatafile = nil
+
+  return pandoc.Pandoc(blocks, document.meta)
 end
 
