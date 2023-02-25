@@ -7,7 +7,7 @@ end
 
 -- c.f. pandoc-filters/withoutheadinglinks.lua
 Header = function (element)
-  if element.level ~= 1 then
+  if element.level >= 2 then
     element = remove_attr(element)
   end
   return pandoc.walk_block(element, {

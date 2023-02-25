@@ -24,17 +24,23 @@ trunc $dir/$of
 while read line; do
   unset title slug
   # Check for chapter header
-  if [[ $line =~ "^# " ]]; then
-    [[ $line =~ "\.unnumbered\b" ]] || let i=$i+1
+  if [[ $line =~ "^##? " ]]; then
     @PANDOC@ --to=plain-smart <<< "$line" |
       read title
-    test -n "$title"
+    if [[ $line =~ "^# " ]]; then
+      [[ $line =~ "\.unnumbered\b" ]] || let i=$i+1
+      unset j
+    else
+      : ${j:=0}
+      [[ $line =~ "\.unnumbered\b" ]] || let j=$j+1
+      echo -n "    "
+    fi
     # https://github.com/jgm/pandoc/issues/8003
     @PANDOC@ -f markdown+ascii_identifiers -t markdown-auto_identifiers <<< "# ${title//ı/i}" |
       @PERL@ -pne 's/^.*{.*#([-\w]+).*}/\1/' |
       read slug
     test -n "$slug"
-    of="$(printf %02d $i)-$slug.md"
+    of="$(printf %02d $i)${j:+$(printf .%03d $j)}-$slug.md"
     trunc $dir/$of
     [[ $line =~ "\.unnumbered\b" ]] || echo -n "- "
     echo "[$title](./$of)"
