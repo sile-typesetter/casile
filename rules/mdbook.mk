@@ -1,10 +1,11 @@
 MDBOOKS := $(call pattern_list,$(SOURCES),.mdbook)
+MDBOOKS += $(and $(EDITS),$(call pattern_list,$(SOURCES),$(EDITS),.mdbook))
 $(MDBOOKS): %.mdbook: $(BUILDDIR)/%.mdbook/src/SUMMARY.md $(BUILDDIR)/%.mdbook/book.toml
 	$(MDBOOK) build $(<D)/.. --dest-dir ../../$@
 
 DISTDIRS += $(MDBOOKS)
 
-$(BUILDDIR)/%-mdbook.md: private PANDOCFILTERARGS = --markdown-headings=atx --wrap=none --reference-location=section --to=commonmark_x-smart
+$(BUILDDIR)/%-mdbook.md: private PANDOCFILTERARGS = --wrap=none --to=commonmark_x-smart
 $(BUILDDIR)/%-mdbook.md: private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/strip_for_mdbook.lua
 $(BUILDDIR)/%-mdbook.md: $(BUILDDIR)/%-$(_processed).md
 	$(PANDOC) --standalone \
@@ -15,7 +16,7 @@ $(BUILDDIR)/%.mdbook/src/SUMMARY.md: $(BUILDDIR)/%-mdbook.md
 	$(MKDIR_P) $(@D)
 	split_mdbook_src.zsh $< $(@D) > $@
 
-$(BUILDDIR)/%.mdbook/book.toml: %-manifest.yml
+$(BUILDDIR)/%.mdbook/book.toml: $$(call parse_bookid,$$*)-manifest.yml
 	$(MKDIR_P) $(@D)
 	$(YQ) -t '{"book": {
 			"title": .title,
