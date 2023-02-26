@@ -252,19 +252,17 @@ all: $(FORMATS)
 define format_template =
 .PHONY: $(1)
 $(1): $(call pattern_list,$(2),.$(1))
-ifneq ($1,pdfs)
 $(1): $(and $(EDITS),$(call pattern_list,$(2),$(EDITS),.$(1)))
-endif
 endef
 
 $(foreach FORMAT,$(FORMATS),$(eval $(call format_template,$(FORMAT),$(TARGETS))))
 
 VIRTUALPDFS := $(call pattern_list,$(SOURCES),.pdfs)
-.PHONY: $(VIRTUALPDFS)
-$(VIRTUALPDFS): %.pdfs: $(call pattern_list,$$*,$(LAYOUTS),.pdf)
+VIRTUALEDITPDFS := $(and $(EDITS),$(call pattern_list,$(SOURCES),$(EDITS),.pdfs))
+.PHONY: $(VIRTUALPDFS) $(VIRTUALEDITPDFS)
+$(VIRTUALPDFS) $(VIRTUALEDITPDFS): %.pdfs: $(call pattern_list,$$*,$(LAYOUTS),.pdf)
 $(VIRTUALPDFS): %.pdfs: $(and $(EDITIONS),$(call pattern_list,$$*,$(EDITIONS),$(LAYOUTS),.pdf))
-$(VIRTUALPDFS): %.pdfs: $(and $(EDITS),$(call pattern_list,$$*,$(EDITS),$(LAYOUTS),.pdf))
-$(VIRTUALPDFS): %.pdfs: $(and $(EDITIONS),$(EDITS),$(call pattern_list,$$*,$(EDITIONS),$(EDITS),$(LAYOUTS),.pdf))
+$(VIRTUALEDITPDFS): %.pdfs: $$(and $(EDITIONS),$(EDITS),$$(call pattern_list,$$(call parse_bookid,$$*),$(EDITIONS),$(EDITS),$(LAYOUTS),.pdf))
 
 # Setup target dependencies to mimic stages of a CI pipeline
 ifeq ($(MAKECMDGOALS),ci)
@@ -367,10 +365,10 @@ $(DISTDIR).tar.bz2 $(DISTDIR).tar.gz $(DISTDIR).tar.xz $(DISTDIR).zip $(DISTDIR)
 
 # Some layouts have matching extra resources to build such as covers
 ifneq ($(strip $(COVERS)),false)
-$(VIRTUALPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_paperback),$(LAYOUTS)),$(_binding),.pdf)
-$(VIRTUALPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_hardcover),$(LAYOUTS)),$(_case) $(_jacket),.pdf)
-$(VIRTUALPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_coil),$(LAYOUTS)),$(_cover),.pdf)
-$(VIRTUALPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_stapled),$(LAYOUTS)),$(_binding),.pdf)
+$(VIRTUALPDFS) $(VIRTUALEDITPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_paperback),$(LAYOUTS)),$(_binding),.pdf)
+$(VIRTUALPDFS) $(VIRTUALEDITPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_hardcover),$(LAYOUTS)),$(_case) $(_jacket),.pdf)
+$(VIRTUALPDFS) $(VIRTUALEDITPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_coil),$(LAYOUTS)),$(_cover),.pdf)
+$(VIRTUALPDFS) $(VIRTUALEDITPDFS): %.pdfs: $$(call pattern_list,$$*,$(filter %-$(_stapled),$(LAYOUTS)),$(_binding),.pdf)
 endif
 
 # Some layouts have matching resources that need to be built first and included
