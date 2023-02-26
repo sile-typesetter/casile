@@ -252,6 +252,7 @@ all: $(FORMATS)
 define format_template =
 .PHONY: $(1)
 $(1): $(call pattern_list,$(2),.$(1))
+$(1): $(and $(EDITS),$(call pattern_list,$(2),$(EDITS),.$(1)))
 endef
 
 $(foreach FORMAT,$(FORMATS),$(eval $(call format_template,$(FORMAT),$(TARGETS))))
