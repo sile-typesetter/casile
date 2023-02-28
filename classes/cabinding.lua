@@ -4,7 +4,8 @@ local class = pl.class(cabook)
 class._name = "cabinding"
 
 local spineoffset = SILE.measurement(CASILE.spine):tonumber() / 2
-class.defaultFrameset = {
+
+local spreadFrameset = {
   front = {
     right = "right(page)",
     width = "50%pw-" .. spineoffset,
@@ -27,14 +28,33 @@ class.defaultFrameset = {
     rotate = 90,
     next = "scratch"
   },
-  scratch = { -- controling overflow from the spine is hard
+  scratch = { -- controling overflow is hard
     left = "left(page)",
     top = "bottom(page)",
     width = 0,
     height = 0
   }
 }
+
+local posterFrameset = {
+  front = {
+    right = "right(page)",
+    left = "left(page)",
+    top = "top(page)",
+    bottom = "bottom(page)",
+    next = "scratch"
+  },
+  scratch = { -- controling overflow is hard
+    left = "left(page)",
+    top = "bottom(page)",
+    width = 0,
+    height = 0
+  }
+}
+
 class.firstContentFrame = "front"
+
+class.defaultFrameset = spreadFrameset
 
 function class:_init (options)
 
@@ -60,12 +80,24 @@ end
 
 function class:declareOptions ()
   cabook.declareOptions(self)
+  local binding
+  self:declareOption("binding", function (_, value)
+      if value then binding = value end
+      if binding == "print" then
+        self.defaultFrameset = posterFrameset
+      end
+      return binding
+    end)
   self:declareOption("papersize", function (_, size)
     if size then
       self.papersize = size
       local parsed = SILE.papersize(size)
-      local spread = parsed[1] * 2 + SILE.measurement(CASILE.spine):tonumber()
-      SILE.documentState.paperSize = { spread, parsed[2] }
+      if self.options.binding ~= "print" then
+        local spread = parsed[1] * 2 + SILE.measurement(CASILE.spine):tonumber()
+        SILE.documentState.paperSize = { spread, parsed[2] }
+      else
+        SILE.documentState.paperSize = { parsed[1], parsed[2] }
+      end
       SILE.documentState.orgPaperSize = SILE.documentState.paperSize
       SILE.newFrame({
         id = "page",

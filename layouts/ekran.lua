@@ -1,5 +1,6 @@
 return function (class)
 
+  class.options.binding = "print"
   class.options.papersize = 1920 / 192 .. "in x " .. 1080 / 192 .. "in"
 
   if class._name == "cabook" then
