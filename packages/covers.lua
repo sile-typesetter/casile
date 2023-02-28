@@ -5,6 +5,11 @@ package._name = "covers"
 
 local color = "#FFFFFF"
 
+function package:_init ()
+  base._init(self)
+  self:loadPackage("markdown")
+end
+
 function package:registerCommands ()
 
   self:registerCommand("frontcover", function (_, _)
