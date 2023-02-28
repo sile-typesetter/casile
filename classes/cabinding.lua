@@ -52,9 +52,9 @@ local posterFrameset = {
   }
 }
 
-class.firstContentFrame = "front"
-
 class.defaultFrameset = spreadFrameset
+
+class.firstContentFrame = "front"
 
 function class:_init (options)
 
@@ -83,20 +83,18 @@ function class:declareOptions ()
   local binding
   self:declareOption("binding", function (_, value)
       if value then binding = value end
-      if binding == "print" then
-        self.defaultFrameset = posterFrameset
-      end
       return binding
     end)
   self:declareOption("papersize", function (_, size)
     if size then
       self.papersize = size
       local parsed = SILE.papersize(size)
-      if self.options.binding ~= "print" then
+      if binding == "print" or CASILE.layout == "print" then
+        self.defaultFrameset = posterFrameset
+        SILE.documentState.paperSize = { parsed[1], parsed[2] }
+      else
         local spread = parsed[1] * 2 + SILE.measurement(CASILE.spine):tonumber()
         SILE.documentState.paperSize = { spread, parsed[2] }
-      else
-        SILE.documentState.paperSize = { parsed[1], parsed[2] }
       end
       SILE.documentState.orgPaperSize = SILE.documentState.paperSize
       SILE.newFrame({
