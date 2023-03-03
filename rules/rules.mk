@@ -93,7 +93,6 @@ EDITIONEDITSOURCES += $(and $(EDITS),$(call pattern_list,$(SOURCES),$(EDITS),# )
 EDITIONEDITSOURCES += $(and $(EDITIONS),$(EDITS),$(call pattern_list,$(SOURCES),$(EDITIONS),$(EDITS),#))
 EDITIONEDITSOURCES := $(subst #,,$(EDITIONEDITSOURCES))
 
-
 # Categorize supported outputs
 PAPERSIZES := $(call localize,$(subst layouts/,,$(notdir $(basename $(wildcard $(CASILEDIR)/layouts/*.lua)))))
 BINDINGS = $(call localize,print paperback hardcover coil stapled)

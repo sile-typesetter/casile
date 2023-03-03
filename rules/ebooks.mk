@@ -1,4 +1,4 @@
-EPUBS := $(call pattern_list,$(SOURCES),.epub)
+EPUBS := $(call pattern_list,$(EDITIONEDITSOURCES),.epub)
 
 $(EPUBS): private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/epubclean.lua
 $(EPUBS): %.epub: $(BUILDDIR)/%-$(_processed).md $(BUILDDIR)/%-epub-metadata.yml
@@ -10,12 +10,12 @@ $(EPUBS): %.epub: $(BUILDDIR)/%-$(_processed).md $(BUILDDIR)/%-epub-metadata.yml
 
 DISTFILES += $(EPUBS)
 
-$(BUILDDIR)/%-epub-metadata.yml: %-manifest.yml %-epub-$(_poster).jpg | $(BUILDDIR)
+$(BUILDDIR)/%-epub-metadata.yml: $$(call parse_bookid,$$*)-manifest.yml %-epub-$(_poster).jpg | $(BUILDDIR)
 	echo '---' > $@
 	$(YQ) -M -e -y '{title: [ { type: "main", text: .title  }, { type: "subtitle", text: .subtitle } ], creator: .creator, contributor: .contributor, identifier: .identifier, date: .date | last | .text, published: .date | first | .text, lang: .lang, description: .abstract, rights: .rights, publisher: .publisher, source: (if .source then (.source[]? | select(.type == "title").text) else null end), "cover-image": "$(filter %.jpg,$^)" }' < $< >> $@
 	echo '...' >> $@
 
-MOBIS := $(call pattern_list,$(SOURCES),.mobi)
+MOBIS := $(call pattern_list,$(EDITIONEDITSOURCES),.mobi)
 
 $(MOBIS): %.mobi: %.epub
 	$(KINDLEGEN) $< ||:
