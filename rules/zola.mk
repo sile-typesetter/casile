@@ -28,12 +28,13 @@ $(BUILDDIR)/%.zola/content/_index.md: $(BUILDDIR)/%.zola/content/manifest.json %
 	coverimg = "$(firstword $(filter $(call pattern_list,$*,$(LAYOUTS),-$(_3d)-$(_front).png),$^ $|) $*-epub-$(_poster).jpg)"
 	+++
 	FRONTMATTER
-	$(and $(filter $*.mdbook,$^ $|),echo "- [Online oku]($(_read))")
-	$(and $(filter $*.epub,$^ $|),echo "- EPUB olarak indir: [epub]($*.epub)")
-	$(and $(filter $*.mobi,$^ $|),echo "- MOBI olarak indir: [mobi]($*.mobi)")
-	for pdf in $(filter $(call pattern_list,$*,$(LAYOUTS),.pdf),$^ $|); do
+	$(and $(filter %.mdbook,$|),echo "- [Online oku]($(_read))")
+	$(and $(filter %.epub,$|),echo "- EPUB olarak indir: [epub]($*.epub)")
+	$(and $(filter %.mobi,$|),echo "- MOBI olarak indir: [mobi]($*.mobi)")
+	for pdf in $(filter %.pdf,$|); do
 		echo "- PDF olarak indir: [$${$${pdf$(hash)$*-}%.pdf}]($$pdf)"
 	done
+	$(and $(filter %.html,$|),echo "- Düz sayfa görüntüle: [html]($*.html)")
 	EOF
 
 $(BUILDDIR)/%.zola/templates/series.html: $(ZOLA_TEMPLATE_SERIES) $(ZOLA_STYLE) | $(BUILDDIR)
