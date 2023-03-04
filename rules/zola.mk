@@ -8,7 +8,7 @@ $(ZOLAS): %.zola: $(addprefix $(BUILDDIR)/%.zola/,config.toml content/_index.md 
 	rm -rf "$$resourcedir"
 	$(MKDIR_P) "$$resourcedir"
 	$(and $(filter $*%,$^ $|),cp -a $(filter $*%,$^ $|) "$$resourcedir")
-	$(and $(filter $*.mdbook,$^ $|),mv $$resourcedir/$*.mdbook $$resourcedir/$(_read))
+	$(and $(filter $*.mdbook,$^ $|),ln -sf $$resourcedir/$*.mdbook $$resourcedir/$(_read))
 	rm -rf $@
 	$(ZOLA) -r "$(<D)" build -o "$@"
 
@@ -28,13 +28,21 @@ $(BUILDDIR)/%.zola/content/_index.md: $(BUILDDIR)/%.zola/content/manifest.json %
 	coverimg = "$(firstword $(filter $(call pattern_list,$*,$(LAYOUTS),-$(_3d)-$(_front).png),$^ $|) $*-epub-$(_poster).jpg)"
 	+++
 	FRONTMATTER
-	$(and $(filter %.mdbook,$|),echo "- [Online oku]($(_read))")
-	$(and $(filter %.epub,$|),echo "- EPUB olarak indir: [epub]($*.epub)")
-	$(and $(filter %.mobi,$|),echo "- MOBI olarak indir: [mobi]($*.mobi)")
+	for mdbook in $(filter %.mdbook,$|); do
+		echo "- Online Oku: [$${$${mdbook$(hash)$*-}%.mdbook}]($$mdbook)"
+	done
+	for epub in $(filter %.epub,$|); do
+		echo "- EPUB olarak indir: [$${$${epub$(hash)$*-}%.epub}]($$epub)"
+	done
+	for mobi in $(filter %.mobi,$|); do
+		echo "- MOBI olarak indir: [$${$${mobi$(hash)$*-}%.mobi}]($$mobi)"
+	done
 	for pdf in $(filter %.pdf,$|); do
 		echo "- PDF olarak indir: [$${$${pdf$(hash)$*-}%.pdf}]($$pdf)"
 	done
-	$(and $(filter %.html,$|),echo "- Düz sayfa görüntüle: [html]($*.html)")
+	for html in $(filter %.html,$|); do
+		echo "- Düz sayfa görüntüle: [$${$${html$(hash)$*-}%.html}]($$html)"
+	done
 	EOF
 
 $(BUILDDIR)/%.zola/templates/series.html: $(ZOLA_TEMPLATE_SERIES) $(ZOLA_STYLE) | $(BUILDDIR)
