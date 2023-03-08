@@ -8,8 +8,8 @@ return function (class)
     class.defaultFrameset = {
       content = {
         left = "left(page) + 2mm",
-        right = "rigt(page) - 2mm",
-        top = "bottom(runningHead) + 2mm",
+        right = "right(page) - 2mm",
+        top = "top(page) + 16mm",
         bottom = "top(footnotes)"
       },
       runningHead = {
