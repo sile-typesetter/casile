@@ -76,7 +76,7 @@ return function (class)
       SILE.scratch.headers.right = {}
     end)
 
-    if class.options.background() == "true" then
+    if class.options.background == "true" then
       SILE.require("packages/background")
       SILE.call("background", { color = "#e1e2e6" })
 
