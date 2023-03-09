@@ -165,6 +165,7 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
 
     # Developer tooling deps
     AM_COND_IF([DEVELOPER], [
+        AX_PROGVAR([black])
         AX_PROGVAR([checkmake])
         AX_PROGVAR([docker])
         AX_PROGVAR([luacheck])

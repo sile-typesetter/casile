@@ -211,12 +211,12 @@ node_modules: yarn.lock
 yarn.lock: package.json
 	$(YARN) install
 
-PHONY_DEVELOPER_TARGETS = lint rustfmt luacheck checkmake ruff clippy tagrelease release-preview release docker docker-dep-check docker-ghcr-to-hub docker-build-push
+PHONY_DEVELOPER_TARGETS = lint rustfmt luacheck checkmake ruff black clippy tagrelease release-preview release docker docker-dep-check docker-ghcr-to-hub docker-build-push
 .PHONY: $(PHONY_DEVELOPER_TARGETS)
 
 if DEVELOPER
 
-lint: clippy luacheck rustfmt checkmake ruff
+lint: clippy luacheck rustfmt checkmake ruff black
 
 rustfmt:
 	$(GIT) ls-files '*.rs' | $(XARGS) $(RUSTFMT) --check
@@ -229,6 +229,9 @@ checkmake:
 
 ruff:
 	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(RUFF)
+
+black:
+	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(BLACK) --check
 
 clippy:
 	cd $(srcdir)
