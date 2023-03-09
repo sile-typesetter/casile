@@ -8,7 +8,7 @@ import re
 file = sys.argv[1]
 metafile = re.sub("-.*$", ".yml", file)
 project = os.environ["PROJECT"]
-metadata = open(metafile, 'r').read()
+metadata = open(metafile, "r").read()
 yamldata = yaml.safe_load(metadata)
 
 if "title" in yamldata:
@@ -24,7 +24,7 @@ for word in words:
     if len > max:
         max = len
 
-lines = [ "" ]
+lines = [""]
 
 for word in words:
     if lines[-1].__len__() == 0:
@@ -36,4 +36,3 @@ for word in words:
 
 for line in lines:
     print(line)
-
