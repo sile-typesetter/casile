@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.16](https://github.com/sile-typesetter/casile/compare/v0.10.15...v0.10.16) (2023-03-14)
+
+
+### Features
+
+* **classes:** Add edition handler as class option ([5821e3d](https://github.com/sile-typesetter/casile/commit/5821e3d063d31dfa9081a2bc2ab676d89fab9461))
+* **deps:** Make sassc available to projects to ease plain html and epub styling ([24b32c0](https://github.com/sile-typesetter/casile/commit/24b32c0f2defc062af7e4b971ae872d9a4b490d7))
+* **ebooks:** Allow building different edits/editions as epub ([032584b](https://github.com/sile-typesetter/casile/commit/032584bd28d507e2924cc0c613fd665a328dca01))
+* **mdbook:** Markup numbered vs. unnumbered chapters in TOC ([56f4b6d](https://github.com/sile-typesetter/casile/commit/56f4b6dbfd57f46eef36324932e72952bb61dc1f))
+* **mdbook:** Split sections into subchapters ([21391ac](https://github.com/sile-typesetter/casile/commit/21391acfc9fe09518a96e4c3f45a75d99be2cfc7))
+* **rules:** Add plain standalone output format ([67107cb](https://github.com/sile-typesetter/casile/commit/67107cb3e026c7db1dfc9f72a37880d6348447dd))
+* **rules:** Add targets for covers and renderings of edits/editions ([076a762](https://github.com/sile-typesetter/casile/commit/076a7628a28704677240968eb440c301331e8568))
+* **rules:** Add targets for rendering resources with edits/editions ([978ffd8](https://github.com/sile-typesetter/casile/commit/978ffd814a8587a895600d631756a10c68e3e137))
+* **rules:** Allow mdbook output format with edits ([8663ac2](https://github.com/sile-typesetter/casile/commit/8663ac24821370638f3151bc3c2d38f244a9825c))
+* **rules:** Allow plain document output formats with edits ([86aa621](https://github.com/sile-typesetter/casile/commit/86aa6212e0b95f0d6b695ffe42552f5a773931a1))
+* **rules:** Expand pattern_list funuction from 5 to 7 segment handling ([473f0f4](https://github.com/sile-typesetter/casile/commit/473f0f40d86ad0ff804afd39a4e98c12b4860f70))
+* **rules:** Separate EDITS from EDITIONS so both can be used ([736e921](https://github.com/sile-typesetter/casile/commit/736e921c57e2fc8d05a8a626f29f3506a483fd3a))
+* **rules:** Use `flock` for more robust locking of single-thread jobs ([d1b9eda](https://github.com/sile-typesetter/casile/commit/d1b9edac7a2e5b4e0cc86013e696cd27a4de545c))
+* **templates:** Pass edit option to SIL template for use by document class ([c7db40c](https://github.com/sile-typesetter/casile/commit/c7db40c96e59d086de898a2c80bf68c711ca1482))
+* **zola:** List more possible output formats in zola resources links ([82e1963](https://github.com/sile-typesetter/casile/commit/82e1963b39ca798b19eb488858df1f1f3433166f))
+* **zola:** Output resource links to edits in all formats ([133dee3](https://github.com/sile-typesetter/casile/commit/133dee39168b7d2dbb35fed9b6ec17e5f798bf74))
+
+
+### Bug Fixes
+
+* **classes:** Make sure promotials use full-page covers ([1eb3598](https://github.com/sile-typesetter/casile/commit/1eb3598cd663ab1e7aa1f2df5cae98b13dc6f68f))
+* **docker:** Give Pandoc filters access to system Lua modules ([d7d0f28](https://github.com/sile-typesetter/casile/commit/d7d0f289fa0e7d0d977bd8285f42a637da05ab06))
+* **filters:** Update verses filter for current Pandoc API ([7b85712](https://github.com/sile-typesetter/casile/commit/7b85712683aa7550bb30d131d959b6a51836a38b))
+* **layouts:** Correct background option usage for app layouts ([2284bde](https://github.com/sile-typesetter/casile/commit/2284bde4d14b86e205896b924cc8f57d75f9bfea))
+* **layouts:** Fixup frame math race condition in app layout ([abf9751](https://github.com/sile-typesetter/casile/commit/abf975166c2e9c99da44a1b01359307d8c3a8286))
+* **mdbook:** Export 'books' that have no chapters in a navigable way ([e5d59ef](https://github.com/sile-typesetter/casile/commit/e5d59ef35255cd741fa7f5b78c2cd0e47dcfcf2d))
+* **packages:** Cast TOC entries to strings (actually this time) ([4443a94](https://github.com/sile-typesetter/casile/commit/4443a94be47d2454000b69c3085f5dc194fd0cab))
+* **packages:** Load required packges for default back cover function ([573dfc2](https://github.com/sile-typesetter/casile/commit/573dfc2480858a437a8f8db8dd486543277f582b))
+* **rules:** Allow 'with verses' builds even if no references found ([f33c534](https://github.com/sile-typesetter/casile/commit/f33c534344999f8173047a9ed2933509f36b4228))
+* **rules:** Allow mdbook generation when no author data present ([88f6925](https://github.com/sile-typesetter/casile/commit/88f6925fd32e70908c32658d0de42f646a716dd7))
+* **rules:** Fix conflicting xargs args to avoid warning ([4c861e2](https://github.com/sile-typesetter/casile/commit/4c861e25c8184b8a3bffb80435b3cbce5ff2ac75))
+* **rules:** Fix pattern nesting so editions plus edits work on the same outputs ([293a833](https://github.com/sile-typesetter/casile/commit/293a833a0df473387823da1db025f3eef20783aa))
+* **rules:** Suppress div wrappers that mess up footnote placement in some output formats ([e2d1961](https://github.com/sile-typesetter/casile/commit/e2d1961835ffd0237aa73c44287610eca362129e))
+* **rules:** Work around XVFB issues with parallel inscapes ([a8a7cf8](https://github.com/sile-typesetter/casile/commit/a8a7cf8bd125fd579fc1755413ca02ca20397fbe))
+* **scripts:** Fix footnote marker order normalization after en/em-dashes ([9a06ca6](https://github.com/sile-typesetter/casile/commit/9a06ca66c251d9b16e66047852069b79d08d3a17))
+
 ### [0.10.15](https://github.com/sile-typesetter/casile/compare/v0.10.14...v0.10.15) (2023-02-07)
 
 
