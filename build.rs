@@ -2,18 +2,19 @@ use clap::Command;
 use clap_complete::generator::generate_to;
 use clap_complete::shells::{Bash, Elvish, Fish, PowerShell, Zsh};
 use std::{collections, env, fs};
-use vergen::{vergen, Config};
+use vergen::EmitBuilder;
 
 include!("src/cli.rs");
 
 fn main() {
-    let mut flags = Config::default();
-    // If passed a version, use that instead of vergen's formatting
+    let mut builder = EmitBuilder::builder();
+    // If passed a version from automake, use that instead of vergen's formatting
     if let Ok(val) = env::var("CASILE_VERSION") {
-        *flags.git_mut().enabled_mut() = false;
-        println!("cargo:rustc-env=VERGEN_GIT_SEMVER={val}")
+        println!("cargo:rustc-env=VERGEN_GIT_DESCRIBE={val}")
+    } else {
+        builder = *builder.git_describe(true, true, None);
     };
-    vergen(flags).expect("Unable to generate the cargo keys!");
+    builder.emit().expect("Unable to generate the cargo keys!");
     pass_on_configure_details();
     generate_shell_completions();
 }

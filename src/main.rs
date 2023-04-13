@@ -9,7 +9,7 @@ fn main() -> Result<()> {
     CONF.defaults()?;
     CONF.merge_env()?;
     CONF.merge_files()?;
-    let cli = Command::new("casile").version(VERSION);
+    let cli = Command::new("casile").version(*VERSION);
     let cli = Cli::augment_args(cli);
     let matches = cli.get_matches();
     let args = Cli::from_arg_matches(&matches).expect("Unable to parse arguments");
