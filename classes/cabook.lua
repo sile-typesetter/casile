@@ -70,29 +70,29 @@ function class:declareOptions ()
   book.declareOptions(self)
   local binding, crop, edition, edit, background, verseindex, layout
   self:declareOption("binding", function (_, value)
-      if value then binding = value end
-      return binding
-    end)
+    if value then binding = value end
+    return binding
+  end)
   self:declareOption("crop", function (_, value)
-      if value then crop = SU.cast("boolean", value) end
-      return crop
-    end)
+    if value then crop = SU.cast("boolean", value) end
+    return crop
+  end)
   self:declareOption("edition", function (_, value)
-      if value then edition = value end
-      return edition
-    end)
+    if value then edition = value end
+    return edition
+  end)
   self:declareOption("edit", function (_, value)
-      if value then edit = value end
-      return edit
-    end)
+    if value then edit = value end
+    return edit
+  end)
   self:declareOption("background", function (_, value)
-      if value then background = SU.cast("boolean", value) end
-      return background
-    end)
+    if value then background = SU.cast("boolean", value) end
+    return background
+  end)
   self:declareOption("verseindex", function (_, value)
-      if value then verseindex = SU.cast("boolean", value) end
-      return verseindex
-    end)
+    if value then verseindex = SU.cast("boolean", value) end
+    return verseindex
+  end)
   self:declareOption("layout", function (_, value)
     if value then
       layout = value
