@@ -75,7 +75,7 @@ function package:registerCommands ()
               -- See https://github.com/simoncozens/sile/issues/318
               local lines = 1
               for i = 1, #SILE.typesetter.state.nodes do
-                lines = lines + (SILE.typesetter.state.nodes[i]:isPenalty() and 1 or 0)
+                lines = lines + (SILE.typesetter.state.nodes[i].is_penalty and 1 or 0)
               end
               for _ = lines, 5 do
                 SILE.call("hbox")
