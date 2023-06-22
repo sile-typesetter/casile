@@ -139,6 +139,8 @@ define link_verses ?=
 		link_verses.js
 endef
 
+cleanupcriticmarkfrompandoc = | $(PERL) $(PERLARGS) -pne 's/(\\([~<>])){2}/$$2$$2/g'
+
 define criticToSile ?=
 	$(SED) -e 's#{==#\\criticHighlight{#g' -e 's#==}#}#g' \
 		-e 's#{>>#\\criticComment{#g'   -e 's#<<}#}#g' \
