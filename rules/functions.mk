@@ -125,7 +125,7 @@ define munge ?=
 	for f in $1; do
 		$${SKIPM4} && $(GREP) -q "esyscmd" $$f && continue # skip anything with m4 macros
 		$(GIT) diff-files --quiet -- $$f || exit 1 # die if this file has uncommitted changes
-		$2 < $$f | sponge $$f
+		 < $$f $2 | sponge $$f
 		$(GIT) add -- $$f
 	done
 	$(GIT) diff-index --quiet --cached HEAD || $(GIT) commit -m "[auto] $3"
