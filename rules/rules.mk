@@ -1131,7 +1131,7 @@ $(BUILDDIR)/repository-worklog.md: $(BUILDDIR)/repository-worklog.sqlite force
 		while read author; do
 			$(SQLITE3) $< "SELECT DISTINCT strftime('%Y-%m', date) FROM commits WHERE author='$${author}'" |
 				while read month; do
-					$(SQLITE3) repository-worklog.sqlite "SELECT SUM(added+ -removed) FROM commits WHERE author='$${author}' and strftime('%Y-%m', date)='$${month}'" | read netadded
+					$(SQLITE3) $< "SELECT SUM(added+ -removed) FROM commits WHERE author='$${author}' and strftime('%Y-%m', date)='$${month}'" | read netadded
 					[[ $${netadded} -ge 1 ]] || continue
 					echo "# Worklog for $${author}"
 					echo "## $$(LANG=en_US date +'%B %Y' -d $${month}-01)"
@@ -1144,7 +1144,7 @@ $(BUILDDIR)/repository-worklog.md: $(BUILDDIR)/repository-worklog.sqlite force
 					echo
 					echo '``` table'
 					echo '---\nheader: True\n---'
-					$(SQLITE3) --header -csv repository-worklog.sqlite "SELECT $(WORKLOGFIELDS) FROM commits WHERE author='$${author}' AND strftime('%Y-%m', date)='$${month}'"
+					$(SQLITE3) --header -csv $< "SELECT $(WORKLOGFIELDS) FROM commits WHERE author='$${author}' AND strftime('%Y-%m', date)='$${month}'"
 					echo '```'
 					echo
 				done
