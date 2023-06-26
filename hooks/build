@@ -6,7 +6,7 @@ set -e
 REVISION=$(git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
 
 RUNTIME_DEPS='bc bcprov curl entr epubcheck fontconfig ghostscript git git-warp-time imagemagick inetutils'\
-' inkscape java-commons-lang jq kindlegen libertinus-font libgit2 m4 make mdbook moreutils nodejs procps-ng'\
+' inkscape java-commons-lang jq kindlegen libertinus-font libgit2 m4 make mdbook moreutils nodejs'\
 ' pandoc-sile-git pcre pdftk podofo-tools poppler povray sassc sile sqlite'\
 ' tex-gyre-fonts texlive-basic texlive-binextra ttf-hack yq zint zola zsh'\
 ' lua luarocks lua-colors-git lua-filesystem lua-yaml'\
