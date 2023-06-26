@@ -7,7 +7,7 @@ FROM docker.io/library/archlinux:$ARCHTAG AS base
 # Setup Caleb’s hosted Arch repository with prebuilt dependencies
 RUN pacman-key --init && pacman-key --populate
 RUN sed -i  /etc/pacman.conf -e \
-	'/^.community/{n;n;s!^!\n\[alerque\]\nServer = https://arch.alerque.com/$arch\n!}'
+	'/^.extra/{n;n;s!^!\n\[alerque\]\nServer = https://arch.alerque.com/$arch\n!}'
 RUN pacman-key --recv-keys 63CC496475267693 && pacman-key --lsign-key 63CC496475267693
 
 # This hack can convince Docker its cache is obsolete; e.g. when the contents
