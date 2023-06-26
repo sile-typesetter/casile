@@ -33,6 +33,10 @@ endif
 # shell code it wants to execute. We use this one because the 
 .SHELLFLAGS += _WRAPTARGET=true
 
+# Differentiate shells used to run recipies vs. shell wrapper function
+# See https://stackoverflow.com/q/65553367/313192
+_ENV := _WRAPTARGET=false
+
 .SHELLFLAGS += $(eval @?=)$(and $@,target=$@)
 .ONESHELL:
 .SECONDEXPANSION:

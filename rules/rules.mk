@@ -17,10 +17,6 @@ LANGUAGE ?= en
 # Empty recipes for anything we _don't_ want to bother rebuilding:
 $(MAKEFILE_LIST):;
 
-# Differentiate shells used to run recipies vs. shell wrapper function
-# See https://stackoverflow.com/q/65553367/313192
-_ENV := _WRAPTARGET=false
-
 export PATH := $(CASILEDIR)/scripts:$(PATH):$(shell $(_ENV) $(PYTHON) -c "import site; print(site.getsitepackages()[0]+'/scripts')")
 export HOSTNAME := $(shell $(_ENV) $(HOSTNAMEBIN))
 export PROJECT := $(PROJECT)
