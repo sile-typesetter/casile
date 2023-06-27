@@ -224,7 +224,7 @@ GITHUB_REF ?=
 CI_COMMIT_TAG ?=
 CI_MERGE_REQUEST_SOURCE_BRANCH_NAME ?=
 GITHUB_BASE_REF ?=
-CI_JOB_NAME ?=
+CI_JOB_NAME_SLUG ?=
 
 # Most CI runners need help getting the branch name because of sparse checkouts
 BRANCH := $(subst refs/heads/,,$(or $(CI_COMMIT_REF_NAME),$(GITHUB_HEAD_REF),$(GITHUB_REF),$(shell $(_ENV) $(GIT) rev-parse --abbrev-ref HEAD)))

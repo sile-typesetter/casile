@@ -98,9 +98,9 @@ _gha:
 	echo "::set-output name=VERSION::$(call versioninfo,$(PROJECT))"
 
 .PHONY: _glc
-_glc: $(CI_JOB_NAME).env
+_glc: $(CI_JOB_NAME_SLUG).env
 
-$(CI_JOB_NAME).env: $(NONDISTGOALS)
+$(CI_JOB_NAME_SLUG).env: $(NONDISTGOALS)
 	$(ZSH) << 'EOF' # inception to break out of CaSILE’s make shell wrapper
 	export PS4=; set -x ; exec 2> $@ # black magic to output sourcable content
 	DISTDIR="$(DISTDIR)"

@@ -177,14 +177,13 @@ default:
     name: "siletypesetter/casile:latest"
     entrypoint: [""]
 variables:
-  DISTDIR: $CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA
+  DISTDIR: $CI_PROJECT_NAME-$CI_JOB_NAME_SLUG-$CI_COMMIT_SHORT_SHA
 casile:
   script:
     - casile make -- pdfs epub renderings
   artifacts:
     name: $DISTDIR
-    paths:
-      - ./$DISTDIR
+    paths: [ ./$DISTDIR/* ]
 ```
 
 ### Dependencies
