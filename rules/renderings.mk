@@ -130,8 +130,8 @@ $(BOOKSCENES): $(BUILDDIR)/%-$(_3d).pov: $$(geometryfile) $(BUILDDIR)/%.inc
 		#declare MaxPile = $(call scale,25,5);
 	EOF
 
-ifneq ($(strip $(SOURCES)),$(strip $(PROJECT)))
 SERIESSCENES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(PROJECT),$(RENDERED),-$(_3d).pov))
+ifneq ($(strip $(SOURCES)),$(strip $(PROJECT)))
 $(SERIESSCENES): $(BUILDDIR)/$(PROJECT)-%-$(_3d).pov: $(BUILDDIR)/$(firstword $(EDITIONEDITSOURCES))-%-$(_3d).pov $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),-%.inc))
 	cat <<- EOF > $@
 		#include "$<"
