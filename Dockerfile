@@ -73,6 +73,10 @@ ENV LANG=en_US.UTF-8
 # root permissions anyway so we're not really adding insecure surface area here.
 RUN git config --system --add safe.directory '*'
 
+# Set user info for when CaSILE commits directly, can of course be overridden
+RUN git config --system user.name "The CaSILE Toolkit" && \
+    git config --system user.email "casile@sile-typesetter.org"
+
 # ImageMagick has started aggressively adding -dSAFER (also the default since
 # Ghostscript 9.5) to callouts to `gs`. This works if the processes inside
 # Docker are running as root, but we're often using setpriv to match file
