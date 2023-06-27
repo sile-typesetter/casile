@@ -116,8 +116,6 @@ list:
 		$(EGREP) -v -e '^[^[:alnum:]]' -e '^$@$$' |
 		$(XARGS)
 
-.PHONY: update_toolkits
-
 .PHONY: upgrade_toolkits
 upgrade_toolkits: upgrade_casile
 
