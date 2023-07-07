@@ -140,6 +140,7 @@ normalize_lua: $(LUASOURCES)
 	$(call munge,$^,$(SED) -e 's/function */function /g',Normalize Lua coding style)
 
 .PHONY: normalize_markdown
+normalize_markdown: private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/titlecase_titles.lua
 normalize_markdown: $(MARKDOWNSOURCES)
 	$(call munge,$(filter %.md,$^),msword_escapes.pl,Fixup bad MS word typing habits that Pandoc tries to preserve)
 	$(call munge,$(filter %.md,$^),lazy_quotes.pl,Replace lazy double single quotes with real doubles)
@@ -170,6 +171,7 @@ split_chapters:
 	$(foreach SOURCE,$(MARKDOWNSOURCES),$(call split_chapters,$(SOURCE)))
 
 .PHONY: normalize_files
+normalize_files: private PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/titlecase_titles.lua
 normalize_files: private PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/chapterid.lua
 normalize_files:
 	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
