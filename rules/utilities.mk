@@ -168,7 +168,7 @@ normalize: normalize_lua normalize_markdown normalize_references
 
 split_chapters:
 	$(if $(MARKDOWNSOURCES),,exit 0)
-	$(foreach SOURCE,$(MARKDOWNSOURCES),$(call split_chapters,$(SOURCE)))
+	$(foreach SOURCE,$(MARKDOWNSOURCES),$(call split_chapters,$(SOURCE));)
 
 .PHONY: normalize_files
 normalize_files: private PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/titlecase_titles.lua
