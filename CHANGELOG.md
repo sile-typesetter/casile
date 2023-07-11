@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.11.0](https://github.com/sile-typesetter/casile/compare/v0.10.17...v0.11.0) (2023-07-11)
+
+
+### Features
+
+* **filters:** Add filter to fix title-casing of headings ([2abf654](https://github.com/sile-typesetter/casile/commit/2abf654b4c77a05fb6bdb47acbf2f6a029a7808e))
+* **rules:** Add machine translation targets using DeepL ([2a9a6e2](https://github.com/sile-typesetter/casile/commit/2a9a6e24c13ae593ff0ff7167b2223d66cb87263))
+* **rules:** Add post-processing no Pandoc normalization to restore CriticMark stuff ([9c579db](https://github.com/sile-typesetter/casile/commit/9c579db20615a433ca3d3d1d5bf5c38e0c677aa8))
+* **rules:** Allow munge command to be a whole pipeline instead of one entry ([25b2d3a](https://github.com/sile-typesetter/casile/commit/25b2d3a30f4eaf2b67a5f5cd7c1d1d1f755cf2b2))
+* **rules:** Apply four_space_rule extension for easier list editing in some editors ([e591701](https://github.com/sile-typesetter/casile/commit/e5917019d5faa874376b5c87de5f9b9f25dd6ad6))
+* **scripts:** Add helper script for finding related files ([2295a65](https://github.com/sile-typesetter/casile/commit/2295a65a2f0fcadb310b02a50d2219dd17c56f84))
+
+
+### Bug Fixes
+
+* **docker:** Install all of texlive, we need the biggest (font) packages anyway ([aea24f5](https://github.com/sile-typesetter/casile/commit/aea24f590b51be48cf506a83104156b6f91f80ba))
+* **docker:** Update Arch repositories post upstream re-org ([5af30eb](https://github.com/sile-typesetter/casile/commit/5af30eb78cd0d53521207c3ded3908ccc927e03b))
+* **docker:** Update Docker deps to canonical distro package name ([dee0c76](https://github.com/sile-typesetter/casile/commit/dee0c76b481ff71c46ea97d0ba89e8b22904fb66))
+* **docker:** Update Docker deps with Arch Linux podofo package split ([8131675](https://github.com/sile-typesetter/casile/commit/8131675834733b489d2141640e86334acc73beaf))
+* **functions:** Catch new chapter loader syntax so operation isn't duplicated ([e40563e](https://github.com/sile-typesetter/casile/commit/e40563e21206aa56dacfb245febdbb7929d815fc))
+* **functions:** Handle splitting more than one base book per project ([9f9eca2](https://github.com/sile-typesetter/casile/commit/9f9eca2e8500af4d24adf742259f21a081c4cea9))
+* **rules:** Fix worklog reports reading correct database file ([b7307ad](https://github.com/sile-typesetter/casile/commit/b7307ad3f8e6255518b5fcb2a60bb6581443b359))
+
 ### [0.10.17](https://github.com/sile-typesetter/casile/compare/v0.10.16...v0.10.17) (2023-04-13)
 
 
