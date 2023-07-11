@@ -14,11 +14,11 @@ colored = "2.0"
 fluent = "0.12"
 fluent-fallback = "0.0"
 fluent-langneg = "0.13"
-itertools = "0.10"
+itertools = "0.11"
 lazy_static = "1.4"
-num_cpus = "1.15"
+num_cpus = "1.16"
 rayon = "1.7"
-rust-embed = "6.6"
+rust-embed = "6.8"
 subprocess = "0.2"
 unic-langid = "0.9"
 
@@ -28,7 +28,7 @@ unic-langid = "0.9"
   features = [ "yaml" ]
 
   [dependencies.clap]
-  version = "4.2"
+  version = "4.3"
   features = [ "derive", "wrap_help" ]
 
   [dependencies.git2]
@@ -44,19 +44,19 @@ unic-langid = "0.9"
   default-features = false
 
   [dependencies.regex]
-  version = "1.7"
+  version = "1.9"
   default-features = false
   features = [ "std" ]
 
 [build-dependencies.clap]
-version = "4.2"
+version = "4.3"
 features = [ "derive" ]
 
 [build-dependencies.clap_complete]
-version = "4.2"
+version = "4.3"
 
 [build-dependencies.vergen]
-version = "8.1"
+version = "8.2"
 default-features = false
 features = [ "build", "cargo", "git", "gitoxide" ]
 
