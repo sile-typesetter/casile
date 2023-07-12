@@ -15,7 +15,7 @@ outputs:
     description: Version string
 runs:
   using: docker
-  image: docker://ghcr.io/sile-typesetter/casile:v0.11.0
+  image: docker://ghcr.io/sile-typesetter/casile:v0.11.1
   args:
     - ${{ inputs.args }}
 branding:

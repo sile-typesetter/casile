@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.1](https://github.com/sile-typesetter/casile/compare/v0.11.0...v0.11.1) (2023-07-12)
+
+
+### Bug Fixes
+
+* **build:** Include new script subcommand sources in source package ([ddbb5ea](https://github.com/sile-typesetter/casile/commit/ddbb5ea8d130efa5b5933d5764559d3786d9df29))
+
 ## [0.11.0](https://github.com/sile-typesetter/casile/compare/v0.10.17...v0.11.0) (2023-07-11)
 
 
