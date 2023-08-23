@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.2](https://github.com/sile-typesetter/casile/compare/v0.11.1...v0.11.2) (2023-08-23)
+
+
+### Features
+
+* **docker:** Rebuild image with SILE v0.14.11 from upstream Arch Linux ([622a184](https://github.com/sile-typesetter/casile/commit/622a1846516cf418391aaff74fc72c02662ede54))
+* **filters:** Allow style guide meta data to impact title case normalization ([9f2d4f5](https://github.com/sile-typesetter/casile/commit/9f2d4f5143e3f7c3c0fe5933c65983b46c7bfa40))
+
 ### [0.11.1](https://github.com/sile-typesetter/casile/compare/v0.11.0...v0.11.1) (2023-07-12)
 
 
