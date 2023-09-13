@@ -50,6 +50,7 @@ autom4te.cache
 /depcomp
 build-aux/install-sh
 build-aux/missing
+build-aux/rust_boilerplate.mk
 /stamp-h1
 
 ### Python ###

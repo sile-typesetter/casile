@@ -7,7 +7,7 @@ description = "The command line interface to the CaSILE toolkit, a book publishi
 homepage = "https://github.com/sile-typesetter/casile"
 repository = "https://github.com/sile-typesetter/casile"
 license = "AGPL-3"
-build = "build.rs"
+build = "build-aux/build.rs"
 
 [dependencies]
 colored = "2.0"
