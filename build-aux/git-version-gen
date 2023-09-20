@@ -152,7 +152,7 @@ then
 # directory, and "git describe" output looks sensible, use that to
 # derive a version string.
 elif test "`git log -1 --pretty=format:x . 2>/dev/null`" = x \
-    && v=`git describe --tags --abbrev=7 --match="$prefix*" HEAD 2>/dev/null \
+    && v=`git describe --tags --abbrev=7 --match="$prefix*\.*\.*" HEAD 2>/dev/null \
           || git describe --tags --abbrev=7 HEAD 2>/dev/null \
           || git log -1 --pretty=format:'v0-HEAD-%h' 2>/dev/null` \
     && v=`printf '%s\n' "$v" | sed "$tag_sed_script"` \
@@ -166,8 +166,8 @@ then
     #   Newer: v6.10-77-g0f8faeb
     #   Older: v6.10-g0f8faeb
     case $v in
-        *-*-*) : git describe is okay three part flavor ;;
-        *-*)
+        *-*-g*) : git describe is okay three part flavor ;;
+        *-g*)
             : git describe is older two part flavor
             # Recreate the number of commits and rewrite such that the
             # result is the same as if we were using the newer version
@@ -182,7 +182,7 @@ then
             ;;
     esac
 
-    v=`echo "$v" | sed 's/-/.r/'`;
+    v=`echo "$v" | sed 's/-\([0-9]\)/.r\1/'`;
     v_from_git=1
 else
     v=UNKNOWN

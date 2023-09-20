@@ -5,12 +5,11 @@ AC_CONFIG_MACRO_DIR([build-aux])
 AM_INIT_AUTOMAKE([foreign tar-pax dist-xz dist-zip no-dist-gzip color-tests subdir-objects])
 AM_SILENT_RULES([yes])
 
+AX_GIT_VERSION
+AX_TRANSFORM_PACKAGE_NAME
+
 # Build time deps
-AC_PROG_AWK
-AC_PROG_GREP
-AC_PROG_INSTALL
 AC_PROG_SED
-AX_PROGVAR([stat])
 AX_PROGVAR([xargs])
 
 AX_RUST_BOILERPLATE
@@ -19,7 +18,10 @@ AX_RUST_BOILERPLATE
 AM_COND_IF([DEPENDENCY_CHECKS], [
 
     # Run time deps
+    AC_PROG_AWK
     AC_PROG_EGREP
+    AC_PROG_GREP
+    AC_PROG_INSTALL
     AC_PROG_MKDIR_P
     AX_PROGVAR([bc])
     AX_PROGVAR([curl])
@@ -57,6 +59,7 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     AX_PROGVAR([sort])
     AX_PROGVAR([sponge])
     AX_PROGVAR([sqlite3])
+    AX_PROGVAR([stat])
     AX_PROGVAR([truncate])
     AX_PROGVAR([wc])
     AX_PROGVAR([xcf2png])
@@ -105,9 +108,6 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     ])
 ])
 
-TRANSFORMED_PACKAGE_NAME="$(printf "$PACKAGE_NAME" | $SED -e "${program_transform_name//\$\$/\$}")"
-AC_SUBST([TRANSFORMED_PACKAGE_NAME])
-
 AC_DEFUN([AX_SCRIPT], [AC_CONFIG_FILES([scripts/$1], [chmod +x scripts/$1])])
 
 AC_CONFIG_FILES([Makefile])
@@ -142,7 +142,5 @@ AX_SCRIPT([stats.zsh])
 AX_SCRIPT([toc2breaks.lua])
 AX_SCRIPT([unicode_symbols.pl])
 AX_SCRIPT([worklog.zsh])
-
-AC_ARG_PROGRAM
 
 AC_OUTPUT
