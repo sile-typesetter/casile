@@ -166,14 +166,25 @@ function package:registerCommands ()
         if SILE.Commands["book:chapter:precounter"] then SILE.call("book:chapter:precounter") end
         SILE.call(options.prenumber)
       end
-      SILE.call("show-multilevel-counter", { id = "sectioning", display = options.display, minlevel = level, level = level })
+      SILE.call("show-multilevel-counter", {
+        id = "sectioning",
+        display = options.display,
+        minlevel = level,
+        level = level
+      })
       if options.postnumber and SILE.Commands[options.postnumber] then
         SILE.call(options.postnumber)
       end
       local number = self.class.packages.counters:formatCounter({ display = "arabic", value = counters.value[level] })
-      if not options.skiptoc then SILE.call("tocentry", { level = options.level, number = tonumber(number) }, toc_content) end
+      if not options.skiptoc then SILE.call("tocentry", {
+        level = options.level,
+        number = tonumber(number)
+      }, toc_content) end
     else
-      if not options.skiptoc then SILE.call("tocentry", { level = options.level, number = false }, content) end
+      if not options.skiptoc then SILE.call("tocentry", {
+        level = options.level,
+        number = false
+      }, content) end
     end
   end)
 
@@ -445,7 +456,12 @@ function package:registerCommands ()
       SILE.call("skip", { height = "-3en" })
     end
     SILE.scratch.last_was_ref = false
-    SILE.call("font", { family = "Libertinus Serif", weight = 400, style = "Italic", features = "+salt,+ss02,+onum,+liga,+dlig,+clig" })
+    SILE.call("font", {
+      family = "Libertinus Serif",
+      weight = 400,
+      style = "Italic",
+      features = "+salt,+ss02,+onum,+liga,+dlig,+clig"
+    })
     SILE.settings:set("linespacing.fit-font.extra-space", SILE.length("0.25ex plus 0.05ex minus 0.05ex"))
   end)
 

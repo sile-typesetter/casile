@@ -470,8 +470,8 @@ $(FCCONFIG): | $(BUILDDIR)
 		<?xml version="1.0"?>
 		<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
 		<fontconfig>$(foreach DIR,$(FONTDIRS),
-		    <dir>$(shell $(_ENV) cd "$(shell $(_ENV) dirname $(DIR))" && pwd)</dir>)
-		    <include ignore_missing="no">$(FCDEFAULT)</include>
+			<dir>$(shell $(_ENV) cd "$(shell $(_ENV) dirname $(DIR))" && pwd)</dir>)
+			<include ignore_missing="no">$(FCDEFAULT)</include>
 		</fontconfig>
 	EOF
 

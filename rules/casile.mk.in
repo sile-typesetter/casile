@@ -30,7 +30,8 @@ ifeq ($(DEBUG),true)
 endif
 
 # We *must* pass at least one argument to our custom shell before make adds the
-# shell code it wants to execute. We use this one because the 
+# shell code it wants to execute. We use this one because its easy to falsify
+# in our $(shell) wrapper environment...
 .SHELLFLAGS += _WRAPTARGET=true
 
 # Differentiate shells used to run recipies vs. shell wrapper function
