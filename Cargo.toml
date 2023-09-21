@@ -31,6 +31,9 @@ unic-langid = "0.9"
   version = "4.3"
   features = [ "derive", "wrap_help" ]
 
+  [build-dependencies.clap_mangen]
+  version = "0.2"
+
   [dependencies.git2]
   version = "0.17"
   default-features = false
