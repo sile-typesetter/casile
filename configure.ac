@@ -14,7 +14,6 @@ AX_PROGVAR([xargs])
 
 AX_RUST_BOILERPLATE
 
-
 AM_COND_IF([DEPENDENCY_CHECKS], [
 
     # Run time deps

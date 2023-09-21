@@ -1,6 +1,7 @@
 AC_DEFUN_ONCE([AX_RUST_BOILERPLATE], [
 
         AX_TRANSFORM_PACKAGE_NAME
+        AX_SHELL_COMPLETION_DIRS
 
         AC_ARG_ENABLE(debug,
                 AS_HELP_STRING([--enable-debug],
