@@ -7,8 +7,8 @@ ACLOCAL_AMFLAGS = -I build-aux
 .SECONDEXPANSION:
 .DELETE_ON_ERROR:
 
-licensedir = $(datarootdir)/licenses/$(TRANSFORMED_PACKAGE_NAME)
 docdir = $(datarootdir)/doc/$(TRANSFORMED_PACKAGE_NAME)
+licensedir = $(datarootdir)/licenses/$(TRANSFORMED_PACKAGE_NAME)
 datadir = $(datarootdir)/$(TRANSFORMED_PACKAGE_NAME)
 pkgdatadir = $(datadir)
 
@@ -17,7 +17,8 @@ reverse_lang_key_files = $(patsubst %.mk,%-reversed.mk,$(lang_key_files))
 
 pkgdata_SCRIPTS = make-shell.zsh
 dist_doc_DATA = README.md CHANGELOG.md
-dist_license_DATA = LICENSE
+dist_license_DATA = LICENSE.md
+dist_man_MANS =
 nobase_data_DATA = rules/casile.mk $(reverse_lang_key_files)
 nobase_dist_data_DATA = rules/rules.mk rules/functions.mk rules/translation.mk rules/utilities.mk $(lang_key_files)
 nobase_dist_data_DATA += rules/ebooks.mk rules/mdbook.mk rules/renderings.mk rules/zola.mk
