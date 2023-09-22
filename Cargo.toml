@@ -6,7 +6,7 @@ edition = "2018"
 description = "The command line interface to the CaSILE toolkit, a book publishing workflow employing SILE and other wizardry"
 homepage = "https://github.com/sile-typesetter/casile"
 repository = "https://github.com/sile-typesetter/casile"
-license = "AGPL-3"
+license = "AGPL-3.0"
 build = "build.rs"
 
 [dependencies]
