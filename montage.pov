@@ -5,14 +5,14 @@
 #local SZ = 0;
 
 union {
-  #for (BookNo,1,BookCount)
-    #local SeriesNo = BookCount - BookNo;
-    union {
-      Book(Books[SeriesNo])
-      #local SZ = SZ + BZ + CoverThickness;
-      translate < 0, 0, -SZ >
-    }
-  #end
+	#for (BookNo,1,BookCount)
+		#local SeriesNo = BookCount - BookNo;
+		union {
+			Book(Books[SeriesNo])
+			#local SZ = SZ + BZ + CoverThickness;
+			translate < 0, 0, -SZ >
+		}
+	#end
 }
 
 camera {

@@ -67,7 +67,7 @@ if #toc > 0 then
   breaks = { 1 }
 
   -- Get a table of major (more that 2 pages apart) TOC entries
-	-- TODO: should this be ipairs()?
+  -- TODO: should this be ipairs()?
   for _, tocentry in pairs(toc) do
     if tocentry.level <= 2 then
       local pageno = tonumber(tocentry.pageno)

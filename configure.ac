@@ -5,92 +5,22 @@ AC_CONFIG_MACRO_DIR([build-aux])
 AM_INIT_AUTOMAKE([foreign tar-pax dist-xz dist-zip no-dist-gzip color-tests subdir-objects])
 AM_SILENT_RULES([yes])
 
+AX_GIT_VERSION
+AX_TRANSFORM_PACKAGE_NAME
+
 # Build time deps
-AC_PROG_AWK
-AC_PROG_GREP
-AC_PROG_INSTALL
 AC_PROG_SED
-AX_PROGVAR([cargo])
-AX_PROGVAR([cmp])
-AX_PROGVAR([stat])
-AX_PROGVAR([rustc])
 AX_PROGVAR([xargs])
 
-AC_ARG_ENABLE([dependency-checks],
-              AS_HELP_STRING([--disable-dependency-checks],
-                             [Disable dependency checks]))
-AM_CONDITIONAL([DEPENDENCY_CHECKS], [test "x$enable_dependency_checks" != "xno"])
-
-AC_ARG_ENABLE([developer],
-              AS_HELP_STRING([--enable-developer],
-                             [Check for and enable tooling required only for developers]))
-AM_CONDITIONAL([DEVELOPER], [test "x$enable_developer" = "xyes"])
-
-# Add --enable-debug flag to change Rust build mode
-AC_ARG_ENABLE(debug,
-            AS_HELP_STRING([--enable-debug],[Build Rust code with debugging information [default=no]]),
-            [debug_release=$enableval],
-            [debug_release=no])
-
-AC_MSG_CHECKING(whether to build Rust code with debugging information)
-if test "x$debug_release" = "xyes" ; then
-    AC_MSG_RESULT(yes)
-    RUST_TARGET_SUBDIR=debug
-else
-    AC_MSG_RESULT(no)
-    RUST_TARGET_SUBDIR=release
-fi
-AM_CONDITIONAL([DEBUG_RELEASE], [test "x$debug_release" = "xyes"])
-
-AC_ARG_WITH([bash-completion-dir],
-    AS_HELP_STRING([--with-bash-completion-dir[=PATH]],
-        [Install the bash auto-completion script in this directory. @<:@default=yes@:>@]),
-    [],
-    [with_bash_completion_dir=yes])
-if test "x$with_bash_completion_dir" = "xyes"; then
-    PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0],
-                      [BASH_COMPLETION_DIR="`pkg-config --define-variable=datadir=$datadir --variable=completionsdir bash-completion`"],
-        [BASH_COMPLETION_DIR="$datadir/bash-completion/completions"])
-else
-    BASH_COMPLETION_DIR="$with_bash_completion_dir"
-fi
-AC_SUBST([BASH_COMPLETION_DIR])
-AM_CONDITIONAL([ENABLE_BASH_COMPLETION],[test "x$with_bash_completion_dir" != "xno"])
-
-AC_ARG_WITH([fish-completion-dir],
-    AS_HELP_STRING([--with-fish-completion-dir[=PATH]],
-        [Install the fish auto-completion script in this directory. @<:@default=yes@:>@]),
-    [],
-    [with_fish_completion_dir=yes])
-if test "x$with_fish_completion_dir" = "xyes"; then
-    PKG_CHECK_MODULES([FISH_COMPLETION], [fish >= 3.0],
-                      [FISH_COMPLETION_DIR="`pkg-config --define-variable=datadir=$datadir --variable=completionsdir fish`"],
-        [FISH_COMPLETION_DIR="$datadir/fish/vendor_completions.d"])
-else
-    FISH_COMPLETION_DIR="$with_fish_completion_dir"
-fi
-AC_SUBST([FISH_COMPLETION_DIR])
-AM_CONDITIONAL([ENABLE_FISH_COMPLETION],[test "x$with_fish_completion_dir" != "xno"])
-
-AC_ARG_WITH([zsh-completion-dir],
-    AS_HELP_STRING([--with-zsh-completion-dir[=PATH]],
-        [Install the zsh auto-completion script in this directory. @<:@default=yes@:>@]),
-    [],
-    [with_zsh_completion_dir=yes])
-if test "x$with_zsh_completion_dir" = "xyes"; then
-    ZSH_COMPLETION_DIR="$datadir/zsh/site-functions"
-else
-    ZSH_COMPLETION_DIR="$with_zsh_completion_dir"
-fi
-AC_SUBST([ZSH_COMPLETION_DIR])
-AM_CONDITIONAL([ENABLE_ZSH_COMPLETION],[test "x$with_zsh_completion_dir" != "xno"])
-
-AC_SUBST([RUST_TARGET_SUBDIR])
+AX_RUST_BOILERPLATE
 
 AM_COND_IF([DEPENDENCY_CHECKS], [
 
     # Run time deps
+    AC_PROG_AWK
     AC_PROG_EGREP
+    AC_PROG_GREP
+    AC_PROG_INSTALL
     AC_PROG_MKDIR_P
     AX_PROGVAR([bc])
     AX_PROGVAR([curl])
@@ -128,6 +58,7 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     AX_PROGVAR([sort])
     AX_PROGVAR([sponge])
     AX_PROGVAR([sqlite3])
+    AX_PROGVAR([stat])
     AX_PROGVAR([truncate])
     AX_PROGVAR([wc])
     AX_PROGVAR([xcf2png])
@@ -172,13 +103,11 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
         AX_PROGVAR([docker])
         AX_PROGVAR([luacheck])
         AX_PROGVAR([ruff])
-        AX_PROGVAR([rustfmt])
         AX_PROGVAR([tr])
     ])
 ])
 
-TRANSFORMED_PACKAGE_NAME="$(printf "$PACKAGE_NAME" | $SED -e "${program_transform_name//\$\$/\$}")"
-AC_SUBST([TRANSFORMED_PACKAGE_NAME])
+AC_DEFUN([AX_SCRIPT], [AC_CONFIG_FILES([scripts/$1], [chmod +x scripts/$1])])
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([rules/casile.mk])
@@ -212,7 +141,5 @@ AX_SCRIPT([stats.zsh])
 AX_SCRIPT([toc2breaks.lua])
 AX_SCRIPT([unicode_symbols.pl])
 AX_SCRIPT([worklog.zsh])
-
-AC_ARG_PROGRAM
 
 AC_OUTPUT

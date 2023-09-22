@@ -7,8 +7,8 @@ ACLOCAL_AMFLAGS = -I build-aux
 .SECONDEXPANSION:
 .DELETE_ON_ERROR:
 
-licensedir = $(datarootdir)/licenses/$(TRANSFORMED_PACKAGE_NAME)
 docdir = $(datarootdir)/doc/$(TRANSFORMED_PACKAGE_NAME)
+licensedir = $(datarootdir)/licenses/$(TRANSFORMED_PACKAGE_NAME)
 datadir = $(datarootdir)/$(TRANSFORMED_PACKAGE_NAME)
 pkgdatadir = $(datadir)
 
@@ -17,19 +17,26 @@ reverse_lang_key_files = $(patsubst %.mk,%-reversed.mk,$(lang_key_files))
 
 pkgdata_SCRIPTS = make-shell.zsh
 dist_doc_DATA = README.md CHANGELOG.md
-dist_license_DATA = LICENSE
+dist_license_DATA = LICENSE.md
+dist_man_MANS =
 nobase_data_DATA = rules/casile.mk $(reverse_lang_key_files)
 nobase_dist_data_DATA = rules/rules.mk rules/functions.mk rules/translation.mk rules/utilities.mk $(lang_key_files)
 nobase_dist_data_DATA += rules/ebooks.mk rules/mdbook.mk rules/renderings.mk rules/zola.mk
 _casile_libs = src/lib.rs src/cli.rs src/config.rs src/i18n.rs
 _casile_modules = src/make/mod.rs src/script/mod.rs src/setup/mod.rs src/status/mod.rs
 _casile_assets = assets/en-US/cli.ftl assets/tr-TR/cli.ftl
-casile_SOURCES = Cargo.toml build.rs src/main.rs $(_casile_libs) $(_casile_modules) $(_casile_assets)
-EXTRA_casile_SOURCES = Cargo.lock tests/cli.rs
 bin_PROGRAMS = casile
+casile_SOURCES = src/main.rs $(_casile_libs) $(_casile_modules) $(_casile_assets)
+EXTRA_casile_SOURCES = tests/cli.rs
 EXTRA_DIST = package.json yarn.lock requirements.txt
 EXTRA_DIST += build-aux/action-updater.js build-aux/cargo-updater.js build-aux/git-version-gen
 EXTRA_DIST += Dockerfile build-aux/bootstrap-docker.sh build-aux/docker-fontconfig.conf hooks/build
+
+BUILT_SOURCES =
+
+CLEANFILES =
+
+include $(top_srcdir)/build-aux/rust_boilerplate.am
 
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
@@ -90,80 +97,9 @@ dist_layouts_DATA = layouts/a4.lua layouts/a4ciltli.lua layouts/a5trim.lua layou
 assetsdir = $(datadir)
 nobase_dist_assets_DATA = assets/en-US/casile.ftl assets/tr-TR/casile.ftl
 
-BUILT_SOURCES = .version
-CLEANFILES = $(BUILT_SOURCES) .version-prev $(bin_PROGRAMS) $(dist_scripts_SCRIPTS)
+CLEANFILES += $(bin_PROGRAMS) $(dist_scripts_SCRIPTS)
 
-if DEBUG_RELEASE
-CARGO_RELEASE_ARGS=--all-features
-_TARGETDIR=debug
-else
-CARGO_RELEASE_ARGS=--release --locked --all-features
-_TARGETDIR=release
-endif
-
-CARGO_ENV = CARGO_TARGET_DIR=@abs_top_builddir@/target
-RUST_BIN = @abs_top_builddir@/target/@RUST_TARGET_SUBDIR@/$(PACKAGE_NAME)
-_RUST_OUT = @abs_top_builddir@/target/@RUST_TARGET_SUBDIR@/.cargo_out_dir
-COMPLETIONS_OUT_DIR = completions
-
-if ENABLE_BASH_COMPLETION
-bashcompletiondir = $(BASH_COMPLETION_DIR)
-nodist_bashcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME)
-CLEANFILES += $(nodist_bashcompletion_DATA)
-endif
-
-if ENABLE_FISH_COMPLETION
-fishcompletiondir = $(FISH_COMPLETION_DIR)
-nodist_fishcompletion_DATA = $(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME).fish
-CLEANFILES += $(nodist_fishcompletion_DATA)
-endif
-
-if ENABLE_ZSH_COMPLETION
-zshcompletiondir = $(ZSH_COMPLETION_DIR)
-nodist_zshcompletion_DATA = $(COMPLETIONS_OUT_DIR)/_$(TRANSFORMED_PACKAGE_NAME)
-CLEANFILES += $(nodist_zshcompletion_DATA)
-endif
-
-export CASILE_VERSION = v$(VERSION)
-
-# Leave some tips for cargo to use so CLI knows where it is
-export CONFIGURE_PREFIX = $(prefix)
-export CONFIGURE_DATADIR = $(datadir)
-export CONFIGURE_BINDIR = $(bindir)
-
-CARGO_VERBOSE = $(cargo_verbose_$(V))
-cargo_verbose_ = $(cargo_verbose_$(AM_DEFAULT_VERBOSITY))
-cargo_verbose_0 =
-cargo_verbose_1 = --verbose
-
-casile$(EXEEXT): $(RUST_BIN)
-	$(INSTALL) $< $@
-
-$(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME): $(RUST_BIN)
-	$(INSTALL) -D $$(cat $(_RUST_OUT))/$(COMPLETIONS_OUT_DIR)/$(PACKAGE_NAME).bash $@
-
-$(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME).elv: $(RUST_BIN)
-	$(INSTALL) -D $$(cat $(_RUST_OUT))/$(COMPLETIONS_OUT_DIR)/$(PACKAGE_NAME).elv $@
-
-$(COMPLETIONS_OUT_DIR)/$(TRANSFORMED_PACKAGE_NAME).fish: $(RUST_BIN)
-	$(INSTALL) -D $$(cat $(_RUST_OUT))/$(COMPLETIONS_OUT_DIR)/$(PACKAGE_NAME).fish $@
-
-$(COMPLETIONS_OUT_DIR)/_$(TRANSFORMED_PACKAGE_NAME).ps1: $(RUST_BIN)
-	$(INSTALL) -D $$(cat $(_RUST_OUT))/$(COMPLETIONS_OUT_DIR)/_$(PACKAGE_NAME).ps1 $@
-
-$(COMPLETIONS_OUT_DIR)/_$(TRANSFORMED_PACKAGE_NAME): $(RUST_BIN)
-	$(INSTALL) -D $$(cat $(_RUST_OUT))/$(COMPLETIONS_OUT_DIR)/_$(PACKAGE_NAME) $@
-
-$(_RUST_OUT) $(RUST_BIN): $(casile_SOURCES) $(EXTRA_casile_SOURCES) clean-embedded-assets
-	cd $(top_srcdir)
-	$(CARGO_ENV) $(CARGO) build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
-	$(CARGO_ENV) $(CARGO) build --quiet --message-format=json $(CARGO_RELEASE_ARGS) |
-		$(JQ) -sr 'map(select(.reason == "build-script-executed")) | last | .out_dir' > $(_RUST_OUT)
-
-.version: $(shell $(AWK) '{print ".git/" $$2}' .git/HEAD 2>/dev/null ||:)
-	[ -e "$@" ] && mv "$@" "$@-prev" || $(if $<,touch,cp "$(srcdir)/.tarball-version") "$@-prev"
-	$(if $<,./build-aux/git-version-gen "$(srcdir)/.tarball-version",printf "$(VERSION)") > "$@"
-	$(CMP) -s "$@" "$@-prev" || autoreconf configure.ac --force
+CARGO_FEATURE_ARGS = --all-features
 
 %-reversed.mk: %.mk
 	$(AWK) -F' := ' '/^_/ { gsub(/_/, "", $$1); print "__" $$2 " := " $$1 }' < $< > $@
@@ -175,7 +111,6 @@ clean-embedded-assets:
 dist: casile-$(VERSION).md
 
 dist-hook:
-	printf "$(VERSION)" > "$(distdir)/.tarball-version"
 	$(YARN) install --production --frozen-lockfile --modules-folder "$(distdir)/node_modules"
 
 install-data-hook:
@@ -183,22 +118,6 @@ install-data-hook:
 
 uninstall-hook:
 	rm -rf "$(DESTDIR)$(datadir)/node_modules"
-
-clean-local:
-	cd $(top_srcdir)
-	$(CARGO_ENV) $(CARGO) clean
-
-check-local: cargo-test check-version
-
-cargo-test: $(PACKAGE_NAME)$(EXEEXT)
-	cd $(srcdir)
-	$(CARGO_ENV) $(CARGO) test --locked
-
-check-version: $(PACKAGE_NAME)$(EXEEXT) | .version
-	./$< --version | $(GREP) -Ff $|
-
-installcheck-local:
-	./$(TRANSFORMED_PACKAGE_NAME) --version
 
 all: init
 
@@ -211,15 +130,12 @@ node_modules: yarn.lock
 yarn.lock: package.json
 	$(YARN) install
 
-PHONY_DEVELOPER_TARGETS = lint rustfmt luacheck checkmake ruff black clippy tagrelease release-preview release docker docker-dep-check docker-ghcr-to-hub docker-build-push
+PHONY_DEVELOPER_TARGETS = lint luacheck checkmake ruff black tagrelease release-preview release docker docker-dep-check docker-ghcr-to-hub docker-build-push
 .PHONY: $(PHONY_DEVELOPER_TARGETS)
 
 if DEVELOPER
 
-lint: clippy luacheck rustfmt checkmake ruff black
-
-rustfmt:
-	$(GIT) ls-files '*.rs' | $(XARGS) $(RUSTFMT) --check
+lint: luacheck checkmake ruff black
 
 luacheck:
 	$(LUACHECK) .
@@ -232,10 +148,6 @@ ruff:
 
 black:
 	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(BLACK) --check
-
-clippy:
-	cd $(srcdir)
-	$(CARGO_ENV) $(CARGO) clippy -- -D warnings
 
 RELTYPE ?=
 

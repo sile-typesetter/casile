@@ -30,29 +30,29 @@
 
 #serial 2
 
-AC_DEFUN([AX_LUAROCKS_ROCK],[
-    # Make sure we have luarocks
-    if test -z "$LUAROCKS"; then
-       AC_PATH_PROG(LUAROCKS, luarocks)
-       if test -z "$LUAROCKS"; then
-           AC_MSG_ERROR([can't find luarocks])
-       fi
-    fi
+AC_DEFUN([AX_LUAROCKS_ROCK], [
+        # Make sure we have luarocks
+        if test -z "$LUAROCKS"; then
+                AC_PATH_PROG(LUAROCKS, luarocks)
+                if test -z "$LUAROCKS"; then
+                        AC_MSG_ERROR([can't find luarocks])
+                fi
+        fi
 
-    AC_PREREQ([2.61])
+        AC_PREREQ([2.61])
 
-    pushdef([ROCK],$1)
-    AC_MSG_CHECKING(whether LuaRock ROCK is installed)
-    AS_IF(["$LUAROCKS" show ROCK > /dev/null],[
-        AC_MSG_RESULT(yes)
-    ],[
-        AX_PROG_LUA
-        AS_IF(["$LUA" -v -l ROCK > /dev/null],[
-            AC_MSG_RESULT(yes)
-        ],[
-            AC_MSG_FAILURE([LuaRock ROCK not found])
+        pushdef([ROCK],$1)
+        AC_MSG_CHECKING(whether LuaRock ROCK is installed)
+        AS_IF(["$LUAROCKS" show ROCK > /dev/null],[
+                AC_MSG_RESULT(yes)
+        ], [
+                AX_PROG_LUA
+                AS_IF(["$LUA" -v -l ROCK > /dev/null],[
+                        AC_MSG_RESULT(yes)
+                ], [
+                        AC_MSG_FAILURE([LuaRock ROCK not found])
+                ])
         ])
-    ])
 
-    popdef([ROCK])
+        popdef([ROCK])
 ])
