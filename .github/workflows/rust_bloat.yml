@@ -16,6 +16,8 @@ jobs:
       - name: Cache Rust
         uses: Swatinem/rust-cache@v2
       - name: Run cargo bloat
-        uses: orf/cargo-bloat-action@v1
+        # https://github.com/orf/cargo-bloat-action/pull/302
+        # uses: orf/cargo-bloat-action@v1
+        uses: Kobzol/cargo-bloat-action@github-actions-cache
         with:
           token: ${{ github.token }}
