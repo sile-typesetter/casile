@@ -1,6 +1,6 @@
 [package]
 name = "casile"
-version = "0.11.2"
+version = "0.11.3"
 authors = [ "Caleb Maclennan <caleb@alerque.com>" ]
 edition = "2018"
 description = "The command line interface to the CaSILE toolkit, a book publishing workflow employing SILE and other wizardry"
@@ -31,9 +31,6 @@ unic-langid = "0.9"
   version = "4.4"
   features = [ "derive", "wrap_help" ]
 
-  [build-dependencies.clap_mangen]
-  version = "0.2"
-
   [dependencies.git2]
   version = "0.18"
   default-features = false
@@ -50,6 +47,9 @@ unic-langid = "0.9"
   version = "1.9"
   default-features = false
   features = [ "std" ]
+
+[build-dependencies.clap_mangen]
+version = "0.2"
 
 [build-dependencies.clap]
 version = "4.4"

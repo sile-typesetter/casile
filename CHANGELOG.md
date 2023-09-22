@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.3](https://github.com/sile-typesetter/casile/compare/v0.11.2...v0.11.3) (2023-09-22)
+
+
+### Features
+
+* **cli:** Generate man page ([90b604a](https://github.com/sile-typesetter/casile/commit/90b604a850d44c7b53159f9b747576ea46b4b5c9))
+
 ### [0.11.2](https://github.com/sile-typesetter/casile/compare/v0.11.1...v0.11.2) (2023-08-23)
 
 
