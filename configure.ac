@@ -9,7 +9,9 @@ AX_GIT_VERSION
 AX_TRANSFORM_PACKAGE_NAME
 
 # Build time deps
+AC_PROG_AWK
 AC_PROG_SED
+AX_PROGVAR([yarn])
 AX_PROGVAR([xargs])
 
 AX_RUST_BOILERPLATE
@@ -17,7 +19,6 @@ AX_RUST_BOILERPLATE
 AM_COND_IF([DEPENDENCY_CHECKS], [
 
     # Run time deps
-    AC_PROG_AWK
     AC_PROG_EGREP
     AC_PROG_GREP
     AC_PROG_INSTALL
@@ -63,7 +64,6 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     AX_PROGVAR([wc])
     AX_PROGVAR([xcf2png])
     AX_PROGVAR([xvfbrun], [xvfb-run])
-    AX_PROGVAR([yarn])
     AX_PROGVAR([yq])
     AX_PROGVAR([zint])
     AX_PROGVAR([zola])

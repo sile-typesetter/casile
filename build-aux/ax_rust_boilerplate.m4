@@ -19,13 +19,13 @@ AC_DEFUN_ONCE([AX_RUST_BOILERPLATE], [
         AM_CONDITIONAL([DEVELOPER], [test "x$enable_developer" = "xyes"])
 
         AC_MSG_NOTICE([checking for tools used by automake to build Rust projects])
+        AC_PROG_INSTALL
+        AX_PROGVAR([cargo])
+        AX_PROGVAR([jq])
+        AX_PROGVAR([rustc])
+        AX_PROGVAR([cmp])
+        AX_PROGVAR([xargs])
         AM_COND_IF([DEPENDENCY_CHECKS], [
-                AC_PROG_INSTALL
-                AX_PROGVAR([cargo])
-                AX_PROGVAR([jq])
-                AX_PROGVAR([rustc])
-                AX_PROGVAR([cmp])
-                AX_PROGVAR([xargs])
                 AM_COND_IF([DEVELOPER], [
                         AX_PROGVAR([git])
                         AX_PROGVAR([rustfmt])
