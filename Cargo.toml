@@ -1,12 +1,12 @@
 [package]
 name = "casile"
-version = "0.11.1"
+version = "0.11.2"
 authors = [ "Caleb Maclennan <caleb@alerque.com>" ]
 edition = "2018"
 description = "The command line interface to the CaSILE toolkit, a book publishing workflow employing SILE and other wizardry"
 homepage = "https://github.com/sile-typesetter/casile"
 repository = "https://github.com/sile-typesetter/casile"
-license = "AGPL-3"
+license = "AGPL-3.0"
 build = "build-aux/build.rs"
 
 [dependencies]
@@ -17,8 +17,8 @@ fluent-langneg = "0.13"
 itertools = "0.11"
 lazy_static = "1.4"
 num_cpus = "1.16"
-rayon = "1.7"
-rust-embed = "6.8"
+rayon = "1.8"
+rust-embed = "8.0"
 subprocess = "0.2"
 unic-langid = "0.9"
 
@@ -28,18 +28,18 @@ unic-langid = "0.9"
   features = [ "yaml" ]
 
   [dependencies.clap]
-  version = "4.3"
+  version = "4.4"
   features = [ "derive", "wrap_help" ]
 
   [build-dependencies.clap_mangen]
   version = "0.2"
 
   [dependencies.git2]
-  version = "0.17"
+  version = "0.18"
   default-features = false
 
   [dependencies.git-warp-time]
-  version = "0.4"
+  version = "0.5"
   default-features = false
 
   [dependencies.Inflector]
@@ -52,11 +52,11 @@ unic-langid = "0.9"
   features = [ "std" ]
 
 [build-dependencies.clap]
-version = "4.3"
+version = "4.4"
 features = [ "derive" ]
 
 [build-dependencies.clap_complete]
-version = "4.3"
+version = "4.4"
 
 [build-dependencies.vergen]
 version = "8.2"
