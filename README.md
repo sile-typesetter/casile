@@ -309,15 +309,21 @@ In return, CaSILE will output
 Build whatever resources you need.
 Assuming you have a book source file `my_book.md` and accompanying meta data at `my_book.yml`, the general syntax for generating resources would be:
 
-        $ casile make -- my_book-<layout>-<options>.<format>
+```console
+$ casile make -- my_book-<layout>-<options>.<format>
+```
 
-    For example to build the press ready PDF for an Octavo size version:
+For example to build the press ready PDF for an Octavo size version:
 
-        $ casile make -- my_book-octavo-hardback-cover.pdf
+```console
+$ casile make -- my_book-octavo-hardback-cover.pdf
+```
 
-    Or to build a 3D rendering of the front cover at Halfletter size:
+Or to build a 3D rendering of the front cover at Halfletter size:
 
-        $ casile make -- my_book-halfletter-paperback-3d-front.jpg
+```console
+$ casile make -- my_book-halfletter-paperback-3d-front.jpg
+```
 
 See also the [CaSILE demos][demos] repository for a sample book project layout.
 
@@ -352,7 +358,7 @@ As a broad overview from least specific to most:
 
   *to be implemented*
 
-* Publisher mata data.
+* Publisher meta data.
 
   *to be implemented*
 
@@ -390,7 +396,9 @@ To override the defaults set them in your project’s `casile.mk`
     The default is English, so you might run `casile make -- book-halfletter-3d-front.png`.
     Changing this to Turkish:
 
-        LANGUAGE = tr
+    ```make
+    LANGUAGE = tr
+    ```
 
     will mean the command you run should be `casile make -- kitap-a5-3b-on.png` to generate the same resource for a similar project with localized filenames.
     At this time localizations are only included for Turkish, but they are easy enough to add to your project.
@@ -402,18 +410,24 @@ To override the defaults set them in your project’s `casile.mk`
     This helps dodge things like `README.md` files that are not the focus of the meat of a project.
     You can manually set this with a list:
 
-        TARGETS = book_1 book_2
+    ```make
+    TARGETS = book_1 book_2
+    ```
 
     Or perhaps populate it with a list of _all_ markdown files.
-    You don’t want the extentions here, just the basenames of books to be built:
+    You don’t want the extensions here, just the basenames of books to be built:
 
-        TARGETS = $(basename $(wildcard *.md))
+    ```make
+    TARGETS = $(basename $(wildcard *.md))
+    ```
 
 * `PROJECT` is the name of the overall project (which might contain several books or other works).
 
     This defaults to the name of the repository directory.
 
-        PROJECT = series_name
+    ```make
+    PROJECT = series_name
+    ```
 
 * `CASILEDIR` is where CaSILE is located.
     Path from which shared resource files are loaded from.
@@ -428,17 +442,21 @@ To override the defaults set them in your project’s `casile.mk`
 
 * `DISTDIR` determines where published files will be placed.
 
-    Ouput files are first created in the current project directory alongside sources.
+    Output files are first created in the current project directory alongside sources.
     Optionally CaSILE can ‘install’ finished resources to some other location.
 
-        DISTDIR = /path/to/pub/$(PROJECT)
+    ```make
+    DISTDIR = /path/to/pub/$(PROJECT)
+    ```
 
 * `FORMATS` contains a list of output formats to build for from each input.
 
     By default this is set to `pdf epub`, but you may want to build less or more that this.
     To built "the works":
 
-        FORMATS = pdf epub mobi odt docx app
+    ```make
+    FORMATS = pdf epub mobi odt docx app
+    ```
 
     Note this only affects the formats that get built by default from the `default` or `all` targets, you can still build individual resources in any format manually withouth them being listed here.
 
@@ -446,26 +464,34 @@ To override the defaults set them in your project’s `casile.mk`
 
     Defaults to 3.
 
-        BLEED = 5
+    ```make
+    BLEED = 5
+    ```
 
 * `TRIM` sets the trim margin for press resources in mm.
 
     Defaults to 10.
 
-        TRIM = 15
+    ```make
+    TRIM = 15
+    ```
 
 * `PAPERWEIGHT` sets the paperweight (in grams) used to calculate book thickness and hence spine width.
 
     Defaults to 60.
 
-        PAPERWEIGHT = 80
+    ```make
+    PAPERWEIGHT = 80
+    ```
 
 * `COVERGRAVITY` tells the cover generator what direction to crop background images when adjusting for different aspect ration.
 
     Defaults to Center.
     Possible options are anything that ImageMagick understands, so South, SouthWest, NorthEast, etc.
 
-        COVERGRAVITY = North
+    ```make
+    COVERGRAVITY = North
+    ```
 
 #### Build time settings
 
@@ -476,7 +502,9 @@ You _may_ set them in your rules file such as `casile.mk` but they would typical
 
     This defaults to false, but may be set to true when executing make:
 
-        casile make -- DRAFT=true book-a4-binding.pdf
+    ```console
+    $ casile make -- DRAFT=true book-a4-binding.pdf
+    ```
 
     What this does will depend on the resource type.
     Books are only typeset in one pass, so TOC’s may be out of date, cover images are generated at 17th final resolution, 3D renderings are done with partial lighting for faster ray-tracing, etc.
@@ -487,9 +515,9 @@ You _may_ set them in your rules file such as `casile.mk` but they would typical
 
     Defaults to false.
 
-    Note this works in congunction with the `PARENT` variable.
-    When pre-processing the source of books, the current commit will be comared to the branch (or commit) defined by PARENT.
-    Any differences (at the character level) will be marked up using CriticMarkup sytax.
+    Note this works in conjunction with the `PARENT` variable.
+    When pre-processing the source of books, the current commit will be compared to the branch (or commit) defined by PARENT.
+    Any differences (at the character level) will be marked up using CriticMarkup syntax.
     Some output formats (notably PDF) will syntax highlight any additions/removals.
 
 * `STATSMONTHS` sets the default time frame to report on activity.
@@ -515,7 +543,9 @@ You _may_ set them in your rules file such as `casile.mk` but they would typical
 
     Defaults to casile.
 
-        SILEDEBUG = casile insertions frames
+    ```make
+    SILEDEBUG = casile insertions frames
+    ```
 
     Usage from the command line might be `casile make -- DEBUG=true SILEDEBUG=frames book-a4.pdf`.
 
@@ -532,7 +562,9 @@ You _may_ set them in your rules file such as `casile.mk` but they would typical
     This is useful when styling a book.
     You can work on the first chapter worth of lines and rebuild the book quickly, then turn it off to regenerate the whole book.
 
-        casile make -- HEAD=50 book-octavo.pdf
+    ```console
+    $ casile make -- HEAD=50 book-octavo.pdf
+    ```
 
 * `SCALE` sets the factor by which to downsample resources while in draft mode.
 
@@ -545,11 +577,15 @@ You _may_ set them in your rules file such as `casile.mk` but they would typical
     This may be set to an another value with or without scaling.
     For example for a one off command you might run:
 
-        casile make -- HIDPI=600 book-octavo-binding.pdf
+    ```console
+    $ casile make -- HIDPI=600 book-octavo-binding.pdf
+    ```
 
     But to change the project default you might set this in your rules file:
 
-        HIDPI = $(call scale,600)
+    ```make
+    HIDPI = $(call scale,600)
+    ```
 
 * `LODPI` is much the same as `HIDPI` but used for regular discribution resources.
 
