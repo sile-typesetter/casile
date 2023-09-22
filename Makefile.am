@@ -36,7 +36,7 @@ BUILT_SOURCES =
 
 CLEANFILES =
 
-include $(top_srcdir)/build-aux/rust_boilerplate.am
+include $(top_srcdir)/build-aux/rust_boilerplate.mk
 
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
