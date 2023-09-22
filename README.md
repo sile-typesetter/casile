@@ -580,6 +580,6 @@ On the other hand each hook has its own usage so note the context it runs in.
 [poppler]: https://poppler.freedesktop.org/
 [pov]: http://www.povray.org/
 [sile]: https://sile-typesetter.org
-[tempalte]: https://github.com/sile-typesetter/casile-template
+[template]: https://github.com/sile-typesetter/casile-template
 [zathura]: https://pwmt.org/projects/zathura/
 [zint]: https://zint.github.io/
