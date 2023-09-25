@@ -108,8 +108,6 @@ CARGO_FEATURE_ARGS = --all-features
 clean-embedded-assets:
 	[[ ! -e .git ]] || $(GIT) clean -dxf assets
 
-dist: casile-$(VERSION).md
-
 dist-hook:
 	$(YARN) install --production --frozen-lockfile --modules-folder "$(distdir)/node_modules"
 
