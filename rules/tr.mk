@@ -47,3 +47,4 @@ _withverses := ayetli
 _withoutlinks := linksiz
 _chapters := bolumler
 _read := oku
+_epub := epub

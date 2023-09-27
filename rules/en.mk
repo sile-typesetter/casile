@@ -47,3 +47,4 @@ _withverses := withverses
 _withoutlinks := withoutlinks
 _chapters := chapters
 _read := read
+_epub := epub
