@@ -46,7 +46,7 @@ WORKDIR /src
 RUN build-aux/bootstrap-docker.sh
 
 RUN ./bootstrap.sh
-RUN ./configure
+RUN ./configure --mandir='${prefix}/man'
 RUN make
 RUN make check-version
 RUN make install DESTDIR=/pkgdir
