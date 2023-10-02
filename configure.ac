@@ -107,6 +107,12 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     ])
 ])
 
+# Avoid the need for configuring with the `--datarootdir=$(cd ..; pwd)` hack to
+# run from the source directory when developer mode is enabled.
+AM_COND_IF([DEVELOPER], [
+    datarootdir="$(cd ..; pwd)"
+])
+
 AC_DEFUN([AX_SCRIPT], [AC_CONFIG_FILES([scripts/$1], [chmod +x scripts/$1])])
 
 AC_CONFIG_FILES([Makefile])
