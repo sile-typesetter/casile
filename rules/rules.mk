@@ -169,6 +169,7 @@ IGNORES += $(DISTFILES) $(DISTDIRS)
 # Tell SILE to look here for stuff before its internal stuff, but still keep anything the user set before run
 SILEPATH ?= $(and $(SILE_PATH),$(subst ;,$( ),$(SILE_PATH)))
 SILEPATH += $(BUILDDIR)
+SILEPATH += $(patsubst ./%,%,$(PUBLISHERDIR))
 SILEPATH += $(CASILEDIR)
 
 # Extra arguments to pass to Pandoc
@@ -463,6 +464,7 @@ $(BUILDDIR)/casile.lua: | $(BUILDDIR)
 		CASILE.project = "$(PROJECT)"
 		CASILE.casiledir = "$(CASILEDIR)"
 		CASILE.publisher = "casile"
+		extendSilePath("$(PROJECTDIR)/lua_madules")
 		return { _name = "casile", type = "casile" }
 	EOF
 
