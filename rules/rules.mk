@@ -495,8 +495,8 @@ $(SOURCESWITHEDITS): $$(call strip_edits,$$@)
 		$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) \
 		$(filter %.md,$^) -o $@
 
-# Configure SILE arguments to include common Lua library
-SILEFLAGS += $(foreach LUAINCLUDE,$(call reverse,$(LUAINCLUDES)),-I $(LUAINCLUDE))
+# Configure SILE arguments to include common Lua libraries
+SILEFLAGS += $(call use_luas,$(LUAINCLUDES))
 
 preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(PROJECTMACRO) $(TARGETMACROS_$1)
 
@@ -713,7 +713,7 @@ $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf:
 		CASILE.spine = "$(call spinemm,$(filter %.pdf,$^))mm"
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) -I $(BUILDDIR)/$*.lua $(call use_luas,$^ $|) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
+	$(SILE) $(SILEFLAGS) --use $(subst /,.,$(BUILDDIR)/$*) $(call use_luas,$^ $|) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
 
 FRONTFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_front).png))
 $(FRONTFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_front).png: $(BUILDDIR)/%-$(_text).pdf | $$(geometryfile)
@@ -772,7 +772,7 @@ $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf:
 		CASILE.language = "$(LANGUAGE)"
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) -I $(BUILDDIR)/$*.lua $(call use_luas,$^ $|) $< -o $@
+	$(SILE) $(SILEFLAGS) --use $(subst /,.,$(BUILDDIR)/$*) $(call use_luas,$^ $|) $< -o $@
 
 FRONTFRAGMENTIMAGES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_fragment).png))
 $(FRONTFRAGMENTIMAGES): $(BUILDDIR)/%-$(_fragment).png: $(BUILDDIR)/%-$(_text).pdf
@@ -881,7 +881,7 @@ $(EMPTYGEOMETRIES): $(BUILDDIR)/$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml | 
 		CASILE.language = "$(LANGUAGE)"
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) -I $(BUILDDIR)/$*.lua $(call use_luas,$^ $|) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
+	$(SILE) $(SILEFLAGS) --use $(subst /,.,$(BUILDDIR)/$*) $(call use_luas,$^ $|) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(ALLLAYOUTS),-$(_geometry).sh))
