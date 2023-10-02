@@ -168,6 +168,7 @@ IGNORES += $(DISTFILES) $(DISTDIRS)
 
 # Tell SILE to look here for stuff before its internal stuff, but still keep anything the user set before run
 SILEPATH ?= $(and $(SILE_PATH),$(subst ;,$( ),$(SILE_PATH)))
+SILEPATH += $(BUILDDIR)
 SILEPATH += $(CASILEDIR)
 
 # Extra arguments to pass to Pandoc
@@ -458,11 +459,11 @@ $(FULLSILS): $(BUILDDIR)/%.sil:
 # Send some environment data to a common Lua file to be pulled into all SILE runs
 $(BUILDDIR)/casile.lua: | $(BUILDDIR)
 	cat <<- EOF > $@
-		package.path = "$(BUILDDIR)/?.lua;$(CASILEDIR)/?.lua;$(CASILEDIR)/?/init.lua" .. package.path
 		CASILE = {}
 		CASILE.project = "$(PROJECT)"
 		CASILE.casiledir = "$(CASILEDIR)"
 		CASILE.publisher = "casile"
+		return { _name = "casile", type = "casile" }
 	EOF
 
 $(FCCONFIG): FCDEFAULT ?= $(shell $(_ENV) env -u FONTCONFIG_FILE $(FCCONFLIST) | $(AWK) -F'[ :]' '/Default configuration file/ { print $$2 }')
@@ -713,7 +714,7 @@ $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf:
 		CASILE.spine = "$(call spinemm,$(filter %.pdf,$^))mm"
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) --use $(subst /,.,$(BUILDDIR)/$*) $(call use_luas,$^ $|) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
+	$(SILE) $(SILEFLAGS) $(call use_luas,$^ $| $*) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
 
 FRONTFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_front).png))
 $(FRONTFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_front).png: $(BUILDDIR)/%-$(_text).pdf | $$(geometryfile)
@@ -772,7 +773,7 @@ $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf:
 		CASILE.language = "$(LANGUAGE)"
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) --use $(subst /,.,$(BUILDDIR)/$*) $(call use_luas,$^ $|) $< -o $@
+	$(SILE) $(SILEFLAGS) $(call use_luas,$^ $| $*) $< -o $@
 
 FRONTFRAGMENTIMAGES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_fragment).png))
 $(FRONTFRAGMENTIMAGES): $(BUILDDIR)/%-$(_fragment).png: $(BUILDDIR)/%-$(_text).pdf
@@ -881,7 +882,7 @@ $(EMPTYGEOMETRIES): $(BUILDDIR)/$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml | 
 		CASILE.language = "$(LANGUAGE)"
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) --use $(subst /,.,$(BUILDDIR)/$*) $(call use_luas,$^ $|) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
+	$(SILE) $(SILEFLAGS) $(call use_luas,$^ $| $*) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(ALLLAYOUTS),-$(_geometry).sh))
