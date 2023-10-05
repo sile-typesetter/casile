@@ -464,7 +464,7 @@ $(BUILDDIR)/casile.lua: | $(BUILDDIR)
 		CASILE.project = "$(PROJECT)"
 		CASILE.casiledir = "$(CASILEDIR)"
 		CASILE.publisher = "casile"
-		extendSilePath("$(PROJECTDIR)/lua_madules")
+		extendSilePath("$(PROJECTDIR)/lua_modules")
 		return { _name = "casile", type = "casile" }
 	EOF
 
