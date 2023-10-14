@@ -11,8 +11,8 @@ trap 'rm -rf ${WT}' EXIT SIGHUP SIGTERM
 @GIT@ worktree prune > /dev/null
 @GIT@ worktree add --detach ${WT} ${BRANCH} > /dev/null
 
-@M4@ ${WT}/${FILE} | @GIT@ hash-object --stdin -w | read A
-@M4@ ${FILE} | @GIT@ hash-object --stdin -w | read B
+@M4@ ${FILTERS} ${WT}/${FILE} | @GIT@ hash-object --stdin -w | read A
+@M4@ ${FILTERS} ${FILE} | @GIT@ hash-object --stdin -w | read B
 
 if @GIT@ diff ${A}..${B} --quiet; then
     @GIT@ show ${B}
