@@ -171,6 +171,7 @@ SILEPATH ?= $(and $(SILE_PATH),$(subst ;,$( ),$(SILE_PATH)))
 SILEPATH += $(BUILDDIR)
 ifneq ($(PUBLISHERDIR),$(CASILEDIR))
 SILEPATH += $(patsubst ./%,%,$(PUBLISHERDIR))
+export PATH := $(PUBLISHERDIR)/scripts:$(PATH)
 endif
 SILEPATH += $(CASILEDIR)
 
