@@ -170,8 +170,9 @@ IGNORES += $(DISTFILES) $(DISTDIRS)
 SILEPATH ?= $(and $(SILE_PATH),$(subst ;,$( ),$(SILE_PATH)))
 SILEPATH += $(BUILDDIR)
 ifneq ($(PUBLISHERDIR),$(CASILEDIR))
-SILEPATH += $(patsubst ./%,%,$(PUBLISHERDIR))
-export PATH := $(PUBLISHERDIR)/scripts:$(PATH)
+PUBLISHERDIRABS := $(realpath $(patsubst ./%,%,$(PUBLISHERDIR)))
+SILEPATH += $(PUBLISHERDIRABS)
+export PATH := $(PUBLISHERDIRABS)/scripts:$(PATH)
 endif
 SILEPATH += $(CASILEDIR)
 
