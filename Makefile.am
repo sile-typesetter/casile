@@ -128,12 +128,12 @@ node_modules: yarn.lock
 yarn.lock: package.json
 	$(YARN) install
 
-PHONY_DEVELOPER_TARGETS = lint luacheck checkmake ruff black tagrelease release-preview release docker docker-dep-check docker-ghcr-to-hub docker-build-push
+PHONY_DEVELOPER_TARGETS = lint luacheck checkmake ruff tagrelease release-preview release docker docker-dep-check docker-ghcr-to-hub docker-build-push
 .PHONY: $(PHONY_DEVELOPER_TARGETS)
 
 if DEVELOPER
 
-lint: luacheck checkmake ruff black
+lint: luacheck checkmake ruff ruff-format
 
 luacheck:
 	$(LUACHECK) .
@@ -142,10 +142,10 @@ checkmake:
 	$(GIT) ls-files '*.mk' | $(XARGS) -n1 checkmake
 
 ruff:
-	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(RUFF)
+	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(RUFF) check
 
-black:
-	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(BLACK) --check
+ruff-format:
+	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(RUFF) format --check
 
 RELTYPE ?=
 
