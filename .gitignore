@@ -2,6 +2,7 @@
 
 /casile
 casile-*
+casile.1
 completions/*
 .version
 .version-prev
