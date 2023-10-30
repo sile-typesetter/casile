@@ -108,7 +108,10 @@ CARGO_FEATURE_ARGS = --all-features
 clean-embedded-assets:
 	[[ ! -e .git ]] || $(GIT) clean -dxf assets
 
-dist-hook:
+dist-hook: dist-hook-yarn
+
+.PHONY: dist-hook-yarn
+dist-hook-yarn:
 	$(YARN) install --production --frozen-lockfile --modules-folder "$(distdir)/node_modules"
 
 install-data-hook:
@@ -127,6 +130,12 @@ node_modules: yarn.lock
 
 yarn.lock: package.json
 	$(YARN) install
+
+dist: casile-$(VERSION).md
+
+casile-%.md: CHANGELOG.md
+	$(SED) -e '/\.\.\.v$*/,/\.\.\.v/!d' $< | \
+		$(SED) -e '1,3d;N;$$!P;$$!D;$$d' > $@
 
 PHONY_DEVELOPER_TARGETS = lint luacheck checkmake ruff tagrelease release-preview release docker docker-dep-check docker-ghcr-to-hub docker-build-push
 .PHONY: $(PHONY_DEVELOPER_TARGETS)
@@ -159,10 +168,6 @@ release-preview:
 	$(YARN) run release --dry-run $(and $(RELTYPE),--release-as $(RELTYPE))
 
 release: tagrelease
-
-casile-%.md: CHANGELOG.md
-	$(SED) -e '/\.\.\.v$*/,/\.\.\.v/!d' $< | \
-		$(SED) -e '1,3d;N;$$!P;$$!D;$$d' > $@
 
 export GHCR_REGISTRY ?= ghcr.io
 export GHCR_REPO ?= sile-typesetter/$(TRANSFORMED_PACKAGE_NAME)
