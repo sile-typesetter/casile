@@ -7,7 +7,7 @@ REVISION=$(git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
 
 RUNTIME_DEPS='bc bcprov curl decasify entr epubcheck fontconfig ghostscript git git-warp-time imagemagick inetutils'\
 ' inkscape java-commons-lang jq kindlegen libertinus-font libgit2 m4 make mdbook moreutils nodejs'\
-' pandoc-sile-git pcre pdftk podofo-tools poppler povray sassc sile-git sqlite'\
+' pandoc-sile-git pcre pdftk podofo-tools poppler povray sassc sile sqlite'\
 ' texlive-binextra texlive-xetex texlive-formatsextra texlive-latexextra texlive-langenglish texlive-langother texlive-langcyrillic'\
 ' tex-gyre-fonts ttf-hack yq zint zola zsh'\
 ' lua luajit-openresty luarocks lua-decasify lua51-decasify lua-colors-git lua51-colors-git lua-filesystem lua51-filesystem lua-yaml lua51-yaml'\
