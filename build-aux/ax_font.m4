@@ -8,10 +8,14 @@ AC_DEFUN([AX_FONT], [
         fi
         pushdef([FONT],$1)
         AC_MSG_CHECKING(whether font family FONT is available)
+        AS_IF([test "$FCMATCH" = "true"],[
+                AC_MSG_RESULT(skip)
+        ],[
         AS_IF([$FCMATCH "FONT" family | $GREP -qx "FONT"], [
                 AC_MSG_RESULT(yes)
         ], [
                 AC_MSG_FAILURE([font family FONT not found])
+                ])
         ])
         popdef([FONT])
 ])dnl
