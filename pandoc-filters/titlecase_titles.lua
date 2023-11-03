@@ -2,7 +2,7 @@
 
 local decasify = require("decasify")
 local locale = os.getenv("LANGUAGE") or "en"
-local style = os.getenv("STYLEGUIDE") or "gruber"
+local style = os.getenv("STYLEGUIDE") or (locale == "en" and "gruber" or "")
 
 Pandoc = function (doc)
   locale = pandoc.utils.stringify(doc.meta.language or locale)
