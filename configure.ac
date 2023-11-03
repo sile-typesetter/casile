@@ -77,7 +77,12 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     ])
 
     AX_PROG_LUA(5.1, [], [], AC_MSG_ERROR([lua interpreter is required]))
+    AX_LUAROCKS_ROCK(cldr)
+    AX_LUAROCKS_ROCK(cosmo)
     AX_LUAROCKS_ROCK(decasify)
+    AX_LUAROCKS_ROCK(fluent)
+    AX_LUAROCKS_ROCK(lpeg)
+    AX_LUAROCKS_ROCK(lua-utf8)
     AX_LUAROCKS_ROCK(yaml)
 
     AC_PATH_PROG([PERL], [perl])
