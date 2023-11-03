@@ -166,12 +166,17 @@ function package:registerCommands ()
         if SILE.Commands["book:chapter:precounter"] then SILE.call("book:chapter:precounter") end
         SILE.call(options.prenumber)
       end
-      SILE.call("show-multilevel-counter", {
-        id = "sectioning",
-        display = options.display,
-        minlevel = level,
-        level = level
-      })
+      if options.msg then
+        local number = SU.formatNumber(counters.value[level], options.display)
+        SILE.call("fluent", { number = number }, { options.msg })
+      else
+        SILE.call("show-multilevel-counter", {
+          id = "sectioning",
+          display = options.display,
+          minlevel = level,
+          level = level
+        })
+      end
       if options.postnumber and SILE.Commands[options.postnumber] then
         SILE.call(options.postnumber)
       end
