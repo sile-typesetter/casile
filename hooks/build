@@ -10,7 +10,8 @@ RUNTIME_DEPS='bc bcprov curl decasify entr epubcheck fontconfig ghostscript git 
 ' pandoc-sile-git pcre pdftk podofo-tools poppler povray sassc sile sqlite'\
 ' texlive-binextra texlive-xetex texlive-formatsextra texlive-latexextra texlive-langenglish texlive-langother texlive-langcyrillic'\
 ' tex-gyre-fonts ttf-hack yq zint zola zsh'\
-' lua luajit-openresty luarocks lua-decasify lua51-decasify lua-colors-git lua51-colors-git lua-filesystem lua51-filesystem lua-yaml lua51-yaml'\
+' lua lua-yaml lua-decasify'\
+' luajit luarocks lua51-cldr lua51-cosmo lua51-decasify lua51-fluent lua51-lpeg lua51-luautf8 lua51-unicode lua51-yaml'\
 ' perl perl-yaml perl-yaml-merge-simple'\
 ' python python-isbnlib python-deepl python-pandocfilters python-pantable python-ruamel-yaml python-usfm2osis-cw-git'\
 ' xcftools xorg-server-xvfb'

@@ -16,6 +16,11 @@ AX_PROGVAR([xargs])
 
 AX_RUST_BOILERPLATE
 
+AC_ARG_WITH([luajit],
+            AS_HELP_STRING([--without-luajit],
+                           [Prefer LuaJIT over PUC Lua, even if the latter is newer]))
+AM_CONDITIONAL([LUAJIT], [test "x$with_luajit" != "xno"])
+
 AM_COND_IF([DEPENDENCY_CHECKS], [
 
     # Run time deps
