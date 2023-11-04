@@ -69,22 +69,22 @@ local function _outputCropMarks ()
   SILE.outputter:drawRule(page:right() + bleed, page:bottom(), len, 0.5)
   SILE.outputter:drawRule(page:right(), page:bottom() + bleed, 0.5, len)
 
-  SILE.call("hbox", {}, function ()
+  local statelen = #SILE.typesetter.state.nodes
+  local hbox = SILE.call("hbox", {}, function ()
     SILE.settings:temporarily(function ()
       SILE.call("noindent")
       SILE.call("font", { family = "Libertinus Serif", size = bleed * 0.8,  weight = 400, style = nil, features = nil })
       SILE.call("crop:header")
     end)
   end)
-  local hbox = SILE.typesetter.state.nodes[#SILE.typesetter.state.nodes]
-  SILE.typesetter.state.nodes[#SILE.typesetter.state.nodes] = nil
+  pl.tablex.clear(SILE.typesetter.state.nodes, statelen)
 
   SILE.typesetter.frame.state.cursorX = page:left() + bleed
   SILE.typesetter.frame.state.cursorY = page:top() - bleed - len / 2 + 2
   outcounter = outcounter + 1
 
   if hbox then
-    for i=1,#(hbox.value) do hbox.value[i]:outputYourself(SILE.typesetter, {ratio=1}) end
+    for i = 1, #hbox.value do hbox.value[i]:outputYourself(SILE.typesetter, { ratio = 1 }) end
   end
 end
 
