@@ -344,14 +344,24 @@ function package:registerCommands ()
   self:registerCommand("footnote", function (options, content)
     options.indent = options.indent or "14pt"
     SILE.call("footnotemark")
-    local opts = SILE.scratch.insertions.classes.footnote
-    local f = SILE.getFrame(opts["insertInto"].frame)
-    local oldT = SILE.typesetter
-    SILE.typesetter = SILE.typesetter {}
-    SILE.typesetter:init(f)
+    local opts = SILE.scratch.insertions.classes.footnote or {}
+    local frame = opts.insertInto and SILE.getFrame(opts.insertInto.frame)
+    local oldGetTargetLength = SILE.typesetter.getTargetLength
+    local oldFrame = SILE.typesetter.frame
     SILE.typesetter.getTargetLength = function () return SILE.length(0xFFFFFF) end
     SILE.settings:pushState()
-    SILE.settings:reset()
+    -- Restore the settings to the top of the queue, which should be the document #986
+    SILE.settings:toplevelState()
+    SILE.typesetter:initFrame(frame)
+    -- Reset settings the document may have but should not be applied to footnotes
+    -- See also same resets in folio package
+    for _, v in ipairs({
+      "current.hangAfter",
+      "current.hangIndent",
+      "linebreak.hangAfter",
+      "linebreak.hangIndent" }) do
+      SILE.settings:set(v, SILE.settings.defaults[v])
+    end
     SILE.settings:set("linespacing.method", "fit-font")
     SILE.settings:set("linespacing.fit-font.extra-space", SILE.length("0.05ex plus 0.1pt minus 0.1pt"))
     SILE.settings:set("document.lskip", SILE.nodefactory.glue(options.indent))
@@ -366,7 +376,8 @@ function package:registerCommands ()
       end)
     end)
     SILE.settings:popState()
-    SILE.typesetter = oldT
+    SILE.typesetter.getTargetLength = oldGetTargetLength
+    SILE.typesetter.frame = oldFrame
     self.class:insert("footnote", material)
     SILE.scratch.counters.footnote.value = SILE.scratch.counters.footnote.value + 1
   end)
