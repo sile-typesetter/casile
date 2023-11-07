@@ -722,9 +722,10 @@ $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf:
 		CASILE.layout = "$(or $(__$(call parse_papersize,$@)),$(call parse_papersize,$@))"
 		CASILE.language = "$(LANGUAGE)"
 		CASILE.spine = "$(call spinemm,$(filter %.pdf,$^))mm"
+		return { _name = "$*", type = "casile" }
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) $(call use_luas,$^ $| $*) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
+	$(SILE) $(SILEFLAGS) $(call use_luas,$^ $| $*.lua) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
 
 FRONTFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_front).png))
 $(FRONTFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_front).png: $(BUILDDIR)/%-$(_text).pdf | $$(geometryfile)
@@ -781,9 +782,10 @@ $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf:
 		CASILE.metadata = require("readmeta").load(metadatafile)
 		CASILE.layout = "$(or $(__$(call parse_papersize,$@)),$(call parse_papersize,$@))"
 		CASILE.language = "$(LANGUAGE)"
+		return { _name = "casile", type = "casile" }
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) $(call use_luas,$^ $| $*) $< -o $@
+	$(SILE) $(SILEFLAGS) $(call use_luas,$^ $| $*.lua) $< -o $@
 
 FRONTFRAGMENTIMAGES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_fragment).png))
 $(FRONTFRAGMENTIMAGES): $(BUILDDIR)/%-$(_fragment).png: $(BUILDDIR)/%-$(_text).pdf
@@ -890,9 +892,10 @@ $(EMPTYGEOMETRIES): $(BUILDDIR)/$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml | 
 		CASILE.versioninfo = "$(call versioninfo,$@)"
 		CASILE.layout = "$(or $(__$(call parse_papersize,$@)),$(call parse_papersize,$@))"
 		CASILE.language = "$(LANGUAGE)"
+		return { _name = "$*", type = "casile" }
 	EOF
 	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
-	$(SILE) $(SILEFLAGS) $(call use_luas,$^ $| $*) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
+	$(SILE) $(SILEFLAGS) $(call use_luas,$^ $| $*.lua) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
 GEOMETRIES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(ALLLAYOUTS),-$(_geometry).sh))
