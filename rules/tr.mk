@@ -48,3 +48,4 @@ _withoutlinks := linksiz
 _chapters := bolumler
 _read := oku
 _epub := epub
+_a5trim := a5trim
