@@ -9,6 +9,7 @@ function class:_init (options)
     SU.error("Cannot run without CASILE global instantiated")
   end
   plain._init(self, options)
+  self:loadPackage("linespacing")
 end
 
 class.declareOptions = cabook.declareOptions
