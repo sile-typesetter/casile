@@ -861,6 +861,7 @@ $(BUILDDIR)/%-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printco
 			s#HHH#$${pagehpm}#g;
 			s#BLEED#$${bleedpm}#g;
 			s#TRIM#$${trimpm}#g;
+			s#CROP#$${trimmm}mm#g;
 			s#CW#$${pagewpm}#g;
 			s#SW#$${spinepm}#g;
 		" $< > $@

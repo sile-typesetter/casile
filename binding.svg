@@ -7,6 +7,9 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    id="svg"
    version="1.1" >
+  <sodipodi:namedview>
+      <inkscape:page bleed="CROP" />
+  </sodipodi:namedview>
   <image
       id="cilt"
       absref="IMG"
@@ -17,6 +20,7 @@
       style="image-rendering:optimizeQuality"
       x="-BLEED"
       y="-BLEED"
+      bleed="CROP"
       />
   <text id="versioninfo"
     x="BLEED"
