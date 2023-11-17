@@ -538,16 +538,16 @@ You _may_ set them in your rules file such as `casile.mk` but they would typical
     This will be pretty verbose on the console.
     Shell scripts will run with `set -x`, programs that have them will be run with debug flags turned on, etc.
 
-* `SILEDEBUG` sets the specific parts of the SILE typesetter to debug.
+* `DEBUGTAGS` sets the specific parts of the SILE typesetter to debug.
     See SILE documentation for details.
 
     Defaults to casile.
 
     ```make
-    SILEDEBUG = casile insertions frames
+    DEBUGTAGS = casile insertions frames
     ```
 
-    Usage from the command line might be `casile make -- DEBUG=true SILEDEBUG=frames book-a4.pdf`.
+    Usage from the command line might be `casile make -- DEBUG=true DEBUGTAGS=frames book-a4.pdf`.
 
 * `COVERS` can be used to disable generating cover images.
     Raster image generation can take time, this skips those steps and just assumes no graphical covers are present.
