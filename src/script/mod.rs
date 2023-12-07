@@ -24,14 +24,20 @@ pub fn run(name: String, arguments: Vec<OsString>) -> Result<()> {
         .env("PROJECTVERSION", git_version);
     let repo = get_repo()?;
     let workdir = repo.workdir().unwrap();
-    process = process.cwd(workdir);
-    let process = process.stderr(Redirection::Pipe).stdout(Redirection::Pipe);
+    process = process
+        .cwd(workdir)
+        .stderr(Redirection::Pipe)
+        .stdout(Redirection::Pipe);
+    eprintln!("all the way to base whatsit");
     let mut popen = process.popen()?;
-    let buf = io::BufReader::new(popen.stdout.as_mut().unwrap());
-    for line in buf.lines() {
+    let bufstdout = io::BufReader::new(popen.stdout.as_mut().unwrap());
+    // let bufstderr = io::BufReader::new(popen.stderr.as_mut().unwrap());
+    for line in bufstdout.lines() {
         let text: &str =
             &line.unwrap_or_else(|_| String::from("INVALID UTF-8 FROM CHILD PROCESS STREAM"));
         println!("{text}");
     }
+    let status = popen.wait().expect("Failed for foo");
+    dbg!(status);
     Ok(())
 }

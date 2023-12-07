@@ -3,7 +3,7 @@ use crate::*;
 
 use colored::Colorize;
 use git2::{Repository, Status};
-use git_warp_time::reset_mtime;
+use git_warp_time::reset_mtimes;
 use std::io::prelude::*;
 use std::sync::{Arc, RwLock};
 use std::{fs, io, path};
@@ -174,7 +174,7 @@ fn warp_time(repo: Repository) -> Result<()> {
     let opts = git_warp_time::Options::new();
     let text = LocalText::new("setup-warp-time").fmt();
     eprintln!("{} {}", "┠┄".cyan(), text);
-    let files = reset_mtime(repo, opts)?;
+    let files = reset_mtimes(repo, opts)?;
     match CONF.get_bool("verbose")? {
         true => {
             for file in files.iter() {
