@@ -37,7 +37,7 @@ unic-langid = "0.9"
   default-features = false
 
   [dependencies.git-warp-time]
-  version = "0.6"
+  version = "0.7"
   default-features = false
 
   [dependencies.Inflector]

@@ -178,8 +178,9 @@ fn warp_time(repo: Repository) -> Result<()> {
     match CONF.get_bool("verbose")? {
         true => {
             for file in files.iter() {
+                let path = file.clone().into_os_string().into_string().unwrap();
                 let text = LocalText::new("setup-warp-time-file")
-                    .arg("path", file.white().bold())
+                    .arg("path", path.white().bold())
                     .fmt();
                 eprintln!("{} {}", "┠┄".cyan(), text);
             }
