@@ -2,13 +2,13 @@ help-description =
   CaSILE avadanlığı için komut satırı arayüzü, SILE ve benzer
   sihirbazlığından faydılanan bir yayınlama işi akışı.
 
-help-subcommand-script =
+help-subcommand-run =
   CaSILE ortamı içinde yardımcı komut dosyasını çalıştırın
 
-help-subcommand-script-name =
+help-subcommand-run-name =
   CaSILE, araç seti veya proje tarafından sağlanan komut dosyası adı
 
-help-subcommand-script-arguments =
+help-subcommand-run-arguments =
   Komut dosyasına iletilecek bağımsız değişkenler
 
 welcome =
@@ -17,7 +17,7 @@ welcome =
 outro =
   CaSILE çalışması tamamlandı
 
-script-header =
+run-header =
   CaSILE ortamı içinde komut dosyası çalıştırılıyor
 
 make-header =

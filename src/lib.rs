@@ -20,7 +20,7 @@ pub mod i18n;
 
 // Subcommands
 pub mod make;
-pub mod script;
+pub mod run;
 pub mod setup;
 pub mod status;
 

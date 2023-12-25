@@ -2,7 +2,7 @@ use clap::{Args, Command, FromArgMatches as _};
 
 use casile::cli::{Cli, Commands};
 use casile::config::CONF;
-use casile::{make, script, setup, status};
+use casile::{make, run, setup, status};
 use casile::{Result, VERSION};
 
 fn main() -> Result<()> {
@@ -18,7 +18,7 @@ fn main() -> Result<()> {
     let subcommand = Commands::from_arg_matches(&matches)?;
     let ret = match subcommand {
         Commands::Make { target } => make::run(target),
-        Commands::Script { name, arguments } => script::run(name, arguments),
+        Commands::Run { name, arguments } => run::run(name, arguments),
         Commands::Setup {} => setup::run(),
         Commands::Status {} => status::run(),
     };

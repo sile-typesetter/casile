@@ -27,14 +27,14 @@ help-subcommand-make =
 help-subcommand-make-target =
   Target as defined by rules in CaSILE or project
 
-help-subcommand-script =
+help-subcommand-run =
   Run helper script inside CaSILE environment
 
-help-subcommand-script-name =
-  Script name as supplied by CaSILE, toolkit, or project
+help-subcommand-run-name =
+  Run named script as supplied by CaSILE, toolkit, or project
 
-help-subcommand-script-arguments =
-  Arguments to pass to script
+help-subcommand-run-arguments =
+  Arguments to pass to script being run
 
 # Currently hard coded, see clap issue #1880
 help-subcommand-setup =
@@ -109,7 +109,7 @@ make-error-target =
 make-error-unknown =
   Make returned unknown error.
 
-script-header =
+run-header =
   Running script inside CaSILE environment
 
 setup-header =

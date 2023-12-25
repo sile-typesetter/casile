@@ -47,15 +47,15 @@ pub enum Commands {
         target: Vec<String>,
     },
 
-    // FTL: help-subcommand-script
+    // FTL: help-subcommand-run
     /// Run helper script inside CaSILE environment
-    Script {
-        // FTL: help-subcommand-script-name
-        /// Script name as supplied by CaSILE, toolkit, or project
+    Run {
+        // FTL: help-subcommand-run-name
+        /// Run script name as supplied by CaSILE, toolkit, or project
         name: String,
 
-        // FTL: help-subcommand-script-arguments
-        /// Arguments to pass to script
+        // FTL: help-subcommand-run-arguments
+        /// Arguments to pass to script being run
         arguments: Vec<OsString>,
     },
 
