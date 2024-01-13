@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.12.0](https://github.com/sile-typesetter/casile/compare/v0.11.4...v0.12.0) (2024-01-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **cli:** The fact that subcommands are not all verbs has been
+bothering me for a while. Several times I've sat down recently and had
+to look up what the subcommand was. This is more along the lines of what
+I seem to expect every time I'm away from it for a while. This choice
+makes all the subcommands into verbs. Alternatives like 'execute' and
+'do' were considered, this is just seemingly the most obvious
+alternative.
+
+### Features
+
+* **build:** Default to LuaJIT like SILE, provide option for switching ([77496ed](https://github.com/sile-typesetter/casile/commit/77496edd222fda7c8444cf5b07492c04bf1233d4))
+* **build:** Provide mechanism to skip only font checks at build time ([7ae3ca8](https://github.com/sile-typesetter/casile/commit/7ae3ca82b54c9c70952757d8c31524970530d56a))
+* **docker:** Build image with SILE v0.14.14 from upstream Arch Linux ([e41cab2](https://github.com/sile-typesetter/casile/commit/e41cab2a1d2e46e4d9554fa3be696583d90d0c42))
+* **packages:** Adjust \book:numbering override to handle Fluent messages like SILE ([1886475](https://github.com/sile-typesetter/casile/commit/1886475fbd507a04bc539416493085211e97ab7b))
+* **rules:** Add error mechanism for filters expecting undefined edits ([7334745](https://github.com/sile-typesetter/casile/commit/73347453ed0ccf25e39459fad3dda5ec0ef0bddd))
+* **scripts:** Use all regular m4 filters when generating branch diffs ([c05caff](https://github.com/sile-typesetter/casile/commit/c05caffcb183925127664525b11d403062c3fd7e))
+
+
+### Bug Fixes
+
+* **classes:** Load package required by settings handler into geometry class ([6a4dbcf](https://github.com/sile-typesetter/casile/commit/6a4dbcfb9aa4ddd3d89d2916f1db1d917ef76086))
+* **covers:** Work around Inkscape 1.3 bug ([9c92650](https://github.com/sile-typesetter/casile/commit/9c9265082eedcd3cffe6409d4e8f6ea92a516bf9))
+* **filters:** Only set a default titlecase style guide for English ([87bd685](https://github.com/sile-typesetter/casile/commit/87bd6859242fda2d9f8d63f9e184dcfd67f7732b))
+* **i18n:** Add missing translation for paper size name ([c1e6c56](https://github.com/sile-typesetter/casile/commit/c1e6c56011b6449a694d5df6f23479b7af7ad351))
+* **packages:** Keep crop mark package from initializing a frame nobody may use ([17a6bb8](https://github.com/sile-typesetter/casile/commit/17a6bb89fb5b79736665c66f07470e70e82a3406))
+* **rules:** Update specialty module loader using update use syntax ([8614ad7](https://github.com/sile-typesetter/casile/commit/8614ad71d69b813e5a486eea50f7e4a77df08065))
+
+
+### Code Refactoring
+
+* **cli:** Rename 'script' subcommand to 'run' ([a6a0b8f](https://github.com/sile-typesetter/casile/commit/a6a0b8fa7d4ebc9170d73f33960c386fdfe9f7b3))
+
 ### [0.11.4](https://github.com/sile-typesetter/casile/compare/v0.11.3...v0.11.4) (2023-10-30)
 
 
