@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.1](https://github.com/sile-typesetter/casile/compare/v0.12.0...v0.12.1) (2024-01-30)
+
+
+### Features
+
+* **docker:** Build image with SILE v0.14.16 from upstream Arch Linux ([3eb6d50](https://github.com/sile-typesetter/casile/commit/3eb6d503c28f3e60128595317e73c9ec09bdb108))
+
 ## [0.12.0](https://github.com/sile-typesetter/casile/compare/v0.11.4...v0.12.0) (2024-01-13)
 
 
