@@ -19,7 +19,7 @@ itertools = "0.12"
 lazy_static = "1.4"
 num_cpus = "1.16"
 rayon = "1.8"
-rust-embed = "8.1"
+rust-embed = "8.2"
 subprocess = "0.2"
 unic-langid = "0.9"
 
@@ -60,13 +60,13 @@ features = [ "derive" ]
 version = "4.4"
 
 [build-dependencies.vergen]
-version = "8.2"
+version = "8.3"
 default-features = false
 features = [ "build", "cargo", "git", "gitoxide" ]
 
 [dev-dependencies]
 assert_cmd = "2.0"
-predicates = "3.0"
+predicates = "3.1"
 
 [profile.release]
 lto = true
