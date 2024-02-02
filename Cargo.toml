@@ -24,7 +24,7 @@ subprocess = "0.2"
 unic-langid = "0.9"
 
   [dependencies.config]
-  version = "0.13"
+  version = "0.14"
   default-features = false
   features = [ "yaml" ]
 
