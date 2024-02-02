@@ -44,7 +44,7 @@ impl CONF {
     pub fn merge_files(&self) -> Result<()> {
         let confs = status::get_confs()?;
         let mut config = self.write().expect(ERROR_CONFIG_WRITE);
-        for (_, conf) in confs.iter().enumerate() {
+        for conf in confs.iter() {
             let f = File::new(conf.to_str().unwrap(), FileFormat::Yaml);
             config.merge(f)?;
         }
