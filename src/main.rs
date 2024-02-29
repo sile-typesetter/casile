@@ -5,7 +5,10 @@ use casile::config::CONF;
 use casile::{make, run, setup, status};
 use casile::{Result, VERSION};
 
+use std::time::Instant;
+
 fn main() -> Result<()> {
+    let started = Instant::now();
     CONF.defaults()?;
     CONF.merge_env()?;
     CONF.merge_files()?;
@@ -22,6 +25,6 @@ fn main() -> Result<()> {
         Commands::Setup {} => setup::run(),
         Commands::Status {} => status::run(),
     };
-    casile::show_outro();
+    casile::show_outro(started.elapsed());
     ret
 }

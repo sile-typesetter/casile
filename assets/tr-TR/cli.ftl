@@ -15,7 +15,7 @@ welcome =
   CaSILE { $version } sürümüne hoş geldiniz!
 
 outro =
-  CaSILE çalışması tamamlandı
+  CaSILE çalışması { $duration } içinde tamamlandı
 
 run-header =
   CaSILE ortamı içinde komut dosyası çalıştırılıyor

@@ -10,10 +10,10 @@ use crate::config::CONF;
 use console::{style, StyledObject};
 use git2::{Oid, Repository, Signature};
 use i18n::LocalText;
-use indicatif::{ProgressBar, ProgressStyle};
+use indicatif::{HumanDuration, ProgressBar, ProgressStyle};
 use regex::Regex;
 use std::ffi::OsStr;
-use std::{error, fmt, path, result, str};
+use std::{error, fmt, path, result, str, time::Duration};
 
 pub mod cli;
 pub mod config;
@@ -109,8 +109,9 @@ pub fn show_welcome() {
 }
 
 /// Output welcome header at start of run before moving on to actual commands
-pub fn show_outro() {
-    let outro = LocalText::new("outro").fmt();
+pub fn show_outro(elapsed: Duration) {
+    let time = HumanDuration(elapsed);
+    let outro = LocalText::new("outro").arg("duration", time).fmt();
     ProgressBar::new_spinner()
         .with_style(ProgressStyle::with_template("{msg}").unwrap())
         .finish_with_message(style(outro).cyan().to_string());

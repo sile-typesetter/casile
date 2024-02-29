@@ -65,7 +65,7 @@ welcome =
   Welcome to CaSILE { $version }!
 
 outro =
-  CaSILE run complete
+  CaSILE run completed in { $duration }
 
 make-header =
   Building target(s) using ‘make’
