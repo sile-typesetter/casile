@@ -7,7 +7,7 @@ extern crate num_cpus;
 
 use crate::config::CONF;
 
-use colored::{ColoredString, Colorize};
+use console::{style, StyledObject};
 use git2::{Oid, Repository, Signature};
 use i18n::LocalText;
 use regex::Regex;
@@ -102,26 +102,26 @@ pub fn locale_to_language(lang: String) -> String {
 /// Output welcome header at start of run before moving on to actual commands
 pub fn show_welcome() {
     let welcome = LocalText::new("welcome").arg("version", *VERSION);
-    eprintln!("{} {}", "┏━".cyan(), welcome.fmt().cyan());
+    eprintln!("{} {}", style("┏━").cyan(), style(welcome.fmt()).cyan());
 }
 
 /// Output welcome header at start of run before moving on to actual commands
 pub fn show_outro() {
     let outro = LocalText::new("outro");
-    eprintln!("{} {}", "┗━".cyan(), outro.fmt().cyan());
+    eprintln!("{} {}", style("┗━").cyan(), style(outro.fmt()).cyan());
 }
 
 /// Output header before starting work on a subcommand
 pub fn show_header(key: &str) {
     let text = LocalText::new(key);
-    eprintln!("{} {}", "┣━".cyan(), text.fmt().yellow());
+    eprintln!("{} {}", style("┣━").cyan(), style(text.fmt()).yellow());
 }
 
 pub fn display_check(key: &str, val: bool) {
     if CONF.get_bool("debug").unwrap() || CONF.get_bool("verbose").unwrap() {
         eprintln!(
             "{} {} {}",
-            "┠─".cyan(),
+            style("┠─").cyan(),
             LocalText::new(key).fmt(),
             fmt_t_f(val)
         );
@@ -129,13 +129,13 @@ pub fn display_check(key: &str, val: bool) {
 }
 
 /// Format a localized string just for true / false status prints
-fn fmt_t_f(val: bool) -> ColoredString {
+fn fmt_t_f(val: bool) -> StyledObject<String> {
     let key = if val { "setup-true" } else { "setup-false" };
     let text = LocalText::new(key).fmt();
     if val {
-        text.green()
+        style(text).green()
     } else {
-        text.red()
+        style(text).red()
     }
 }
 

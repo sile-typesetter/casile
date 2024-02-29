@@ -1,7 +1,7 @@
 use crate::i18n::LocalText;
 use crate::*;
 
-use colored::Colorize;
+use console::style;
 use regex::Regex;
 use std::io::prelude::*;
 use std::{ffi::OsString, io};
@@ -189,35 +189,35 @@ pub fn run(target: Vec<String>) -> Result<()> {
 
 fn dump_backlog(backlog: &[String]) {
     let start = LocalText::new("make-backlog-start").fmt();
-    eprintln!("{} {}", "┖┄".cyan(), start);
+    eprintln!("{} {}", style("┖┄").cyan(), start);
     for line in backlog.iter() {
         eprintln!("{line}");
     }
     let end = LocalText::new("make-backlog-end").fmt();
-    eprintln!("{} {}", "┎┄".cyan(), end);
+    eprintln!("{} {}", style("┎┄").cyan(), end);
 }
 
 fn report_line(line: &str) {
-    eprintln!("{} {}", "┠╎".cyan(), line.dimmed());
+    eprintln!("{} {}", style("┠╎").cyan(), style(line).dim());
 }
 
 fn report_start(target: &str) {
     let text = LocalText::new("make-report-start")
-        .arg("target", target.white().bold())
+        .arg("target", style(target).white().bold())
         .fmt();
-    eprintln!("{} {}", "┠┄".cyan(), text.yellow());
+    eprintln!("{} {}", style("┠┄").cyan(), style(text).yellow());
 }
 
 fn report_end(target: &str) {
     let text = LocalText::new("make-report-end")
-        .arg("target", target.white().bold())
+        .arg("target", style(target).white().bold())
         .fmt();
-    eprintln!("{} {}", "┠┄".cyan(), text.green());
+    eprintln!("{} {}", style("┠┄").cyan(), style(text).green());
 }
 
 fn report_fail(target: &str) {
     let text = LocalText::new("make-report-fail")
-        .arg("target", target.white().bold())
+        .arg("target", style(target).white().bold())
         .fmt();
-    eprintln!("{} {}", "┠┄".cyan(), text.red());
+    eprintln!("{} {}", style("┠┄").cyan(), style(text).red());
 }

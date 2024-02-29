@@ -1,7 +1,7 @@
 use crate::i18n::LocalText;
 use crate::*;
 
-use colored::Colorize;
+use console::style;
 use git2::{Repository, Status};
 use git_warp_time::reset_mtimes;
 use std::io::prelude::*;
@@ -75,8 +75,12 @@ pub fn is_setup() -> Result<bool> {
     let msg = LocalText::new(if ret { "setup-good" } else { "setup-bad" }).fmt();
     eprintln!(
         "{} {}",
-        "┠─".cyan(),
-        if ret { msg.green() } else { msg.red() }
+        style("┠─").cyan(),
+        if ret {
+            style(msg).green()
+        } else {
+            style(msg).red()
+        }
     );
     Ok(ret)
 }
@@ -153,12 +157,12 @@ fn regen_gitignore(repo: Repository) -> Result<()> {
     match repo.status_file(path) {
         Ok(Status::CURRENT) => {
             let text = LocalText::new("setup-gitignore-fresh").fmt();
-            eprintln!("{} {}", "┠┄".cyan(), text);
+            eprintln!("{} {}", style("┠┄").cyan(), text);
             Ok(())
         }
         _ => {
             let text = LocalText::new("setup-gitignore-committing").fmt();
-            eprintln!("{} {}", "┠┄".cyan(), text);
+            eprintln!("{} {}", style("┠┄").cyan(), text);
             match commit(repo, oid, "Update .gitignore") {
                 Ok(_) => {
                     index.write()?;
@@ -173,16 +177,16 @@ fn regen_gitignore(repo: Repository) -> Result<()> {
 fn warp_time(repo: Repository) -> Result<()> {
     let opts = git_warp_time::Options::new();
     let text = LocalText::new("setup-warp-time").fmt();
-    eprintln!("{} {}", "┠┄".cyan(), text);
+    eprintln!("{} {}", style("┠┄").cyan(), text);
     let files = reset_mtimes(repo, opts)?;
     match CONF.get_bool("verbose")? {
         true => {
             for file in files.iter() {
                 let path = file.clone().into_os_string().into_string().unwrap();
                 let text = LocalText::new("setup-warp-time-file")
-                    .arg("path", path.white().bold())
+                    .arg("path", style(path).white().bold())
                     .fmt();
-                eprintln!("{} {}", "┠┄".cyan(), text);
+                eprintln!("{} {}", style("┠┄").cyan(), text);
             }
         }
         false => {}
@@ -192,7 +196,7 @@ fn warp_time(repo: Repository) -> Result<()> {
 
 fn configure_short_shas(repo: Repository) -> Result<()> {
     let text = LocalText::new("setup-short-shas").fmt();
-    eprintln!("{} {}", "┠┄".cyan(), text);
+    eprintln!("{} {}", style("┠┄").cyan(), text);
     let mut conf = repo.config()?;
     Ok(conf.set_i32("core.abbrev", 7)?)
 }
