@@ -10,6 +10,7 @@ use crate::config::CONF;
 use console::{style, StyledObject};
 use git2::{Oid, Repository, Signature};
 use i18n::LocalText;
+use indicatif::{ProgressBar, ProgressStyle};
 use regex::Regex;
 use std::ffi::OsStr;
 use std::{error, fmt, path, result, str};
@@ -101,14 +102,18 @@ pub fn locale_to_language(lang: String) -> String {
 
 /// Output welcome header at start of run before moving on to actual commands
 pub fn show_welcome() {
-    let welcome = LocalText::new("welcome").arg("version", *VERSION);
-    eprintln!("{} {}", style("┏━").cyan(), style(welcome.fmt()).cyan());
+    let welcome = LocalText::new("welcome").arg("version", *VERSION).fmt();
+    ProgressBar::new_spinner()
+        .with_style(ProgressStyle::with_template("{msg}").unwrap())
+        .finish_with_message(style(welcome).cyan().to_string());
 }
 
 /// Output welcome header at start of run before moving on to actual commands
 pub fn show_outro() {
-    let outro = LocalText::new("outro");
-    eprintln!("{} {}", style("┗━").cyan(), style(outro.fmt()).cyan());
+    let outro = LocalText::new("outro").fmt();
+    ProgressBar::new_spinner()
+        .with_style(ProgressStyle::with_template("{msg}").unwrap())
+        .finish_with_message(style(outro).cyan().to_string());
 }
 
 /// Output header before starting work on a subcommand
