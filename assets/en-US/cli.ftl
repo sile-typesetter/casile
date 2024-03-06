@@ -64,7 +64,7 @@ error-no-path =
 welcome =
   Welcome to CaSILE { $version }!
 
-outro =
+farewell =
   CaSILE run completed in { $duration }
 
 make-header =

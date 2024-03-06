@@ -109,12 +109,12 @@ pub fn show_welcome() {
 }
 
 /// Output welcome header at start of run before moving on to actual commands
-pub fn show_outro(elapsed: Duration) {
+pub fn show_farewell(elapsed: Duration) {
     let time = HumanDuration(elapsed);
-    let outro = LocalText::new("outro").arg("duration", time).fmt();
+    let farewell = LocalText::new("farewell").arg("duration", time).fmt();
     ProgressBar::new_spinner()
         .with_style(ProgressStyle::with_template("{msg}").unwrap())
-        .finish_with_message(style(outro).cyan().to_string());
+        .finish_with_message(style(farewell).cyan().to_string());
 }
 
 /// Output header before starting work on a subcommand

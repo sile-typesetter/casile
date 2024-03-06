@@ -14,7 +14,7 @@ help-subcommand-run-arguments =
 welcome =
   CaSILE { $version } sürümüne hoş geldiniz!
 
-outro =
+farewell =
   CaSILE çalışması { $duration } içinde tamamlandı
 
 run-header =

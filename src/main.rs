@@ -25,6 +25,6 @@ fn main() -> Result<()> {
         Commands::Setup {} => setup::run(),
         Commands::Status {} => status::run(),
     };
-    casile::show_outro(started.elapsed());
+    casile::show_farewell(started.elapsed());
     ret
 }
