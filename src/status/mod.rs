@@ -1,16 +1,15 @@
 use crate::*;
 
 use git2::{DescribeFormatOptions, DescribeOptions};
-use indicatif::MultiProgress;
 use regex::Regex;
 use std::{env, path};
 
 // FTL: help-subcommand-status
 /// Dump what we know about the repo
-pub fn run(progress: MultiProgress) -> Result<()> {
-    let header = progress_header(progress, "status-header");
+pub fn run() -> Result<()> {
+    let statusbar = SubcommandStatus::new("status-header");
     CONF.set_bool("verbose", true)?;
-    let _ret = setup::is_setup(header)?;
+    setup::is_setup(statusbar)?;
     Ok(())
 }
 
@@ -32,14 +31,14 @@ fn run_as() -> RunAsMode {
 /// Check to see if we're running in GitHub Actions
 pub fn is_gha() -> Result<bool> {
     let ret = env::var("GITHUB_ACTIONS").is_ok();
-    display_check("status-is-gha", ret);
+    // display_check("status-is-gha", ret);
     Ok(ret)
 }
 
 /// Check to see if we're running in GitLab CI
 pub fn is_glc() -> Result<bool> {
     let ret = env::var("GITLAB_CI").is_ok();
-    display_check("status-is-glc", ret);
+    // display_check("status-is-glc", ret);
     Ok(ret)
 }
 

@@ -9,9 +9,9 @@ use subprocess::{Exec, ExitStatus, Redirection};
 
 // FTL: help-subcommand-make
 /// Build specified target(s)
-pub fn run(progress: MultiProgress, target: Vec<String>) -> Result<()> {
-    let header = progress_header(progress, "make-header");
-    setup::is_setup(header)?;
+pub fn run(target: Vec<String>) -> Result<()> {
+    let statusbar = SubcommandStatus::new("make-header");
+    setup::is_setup(statusbar)?;
     let mut makeflags: Vec<OsString> = Vec::new();
     let cpus = &num_cpus::get().to_string();
     makeflags.push(OsString::from(format!("--jobs={cpus}")));

@@ -7,12 +7,13 @@ extern crate num_cpus;
 
 use crate::config::CONF;
 
-use console::{style, StyledObject};
+use console::style;
 use git2::{Oid, Repository, Signature};
 use i18n::LocalText;
-use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressStyle};
+use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressFinish, ProgressStyle};
 use regex::Regex;
 use std::ffi::OsStr;
+use std::sync::MutexGuard;
 use std::{error, fmt, path, result, str, time::Duration};
 
 pub mod cli;
@@ -67,6 +68,94 @@ impl error::Error for Error {
     }
 }
 
+#[derive(Debug)]
+pub struct HeaderBar(ProgressBar);
+
+impl HeaderBar {
+    pub fn new(key: &str) -> HeaderBar {
+        let msg = style(LocalText::new(key).fmt()).yellow().bright().to_string();
+        let prefix = style("⟳").yellow().to_string();
+        let bar = ProgressBar::new_spinner()
+            .with_style(ProgressStyle::with_template("{prefix} {msg}").unwrap())
+            .with_prefix(prefix)
+            .with_message(msg);
+        HeaderBar(bar)
+    }
+    pub fn pass(&self, key: &str) {
+        let msg = style(LocalText::new(key).fmt())
+            .green()
+            .bright()
+            .to_string();
+        let prefix = style("✔").green().to_string();
+        self.set_prefix(prefix);
+        self.finish_with_message(msg);
+    }
+    pub fn fail(&self, key: &str) {
+        let msg = style(LocalText::new(key).fmt()).red().bright().to_string();
+        let prefix = style("✗").red().to_string();
+        self.set_prefix(prefix);
+        self.finish_with_message(msg);
+    }
+}
+
+impl std::ops::Deref for HeaderBar {
+    type Target = ProgressBar;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+/// A holder for subcommand level status with the group and top level header
+#[derive(Debug)]
+pub struct SubcommandStatus {
+    pub progress: MultiProgress,
+    pub header: HeaderBar,
+}
+
+impl SubcommandStatus {
+    pub fn new(key: &str) -> SubcommandStatus {
+        let progress = MultiProgress::new();
+        let header = HeaderBar::new(key);
+        let header = HeaderBar(progress.add(header.0));
+        SubcommandStatus { progress, header }
+    }
+}
+
+#[derive(Debug)]
+pub struct SetupCheck(ProgressBar);
+
+impl SetupCheck {
+    pub fn start(progress: MutexGuard<MultiProgress>, key: &str) -> SetupCheck {
+        let msg = LocalText::new(key).fmt();
+        let bar = if CONF.get_bool("debug").unwrap() || CONF.get_bool("verbose").unwrap() {
+            let no = style(LocalText::new("setup-false").fmt()).red().to_string();
+            ProgressBar::new_spinner()
+                .with_style(ProgressStyle::with_template("{msg}").unwrap())
+                .with_finish(ProgressFinish::AbandonWithMessage(
+                    format!("{msg} {no}").into(),
+                ))
+        } else {
+            ProgressBar::hidden()
+        };
+        let bar = bar.with_message(msg);
+        SetupCheck(progress.add(bar))
+    }
+    pub fn pass(&self) {
+        let msg = self.0.message();
+        let yes = style(LocalText::new("setup-true").fmt())
+            .green()
+            .to_string();
+        self.finish_with_message(format!("{msg} {yes}"))
+    }
+}
+
+impl std::ops::Deref for SetupCheck {
+    type Target = ProgressBar;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
 /// Get repository object
 pub fn get_repo() -> Result<Repository> {
     let path = CONF.get_string("path")?;
@@ -102,49 +191,25 @@ pub fn locale_to_language(lang: String) -> String {
 
 /// Output welcome header at start of run before moving on to actual commands
 pub fn show_welcome() {
-    let welcome = LocalText::new("welcome").arg("version", *VERSION).fmt();
+    let msg = LocalText::new("welcome").arg("version", *VERSION).fmt();
+    let msg = style(msg).cyan().bright().to_string();
+    let prefix = style("⛫").cyan().to_string();
     ProgressBar::new_spinner()
-        .with_style(ProgressStyle::with_template("{msg}").unwrap())
-        .finish_with_message(style(welcome).cyan().to_string());
+        .with_style(ProgressStyle::with_template("{prefix} {msg}").unwrap())
+        .with_prefix(prefix)
+        .finish_with_message(msg);
 }
 
 /// Output welcome header at start of run before moving on to actual commands
 pub fn show_farewell(elapsed: Duration) {
     let time = HumanDuration(elapsed);
-    let farewell = LocalText::new("farewell").arg("duration", time).fmt();
+    let msg = LocalText::new("farewell").arg("duration", time).fmt();
+    let msg = style(msg).cyan().bright().to_string();
+    let prefix = style("⛫").cyan().to_string();
     ProgressBar::new_spinner()
-        .with_style(ProgressStyle::with_template("{msg}").unwrap())
-        .finish_with_message(style(farewell).cyan().to_string());
-}
-
-/// Output header before starting work on a subcommand
-pub fn progress_header(progress: MultiProgress, key: &str) -> ProgressBar {
-    let text = LocalText::new(key).fmt();
-    let bar = ProgressBar::new_spinner().with_style(ProgressStyle::with_template("{msg}").unwrap());
-    bar.set_message(style(text).yellow().to_string());
-    progress.add(bar)
-}
-
-pub fn display_check(key: &str, val: bool) {
-    if CONF.get_bool("debug").unwrap() || CONF.get_bool("verbose").unwrap() {
-        eprintln!(
-            "{} {} {}",
-            style("┠─").cyan(),
-            LocalText::new(key).fmt(),
-            fmt_t_f(val)
-        );
-    };
-}
-
-/// Format a localized string just for true / false status prints
-fn fmt_t_f(val: bool) -> StyledObject<String> {
-    let key = if val { "setup-true" } else { "setup-false" };
-    let text = LocalText::new(key).fmt();
-    if val {
-        style(text).green()
-    } else {
-        style(text).red()
-    }
+        .with_style(ProgressStyle::with_template("{prefix} {msg}").unwrap())
+        .with_prefix(prefix)
+        .finish_with_message(msg);
 }
 
 #[cfg(unix)]
