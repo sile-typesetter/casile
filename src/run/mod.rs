@@ -6,9 +6,9 @@ use subprocess::{Exec, Redirection};
 
 // FTL: help-subcommand-script
 /// Run helper script inside CaSILE environment
-pub fn run(name: String, arguments: Vec<OsString>) -> Result<()> {
-    setup::is_setup()?;
-    show_header("script-header");
+pub fn run(progress: MultiProgress, name: String, arguments: Vec<OsString>) -> Result<()> {
+    let header = progress_header(progress, "script-header");
+    setup::is_setup(header)?;
     let cpus = &num_cpus::get().to_string();
     let mut process = Exec::cmd(format!("{CONFIGURE_DATADIR}/scripts/{name}")).args(&arguments);
     let gitname = status::get_gitname()?;

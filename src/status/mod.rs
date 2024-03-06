@@ -1,15 +1,16 @@
 use crate::*;
 
 use git2::{DescribeFormatOptions, DescribeOptions};
+use indicatif::MultiProgress;
 use regex::Regex;
 use std::{env, path};
 
 // FTL: help-subcommand-status
 /// Dump what we know about the repo
-pub fn run() -> Result<()> {
-    show_header("status-header");
+pub fn run(progress: MultiProgress) -> Result<()> {
+    let header = progress_header(progress, "status-header");
     CONF.set_bool("verbose", true)?;
-    setup::is_setup()?;
+    let _ret = setup::is_setup(header)?;
     Ok(())
 }
 

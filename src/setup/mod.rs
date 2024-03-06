@@ -11,14 +11,14 @@ use subprocess::{Exec, NullFile, Redirection};
 
 // FTL: help-subcommand-setup
 /// Setup a publishing project for use with CaSILE
-pub fn run() -> Result<()> {
-    show_header("setup-header");
+pub fn run(progress: MultiProgress) -> Result<()> {
+    let _header = progress_header(progress.clone(), "setup-header");
     let path = &CONF.get_string("path")?;
     let metadata = fs::metadata(path)?;
     match metadata.is_dir() {
         true => match is_repo()? {
             true => {
-                regen_gitignore(get_repo()?)?;
+                regen_gitignore(progress, get_repo()?)?;
                 configure_short_shas(get_repo()?)?;
                 if is_deep()? {
                     warp_time(get_repo()?)?;
@@ -38,7 +38,7 @@ pub fn run() -> Result<()> {
 }
 
 /// Evaluate whether this project is properly configured
-pub fn is_setup() -> Result<bool> {
+pub fn is_setup(progress: ProgressBar) -> Result<bool> {
     let results = Arc::new(RwLock::new(Vec::new()));
 
     // First round of tests, entirely independent
@@ -72,16 +72,14 @@ pub fn is_setup() -> Result<bool> {
     }
 
     let ret = results.read().unwrap().iter().all(|&v| v);
+
     let msg = LocalText::new(if ret { "setup-good" } else { "setup-bad" }).fmt();
-    eprintln!(
-        "{} {}",
-        style("┠─").cyan(),
-        if ret {
-            style(msg).green()
-        } else {
-            style(msg).red()
-        }
-    );
+    if ret {
+        progress.finish_with_message(style(msg).green().to_string());
+    } else {
+        progress.finish_with_message(style(msg).red().to_string());
+    }
+
     Ok(ret)
 }
 
@@ -147,9 +145,9 @@ pub fn is_make_gnu() -> Result<bool> {
     Ok(ret)
 }
 
-fn regen_gitignore(repo: Repository) -> Result<()> {
+fn regen_gitignore(progress: MultiProgress, repo: Repository) -> Result<()> {
     let target = vec![String::from(".gitignore")];
-    make::run(target)?;
+    make::run(progress, target)?;
     let path = path::Path::new(".gitignore");
     let mut index = repo.index()?;
     index.add_path(path)?;

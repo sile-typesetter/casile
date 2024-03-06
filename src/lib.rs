@@ -10,7 +10,7 @@ use crate::config::CONF;
 use console::{style, StyledObject};
 use git2::{Oid, Repository, Signature};
 use i18n::LocalText;
-use indicatif::{HumanDuration, ProgressBar, ProgressStyle};
+use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressStyle};
 use regex::Regex;
 use std::ffi::OsStr;
 use std::{error, fmt, path, result, str, time::Duration};
@@ -118,9 +118,11 @@ pub fn show_farewell(elapsed: Duration) {
 }
 
 /// Output header before starting work on a subcommand
-pub fn show_header(key: &str) {
-    let text = LocalText::new(key);
-    eprintln!("{} {}", style("┣━").cyan(), style(text.fmt()).yellow());
+pub fn progress_header(progress: MultiProgress, key: &str) -> ProgressBar {
+    let text = LocalText::new(key).fmt();
+    let bar = ProgressBar::new_spinner().with_style(ProgressStyle::with_template("{msg}").unwrap());
+    bar.set_message(style(text).yellow().to_string());
+    progress.add(bar)
 }
 
 pub fn display_check(key: &str, val: bool) {
