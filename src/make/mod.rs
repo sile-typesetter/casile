@@ -1,5 +1,6 @@
 use crate::i18n::LocalText;
 use crate::*;
+use crate::tui::*;
 
 use console::style;
 use regex::Regex;

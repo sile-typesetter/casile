@@ -1,4 +1,5 @@
 use crate::*;
+use crate::tui::*;
 
 use std::io::prelude::*;
 use std::{ffi::OsString, io};

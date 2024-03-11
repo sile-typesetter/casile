@@ -1,4 +1,5 @@
 use crate::*;
+use crate::tui::*;
 
 use git2::{DescribeFormatOptions, DescribeOptions};
 use regex::Regex;
