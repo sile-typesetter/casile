@@ -133,15 +133,15 @@ impl SetupCheck {
         let msg = LocalText::new(key).fmt();
         let bar = if CONF.get_bool("debug").unwrap() || CONF.get_bool("verbose").unwrap() {
             let no = style(LocalText::new("setup-false").fmt()).red().to_string();
-            ProgressBar::new_spinner()
+            let bar = ProgressBar::new_spinner()
                 .with_style(ProgressStyle::with_template("{msg}").unwrap())
                 .with_finish(ProgressFinish::AbandonWithMessage(
                     format!("{msg} {no}").into(),
-                ))
+                ));
+            TUI.add(bar)
         } else {
             ProgressBar::hidden()
         };
-        let bar = TUI.add(bar);
         bar.set_message(msg);
         SetupCheck(bar)
     }

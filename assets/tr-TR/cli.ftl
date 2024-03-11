@@ -15,13 +15,16 @@ welcome =
   CaSILE { $version } sürümüne hoş geldiniz!
 
 farewell =
-  CaSILE çalışması { $duration } içinde tamamlandı
-
-run-header =
-  CaSILE ortamı içinde komut dosyası çalıştırılıyor
+  CaSILE çalışması { $duration } içinde tamamlandı.
 
 make-header =
-  ‘make’ aracılığıyla hedef(ler) oluşturuluyor
+  ‘make’ aracılığıyla hedef(ler) oluşturuluyor.
+
+make-good =
+  Tüm hedef(ler) başarıyla oluşturuldu.
+
+make-bad =
+  Bazı veya tüm hedef(ler) oluşturulamadı.
 
 make-report-start =
   Hedef için işlemeri başlatırılıyor: { $target }
@@ -32,20 +35,29 @@ make-report-end =
 make-report-fail =
   Hedef işlemi başarsız sonlandırmış: { $target }
 
+run-header =
+  CaSILE ortamı içinde komut dosyası çalıştırılıyor.
+
+run-good =
+  Komut dosyası başarıyla çalıştırıldı.
+
+run-bad =
+  Komut dosyası başarılı bir şekilde çalıştılmadı.
+
 setup-header =
-  Depoyu CaSILE ile kullanılmak üzere yapılandırılıyor
+  Depoyu CaSILE ile kullanılmak üzere yapılandırılıyor.
+
+setup-good =
+  Depoyu CaSILE ile kullanılmak üzere tamamen yapılandırılmıştır.
+
+setup-bad =
+  Depoyu CaSILE ile kullanılmak üzere yapılandırılamadı.
 
 setup-true =
   Evet
 
 setup-false =
   Hayır
-
-setup-good =
-  Her şey yerinde gibi gözüküyor, presleri ısıtın!
-
-setup-bad =
-  Presleri durdurun, bir eksiklik varmış, 'casile setup' çalıştırın.
 
 setup-is-repo =
   Dizin yolu bir Git deposu mudur?
@@ -73,6 +85,12 @@ setup-warp-time-file =
 
 status-header =
   Proje durum inceleniyor
+
+status-good =
+  Her şey yerinde gibi gözüküyor, presleri ısıtın!
+
+status-bad =
+  Presleri durdurun, bir eksiklik varmış, 'casile setup' çalıştırın.
 
 status-is-gha =
   GitHub Action olarak mı çalıştırıldık?

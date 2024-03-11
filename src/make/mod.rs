@@ -11,8 +11,9 @@ use subprocess::{Exec, ExitStatus, Redirection};
 // FTL: help-subcommand-make
 /// Build specified target(s)
 pub fn run(target: Vec<String>) -> Result<()> {
-    let subcommand_status = SubcommandStatus::new("make-header", "", "");
+    let subcommand_status = SubcommandStatus::new("status-header", "status-good", "status-bad");
     setup::is_setup(subcommand_status)?;
+    let subcommand_status = SubcommandStatus::new("make-header", "make-good", "make-bad");
     let mut makeflags: Vec<OsString> = Vec::new();
     let cpus = &num_cpus::get().to_string();
     makeflags.push(OsString::from(format!("--jobs={cpus}")));
@@ -127,7 +128,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
         }
     }
     let status = popen.wait();
-    match status {
+    let ret = match status {
         Ok(ExitStatus::Exited(int)) => {
             let code = int + ret;
             match code {
@@ -185,7 +186,9 @@ pub fn run(target: Vec<String>) -> Result<()> {
             io::ErrorKind::InvalidInput,
             LocalText::new("make-error").fmt(),
         ))),
-    }
+    };
+    subcommand_status.end(ret.is_ok());
+    Ok(ret?)
 }
 
 fn dump_backlog(backlog: &[String]) {

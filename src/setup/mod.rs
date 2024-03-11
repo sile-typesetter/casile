@@ -13,10 +13,10 @@ use subprocess::{Exec, NullFile, Redirection};
 // FTL: help-subcommand-setup
 /// Setup a publishing project for use with CaSILE
 pub fn run() -> Result<()> {
-    // let subcommand_status = SubcommandStatus::new("setup-header", "setup-good", "setup_bad");
+    let subcommand_status = SubcommandStatus::new("setup-header", "setup-good", "setup_bad");
     let path = &CONF.get_string("path")?;
     let metadata = fs::metadata(path)?;
-    match metadata.is_dir() {
+    let ret = match metadata.is_dir() {
         true => match is_repo()? {
             true => {
                 regen_gitignore(get_repo()?)?;
@@ -35,7 +35,9 @@ pub fn run() -> Result<()> {
             io::ErrorKind::InvalidInput,
             LocalText::new("setup-error-not-dir").fmt(),
         ))),
-    }
+    };
+    subcommand_status.end(ret.is_ok());
+    Ok(ret?)
 }
 
 /// Evaluate whether this project is properly configured
@@ -88,7 +90,8 @@ pub fn is_repo() -> Result<bool> {
 /// Is this repo a deep clone?
 pub fn is_deep() -> Result<bool> {
     let ret = !get_repo()?.is_shallow();
-    // display_check("setup-is-deep", ret);
+    let status = SetupCheck::start("setup-is-deep");
+    (ret).then(|| status.pass());
     Ok(ret)
 }
 
