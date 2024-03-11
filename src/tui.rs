@@ -7,7 +7,7 @@ use console::style;
 use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressFinish, ProgressStyle};
 use std::sync::RwLock;
 use std::str;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 static ERROR_TUI_WRITE: &str = "Unable to gain write lock on tui status wrapper";
 
@@ -119,6 +119,58 @@ impl SubcommandStatus {
 }
 
 impl std::ops::Deref for SubcommandStatus {
+    type Target = ProgressBar;
+    fn deref(&self) -> &Self::Target {
+        &self.bar
+    }
+}
+
+#[derive(Debug)]
+pub struct MakeTargetStatus {
+    bar: ProgressBar,
+    target: String,
+}
+
+impl MakeTargetStatus {
+    pub fn new(target: String) -> MakeTargetStatus {
+        let msg = style(LocalText::new("make-report-start")
+            .arg("target", style(target.clone()).white().bold())
+            .fmt()).yellow().bright().to_string();
+        let bar = ProgressBar::new_spinner()
+            .with_style(ProgressStyle::with_template("{spinner} {msg}").unwrap());
+        let bar = TUI.add(bar);
+        bar.set_message(msg);
+        bar.enable_steady_tick(Duration::new(0, 500_000_000));
+        MakeTargetStatus {
+            bar: bar,
+            target,
+        }
+    }
+    pub fn stdout(&self, line: &str) {
+        let target = style(self.target.clone()).white().bold().to_string();
+        let line = style(line).dim();
+        self.println(format!("{target}: {line}"));
+    }
+    pub fn stderr(&self, line: &str) {
+        let target = style(self.target.clone()).white().to_string();
+        let line = style(line).dim();
+        self.println(format!("{target}: {line}"));
+    }
+    pub fn pass(&self) {
+        let msg = style(LocalText::new("make-report-pass")
+            .arg("target", style(self.target.clone()).white().bold())
+            .fmt()).green().bright().to_string();
+        self.finish_with_message(msg);
+    }
+    pub fn fail(&self) {
+        let msg = style(LocalText::new("make-report-fail")
+            .arg("target", style(self.target.clone()).white().bold())
+            .fmt()).red().bright().to_string();
+        self.finish_with_message(msg);
+    }
+}
+
+impl std::ops::Deref for MakeTargetStatus {
     type Target = ProgressBar;
     fn deref(&self) -> &Self::Target {
         &self.bar

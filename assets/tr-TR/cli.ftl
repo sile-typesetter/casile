@@ -29,7 +29,7 @@ make-bad =
 make-report-start =
   Hedef için işlemeri başlatırılıyor: { $target }
 
-make-report-end =
+make-report-pass =
   Hedef işlemi başarıyla bittirilmiş: { $target }
 
 make-report-fail =

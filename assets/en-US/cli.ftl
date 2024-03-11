@@ -79,7 +79,7 @@ make-bad =
 make-report-start =
   Starting make job for target: { $target }
 
-make-report-end =
+make-report-pass =
   Finished make job for target: { $target }
 
 make-report-fail =
