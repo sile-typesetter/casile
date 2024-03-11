@@ -132,7 +132,9 @@ pub struct MakeTargetStatus {
 }
 
 impl MakeTargetStatus {
-    pub fn new(target: String) -> MakeTargetStatus {
+    pub fn new(mut target: String) -> MakeTargetStatus {
+        // Withouth this, copying the string in the terminal as a word brings a U+2069 with it
+        target.push_str(" ");
         let msg = style(LocalText::new("make-report-start")
             .arg("target", style(target.clone()).white().bold())
             .fmt()).yellow().bright().to_string();
