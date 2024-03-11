@@ -157,10 +157,16 @@ impl MakeTargetStatus {
         self.println(format!("{target}: {line}"));
     }
     pub fn pass(&self) {
-        let msg = style(LocalText::new("make-report-pass")
-            .arg("target", style(self.target.clone()).white().bold())
-            .fmt()).green().bright().to_string();
-        self.finish_with_message(msg);
+        let target = self.target.clone();
+        if target.starts_with(".casile") {
+            self.bar.disable_steady_tick();
+            TUI.remove(&self.bar);
+        } else {
+            let msg = style(LocalText::new("make-report-pass")
+                            .arg("target", style(target).white().bold())
+                            .fmt()).green().bright().to_string();
+            self.finish_with_message(msg);
+        }
     }
     pub fn fail(&self) {
         let msg = style(LocalText::new("make-report-fail")
