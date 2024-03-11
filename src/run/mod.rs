@@ -8,8 +8,8 @@ use subprocess::{Exec, Redirection};
 // FTL: help-subcommand-script
 /// Run helper script inside CaSILE environment
 pub fn run(name: String, arguments: Vec<OsString>) -> Result<()> {
-    let statusbar = SubcommandStatus::new("script-header");
-    setup::is_setup(statusbar)?;
+    let subcommand_status = SubcommandStatus::new("script-header", "", "");
+    setup::is_setup(subcommand_status)?;
     let cpus = &num_cpus::get().to_string();
     let mut process = Exec::cmd(format!("{CONFIGURE_DATADIR}/scripts/{name}")).args(&arguments);
     let gitname = status::get_gitname()?;

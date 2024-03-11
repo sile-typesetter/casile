@@ -6,21 +6,18 @@ use console::style;
 use git2::{Repository, Status};
 use git_warp_time::reset_mtimes;
 use std::io::prelude::*;
-use std::sync::{Arc, Mutex, MutexGuard, RwLock};
-use indicatif::{MultiProgress};
+use std::sync::{Arc, RwLock};
 use std::{fs, io, path};
 use subprocess::{Exec, NullFile, Redirection};
 
 // FTL: help-subcommand-setup
 /// Setup a publishing project for use with CaSILE
 pub fn run() -> Result<()> {
-    let statusbar = SubcommandStatus::new("setup-header");
+    // let subcommand_status = SubcommandStatus::new("setup-header", "setup-good", "setup_bad");
     let path = &CONF.get_string("path")?;
     let metadata = fs::metadata(path)?;
-    let progress = Arc::new(Mutex::new(statusbar.progress));
-    let progress = progress.lock().unwrap();
     match metadata.is_dir() {
-        true => match is_repo(progress)? {
+        true => match is_repo()? {
             true => {
                 regen_gitignore(get_repo()?)?;
                 configure_short_shas(get_repo()?)?;
@@ -42,20 +39,17 @@ pub fn run() -> Result<()> {
 }
 
 /// Evaluate whether this project is properly configured
-pub fn is_setup(statusbar: SubcommandStatus) -> Result<bool> {
+pub fn is_setup(subcommand_status: SubcommandStatus) -> Result<bool> {
     let results = Arc::new(RwLock::new(Vec::new()));
-    let progress = Arc::new(Mutex::new(statusbar.progress));
 
     // First round of tests, entirely independent
     rayon::scope(|s| {
         s.spawn(|_| {
-            let progress = progress.lock().unwrap();
-            let ret = is_repo(progress).unwrap();
+            let ret = is_repo().unwrap();
             results.write().unwrap().push(ret);
         });
         s.spawn(|_| {
-            let progress = progress.lock().unwrap();
-            let ret = is_make_exectuable(progress).unwrap();
+            let ret = is_make_exectuable().unwrap();
             results.write().unwrap().push(ret);
         });
     });
@@ -64,43 +58,28 @@ pub fn is_setup(statusbar: SubcommandStatus) -> Result<bool> {
     if results.read().unwrap().iter().all(|&v| v) {
         rayon::scope(|s| {
             s.spawn(|_| {
-                let progress = progress.lock().unwrap();
-                let ret = is_not_casile_source(progress).unwrap();
+                let ret = is_not_casile_source().unwrap();
                 results.write().unwrap().push(ret);
             });
             s.spawn(|_| {
-                let progress = progress.lock().unwrap();
-                let ret = is_writable(progress).unwrap();
+                let ret = is_writable().unwrap();
                 results.write().unwrap().push(ret);
             });
             s.spawn(|_| {
-                let progress = progress.lock().unwrap();
-                let ret = is_make_gnu(progress).unwrap();
+                let ret = is_make_gnu().unwrap();
                 results.write().unwrap().push(ret);
             });
         });
     }
 
     let ret = results.read().unwrap().iter().all(|&v| v);
-
-    // Drop the status bar so we can redraw it *after* the relevant check messages
-    let progress = progress.lock().unwrap();
-    progress.remove(&statusbar.header);
-    let header = HeaderBar(progress.add(statusbar.header.0));
-
-    // Set the relevant final status for the section
-    if ret {
-        header.pass("setup-good");
-    } else {
-        header.fail("setup-bad");
-    }
-
+    subcommand_status.end(ret);
     Ok(ret)
 }
 
 /// Are we in a git repo?
-pub fn is_repo(progress: MutexGuard<MultiProgress>) -> Result<bool> {
-    let status = SetupCheck::start(progress, "setup-is-repo");
+pub fn is_repo() -> Result<bool> {
+    let status = SetupCheck::start("setup-is-repo");
     let ret = get_repo().is_ok();
     (ret).then(|| status.pass());
     Ok(ret)
@@ -114,8 +93,8 @@ pub fn is_deep() -> Result<bool> {
 }
 
 /// Are we not in the CaSILE source repo?
-pub fn is_not_casile_source(progress: MutexGuard<MultiProgress>) -> Result<bool> {
-    let status = SetupCheck::start(progress, "setup-is-not-casile");
+pub fn is_not_casile_source() -> Result<bool> {
+    let status = SetupCheck::start("setup-is-not-casile");
     let repo = get_repo()?;
     let workdir = repo.workdir().unwrap();
     let testfile = workdir.join("make-shell.zsh.in");
@@ -125,8 +104,8 @@ pub fn is_not_casile_source(progress: MutexGuard<MultiProgress>) -> Result<bool>
 }
 
 /// Is the git repo we are in writable?
-pub fn is_writable(progress: MutexGuard<MultiProgress>) -> Result<bool> {
-    let status = SetupCheck::start(progress, "setup-is-writable");
+pub fn is_writable() -> Result<bool> {
+    let status = SetupCheck::start("setup-is-writable");
     let repo = get_repo()?;
     let workdir = repo.workdir().unwrap();
     let testfile = workdir.join(".casile-write-test");
@@ -139,8 +118,8 @@ pub fn is_writable(progress: MutexGuard<MultiProgress>) -> Result<bool> {
 }
 
 /// Check if we can execute the system's `make` utility
-pub fn is_make_exectuable(progress: MutexGuard<MultiProgress>) -> Result<bool> {
-    let status = SetupCheck::start(progress, "setup-is-make-executable");
+pub fn is_make_exectuable() -> Result<bool> {
+    let status = SetupCheck::start("setup-is-make-executable");
     let ret = Exec::cmd("make")
         .arg("-v")
         .stdout(NullFile)
@@ -152,8 +131,8 @@ pub fn is_make_exectuable(progress: MutexGuard<MultiProgress>) -> Result<bool> {
 }
 
 /// Check that the system's `make` utility is GNU Make
-pub fn is_make_gnu(progress: MutexGuard<MultiProgress>) -> Result<bool> {
-    let status = SetupCheck::start(progress, "setup-is-make-gnu");
+pub fn is_make_gnu() -> Result<bool> {
+    let status = SetupCheck::start("setup-is-make-gnu");
     let out = Exec::cmd("make")
         .arg("-v")
         .stdout(Redirection::Pipe)

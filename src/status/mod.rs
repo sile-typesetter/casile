@@ -8,9 +8,9 @@ use std::{env, path};
 // FTL: help-subcommand-status
 /// Dump what we know about the repo
 pub fn run() -> Result<()> {
-    let statusbar = SubcommandStatus::new("status-header");
+    let subcommand_status = SubcommandStatus::new("status-header", "setup-good", "setup-bad");
     CONF.set_bool("verbose", true)?;
-    setup::is_setup(statusbar)?;
+    setup::is_setup(subcommand_status)?;
     Ok(())
 }
 
