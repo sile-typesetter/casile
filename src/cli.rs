@@ -8,27 +8,27 @@ use std::{ffi::OsString, path};
 #[derive(Args, Debug)]
 #[clap(author)]
 pub struct Cli {
-    // FTL: help-flags-debug
+    // FTL: help-flag-debug
     /// Enable extra debug output from tooling
     #[clap(short, long)]
     pub debug: bool,
 
-    // FTL: help-flags-language
+    // FTL: help-flag-language
     /// Set language
     #[clap(short, long)]
     pub language: Option<String>,
 
-    // FTL: help-flags-path
+    // FTL: help-flag-path
     /// Set project root path
     #[clap(short, long, default_value = "./")]
     pub path: path::PathBuf,
 
-    // FTL: help-flags-quiet
+    // FTL: help-flag-quiet
     /// Discard all non-error output messages
     #[clap(short, long)]
     pub quiet: bool,
 
-    // FTL: help-flags-verbose
+    // FTL: help-flag-verbose
     /// Enable extra verbose output from tooling
     #[clap(short, long)]
     pub verbose: bool,

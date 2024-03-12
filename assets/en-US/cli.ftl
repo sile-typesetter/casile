@@ -4,19 +4,19 @@ help-description =
   a publishing workflow employing SILE and other wizardry.
 
 # Currently hard coded, see clap issue #1880
-help-flags-debug =
+help-flag-debug =
   Enable extra debug output from tooling
 
 # Currently hard coded, see clap issue #1880
-help-flags-language =
+help-flag-language =
   Set language
 
 # Currently hard coded, see clap issue #1880
-help-flags-quiet =
+help-flag-quiet =
   Enable extra debug output from tooling
 
 # Currently hard coded, see clap issue #1880
-help-flags-verbose =
+help-flag-verbose =
   Enable extra verbose output from tooling
 
 # Currently hard coded, see clap issue #1880
