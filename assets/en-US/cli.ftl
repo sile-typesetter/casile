@@ -77,13 +77,13 @@ make-bad =
   Unable to finish making some or all target(s).
 
 make-report-start =
-  Starting make job for target: { $target }
+  Started to make: { $target }
 
 make-report-pass =
-  Finished make job for target: { $target }
+  Finished making: { $target }
 
 make-report-fail =
-  Failed make job for target: { $target }
+  Failed make job: { $target }
 
 make-backlog-start =
   Dumping captured output of ‘make’:

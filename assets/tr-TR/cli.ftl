@@ -27,13 +27,13 @@ make-bad =
   Bazı veya tüm hedef(ler) oluşturulamadı.
 
 make-report-start =
-  Hedef için işlemeri başlatırılıyor: { $target }
+  İşlem başlatıldı: { $target }
 
 make-report-pass =
-  Hedef işlemi başarıyla bittirilmiş: { $target }
+  İşlem bittirildi: { $target }
 
 make-report-fail =
-  Hedef işlemi başarsız sonlandırmış: { $target }
+  İşlem başarsızdı: { $target }
 
 run-header =
   CaSILE ortamı içinde komut dosyası çalıştırılıyor.
