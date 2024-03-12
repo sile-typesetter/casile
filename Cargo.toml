@@ -12,16 +12,20 @@ build = "build-aux/build.rs"
 
 [dependencies]
 console = "0.15"
-fluent = "0.12"
-fluent-fallback = "0.0"
+fluent = "0.16"
+fluent-fallback = "0.7"
+# 0.14 is blocked by https://github.com/projectfluent/fluent-langneg-rs/issues/26
 fluent-langneg = "0.13"
+futures = "0.3"
 itertools = "0.12"
 lazy_static = "1.4"
 num_cpus = "1.16"
 rayon = "1.8"
 rust-embed = "8.2"
+rustc-hash = "1.1"
 subprocess = "0.2"
 unic-langid = "0.9"
+unic-langid-impl = "0.9"
 
   [dependencies.config]
   version = "0.14"
