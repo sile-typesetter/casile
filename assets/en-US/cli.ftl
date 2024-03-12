@@ -64,23 +64,29 @@ error-no-path =
 welcome =
   Welcome to CaSILE { $version }!
 
-outro =
-  CaSILE run complete
+farewell =
+  CaSILE run completed in { $duration }.
 
 make-header =
-  Building target(s) using ‘make’
+  Building target(s) using ‘make’.
+
+make-good =
+  All target(s) sucessfully made.
+
+make-bad =
+  Unable to finish making some or all target(s).
 
 make-report-start =
   Starting make job for target: { $target }
 
-make-report-end =
+make-report-pass =
   Finished make job for target: { $target }
 
 make-report-fail =
   Failed make job for target: { $target }
 
 make-backlog-start =
-  Dumping captured output of ‘make’
+  Dumping captured output of ‘make’:
 
 make-backlog-end =
   End dump
@@ -110,22 +116,28 @@ make-error-unknown =
   Make returned unknown error.
 
 run-header =
-  Running script inside CaSILE environment
+  Running script inside CaSILE environment.
+
+run-good =
+  Script successfully run.
+
+run-bad =
+  Script did not run sucessfully.
 
 setup-header =
-  Configuring repository for use with CaSILE
+  Configuring repository for use with CaSILE.
+
+setup-good =
+  Repository is fully configured for use with CaSILE.
+
+setup-bad =
+  Repository could not be configured for use with CaSILE.
 
 setup-true =
   Yes
 
 setup-false =
   No
-
-setup-good =
-  Everything seems to be ship shape, warm up the presses!
-
-setup-bad =
-  Hold the presses, something isn’t right, run ‘casile setup’
 
 setup-is-repo =
   Is the path a Git repository?
@@ -134,7 +146,7 @@ setup-is-deep =
   Is the Git a deep clone?
 
 setup-is-not-casile =
-  Are we not in the CaSILE source repository?
+  Are we safely outside of the CaSILE source repository?
 
 setup-is-writable =
   Can we write to the project base directory?
@@ -162,6 +174,12 @@ setup-warp-time-file =
 
 status-header =
   Scanning project status
+
+status-good =
+  Everything seems to be ship shape, warm up the presses!
+
+status-bad =
+  Hold the presses, something isn’t right, run ‘casile setup’
 
 status-is-gha =
   Are we running as a GitHub Action?

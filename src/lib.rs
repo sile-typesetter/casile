@@ -7,7 +7,6 @@ extern crate num_cpus;
 
 use crate::config::CONF;
 
-use colored::{ColoredString, Colorize};
 use git2::{Oid, Repository, Signature};
 use i18n::LocalText;
 use regex::Regex;
@@ -17,6 +16,7 @@ use std::{error, fmt, path, result, str};
 pub mod cli;
 pub mod config;
 pub mod i18n;
+pub mod tui;
 
 // Subcommands
 pub mod make;
@@ -86,7 +86,7 @@ pub fn commit(repo: Repository, oid: Oid, msg: &str) -> result::Result<Oid, git2
         &[prefix, msg].join(" "),
         &tree,
         &parents,
-    )
+        )
 }
 
 pub fn locale_to_language(lang: String) -> String {
@@ -96,46 +96,6 @@ pub fn locale_to_language(lang: String) -> String {
     match &lang[..] {
         "c" => String::from("en"),
         _ => String::from(lang),
-    }
-}
-
-/// Output welcome header at start of run before moving on to actual commands
-pub fn show_welcome() {
-    let welcome = LocalText::new("welcome").arg("version", *VERSION);
-    eprintln!("{} {}", "┏━".cyan(), welcome.fmt().cyan());
-}
-
-/// Output welcome header at start of run before moving on to actual commands
-pub fn show_outro() {
-    let outro = LocalText::new("outro");
-    eprintln!("{} {}", "┗━".cyan(), outro.fmt().cyan());
-}
-
-/// Output header before starting work on a subcommand
-pub fn show_header(key: &str) {
-    let text = LocalText::new(key);
-    eprintln!("{} {}", "┣━".cyan(), text.fmt().yellow());
-}
-
-pub fn display_check(key: &str, val: bool) {
-    if CONF.get_bool("debug").unwrap() || CONF.get_bool("verbose").unwrap() {
-        eprintln!(
-            "{} {} {}",
-            "┠─".cyan(),
-            LocalText::new(key).fmt(),
-            fmt_t_f(val)
-        );
-    };
-}
-
-/// Format a localized string just for true / false status prints
-fn fmt_t_f(val: bool) -> ColoredString {
-    let key = if val { "setup-true" } else { "setup-false" };
-    let text = LocalText::new(key).fmt();
-    if val {
-        text.green()
-    } else {
-        text.red()
     }
 }
 

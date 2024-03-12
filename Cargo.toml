@@ -11,7 +11,7 @@ license = "AGPL-3.0"
 build = "build-aux/build.rs"
 
 [dependencies]
-colored = "2.1"
+console = "0.15"
 fluent = "0.12"
 fluent-fallback = "0.0"
 fluent-langneg = "0.13"
@@ -39,6 +39,10 @@ unic-langid = "0.9"
   [dependencies.git-warp-time]
   version = "0.7"
   default-features = false
+
+  [dependencies.indicatif]
+  version = "0.17"
+  features = [ "improved_unicode", "rayon" ]
 
   [dependencies.Inflector]
   version = "0.11"

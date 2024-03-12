@@ -1,4 +1,5 @@
 use crate::*;
+use crate::tui::*;
 
 use git2::{DescribeFormatOptions, DescribeOptions};
 use regex::Regex;
@@ -7,9 +8,9 @@ use std::{env, path};
 // FTL: help-subcommand-status
 /// Dump what we know about the repo
 pub fn run() -> Result<()> {
-    show_header("status-header");
+    let subcommand_status = SubcommandStatus::new("status-header", "status-good", "status-bad");
     CONF.set_bool("verbose", true)?;
-    setup::is_setup()?;
+    setup::is_setup(subcommand_status)?;
     Ok(())
 }
 
@@ -31,14 +32,16 @@ fn run_as() -> RunAsMode {
 /// Check to see if we're running in GitHub Actions
 pub fn is_gha() -> Result<bool> {
     let ret = env::var("GITHUB_ACTIONS").is_ok();
-    display_check("status-is-gha", ret);
+    // let status = SetupCheck::start("setup-is-gha");
+    // (ret).then(|| status.pass());
     Ok(ret)
 }
 
 /// Check to see if we're running in GitLab CI
 pub fn is_glc() -> Result<bool> {
     let ret = env::var("GITLAB_CI").is_ok();
-    display_check("status-is-glc", ret);
+    // let status = SetupCheck::start("setup-is-glc");
+    // (ret).then(|| status.pass());
     Ok(ret)
 }
 

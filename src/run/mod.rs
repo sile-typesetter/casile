@@ -1,14 +1,15 @@
 use crate::*;
+use crate::tui::*;
 
 use std::io::prelude::*;
 use std::{ffi::OsString, io};
 use subprocess::{Exec, Redirection};
 
-// FTL: help-subcommand-script
+// FTL: help-subcommand-run
 /// Run helper script inside CaSILE environment
 pub fn run(name: String, arguments: Vec<OsString>) -> Result<()> {
-    setup::is_setup()?;
-    show_header("script-header");
+    let subcommand_status = SubcommandStatus::new("run-header", "run-good", "run-bad");
+    setup::is_setup(subcommand_status)?;
     let cpus = &num_cpus::get().to_string();
     let mut process = Exec::cmd(format!("{CONFIGURE_DATADIR}/scripts/{name}")).args(&arguments);
     let gitname = status::get_gitname()?;

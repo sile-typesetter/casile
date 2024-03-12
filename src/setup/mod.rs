@@ -1,7 +1,8 @@
 use crate::i18n::LocalText;
 use crate::*;
+use crate::tui::*;
 
-use colored::Colorize;
+use console::style;
 use git2::{Repository, Status};
 use git_warp_time::reset_mtimes;
 use std::io::prelude::*;
@@ -12,10 +13,10 @@ use subprocess::{Exec, NullFile, Redirection};
 // FTL: help-subcommand-setup
 /// Setup a publishing project for use with CaSILE
 pub fn run() -> Result<()> {
-    show_header("setup-header");
+    let subcommand_status = SubcommandStatus::new("setup-header", "setup-good", "setup_bad");
     let path = &CONF.get_string("path")?;
     let metadata = fs::metadata(path)?;
-    match metadata.is_dir() {
+    let ret = match metadata.is_dir() {
         true => match is_repo()? {
             true => {
                 regen_gitignore(get_repo()?)?;
@@ -34,11 +35,13 @@ pub fn run() -> Result<()> {
             io::ErrorKind::InvalidInput,
             LocalText::new("setup-error-not-dir").fmt(),
         ))),
-    }
+    };
+    subcommand_status.end(ret.is_ok());
+    Ok(ret?)
 }
 
 /// Evaluate whether this project is properly configured
-pub fn is_setup() -> Result<bool> {
+pub fn is_setup(subcommand_status: SubcommandStatus) -> Result<bool> {
     let results = Arc::new(RwLock::new(Vec::new()));
 
     // First round of tests, entirely independent
@@ -72,41 +75,40 @@ pub fn is_setup() -> Result<bool> {
     }
 
     let ret = results.read().unwrap().iter().all(|&v| v);
-    let msg = LocalText::new(if ret { "setup-good" } else { "setup-bad" }).fmt();
-    eprintln!(
-        "{} {}",
-        "┠─".cyan(),
-        if ret { msg.green() } else { msg.red() }
-    );
+    subcommand_status.end(ret);
     Ok(ret)
 }
 
 /// Are we in a git repo?
 pub fn is_repo() -> Result<bool> {
+    let status = SetupCheck::start("setup-is-repo");
     let ret = get_repo().is_ok();
-    display_check("setup-is-repo", ret);
+    (ret).then(|| status.pass());
     Ok(ret)
 }
 
 /// Is this repo a deep clone?
 pub fn is_deep() -> Result<bool> {
     let ret = !get_repo()?.is_shallow();
-    display_check("setup-is-deep", ret);
+    let status = SetupCheck::start("setup-is-deep");
+    (ret).then(|| status.pass());
     Ok(ret)
 }
 
 /// Are we not in the CaSILE source repo?
 pub fn is_not_casile_source() -> Result<bool> {
+    let status = SetupCheck::start("setup-is-not-casile");
     let repo = get_repo()?;
     let workdir = repo.workdir().unwrap();
     let testfile = workdir.join("make-shell.zsh.in");
     let ret = fs::File::open(testfile).is_err();
-    display_check("setup-is-not-casile", ret);
+    (ret).then(|| status.pass());
     Ok(ret)
 }
 
 /// Is the git repo we are in writable?
 pub fn is_writable() -> Result<bool> {
+    let status = SetupCheck::start("setup-is-writable");
     let repo = get_repo()?;
     let workdir = repo.workdir().unwrap();
     let testfile = workdir.join(".casile-write-test");
@@ -114,24 +116,26 @@ pub fn is_writable() -> Result<bool> {
     file.write_all(b"test")?;
     fs::remove_file(&testfile)?;
     let ret = true;
-    display_check("setup-is-writable", ret);
+    (ret).then(|| status.pass());
     Ok(ret)
 }
 
 /// Check if we can execute the system's `make` utility
 pub fn is_make_exectuable() -> Result<bool> {
+    let status = SetupCheck::start("setup-is-make-executable");
     let ret = Exec::cmd("make")
         .arg("-v")
         .stdout(NullFile)
         .stderr(NullFile)
         .join()
         .is_ok();
-    display_check("setup-is-make-executable", ret);
+    (ret).then(|| status.pass());
     Ok(ret)
 }
 
 /// Check that the system's `make` utility is GNU Make
 pub fn is_make_gnu() -> Result<bool> {
+    let status = SetupCheck::start("setup-is-make-gnu");
     let out = Exec::cmd("make")
         .arg("-v")
         .stdout(Redirection::Pipe)
@@ -139,7 +143,7 @@ pub fn is_make_gnu() -> Result<bool> {
         .capture()?
         .stdout_str();
     let ret = out.starts_with("GNU Make 4.");
-    display_check("setup-is-make-gnu", ret);
+    (ret).then(|| status.pass());
     Ok(ret)
 }
 
@@ -153,12 +157,12 @@ fn regen_gitignore(repo: Repository) -> Result<()> {
     match repo.status_file(path) {
         Ok(Status::CURRENT) => {
             let text = LocalText::new("setup-gitignore-fresh").fmt();
-            eprintln!("{} {}", "┠┄".cyan(), text);
+            eprintln!("{} {}", style("┠┄").cyan(), text);
             Ok(())
         }
         _ => {
             let text = LocalText::new("setup-gitignore-committing").fmt();
-            eprintln!("{} {}", "┠┄".cyan(), text);
+            eprintln!("{} {}", style("┠┄").cyan(), text);
             match commit(repo, oid, "Update .gitignore") {
                 Ok(_) => {
                     index.write()?;
@@ -173,16 +177,16 @@ fn regen_gitignore(repo: Repository) -> Result<()> {
 fn warp_time(repo: Repository) -> Result<()> {
     let opts = git_warp_time::Options::new();
     let text = LocalText::new("setup-warp-time").fmt();
-    eprintln!("{} {}", "┠┄".cyan(), text);
+    eprintln!("{} {}", style("┠┄").cyan(), text);
     let files = reset_mtimes(repo, opts)?;
     match CONF.get_bool("verbose")? {
         true => {
             for file in files.iter() {
                 let path = file.clone().into_os_string().into_string().unwrap();
                 let text = LocalText::new("setup-warp-time-file")
-                    .arg("path", path.white().bold())
+                    .arg("path", style(path).white().bold())
                     .fmt();
-                eprintln!("{} {}", "┠┄".cyan(), text);
+                eprintln!("{} {}", style("┠┄").cyan(), text);
             }
         }
         false => {}
@@ -192,7 +196,7 @@ fn warp_time(repo: Repository) -> Result<()> {
 
 fn configure_short_shas(repo: Repository) -> Result<()> {
     let text = LocalText::new("setup-short-shas").fmt();
-    eprintln!("{} {}", "┠┄".cyan(), text);
+    eprintln!("{} {}", style("┠┄").cyan(), text);
     let mut conf = repo.config()?;
     Ok(conf.set_i32("core.abbrev", 7)?)
 }

@@ -2,6 +2,7 @@ use clap::{Args, Command, FromArgMatches as _};
 
 use casile::cli::{Cli, Commands};
 use casile::config::CONF;
+use casile::tui::*;
 use casile::{make, run, setup, status};
 use casile::{Result, VERSION};
 
@@ -14,7 +15,8 @@ fn main() -> Result<()> {
     let matches = cli.get_matches();
     let args = Cli::from_arg_matches(&matches).expect("Unable to parse arguments");
     CONF.merge_args(&args)?;
-    casile::show_welcome();
+    let command_status = CommandStatus::new();
+    command_status.welcome();
     let subcommand = Commands::from_arg_matches(&matches)?;
     let ret = match subcommand {
         Commands::Make { target } => make::run(target),
@@ -22,6 +24,6 @@ fn main() -> Result<()> {
         Commands::Setup {} => setup::run(),
         Commands::Status {} => status::run(),
     };
-    casile::show_outro();
+    command_status.farewell();
     ret
 }
