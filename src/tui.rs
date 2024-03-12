@@ -7,7 +7,7 @@ use console::style;
 use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressFinish, ProgressStyle};
 use std::sync::RwLock;
 use std::str;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 static ERROR_TUI_WRITE: &str = "Unable to gain write lock on tui status wrapper";
 
@@ -31,7 +31,9 @@ pub struct Progress(MultiProgress);
 
 impl Progress {
     pub fn new() -> Progress {
-        Progress (MultiProgress::new())
+        let progress = MultiProgress::new();
+        progress.set_move_cursor(true);
+        Progress (progress)
     }
 }
 
@@ -91,9 +93,9 @@ impl SubcommandStatus {
         let prefix = style("⟳").yellow().to_string();
         let bar = ProgressBar::new_spinner()
             .with_style(ProgressStyle::with_template("{prefix} {msg}").unwrap())
-            .with_prefix(prefix)
-            .with_message(msg);
+            .with_prefix(prefix);
         let bar = TUI.add(bar);
+        bar.set_message(msg);
         let good_msg = style(LocalText::new(good_key).fmt())
             .green()
             .bright()
@@ -138,11 +140,12 @@ impl MakeTargetStatus {
         let msg = style(LocalText::new("make-report-start")
             .arg("target", style(target.clone()).white().bold())
             .fmt()).yellow().bright().to_string();
+        let pstyle = ProgressStyle::with_template("{spinner} {msg}").unwrap().tick_strings(&["↻","✔"]);
         let bar = ProgressBar::new_spinner()
-            .with_style(ProgressStyle::with_template("{spinner} {msg}").unwrap());
+            .with_style(pstyle)
+            .with_message(msg);
         let bar = TUI.add(bar);
-        bar.set_message(msg);
-        bar.enable_steady_tick(Duration::new(0, 500_000_000));
+        bar.tick();
         MakeTargetStatus {
             bar: bar,
             target,
@@ -161,7 +164,6 @@ impl MakeTargetStatus {
     pub fn pass(&self) {
         let target = self.target.clone();
         if target.starts_with(".casile") {
-            self.bar.disable_steady_tick();
             TUI.remove(&self.bar);
         } else {
             let msg = style(LocalText::new("make-report-pass")
