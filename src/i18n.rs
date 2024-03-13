@@ -15,6 +15,7 @@ use rustc_hash::FxHashSet;
 use std::ops::Deref;
 use std::path::{Component, Path, PathBuf};
 use std::str;
+use std::borrow::Cow;
 use std::sync::RwLock;
 use std::vec::IntoIter;
 use unic_langid_impl::LanguageIdentifier;
@@ -129,7 +130,7 @@ impl<'a> LocalText<'a> {
         let value = bundles
             .format_value_sync(&self.key, self.args.as_ref(), &mut errors)
             .expect("Failed to format a value");
-        value.unwrap().to_string()
+        value.unwrap_or(Cow::from("")).to_string()
     }
 }
 
