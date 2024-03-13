@@ -219,7 +219,7 @@ fn dump_backlog(backlog: &[String]) {
     dump.push_str(start.as_str());
     for line in backlog.iter() {
         dump.push_str(line.as_str());
-        dump.push_str("\n");
+        dump.push('\n');
     }
     let end = LocalText::new("make-backlog-end").fmt();
     let end = format!("{} {end}", style(style("┄┄┄┄┄").cyan()));

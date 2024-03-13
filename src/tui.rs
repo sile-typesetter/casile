@@ -29,6 +29,12 @@ impl TUI {
 #[derive(Debug)]
 pub struct Progress(MultiProgress);
 
+impl Default for Progress {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Progress {
     pub fn new() -> Progress {
         let progress = MultiProgress::new();
@@ -50,6 +56,12 @@ pub struct CommandStatus {
     started: Instant,
 }
 
+impl Default for CommandStatus {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl CommandStatus {
     pub fn new () -> CommandStatus {
         let started = Instant::now();
@@ -59,10 +71,10 @@ impl CommandStatus {
     }
     pub fn bar (&self) -> ProgressBar {
         let prefix = style("⛫").cyan().to_string();
-        let bar = ProgressBar::new_spinner()
+        
+        ProgressBar::new_spinner()
             .with_style(ProgressStyle::with_template("{prefix} {msg}").unwrap())
-            .with_prefix(prefix);
-        bar
+            .with_prefix(prefix)
     }
     pub fn show(&self, msg: String) {
         let bar = self.bar();
@@ -136,7 +148,7 @@ pub struct MakeTargetStatus {
 impl MakeTargetStatus {
     pub fn new(mut target: String) -> MakeTargetStatus {
         // Withouth this, copying the string in the terminal as a word brings a U+2069 with it
-        target.push_str(" ");
+        target.push(' ');
         let msg = style(LocalText::new("make-report-start")
             .arg("target", style(target.clone()).white().bold())
             .fmt()).yellow().bright().to_string();
@@ -147,7 +159,7 @@ impl MakeTargetStatus {
         let bar = TUI.add(bar);
         bar.tick();
         MakeTargetStatus {
-            bar: bar,
+            bar,
             target,
         }
     }
