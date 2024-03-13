@@ -1,14 +1,14 @@
 use crate::i18n::LocalText;
-use crate::*;
 use crate::tui::*;
+use crate::*;
 
 use console::style;
+use indicatif::{ProgressBar, ProgressStyle};
 use regex::Regex;
+use std::collections::HashMap;
 use std::io::prelude::*;
 use std::{ffi::OsString, io};
-use std::collections::HashMap;
 use subprocess::{Exec, ExitStatus, Redirection};
-use indicatif::{ProgressBar, ProgressStyle};
 
 // FTL: help-subcommand-make
 /// Build specified target(s)
@@ -97,11 +97,8 @@ pub fn run(target: Vec<String>) -> Result<()> {
                 "PRE" => {
                     let target = fields[2].to_owned();
                     let target_status = MakeTargetStatus::new(target.clone());
-                    target_statuses.insert(
-                        target,
-                        target_status,
-                        );
-                },
+                    target_statuses.insert(target, target_status);
+                }
                 "STDOUT" => {
                     let target = fields[2].to_owned();
                     let target_status = target_statuses.get(&target).unwrap();
@@ -112,7 +109,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
                     } else {
                         backlog.push(String::from(fields[3]));
                     }
-                },
+                }
                 "STDERR" => {
                     let target = fields[2].to_owned();
                     let target_status = target_statuses.get(&target).unwrap();
@@ -123,7 +120,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
                     } else {
                         backlog.push(String::from(fields[3]));
                     }
-                },
+                }
                 "POST" => {
                     let target = fields[3].to_owned();
                     let target_status = target_statuses.get(&target).unwrap();
@@ -210,8 +207,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
 }
 
 fn dump_backlog(backlog: &[String]) {
-    let bar = ProgressBar::new_spinner()
-        .with_style(ProgressStyle::with_template("{msg}").unwrap());
+    let bar = ProgressBar::new_spinner().with_style(ProgressStyle::with_template("{msg}").unwrap());
     let bar = TUI.add(bar);
     let mut dump = String::new();
     let start = LocalText::new("make-backlog-start").fmt();

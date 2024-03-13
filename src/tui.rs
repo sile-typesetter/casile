@@ -5,8 +5,8 @@ use crate::VERSION;
 
 use console::style;
 use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressFinish, ProgressStyle};
-use std::sync::RwLock;
 use std::str;
+use std::sync::RwLock;
 use std::time::Instant;
 
 static ERROR_TUI_WRITE: &str = "Unable to gain write lock on tui status wrapper";
@@ -39,7 +39,7 @@ impl Progress {
     pub fn new() -> Progress {
         let progress = MultiProgress::new();
         progress.set_move_cursor(true);
-        Progress (progress)
+        Progress(progress)
     }
 }
 
@@ -63,15 +63,13 @@ impl Default for CommandStatus {
 }
 
 impl CommandStatus {
-    pub fn new () -> CommandStatus {
+    pub fn new() -> CommandStatus {
         let started = Instant::now();
-        CommandStatus {
-            started,
-        }
+        CommandStatus { started }
     }
-    pub fn bar (&self) -> ProgressBar {
+    pub fn bar(&self) -> ProgressBar {
         let prefix = style("⛫").cyan().to_string();
-        
+
         ProgressBar::new_spinner()
             .with_style(ProgressStyle::with_template("{prefix} {msg}").unwrap())
             .with_prefix(prefix)
@@ -101,7 +99,10 @@ pub struct SubcommandStatus {
 
 impl SubcommandStatus {
     pub fn new(key: &str, good_key: &str, bad_key: &str) -> SubcommandStatus {
-        let msg = style(LocalText::new(key).fmt()).yellow().bright().to_string();
+        let msg = style(LocalText::new(key).fmt())
+            .yellow()
+            .bright()
+            .to_string();
         let prefix = style("⟳").yellow().to_string();
         let bar = ProgressBar::new_spinner()
             .with_style(ProgressStyle::with_template("{prefix} {msg}").unwrap())
@@ -112,8 +113,15 @@ impl SubcommandStatus {
             .green()
             .bright()
             .to_string();
-        let bad_msg = style(LocalText::new(bad_key).fmt()).red().bright().to_string();
-        SubcommandStatus{ bar, good_msg, bad_msg }
+        let bad_msg = style(LocalText::new(bad_key).fmt())
+            .red()
+            .bright()
+            .to_string();
+        SubcommandStatus {
+            bar,
+            good_msg,
+            bad_msg,
+        }
     }
     pub fn end(&self, status: bool) {
         (status).then(|| self.pass()).unwrap_or_else(|| self.fail());
@@ -149,19 +157,23 @@ impl MakeTargetStatus {
     pub fn new(mut target: String) -> MakeTargetStatus {
         // Withouth this, copying the string in the terminal as a word brings a U+2069 with it
         target.push(' ');
-        let msg = style(LocalText::new("make-report-start")
-            .arg("target", style(target.clone()).white().bold())
-            .fmt()).yellow().bright().to_string();
-        let pstyle = ProgressStyle::with_template("{spinner} {msg}").unwrap().tick_strings(&["↻","✔"]);
+        let msg = style(
+            LocalText::new("make-report-start")
+                .arg("target", style(target.clone()).white().bold())
+                .fmt(),
+        )
+        .yellow()
+        .bright()
+        .to_string();
+        let pstyle = ProgressStyle::with_template("{spinner} {msg}")
+            .unwrap()
+            .tick_strings(&["↻", "✔"]);
         let bar = ProgressBar::new_spinner()
             .with_style(pstyle)
             .with_message(msg);
         let bar = TUI.add(bar);
         bar.tick();
-        MakeTargetStatus {
-            bar,
-            target,
-        }
+        MakeTargetStatus { bar, target }
     }
     pub fn stdout(&self, line: &str) {
         let target = style(self.target.clone()).white().bold().to_string();
@@ -178,16 +190,26 @@ impl MakeTargetStatus {
         if target.starts_with(".casile") {
             TUI.remove(&self.bar);
         } else {
-            let msg = style(LocalText::new("make-report-pass")
-                            .arg("target", style(target).white().bold())
-                            .fmt()).green().bright().to_string();
+            let msg = style(
+                LocalText::new("make-report-pass")
+                    .arg("target", style(target).white().bold())
+                    .fmt(),
+            )
+            .green()
+            .bright()
+            .to_string();
             self.finish_with_message(msg);
         }
     }
     pub fn fail(&self) {
-        let msg = style(LocalText::new("make-report-fail")
-            .arg("target", style(self.target.clone()).white().bold())
-            .fmt()).red().bright().to_string();
+        let msg = style(
+            LocalText::new("make-report-fail")
+                .arg("target", style(self.target.clone()).white().bold())
+                .fmt(),
+        )
+        .red()
+        .bright()
+        .to_string();
         self.finish_with_message(msg);
     }
 }

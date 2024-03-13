@@ -1,6 +1,6 @@
 use crate::i18n::LocalText;
-use crate::*;
 use crate::tui::*;
+use crate::*;
 
 use console::style;
 use git2::{Repository, Status};

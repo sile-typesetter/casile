@@ -86,7 +86,7 @@ pub fn commit(repo: Repository, oid: Oid, msg: &str) -> result::Result<Oid, git2
         &[prefix, msg].join(" "),
         &tree,
         &parents,
-        )
+    )
 }
 
 pub fn locale_to_language(lang: String) -> String {

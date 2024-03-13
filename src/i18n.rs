@@ -5,19 +5,19 @@ use fluent::{FluentArgs, FluentBundle, FluentResource, FluentValue};
 use fluent_fallback::{
     env::LocalesProvider,
     generator::{BundleGenerator, FluentBundleResult},
-    Localization,
     types::{ResourceId, ResourceType},
+    Localization,
 };
+use fluent_langneg::{accepted_languages, negotiate_languages, NegotiationStrategy};
+use futures::stream::Stream;
 use regex::Regex;
 use rust_embed::RustEmbed;
 use rustc_hash::FxHashSet;
-use futures::stream::Stream;
-use std::str;
-use std::path::{Component, Path, PathBuf};
 use std::ops::Deref;
-use std::vec::IntoIter;
+use std::path::{Component, Path, PathBuf};
+use std::str;
 use std::sync::RwLock;
-use fluent_langneg::{negotiate_languages, accepted_languages, NegotiationStrategy};
+use std::vec::IntoIter;
 use unic_langid_impl::LanguageIdentifier;
 
 // List of Fluent resource filenames to scan for keys from each locale directory.
@@ -120,16 +120,16 @@ impl<'a> LocalText<'a> {
             .expect("Unable to read negotiated locale list")
             .clone();
         let bundled_resources = EmbededBundleManager {};
-        let scan_resources: Vec<ResourceId> = FTL_RESOURCES.iter().map(|s| ResourceId::new(s.to_string(), ResourceType::Required)).collect();
-        let loc = Localization::with_env(
-            scan_resources,
-            true,
-            locales,
-            bundled_resources,
-        );
+        let scan_resources: Vec<ResourceId> = FTL_RESOURCES
+            .iter()
+            .map(|s| ResourceId::new(s.to_string(), ResourceType::Required))
+            .collect();
+        let loc = Localization::with_env(scan_resources, true, locales, bundled_resources);
         let bundles = loc.bundles();
         let mut errors = vec![];
-        let value = bundles.format_value_sync(&self.key, self.args.as_ref(), &mut errors).expect("Failed to format a value");
+        let value = bundles
+            .format_value_sync(&self.key, self.args.as_ref(), &mut errors)
+            .expect("Failed to format a value");
         value.unwrap().to_string()
     }
 }
