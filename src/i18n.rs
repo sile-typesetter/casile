@@ -1,4 +1,3 @@
-#[allow(dead_code)]
 use crate::config::CONF;
 
 use fluent::{FluentArgs, FluentBundle, FluentResource, FluentValue};
