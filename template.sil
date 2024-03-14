@@ -1,12 +1,12 @@
 \begin[$if(papersize)$papersize=$papersize$,$endif$class=$documentclass$$if(classoptions)$,$classoptions$$endif$]{document}
-\begin{script}
+\begin{lua}
 $if(metadatafile)$
 CASILE.metadata = require("readmeta").load("$metadatafile$")
 $endif$
 $if(versesfile)$
 CASILE.verses = require("readmeta").load("$versesfile$")
 $endif$
-\end{script}
+\end{lua}
 $if(lang)$
 \language[main=$lang$]
 \font[language=$lang$]
@@ -108,14 +108,14 @@ $if(versecredits)$
 $endif$
 \use[module=packages.pandoc]
 \use[module=packages.calists]
-\begin{script}
+\begin{lua}
 qrimg = "$qrimg$"
 SILE.registerCommand("label", function()
   -- ignore labels
 end)
 $if(links-as-notes)$
 $endif$
-\end{script}
+\end{lua}
 $for(include)$
 \include[src=$include$]
 $endfor$
