@@ -167,7 +167,7 @@ function package:registerCommands ()
         SILE.call(options.prenumber)
       end
       if options.msg then
-        local number = SU.formatNumber(counters.value[level], options.display)
+        local number = SU.formatNumber(counters.value[level], { style = options.display })
         SILE.call("fluent", { number = number }, { options.msg })
       else
         SILE.call("show-multilevel-counter", {
