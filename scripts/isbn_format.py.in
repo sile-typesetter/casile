@@ -1,12 +1,14 @@
 #!@PYTHON@
 
 import sys
-from ruamel import yaml
+from ruamel.yaml import YAML
 import isbnlib
+
+yaml = YAML(typ="safe", pure=True)
 
 metafile = sys.argv[1]
 metadata = open(metafile, "r").read()
-yamldata = yaml.safe_load(metadata)
+yamldata = yaml.load(metadata)
 
 identifier = {}
 
