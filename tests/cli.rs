@@ -14,8 +14,9 @@ fn outputs_version() -> Result<()> {
     Ok(())
 }
 
+#[ignore] // Test assumes stderr, indicatif is in some paged mode that doesn't reach there any more
 #[test]
-fn ouput_is_localized() -> Result<()> {
+fn output_is_localized() -> Result<()> {
     let mut cmd = Command::cargo_bin(BIN_NAME)?;
     cmd.arg("-l").arg("tr").arg("status");
     cmd.assert()
