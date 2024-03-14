@@ -148,7 +148,7 @@ luacheck:
 	$(LUACHECK) .
 
 checkmake:
-	$(GIT) ls-files '*.mk' | $(XARGS) -n1 checkmake
+	$(GIT) ls-files 'rules/*.mk' 'rules/*.mk.in' | $(XARGS) -n1 checkmake
 
 ruff:
 	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(RUFF) check
