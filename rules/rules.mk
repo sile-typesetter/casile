@@ -62,6 +62,7 @@ EDITS ?= $(_withverses) $(_withoutfootnotes) $(_withoutlinks)
 
 # Build mode flags
 DRAFT ?= false # Take shortcuts, scale things down, be quick about it
+WATERMARK ?=
 LAZY ?= false # Pretend to do things we didn't
 HIGHLIGHT_DIFF ?= false # Show differences to parent branch in build
 STATSMONTHS ?= 1 # How far back to look for commits when building stats
@@ -429,6 +430,11 @@ $(FULLPDFS): %.pdf: $(BUILDDIR)/%.sil $$(call coverpreq,$$@) $$(call onpaperlibs
 		$(PDFTK) $*.tmp.pdf update_info_utf8 $(BUILDDIR)/$*.dat output $@
 		rm $*.tmp.pdf
 	fi
+
+ifneq ($(strip $(WATERMARK)),)
+export CASILE_WATERMARK = $(WATERMARK)
+$(FULLPDFS): SILEFLAGS += --use packages.watermark
+endif
 
 DISTFILES += $(FULLPDFS)
 
