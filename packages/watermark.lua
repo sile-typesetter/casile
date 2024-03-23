@@ -13,8 +13,7 @@ function package:_init(options)
   self:addWatermark()
 end
 
-function package:addWatermark ()
-  local page = SILE.getFrame("page")
+function package.addWatermark ()
   local frame = SILE.newFrame({
     id = "watermark",
     left = "left(page)+20",
@@ -28,7 +27,7 @@ end
 
 function package:registerCommands ()
 
-  SILE.registerCommand("watermark:content", function (_, _)
+  self:registerCommand("watermark:content", function (_, _)
     SILE.call("hbox")
     SILE.call("skip", { height = "20%fh" })
     SILE.call("center", {}, function ()
