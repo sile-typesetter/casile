@@ -24,7 +24,7 @@ jobs:
           git fetch --prune --tags ||:
       - name: Setup system dependencies
         run: |
-          sudo apt-get install autoconf-archive
+          sudo apt-get install autoconf-archive clang mold
       - name: Configure
         run: |
           ./bootstrap.sh

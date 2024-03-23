@@ -14,6 +14,9 @@ jobs:
       - name: Fetch tags
         run: |
           git fetch --prune --tags ||:
+      - name: Setup system dependencies
+        run: |
+          sudo apt-get install clang mold
       - name: Install Rust
         uses: actions-rs/toolchain@v1
       - name: Cache Rust

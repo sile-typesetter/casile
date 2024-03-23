@@ -29,6 +29,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup system dependencies
+        run: |
+          sudo apt-get install clang mold
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
