@@ -70,10 +70,10 @@ $(BUILDDIR)/%-pov-$(_front).png: $(BUILDDIR)/%-$(_binding)-printcolor.png $$(geo
 		$< \
 		-gravity East \
 		-crop $${pagewpx}x$${pagehpx}+$${bleedpx}+0! \
-		-resize $(POVTEXTURESCALE)x \
 		$(call magick_emulateprint) \
 		$(and $(filter $(_paperback),$(call parse_binding,$@)),$(call magick_crease,0+)) \
 		$(call magick_fray) \
+		-resize $(POVTEXTURESCALE)x \
 		$@
 
 $(BUILDDIR)/%-pov-$(_back).png: $(BUILDDIR)/%-$(_binding)-printcolor.png $$(geometryfile)

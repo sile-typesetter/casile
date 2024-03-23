@@ -256,9 +256,18 @@ define magick_barcode ?=
 endef
 
 define magick_crease ?=
-	-stroke gray95 -strokewidth $(call mmtopx,0.5) \
-	\( -size $${pagewpx}x$${pagehpx} -background none xc: -draw "line %[fx:$1$(call mmtopx,8)],0 %[fx:$1$(call mmtopx,8)],$${pagehpx}" -blur 0x$(call scale,$(call mmtopx,0.2)) -level "0x40%!" \) \
-	-compose ModulusAdd -composite
+	-gravity NorthWest \
+	\( \
+		-size $${pagewpx}x$${pagehpx} \
+		-background none \
+		xc: \
+		-stroke grey95 \
+		-strokewidth $(call mmtopx,0.5) \
+		-draw "line %[fx:$1$(call mmtopx,8)],0 %[fx:$1$(call mmtopx,8)],$${pagehpx}" \
+		-blur 0x$(call scale,$(call mmtopx,0.2)) \
+		-level "0x40%!" \
+	\) \
+	-compose Divide -composite
 endef
 
 define magick_fray ?=
