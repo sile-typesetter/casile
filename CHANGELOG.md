@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.1](https://github.com/sile-typesetter/casile/compare/v0.13.0...v0.13.1) (2024-03-23)
+
+
+### Bug Fixes
+
+* **docker:** Install clang/mold in Docker builder ([59d0c17](https://github.com/sile-typesetter/casile/commit/59d0c17abaeb78da23d51f2c7ee3ae8babc9f519))
+* **release:** Install clang/mold in CI workflows so release artifacts build ([9764f4c](https://github.com/sile-typesetter/casile/commit/9764f4cc163fe2da0ce69b959c31f17e044bc0b3))
+
 ## [0.13.0](https://github.com/sile-typesetter/casile/compare/v0.12.2...v0.13.0) (2024-03-23)
 
 
