@@ -1,6 +1,6 @@
 [package]
 name = "casile"
-version = "0.12.2"
+version = "0.13.0"
 authors = [ "Caleb Maclennan <caleb@alerque.com>" ]
 edition = "2018"
 rust-version = "1.70.0"
@@ -14,7 +14,6 @@ build = "build-aux/build.rs"
 console = "0.15"
 fluent = "0.16"
 fluent-fallback = "0.7"
-# 0.14 is blocked by https://github.com/projectfluent/fluent-langneg-rs/issues/26
 fluent-langneg = "0.13"
 futures = "0.3"
 itertools = "0.12"

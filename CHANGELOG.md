@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.13.0](https://github.com/sile-typesetter/casile/compare/v0.12.2...v0.13.0) (2024-03-23)
+
+
+### Features
+
+* **cli:** Add duration timer to main runner ([004fcae](https://github.com/sile-typesetter/casile/commit/004fcaeee96256a7465c075ad392707d85268052))
+* **cli:** Hide build status messages for successful builds of intermediate targets ([160423c](https://github.com/sile-typesetter/casile/commit/160423c40e083c792dff636cc0b2daaa6207b662))
+* **cli:** Redo output using progress widgets to reduce total output ([43f7453](https://github.com/sile-typesetter/casile/commit/43f7453a1229ba4df3398be1c239878e9a49858f))
+* **docker:** Rebuild image to have Caleb's current GPG public key ([4d3a521](https://github.com/sile-typesetter/casile/commit/4d3a521bb30a0ded17e8aee2af28d81570ebba98))
+* **packages:** Add watermark package and trigger from build variable ([bff34e9](https://github.com/sile-typesetter/casile/commit/bff34e9b50c0b42485919ccc9faa8f105592e9c1)), closes [#154](https://github.com/sile-typesetter/casile/issues/154)
+* **zola:** Use relative links for internal references for easier hosting ([90085a9](https://github.com/sile-typesetter/casile/commit/90085a92e5cc62feabc455d535b8bffbef95967b))
+
+
+### Bug Fixes
+
+* **build:** Correct configure flag so debug builds are not release mode ([1236b2a](https://github.com/sile-typesetter/casile/commit/1236b2a845e2d35d4e241594d9ae7f231e47be83))
+* **classes:** Keep vertical box out of horizontal tags ([b457a2d](https://github.com/sile-typesetter/casile/commit/b457a2d4028c38a56b7e95ebbba99b7ef905eed8))
+* **cli:** Add a space to target names so wordwise copy-paste can't catch formatting ([f54ae9d](https://github.com/sile-typesetter/casile/commit/f54ae9d2aa53fbeff4cd71831b0efcbabf2b289c))
+* **docker:** Drop bogus lua dependency, only mention is example code ([1823286](https://github.com/sile-typesetter/casile/commit/182328643c96fa14d9b428b2d8f7acba5aea74e2))
+* **docker:** Restore provision of Lua colors library ([8cff649](https://github.com/sile-typesetter/casile/commit/8cff6499ec7365be2f7baf19036f8a2e784877b5))
+* **rendering:** Improve paper finish properties to get more realistic colors ([d031f2a](https://github.com/sile-typesetter/casile/commit/d031f2adb8c60c51731d2123ee8257ae5b0ba4a8))
+* **renderings:** Update soft-cover crease emulator color/location ([bab24f0](https://github.com/sile-typesetter/casile/commit/bab24f08fd5dd42b849c91bffc140690df58f300))
+
+
+### Performance Improvements
+
+* **build:** Use mold linker by default for x86_64 ([76d4a11](https://github.com/sile-typesetter/casile/commit/76d4a11135717064ee9b0c44056822824352a54f))
+
 ### [0.12.2](https://github.com/sile-typesetter/casile/compare/v0.12.1...v0.12.2) (2024-02-07)
 
 
