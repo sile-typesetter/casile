@@ -11,6 +11,7 @@ $(ZOLAS): %.zola: $(addprefix $(BUILDDIR)/%.zola/,config.toml content/_index.md 
 	$(and $(filter $*.mdbook,$^ $|),ln -sf $$resourcedir/$*.mdbook $$resourcedir/$(_read))
 	rm -rf $@
 	$(ZOLA) -r "$(<D)" build -o "$@"
+	$(SED) -i -e 's#$(call urlinfo,$*)/##g' $@/*.html
 
 DISTDIRS += $(ZOLAS)
 
