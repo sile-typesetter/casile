@@ -41,12 +41,20 @@ global_settings {
 	rotate <90,0,0>
 }
 
-#declare BookFinish = finish {
-	ambient 0.75
-	emission 0.75
-	diffuse 0.25
+#declare PaperFinish = finish {
+	ambient 0.5
+	emission 0.5
+	diffuse 0.35
 	reflection 0.01
-	specular 0.25
+	specular 0
+}
+
+#declare BookFinish = finish {
+	ambient 0.6
+	emission 0.6
+	diffuse 0.1
+	reflection 0.01
+	specular 0.1
 	roughness 0.05
 }
 
@@ -80,7 +88,7 @@ sky_sphere {
 
 light_source {
 	<-0.2*Blowout,8*Blowout,3.0*ViewZ*Blowout>
-	color rgb<1, 1, 1>
+	color rgb<0.8, 0.8, 0.8>
 	// spotlight
 	// radius 10
 	// point_at <BX/4,0,0>
@@ -234,10 +242,7 @@ light_source {
 	box { min_extent(Paper) max_extent(Paper)-((PaperInset*2)*y)-(PaperInset*x)
 		translate <0,PaperInset,0>
 		pigment { PaperPigment }
-		finish {
-			ambient 0.4
-			emission 0.4
-		}
+		finish { PaperFinish }
 	}
 
 #end
