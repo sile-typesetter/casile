@@ -187,7 +187,8 @@ impl MakeTargetStatus {
     }
     pub fn pass(&self) {
         let target = self.target.clone();
-        if target.starts_with(".casile") {
+        let allow_hide = !CONF.get_bool("debug").unwrap() && !CONF.get_bool("verbose").unwrap();
+        if allow_hide && target.starts_with(".casile") {
             TUI.remove(&self.bar);
         } else {
             let msg = style(
