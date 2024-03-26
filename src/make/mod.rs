@@ -101,37 +101,66 @@ pub fn run(target: Vec<String>) -> Result<()> {
                 }
                 "STDOUT" => {
                     let target = fields[2].to_owned();
-                    let target_status = target_statuses.get(&target).unwrap();
-                    if is_gha || is_glc {
-                        target_status.stdout(fields[3]);
-                    } else if CONF.get_bool("verbose")? {
-                        target_status.stderr(fields[3]);
-                    } else {
-                        backlog.push(String::from(fields[3]));
+                    let target_status = target_statuses.get(&target);
+                    match target_status {
+                        Some(target_status) => {
+                            if is_gha || is_glc {
+                                target_status.stdout(fields[3]);
+                            } else if CONF.get_bool("verbose")? {
+                                target_status.stderr(fields[3]);
+                            } else {
+                                backlog.push(String::from(fields[3]));
+                            }
+                        },
+                        None =>{
+                            let text = LocalText::new("make-error-unknown-target").
+                                arg("target", style(target).white()).fmt();
+                            eprintln!("{}", style(text).red());
+                            backlog.push(String::from(fields[3]));
+                        }
                     }
                 }
                 "STDERR" => {
                     let target = fields[2].to_owned();
-                    let target_status = target_statuses.get(&target).unwrap();
-                    if is_gha || is_glc {
-                        target_status.stderr(fields[3]);
-                    } else if CONF.get_bool("verbose")? {
-                        target_status.stdout(fields[3]);
-                    } else {
-                        backlog.push(String::from(fields[3]));
+                    let target_status = target_statuses.get(&target);
+                    match target_status {
+                        Some(target_status) => {
+                            if is_gha || is_glc {
+                                target_status.stderr(fields[3]);
+                            } else if CONF.get_bool("verbose")? {
+                                target_status.stdout(fields[3]);
+                            } else {
+                                backlog.push(String::from(fields[3]));
+                            }
+                        },
+                        None => {
+                            let text = LocalText::new("make-error-unknown-target").
+                                arg("target", style(target).white()).fmt();
+                            eprintln!("{}", style(text).red());
+                            backlog.push(String::from(fields[3]));
+                        }
                     }
                 }
                 "POST" => {
                     let target = fields[3].to_owned();
-                    let target_status = target_statuses.get(&target).unwrap();
-                    match fields[2] {
-                        "0" => {
-                            target_status.pass();
-                        }
-                        val => {
-                            target_status.fail();
-                            ret = val.parse().unwrap_or(1);
-                        }
+                    let target_status = target_statuses.get(&target);
+                    match target_status {
+                        Some(target_status) => {
+                            match fields[2] {
+                                "0" => {
+                                    target_status.pass();
+                                }
+                                val => {
+                                    target_status.fail();
+                                    ret = val.parse().unwrap_or(1);
+                                }
+                            }
+                        },
+                        None => {
+                            let text = LocalText::new("make-error-unknown-target").
+                                arg("target", style(target).white()).fmt();
+                            eprintln!("{}", style(text).red());
+                        },
                     }
                 }
                 _ => {

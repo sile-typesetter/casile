@@ -112,6 +112,9 @@ make-error-build =
 make-error-target =
   Make failed to execute a recipe.
 
+make-error-unidentified-target =
+  Make asked to print output related to a target we didn't know was running: { $target }
+
 make-error-unknown =
   Make returned unknown error.
 
