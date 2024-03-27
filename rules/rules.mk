@@ -407,7 +407,7 @@ $(FULLPDFS): .EXTRA_PREREQS = $(LUAINCLUDES)
 $(FULLPDFS): %.pdf: $(BUILDDIR)/%.sil $$(call coverpreq,$$@) $$(call onpaperlibs,$$@) $(FCCONFIG)
 	$(call skip_if_lazy,$@)
 	$(HIGHLIGHT_DIFF) && $(SED) -e 's/\\\././g;s/\\\*/*/g' -i $< ||:
-	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
+	export SILE_PATH="$(subst $( ),;,$(strip $(SILEPATH)))"
 	# If in draft mode don't rebuild for TOC and do output debug info, otherwise
 	# account for TOC $(_issue): https://github.com/simoncozens/sile/issues/230
 	runsile="$(SILE) $(SILEFLAGS) $< -o $@"
@@ -731,7 +731,7 @@ $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf:
 		CASILE.spine = "$(call spinemm,$(filter %.pdf,$^))mm"
 		return { _name = "$*", type = "casile" }
 	EOF
-	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
+	export SILE_PATH="$(subst $( ),;,$(strip $(SILEPATH)))"
 	$(SILE) $(SILEFLAGS) $(call use_luas,$^ $| $*.lua) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
 
 FRONTFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_front).png))
@@ -791,7 +791,7 @@ $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf:
 		CASILE.language = "$(LANGUAGE)"
 		return { _name = "casile", type = "casile" }
 	EOF
-	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
+	export SILE_PATH="$(subst $( ),;,$(strip $(SILEPATH)))"
 	$(SILE) $(SILEFLAGS) $(call use_luas,$^ $| $*.lua) $< -o $@
 
 FRONTFRAGMENTIMAGES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_fragment).png))
@@ -902,7 +902,7 @@ $(EMPTYGEOMETRIES): $(BUILDDIR)/$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml | 
 		CASILE.language = "$(LANGUAGE)"
 		return { _name = "$*", type = "casile" }
 	EOF
-	export SILE_PATH="$(subst $( ),;,$(SILEPATH))"
+	export SILE_PATH="$(subst $( ),;,$(strip $(SILEPATH)))"
 	$(SILE) $(SILEFLAGS) $(call use_luas,$^ $| $*.lua) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
