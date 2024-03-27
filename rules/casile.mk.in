@@ -107,6 +107,8 @@ export BUILDDIR ?= .casile
 CASILE_SINGLEPOVJOB ?=
 CASILE_SINGLEXVFBJOB ?= true
 
+SILE_PATH ?=
+
 .PHONY: default
 default: all
 
