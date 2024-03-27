@@ -111,10 +111,11 @@ pub fn run(target: Vec<String>) -> Result<()> {
                             } else {
                                 backlog.push(String::from(fields[3]));
                             }
-                        },
-                        None =>{
-                            let text = LocalText::new("make-error-unknown-target").
-                                arg("target", style(target).white()).fmt();
+                        }
+                        None => {
+                            let text = LocalText::new("make-error-unknown-target")
+                                .arg("target", style(target).white())
+                                .fmt();
                             eprintln!("{}", style(text).red());
                             backlog.push(String::from(fields[3]));
                         }
@@ -132,10 +133,11 @@ pub fn run(target: Vec<String>) -> Result<()> {
                             } else {
                                 backlog.push(String::from(fields[3]));
                             }
-                        },
+                        }
                         None => {
-                            let text = LocalText::new("make-error-unknown-target").
-                                arg("target", style(target).white()).fmt();
+                            let text = LocalText::new("make-error-unknown-target")
+                                .arg("target", style(target).white())
+                                .fmt();
                             eprintln!("{}", style(text).red());
                             backlog.push(String::from(fields[3]));
                         }
@@ -145,22 +147,21 @@ pub fn run(target: Vec<String>) -> Result<()> {
                     let target = fields[3].to_owned();
                     let target_status = target_statuses.get(&target);
                     match target_status {
-                        Some(target_status) => {
-                            match fields[2] {
-                                "0" => {
-                                    target_status.pass();
-                                }
-                                val => {
-                                    target_status.fail();
-                                    ret = val.parse().unwrap_or(1);
-                                }
+                        Some(target_status) => match fields[2] {
+                            "0" => {
+                                target_status.pass();
+                            }
+                            val => {
+                                target_status.fail();
+                                ret = val.parse().unwrap_or(1);
                             }
                         },
                         None => {
-                            let text = LocalText::new("make-error-unknown-target").
-                                arg("target", style(target).white()).fmt();
+                            let text = LocalText::new("make-error-unknown-target")
+                                .arg("target", style(target).white())
+                                .fmt();
                             eprintln!("{}", style(text).red());
-                        },
+                        }
                     }
                 }
                 _ => {
