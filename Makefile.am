@@ -12,6 +12,15 @@ licensedir = $(datarootdir)/licenses/$(TRANSFORMED_PACKAGE_NAME)
 datadir = $(datarootdir)/$(TRANSFORMED_PACKAGE_NAME)
 pkgdatadir = $(datadir)
 
+# Since we can't use $(wildcard ...) in automake file lists, we generate a file
+# with a script that builds our dynamic file lists instead. This is tricky,
+# because if we just include the file automake will flatten this include. By
+# using $(wildcard ...) to include it (the very function we couldn't use because
+# of the race condition it creates) we actually keep it from being flattened and
+# hence evaluated when we want it to be. Since the file always exists (see
+# BUILT_SOURCES and EXTRA_DIST) this doesn't induce a race.
+include $(wildcard Makefile-distfiles)
+
 lang_key_files = rules/en.mk rules/tr.mk
 reverse_lang_key_files = $(patsubst %.mk,%-reversed.mk,$(lang_key_files))
 
@@ -22,6 +31,7 @@ dist_man_MANS =
 nobase_data_DATA = rules/casile.mk $(reverse_lang_key_files)
 nobase_dist_data_DATA = rules/rules.mk rules/functions.mk rules/translation.mk rules/utilities.mk $(lang_key_files)
 nobase_dist_data_DATA += rules/ebooks.mk rules/mdbook.mk rules/renderings.mk rules/zola.mk
+nobase_dist_pkgdata_DATA = $(LUALIBRARIES)
 _casile_libs = src/lib.rs src/cli.rs src/config.rs src/i18n.rs src/tui.rs
 _casile_modules = src/make/mod.rs src/run/mod.rs src/setup/mod.rs src/status/mod.rs
 _casile_assets = assets/en-US/cli.ftl assets/tr-TR/cli.ftl
@@ -29,14 +39,18 @@ bin_PROGRAMS = casile
 casile_SOURCES = src/main.rs $(_casile_libs) $(_casile_modules) $(_casile_assets)
 EXTRA_casile_SOURCES = tests/cli.rs
 EXTRA_DIST = package.json yarn.lock requirements.txt
-EXTRA_DIST += build-aux/action-updater.js build-aux/cargo-updater.js build-aux/git-version-gen
+EXTRA_DIST += Makefile-distfiles
+EXTRA_DIST += build-aux/action-updater.js build-aux/cargo-updater.js build-aux/git-version-gen build-aux/list-dist-files.sh
 EXTRA_DIST += Dockerfile build-aux/bootstrap-docker.sh build-aux/docker-fontconfig.conf hooks/build
 
-BUILT_SOURCES =
+BUILT_SOURCES = Makefile-distfiles
 
 CLEANFILES =
 
 include $(top_srcdir)/build-aux/rust_boilerplate.mk
+
+Makefile-distfiles: $(wildcard .version .tarball-version)
+	$(SHELL) build-aux/list-dist-files.sh > $@
 
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
