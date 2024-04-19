@@ -267,7 +267,7 @@ define magick_crease ?=
 		-blur 0x$(call scale,$(call mmtopx,0.2)) \
 		-level "0x40%!" \
 	\) \
-	-compose Divide -composite
+	-compose Difference -composite
 endef
 
 define magick_fray ?=
