@@ -22,9 +22,15 @@ local spreadHook = function ()
   spread_counter = spread_counter + 1
 end
 
+local _requireSpaceSamePage
+local function _abortRequireSpace ()
+   _requireSpaceSamePage = false
+end
+
 function package:_init ()
   base._init(self)
   self.class:registerHook("newpage", spreadHook)
+  self.class:registerHook("newpage", _abortRequireSpace)
 end
 
 function package:registerCommands ()
@@ -599,14 +605,18 @@ function package:registerCommands ()
   end, "Output publication dates in proper format for imprint page")
 
   self:registerCommand("requireSpace", function (options, content)
+    _requireSpaceSamePage = true
     local required = SILE.length(options.height or 0)
     SILE.typesetter:leaveHmode()
     SILE.call("hbox", {}, content) -- push content we want to fit
-    local heightOfPageSoFar = SILE.pagebuilder:collateVboxes(SILE.typesetter.state.outputQueue).height
     local heightOfFrame = SU.cast("length", SILE.typesetter.frame:height())
+    local heightOfPageSoFar = SILE.pagebuilder:collateVboxes(SILE.typesetter.state.outputQueue).height
     table.remove(SILE.typesetter.state.nodes) -- steal it back
+    SILE.typesetter:leaveHmode()
     if heightOfFrame - heightOfPageSoFar < required then
-      SILE.call("supereject")
+      if _requireSpaceSamePage then
+        SILE.call("supereject")
+      end
     end
   end)
 
