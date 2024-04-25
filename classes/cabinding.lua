@@ -89,7 +89,7 @@ function class:declareOptions ()
     if size then
       self.papersize = size
       local parsed = SILE.papersize(size)
-      if binding == "print" or CASILE.layout == "print" then
+      if binding == "print" or CASILE.binding == "print" then
         self.defaultFrameset = posterFrameset
         SILE.documentState.paperSize = { parsed[1], parsed[2] }
       else

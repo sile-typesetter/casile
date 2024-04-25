@@ -103,17 +103,19 @@ function class:declareOptions ()
 end
 
 function class:setOptions (options)
-  options.binding = options.binding or "print" -- print, paperback, hardcover, coil, stapled
+  options.binding = options.binding or CASILE.binding or "print" -- print, paperback, hardcover, coil, stapled
+  -- Set binding first if we have it so that the layout can adapt the papersize based on the binding
+  self.options.binding = options.binding
   options.crop = options.crop or (options.binding ~= "print")
-  options.background = options.background or true
-  options.verseindex = options.verseindex or false
-  options.layout = options.layout or CASILE.layout or "a4"
-  -- Set layout first because it resets paper size. If we don't a random race
+  -- Set layout next because it resets paper size. If we don't a random race
   -- condition picks the default papersize *or* our layout to be set first.
+  options.layout = options.layout or CASILE.layout or "a4"
   self.options.layout = options.layout
   -- Now set the rest but with the papersize reset to whatever layout wanted
   options.papersize = self.options.papersize
   options.layout = nil
+  options.background = options.background or true
+  options.verseindex = options.verseindex or false
   book.setOptions(self, options)
 end
 
