@@ -42,7 +42,7 @@ MOCKUPFACTOR ?= 1
 FIGURES ?=
 
 # Default output formats and parameters (often overridden)
-FORMATS ?= pdfs epub mobi odt docx mdbook zola $(and $(ISBNS),play) app html
+FORMATS ?= manifest pdfs epub mobi odt docx mdbook zola $(and $(ISBNS),play) app html
 BLEED ?= 3
 TRIM ?= 10
 NOBLEED ?= 0
@@ -275,6 +275,10 @@ endef
 
 $(foreach FORMAT,$(FORMATS),$(eval $(call format_template,$(FORMAT),$(TARGETS))))
 
+VIRTUALMANIFESTS := $(call pattern_list,$(SOURCES),.manifest)
+.PHONY: $(VIRTUALMANIFESTS)
+$(VIRTUALMANIFESTS): %.manifest: %-manifest.yml
+
 VIRTUALPDFS := $(call pattern_list,$(SOURCES),.pdfs)
 VIRTUALEDITPDFS := $(and $(EDITS),$(call pattern_list,$(SOURCES),$(EDITS),.pdfs))
 .PHONY: $(VIRTUALPDFS) $(VIRTUALEDITPDFS)
@@ -314,7 +318,11 @@ $(VIRTUALPROMOTIONALS): %.promotionals: $(call pattern_list,$$*,$(PLACARDS),-$(_
 ifneq ($(words $(TARGETS)),1)
 promotionals: series_promotionals
 renderings: series_renderings
+manifest: series_manifest
 endif
+
+.PHONY: series_manifest
+series_manifest: $(call pattern_list,$(PROJECT),manifest,.yml)
 
 .PHONY: series_promotionals
 series_promotionals: $(PROJECT)-epub-$(_poster)-$(_montage).jpg $(PROJECT)-$(_square)-$(_poster)-$(_montage).jpg
