@@ -13,7 +13,7 @@ use subprocess::{Exec, NullFile, Redirection};
 // FTL: help-subcommand-setup
 /// Setup a publishing project for use with CaSILE
 pub fn run() -> Result<()> {
-    let subcommand_status = SubcommandStatus::new("setup-header", "setup-good", "setup_bad");
+    let subcommand_status = CASILEUI.new_subcommand("setup-header", "setup-good", "setup_bad");
     let path = &CONF.get_string("path")?;
     let metadata = fs::metadata(path)?;
     let ret = match metadata.is_dir() {
@@ -41,7 +41,8 @@ pub fn run() -> Result<()> {
 }
 
 /// Evaluate whether this project is properly configured
-pub fn is_setup(subcommand_status: SubcommandStatus) -> Result<bool> {
+pub fn is_setup() -> Result<bool> {
+    let subcommand_status = CASILEUI.new_subcommand("status-header", "status-good", "status-bad");
     let results = Arc::new(RwLock::new(Vec::new()));
 
     // First round of tests, entirely independent
@@ -81,7 +82,7 @@ pub fn is_setup(subcommand_status: SubcommandStatus) -> Result<bool> {
 
 /// Are we in a git repo?
 pub fn is_repo() -> Result<bool> {
-    let status = SetupCheck::start("setup-is-repo");
+    let status = CASILEUI.new_check("setup-is-repo");
     let ret = get_repo().is_ok();
     (ret).then(|| status.pass());
     Ok(ret)
@@ -89,15 +90,15 @@ pub fn is_repo() -> Result<bool> {
 
 /// Is this repo a deep clone?
 pub fn is_deep() -> Result<bool> {
+    let status = CASILEUI.new_check("setup-is-deep");
     let ret = !get_repo()?.is_shallow();
-    let status = SetupCheck::start("setup-is-deep");
     (ret).then(|| status.pass());
     Ok(ret)
 }
 
 /// Are we not in the CaSILE source repo?
 pub fn is_not_casile_source() -> Result<bool> {
-    let status = SetupCheck::start("setup-is-not-casile");
+    let status = CASILEUI.new_check("setup-is-not-casile");
     let repo = get_repo()?;
     let workdir = repo.workdir().unwrap();
     let testfile = workdir.join("make-shell.zsh.in");
@@ -108,7 +109,7 @@ pub fn is_not_casile_source() -> Result<bool> {
 
 /// Is the git repo we are in writable?
 pub fn is_writable() -> Result<bool> {
-    let status = SetupCheck::start("setup-is-writable");
+    let status = CASILEUI.new_check("setup-is-writable");
     let repo = get_repo()?;
     let workdir = repo.workdir().unwrap();
     let testfile = workdir.join(".casile-write-test");
@@ -122,7 +123,7 @@ pub fn is_writable() -> Result<bool> {
 
 /// Check if we can execute the system's `make` utility
 pub fn is_make_exectuable() -> Result<bool> {
-    let status = SetupCheck::start("setup-is-make-executable");
+    let status = CASILEUI.new_check("setup-is-make-executable");
     let ret = Exec::cmd("make")
         .arg("-v")
         .stdout(NullFile)
@@ -135,7 +136,7 @@ pub fn is_make_exectuable() -> Result<bool> {
 
 /// Check that the system's `make` utility is GNU Make
 pub fn is_make_gnu() -> Result<bool> {
-    let status = SetupCheck::start("setup-is-make-gnu");
+    let status = CASILEUI.new_check("setup-is-make-gnu");
     let out = Exec::cmd("make")
         .arg("-v")
         .stdout(Redirection::Pipe)
