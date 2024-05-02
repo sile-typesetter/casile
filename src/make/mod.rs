@@ -1,5 +1,5 @@
 use crate::i18n::LocalText;
-use crate::tui::*;
+use crate::ui::*;
 use crate::*;
 
 use console::style;
@@ -238,7 +238,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
 
 fn dump_backlog(backlog: &[String]) {
     let bar = ProgressBar::new_spinner().with_style(ProgressStyle::with_template("{msg}").unwrap());
-    let bar = TUI.add(bar);
+    let bar = UI.add(bar);
     let mut dump = String::new();
     let start = LocalText::new("make-backlog-start").fmt();
     let start = format!("{} {start}\n", style(style("┄┄┄┄┄┄").cyan()));

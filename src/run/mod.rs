@@ -1,4 +1,4 @@
-use crate::tui::*;
+use crate::ui::*;
 use crate::*;
 
 use std::io::prelude::*;

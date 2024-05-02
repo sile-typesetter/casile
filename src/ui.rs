@@ -9,20 +9,21 @@ use std::str;
 use std::sync::RwLock;
 use std::time::Instant;
 
-static ERROR_TUI_WRITE: &str = "Unable to gain write lock on tui status wrapper";
+static ERROR_UI_WRITE: &str = "Unable to gain write lock on ui status wrapper";
 
 lazy_static! {
-    pub static ref TUI: RwLock<Progress> = RwLock::new(Progress::new());
+    pub static ref UI: RwLock<Progress> = RwLock::new(Progress::new());
 }
 
-impl TUI {
+impl UI {
     pub fn add(&self, bar: ProgressBar) -> ProgressBar {
-        let tui = self.write().expect(ERROR_TUI_WRITE);
-        tui.add(bar)
+        let ui = self.write().expect(ERROR_UI_WRITE);
+        ui.add(bar)
     }
     pub fn remove(&self, bar: &ProgressBar) {
-        let tui = self.write().expect(ERROR_TUI_WRITE);
-        tui.remove(bar);
+        let ui = self.write().expect(ERROR_UI_WRITE);
+        bar.finish();
+        ui.remove(bar);
     }
 }
 
@@ -69,7 +70,6 @@ impl CommandStatus {
     }
     pub fn bar(&self) -> ProgressBar {
         let prefix = style("⛫").cyan().to_string();
-
         ProgressBar::new_spinner()
             .with_style(ProgressStyle::with_template("{prefix} {msg}").unwrap())
             .with_prefix(prefix)
@@ -107,7 +107,7 @@ impl SubcommandStatus {
         let bar = ProgressBar::new_spinner()
             .with_style(ProgressStyle::with_template("{prefix} {msg}").unwrap())
             .with_prefix(prefix);
-        let bar = TUI.add(bar);
+        let bar = UI.add(bar);
         bar.set_message(msg);
         let good_msg = style(LocalText::new(good_key).fmt())
             .green()
@@ -171,7 +171,7 @@ impl MakeTargetStatus {
         let bar = ProgressBar::new_spinner()
             .with_style(pstyle)
             .with_message(msg);
-        let bar = TUI.add(bar);
+        let bar = UI.add(bar);
         bar.tick();
         MakeTargetStatus { bar, target }
     }
@@ -189,7 +189,7 @@ impl MakeTargetStatus {
         let target = self.target.clone();
         let allow_hide = !CONF.get_bool("debug").unwrap() && !CONF.get_bool("verbose").unwrap();
         if allow_hide && target.starts_with(".casile") {
-            TUI.remove(&self.bar);
+            UI.remove(&self.bar);
         } else {
             let msg = style(
                 LocalText::new("make-report-pass")
@@ -235,7 +235,7 @@ impl SetupCheck {
                 .with_finish(ProgressFinish::AbandonWithMessage(
                     format!("{msg} {no}").into(),
                 ));
-            TUI.add(bar)
+            UI.add(bar)
         } else {
             ProgressBar::hidden()
         };

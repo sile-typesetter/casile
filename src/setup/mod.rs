@@ -1,5 +1,5 @@
 use crate::i18n::LocalText;
-use crate::tui::*;
+use crate::ui::*;
 use crate::*;
 
 use console::style;

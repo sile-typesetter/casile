@@ -2,7 +2,7 @@ use clap::{Args, Command, FromArgMatches as _};
 
 use casile::cli::{Cli, Commands};
 use casile::config::CONF;
-use casile::tui::*;
+use casile::ui::*;
 use casile::{make, run, setup, status};
 use casile::{Result, VERSION};
 
