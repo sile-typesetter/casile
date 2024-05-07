@@ -285,6 +285,8 @@ VIRTUALEDITPDFS := $(and $(EDITS),$(call pattern_list,$(SOURCES),$(EDITS),.pdfs)
 $(VIRTUALPDFS) $(VIRTUALEDITPDFS): %.pdfs: $(call pattern_list,$$*,$(LAYOUTS),.pdf)
 $(VIRTUALPDFS): %.pdfs: $(and $(EDITIONS),$(call pattern_list,$$*,$(EDITIONS),$(LAYOUTS),.pdf))
 $(VIRTUALEDITPDFS): %.pdfs: $$(and $(EDITIONS),$(EDITS),$$(call pattern_list,$$(call parse_bookid,$$*),$(EDITIONS),$(EDITS),$(LAYOUTS),.pdf))
+ACTIVEBOUNDLAYOUTS = $(filter $(BOUNDLAYOUTS),$(LAYOUTS))
+$(VIRTUALPDFS): %.pdfs: $(and $(ACTIVEBOUNDLAYOUTS),$(call pattern_list,$$*,$(ACTIVEBOUNDLAYOUTS),$(_cropped),.pdf))
 
 # Setup target dependencies to mimic stages of a CI pipeline
 ifeq ($(MAKECMDGOALS),ci)
