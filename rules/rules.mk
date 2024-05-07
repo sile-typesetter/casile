@@ -1121,9 +1121,12 @@ $(BUILDDIR)/%-$(_barcode).png: $(BUILDDIR)/%-$(_barcode).svg
 		$< \
 		-bordercolor white -border 10 \
 		-font Hack-Regular -pointsize 72 \
+		-fill black \
 		label:" ISBN $(shell $(_ENV) isbn_format.py $*-manifest.yml paperback mask)" +swap -gravity Center -append \
 		-bordercolor white -border 0x10 \
 		-resize $(call scale,1200)x \
+		-alpha off \
+		-fill '#fffffe' -draw 'point 2,2' \
 		$@
 	if [[ $(shell $(_ENV) isbn_format.py $*-manifest.yml paperback) == 9786056644504 ]]; then
 		$(MAGICK) \
