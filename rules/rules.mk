@@ -722,7 +722,7 @@ $(COVERPDFS): $(BUILDDIR)/%-$(_cover).pdf: $(BUILDDIR)/%-$(_cover).png $(BUILDDI
 		+repage \
 		$$bg
 	$(PDFTK) $(filter %.pdf,$^) cat 1 output $$text
-	$(PDFTK) $$bg background $$text output $@
+	$(PDFTK) $$text stamp $$bg output $@
 
 BINDINGFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_text).pdf))
 $(BINDINGFRAGMENTS): .EXTRA_PREREQS = $(LUAINCLUDES)
