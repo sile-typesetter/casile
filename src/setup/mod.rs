@@ -42,7 +42,7 @@ pub fn run() -> Result<()> {
 
 /// Evaluate whether this project is properly configured
 pub fn is_setup() -> Result<bool> {
-    let subcommand_status = CASILEUI.new_subcommand("status");
+    let subcommand_status = CASILEUI.new_subcommand("is-setup");
     let results = Arc::new(RwLock::new(Vec::new()));
 
     // First round of tests, entirely independent

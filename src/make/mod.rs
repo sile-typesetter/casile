@@ -4,7 +4,6 @@ use crate::*;
 
 use console::style;
 use regex::Regex;
-use std::collections::HashMap;
 use std::io::prelude::*;
 use std::{ffi::OsString, io};
 use subprocess::{Exec, ExitStatus, Redirection};
@@ -13,7 +12,7 @@ use subprocess::{Exec, ExitStatus, Redirection};
 /// Build specified target(s)
 pub fn run(target: Vec<String>) -> Result<()> {
     setup::is_setup()?;
-    let subcommand_status = CASILEUI.new_subcommand("make");
+    let mut subcommand_status = CASILEUI.new_subcommand("make");
     let mut makeflags: Vec<OsString> = Vec::new();
     let cpus = &num_cpus::get().to_string();
     makeflags.push(OsString::from(format!("--jobs={cpus}")));
@@ -68,6 +67,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
         .env("PROJECTDIR", CONF.get_string("path")?)
         .env("PROJECTVERSION", git_version);
     if CONF.get_bool("debug")? {
+        // || targets.contains(&"-p".into())
         process = process.env("DEBUG", "true");
     };
     if CONF.get_bool("quiet")? {
@@ -81,11 +81,8 @@ pub fn run(target: Vec<String>) -> Result<()> {
     process = process.cwd(workdir);
     let process = process.stderr(Redirection::Merge).stdout(Redirection::Pipe);
     let mut popen = process.popen()?;
-    let mut target_statuses = HashMap::new();
     let buf = io::BufReader::new(popen.stdout.as_mut().unwrap());
-    let mut backlog: Vec<String> = Vec::new();
     let seps = Regex::new(r"").unwrap();
-    let mut ret: u32 = 0;
     for line in buf.lines() {
         let text: &str =
             &line.unwrap_or_else(|_| String::from("INVALID UTF-8 FROM CHILD PROCESS STREAM"));
@@ -94,137 +91,97 @@ pub fn run(target: Vec<String>) -> Result<()> {
             "CASILE" => match fields[1] {
                 "PRE" => {
                     let target = fields[2].to_owned();
-                    let target_status = CASILEUI.new_target(target.clone());
-                    target_statuses.insert(target, target_status);
+                    subcommand_status.new_target(&target);
                 }
                 "STDOUT" => {
                     let target = fields[2].to_owned();
-                    let target_status = target_statuses.get(&target);
+                    let target_status = subcommand_status.get_target(&target);
                     match target_status {
                         Some(target_status) => {
-                            if is_gha || is_glc {
-                                target_status.stdout(fields[3]);
-                            } else if CONF.get_bool("verbose")? {
-                                target_status.stderr(fields[3]);
-                            } else {
-                                backlog.push(String::from(fields[3]));
-                            }
+                            target_status.stdout(fields[3]);
                         }
                         None => {
                             let text = LocalText::new("make-error-unknown-target")
                                 .arg("target", style(target).white())
                                 .fmt();
-                            eprintln!("{}", style(text).red());
-                            backlog.push(String::from(fields[3]));
+                            subcommand_status.error(format!("{}", style(text).red()));
+                            subcommand_status.error(fields[3].to_string());
                         }
                     }
                 }
                 "STDERR" => {
                     let target = fields[2].to_owned();
-                    let target_status = target_statuses.get(&target);
+                    let target_status = subcommand_status.get_target(&target);
                     match target_status {
                         Some(target_status) => {
-                            if is_gha || is_glc {
-                                target_status.stderr(fields[3]);
-                            } else if CONF.get_bool("verbose")? {
-                                target_status.stdout(fields[3]);
-                            } else {
-                                backlog.push(String::from(fields[3]));
-                            }
+                            target_status.stderr(fields[3]);
                         }
                         None => {
                             let text = LocalText::new("make-error-unknown-target")
                                 .arg("target", style(target).white())
                                 .fmt();
-                            eprintln!("{}", style(text).red());
-                            backlog.push(String::from(fields[3]));
+                            subcommand_status.error(format!("{}", style(text).red()));
+                            subcommand_status.error(fields[3].to_string());
                         }
                     }
                 }
                 "POST" => {
-                    let target = fields[3].to_owned();
-                    let target_status = target_statuses.get(&target);
+                    let target = fields[2].to_owned();
+                    let target_status = subcommand_status.get_target(&target);
                     match target_status {
-                        Some(target_status) => match fields[2] {
+                        Some(target_status) => match fields[3] {
                             "0" => {
                                 target_status.pass();
                             }
                             val => {
-                                target_status.fail();
-                                ret = val.parse().unwrap_or(1);
+                                let code = val.parse().unwrap_or(1);
+                                target_status.fail(code);
                             }
                         },
                         None => {
-                            let text = LocalText::new("make-error-unknown-target")
-                                .arg("target", style(target).white())
-                                .fmt();
-                            eprintln!("{}", style(text).red());
+                            let text = LocalText::new("make-error-unknown-target").fmt();
+                            subcommand_status.error(format!("{}", style(text).red()));
                         }
                     }
                 }
                 _ => {
                     let errmsg = LocalText::new("make-error-unknown-code").fmt();
-                    panic!("{}", errmsg)
+                    subcommand_status.error(format!("Make wrapper failed: {errmsg}"));
                 }
             },
-            _ => backlog.push(String::from(fields[0])),
+            _ => {
+                subcommand_status.error(format!(
+                    "Error encountered outside of CaSILE wrapper: {:?}",
+                    fields
+                ));
+            }
         }
     }
     let status = popen.wait();
     let ret = match status {
-        Ok(ExitStatus::Exited(int)) => {
-            let code = int + ret;
-            match code {
-                0 => {
-                    if CONF.get_bool("debug")?
-                        || targets.contains(&"debug".into())
-                        || targets.contains(&"-p".into())
-                    {
-                        subcommand_status.dump(&backlog)
-                    };
-                    Ok(())
-                }
-                1 => {
-                    subcommand_status.dump(&backlog);
-                    Err(Box::new(io::Error::new(
-                        io::ErrorKind::InvalidInput,
-                        LocalText::new("make-error-unfinished").fmt(),
-                    )))
-                }
-                2 => {
-                    subcommand_status.dump(&backlog);
-                    Err(Box::new(io::Error::new(
-                        io::ErrorKind::InvalidInput,
-                        LocalText::new("make-error-build").fmt(),
-                    )))
-                }
-                3 => {
-                    if !CONF.get_bool("verbose")? {
-                        subcommand_status.dump(&backlog);
-                    }
-                    Err(Box::new(io::Error::new(
-                        io::ErrorKind::InvalidInput,
-                        LocalText::new("make-error-target").fmt(),
-                    )))
-                }
-                137 => {
-                    if !CONF.get_bool("verbose")? {
-                        subcommand_status.dump(&backlog);
-                    }
-                    Err(Box::new(io::Error::new(
-                        io::ErrorKind::InvalidInput,
-                        LocalText::new("make-error-oom").fmt(),
-                    )))
-                }
-                _ => {
-                    subcommand_status.dump(&backlog);
-                    Err(Box::new(io::Error::new(
-                        io::ErrorKind::InvalidInput,
-                        LocalText::new("make-error-unknown").fmt(),
-                    )))
-                }
-            }
-        }
+        Ok(ExitStatus::Exited(code)) => match code {
+            0 => Ok(()),
+            1 => Err(Box::new(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                LocalText::new("make-error-unfinished").fmt(),
+            ))),
+            2 => Err(Box::new(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                LocalText::new("make-error-build").fmt(),
+            ))),
+            3 => Err(Box::new(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                LocalText::new("make-error-target").fmt(),
+            ))),
+            137 => Err(Box::new(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                LocalText::new("make-error-oom").fmt(),
+            ))),
+            _ => Err(Box::new(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                LocalText::new("make-error-unknown").fmt(),
+            ))),
+        },
         _ => Err(Box::new(io::Error::new(
             io::ErrorKind::InvalidInput,
             LocalText::new("make-error").fmt(),

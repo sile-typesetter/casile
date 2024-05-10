@@ -33,7 +33,13 @@ make-report-pass =
   İşlem bittirildi: { $target }
 
 make-report-fail =
-  İşlem başarsızdı: { $target }
+  Hedef { $target } için tarife çıkış kodu { $code } ile başarsız oldu.
+
+make-backlog-start =
+  Hedef { $target } için ‘make’in yakalanan çıktısı dökülüyor:
+
+make-backlog-end =
+  Çıktı döcülmesinin sonu.
 
 run-header =
   CaSILE ortamı içinde komut dosyası çalıştırılıyor.
@@ -82,6 +88,15 @@ setup-warp-time =
 
 setup-warp-time-file =
   Dosya { $path } geçmişine göre döndürüldü
+
+is-setup-header =
+  { setup-header }
+
+is-setup-good =
+  { status-good }
+
+is-setup-bad =
+  { status-bad }
 
 status-header =
   Proje durum inceleniyor

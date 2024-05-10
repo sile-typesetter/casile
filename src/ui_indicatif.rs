@@ -1,11 +1,22 @@
-use crate::i18n::LocalText;
-
 use crate::config::CONF;
+use crate::i18n::LocalText;
 use crate::ui::*;
+use crate::*;
 
 use console::style;
-use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressFinish, ProgressStyle};
+use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressStyle};
+use std::collections::HashMap;
 use std::time::Instant;
+
+fn finalize_bar(bar: ProgressBar, msg: String) {
+    let prefix = bar.prefix();
+    if !bar.is_hidden() {
+        bar.suspend(|| {
+            println!("{prefix} {msg}");
+        });
+    }
+    bar.finish_and_clear();
+}
 
 #[derive(Debug)]
 pub struct IndicatifInterface {
@@ -45,7 +56,7 @@ impl IndicatifInterface {
     pub fn show(&self, msg: String) {
         let bar = self.bar();
         let msg = style(msg).cyan().bright().to_string();
-        bar.finish_with_message(msg);
+        finalize_bar(bar, msg);
     }
 }
 
@@ -59,22 +70,19 @@ impl UserInterface for IndicatifInterface {
         let msg = LocalText::new("farewell").arg("duration", time).fmt();
         self.show(msg);
     }
-    fn new_subcommand(&self, key: &str) -> Box<dyn SubcommandStatus> {
-        Box::new(IndicatifSubcommandStatus::new(self, key))
-    }
     fn new_check(&self, key: &str) -> Box<dyn SetupCheck> {
         Box::new(IndicatifSetupCheck::new(self, key))
     }
-    fn new_target(&self, target: String) -> Box<dyn MakeTargetStatus> {
-        Box::new(IndicatifMakeTargetStatus::new(self, target))
+    fn new_subcommand(&self, key: &str) -> Box<dyn SubcommandStatus> {
+        Box::new(IndicatifSubcommandStatus::new(self, key))
     }
 }
 
-#[derive(Debug)]
 pub struct IndicatifSubcommandStatus {
     progress: MultiProgress,
     bar: ProgressBar,
     messages: SubcommandHeaderMessages,
+    jobs: HashMap<String, Box<dyn JobStatus>>,
 }
 
 impl std::ops::Deref for IndicatifSubcommandStatus {
@@ -98,6 +106,7 @@ impl IndicatifSubcommandStatus {
             progress: ui.progress.clone(),
             bar,
             messages,
+            jobs: HashMap::new(),
         }
     }
     pub fn pass(&self) {
@@ -107,7 +116,7 @@ impl IndicatifSubcommandStatus {
             .green()
             .bright()
             .to_string();
-        self.finish_with_message(msg);
+        finalize_bar(self.bar.clone(), msg);
     }
     pub fn fail(&self) {
         let prefix = style("✗").red().to_string();
@@ -116,7 +125,7 @@ impl IndicatifSubcommandStatus {
             .red()
             .bright()
             .to_string();
-        self.finish_with_message(msg);
+        finalize_bar(self.bar.clone(), msg);
     }
 }
 
@@ -124,23 +133,17 @@ impl SubcommandStatus for IndicatifSubcommandStatus {
     fn end(&self, status: bool) {
         (status).then(|| self.pass()).unwrap_or_else(|| self.fail());
     }
-    fn dump(&self, backlog: &[String]) {
-        let bar =
-            ProgressBar::new_spinner().with_style(ProgressStyle::with_template("{msg}").unwrap());
-        let bar = self.progress.add(bar);
-        let mut dump = String::new();
-        let start = LocalText::new("make-backlog-start").fmt();
-        let start = format!("{} {start}\n", style(style("┄┄┄┄┄┄").cyan()));
-        dump.push_str(start.as_str());
-        for line in backlog.iter() {
-            dump.push_str(line.as_str());
-            dump.push('\n');
-        }
-        let end = LocalText::new("make-backlog-end").fmt();
-        let end = format!("{} {end}", style(style("┄┄┄┄┄").cyan()));
-        dump.push_str(end.as_str());
-        bar.set_message(dump);
-        bar.finish();
+    fn error(&mut self, msg: String) {
+        self.bar.suspend(|| {
+            eprintln!("{msg}");
+        });
+    }
+    fn new_target(&mut self, target: &String) {
+        let target_status = Box::new(IndicatifJobStatus::new(self, target.clone()));
+        self.jobs.insert(target.clone(), target_status);
+    }
+    fn get_target(&self, target: &String) -> Option<&Box<dyn JobStatus>> {
+        self.jobs.get(target)
     }
 }
 
@@ -158,12 +161,9 @@ impl IndicatifSetupCheck {
     pub fn new(ui: &IndicatifInterface, key: &str) -> Self {
         let msg = LocalText::new(key).fmt();
         let bar = if CONF.get_bool("debug").unwrap() || CONF.get_bool("verbose").unwrap() {
-            let no = style(LocalText::new("setup-false").fmt()).red().to_string();
             let bar = ProgressBar::new_spinner()
-                .with_style(ProgressStyle::with_template("{msg}").unwrap())
-                .with_finish(ProgressFinish::AbandonWithMessage(
-                    format!("{msg} {no}").into(),
-                ));
+                .with_prefix("-")
+                .with_style(ProgressStyle::with_template("{msg}").unwrap());
             ui.add(bar)
         } else {
             ProgressBar::hidden()
@@ -179,25 +179,27 @@ impl SetupCheck for IndicatifSetupCheck {
         let yes = style(LocalText::new("setup-true").fmt())
             .green()
             .to_string();
-        self.finish_with_message(format!("{msg} {yes}"))
+        finalize_bar(self.0.clone(), format!("{msg} {yes}"));
     }
 }
 
 #[derive(Debug)]
-pub struct IndicatifMakeTargetStatus {
+pub struct IndicatifJobStatus {
     bar: ProgressBar,
     target: String,
+    log: JobBacklog,
 }
 
-impl std::ops::Deref for IndicatifMakeTargetStatus {
+impl std::ops::Deref for IndicatifJobStatus {
     type Target = ProgressBar;
     fn deref(&self) -> &Self::Target {
         &self.bar
     }
 }
 
-impl IndicatifMakeTargetStatus {
-    pub fn new(ui: &IndicatifInterface, mut target: String) -> Self {
+impl IndicatifJobStatus {
+    // pub fn new(ui: &IndicatifInterface, mut target: String) -> Self {
+    pub fn new(subcommand: &IndicatifSubcommandStatus, mut target: String) -> Self {
         // Withouth this, copying the string in the terminal as a word brings a U+2069 with it
         target.push(' ');
         let msg = style(
@@ -212,26 +214,41 @@ impl IndicatifMakeTargetStatus {
             .unwrap()
             .tick_strings(&["↻", "✔"]);
         let bar = ProgressBar::new_spinner()
+            .with_prefix("✔") // not relevant for spinner, but we use it for our finalized mode
             .with_style(pstyle)
             .with_message(msg);
-        let bar = ui.add(bar);
+        let bar = subcommand.progress.add(bar);
         bar.tick();
-        Self { bar, target }
+        Self {
+            bar,
+            target,
+            log: JobBacklog::default(),
+        }
     }
 }
 
-impl MakeTargetStatus for IndicatifMakeTargetStatus {
-    fn stdout(&self, line: &str) {
-        let target = style(self.target.clone()).white().bold().to_string();
-        let line = style(line).dim();
-        self.println(format!("{target}: {line}"));
+impl JobStatus for IndicatifJobStatus {
+    fn push(&self, line: JobBacklogLine) {
+        self.log.push(line);
     }
-    fn stderr(&self, line: &str) {
-        let target = style(self.target.clone()).white().to_string();
-        let line = style(line).dim();
-        self.println(format!("{target}: {line}"));
+    fn must_dump(&self) -> bool {
+        self.target == "debug"
     }
-    fn pass(&self) {
+    fn dump(&self) {
+        let start = LocalText::new("make-backlog-start")
+            .arg("target", self.target.clone())
+            .fmt();
+        let start = format!("{} {start}", style(style("┄┄┄┄┄").cyan()));
+        self.bar.println(start);
+        let lines = self.log.lines.read().unwrap();
+        for line in lines.iter() {
+            self.bar.println(line.line.as_str());
+        }
+        let end = LocalText::new("make-backlog-end").fmt();
+        let end = format!("{} {end}", style(style("┄┄┄┄┄").cyan()));
+        self.bar.println(end);
+    }
+    fn pass_msg(&self) {
         let target = self.target.clone();
         let allow_hide = !CONF.get_bool("debug").unwrap() && !CONF.get_bool("verbose").unwrap();
         if allow_hide && target.starts_with(".casile") {
@@ -245,18 +262,19 @@ impl MakeTargetStatus for IndicatifMakeTargetStatus {
             .green()
             .bright()
             .to_string();
-            self.finish_with_message(msg);
+            finalize_bar(self.bar.clone(), msg);
         }
     }
-    fn fail(&self) {
+    fn fail_msg(&self, code: u32) {
         let msg = style(
             LocalText::new("make-report-fail")
                 .arg("target", style(self.target.clone()).white().bold())
+                .arg("code", style(code).white().bold())
                 .fmt(),
         )
         .red()
         .bright()
         .to_string();
-        self.finish_with_message(msg);
+        finalize_bar(self.bar.clone(), msg);
     }
 }

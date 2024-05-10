@@ -12,7 +12,7 @@ local pre_hook() {
 }
 
 local post_hook() {
-  status "CASILEPOST$2$target"
+  status "CASILEPOST$target$2"
 }
 
 local report_stdout() {
@@ -91,7 +91,7 @@ while true; do
 done
 
 if ${_WRAPTARGET:-false} && [[ -v target ]]; then
-  process_recipe $final
+  exec process_recipe $final
 else
-  process_shell $final
+  exec process_shell $final
 fi

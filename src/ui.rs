@@ -2,9 +2,11 @@ use crate::i18n::LocalText;
 use crate::ui_ascii::AsciiInterface;
 use crate::ui_indicatif::IndicatifInterface;
 use crate::VERSION;
+use crate::*;
 
 use console::user_attended;
 use std::str;
+use std::sync::Arc;
 use std::sync::RwLock;
 
 static ERROR_UI_WRITE: &str = "Unable to gain write lock on ui status wrapper";
@@ -30,9 +32,8 @@ impl UISwitcher {
 pub trait UserInterface: Send + Sync {
     fn welcome(&self);
     fn farewell(&self);
-    fn new_subcommand(&self, key: &str) -> Box<dyn SubcommandStatus>;
     fn new_check(&self, key: &str) -> Box<dyn SetupCheck>;
-    fn new_target(&self, target: String) -> Box<dyn MakeTargetStatus>;
+    fn new_subcommand(&self, key: &str) -> Box<dyn SubcommandStatus>;
 }
 
 impl UserInterface for CASILEUI {
@@ -42,32 +43,64 @@ impl UserInterface for CASILEUI {
     fn farewell(&self) {
         self.write().expect(ERROR_UI_WRITE).farewell()
     }
-    fn new_subcommand(&self, key: &str) -> Box<dyn SubcommandStatus> {
-        self.write().expect(ERROR_UI_WRITE).new_subcommand(key)
-    }
     fn new_check(&self, key: &str) -> Box<dyn SetupCheck> {
         self.write().expect(ERROR_UI_WRITE).new_check(key)
     }
-    fn new_target(&self, target: String) -> Box<dyn MakeTargetStatus> {
-        self.write().expect(ERROR_UI_WRITE).new_target(target)
+    fn new_subcommand(&self, key: &str) -> Box<dyn SubcommandStatus> {
+        self.write().expect(ERROR_UI_WRITE).new_subcommand(key)
     }
+    // fn new_target(&self, target: String) -> Box<dyn JobStatus> {
+    //     self.write().expect(ERROR_UI_WRITE).new_target(target)
+    // }
 }
 
 pub trait SubcommandStatus: Send + Sync {
     fn end(&self, status: bool);
-    fn dump(&self, backlog: &[String]);
+    fn error(&mut self, target: String);
+    fn new_target(&mut self, target: &String);
+    fn get_target(&self, target: &String) -> Option<&Box<dyn JobStatus>>;
 }
 
 pub trait SetupCheck: Send + Sync {
     fn pass(&self);
 }
 
-pub trait MakeTargetStatus: Send + Sync {
-    fn stdout(&self, line: &str);
-    fn stderr(&self, line: &str);
-    fn pass(&self);
-    fn fail(&self);
+pub trait JobStatus: Send + Sync {
+    fn push(&self, line: JobBacklogLine);
+    fn stdout(&self, line: &str) {
+        let line = JobBacklogLine {
+            stream: JobBacklogStream::StdOut,
+            line: line.into(),
+        };
+        self.push(line);
+    }
+    fn stderr(&self, line: &str) {
+        let line = JobBacklogLine {
+            stream: JobBacklogStream::StdErr,
+            line: line.into(),
+        };
+        self.push(line);
+    }
+    fn must_dump(&self) -> bool;
+    fn dump(&self);
+    fn pass(&self) {
+        self.pass_msg();
+        if CONF.get_bool("debug").unwrap() || self.must_dump()
+        // TODO: figure out how to handle output from -p
+        // || targets.contains(&"-p".into())
+        {
+            self.dump();
+        }
+    }
+    fn pass_msg(&self);
+    fn fail(&self, code: u32) {
+        self.fail_msg(code);
+        self.dump();
+    }
+    fn fail_msg(&self, code: u32);
 }
+
+// TODO: implement destroy for job status to catch unfinished jobs
 
 #[derive(Debug, Default)]
 pub struct UserInterfaceMessages {
@@ -107,4 +140,32 @@ impl SubcommandHeaderMessages {
             bad_msg,
         }
     }
+}
+
+#[derive(Debug, Default)]
+pub enum JobBacklogStream {
+    StdErr,
+    #[default]
+    StdOut,
+}
+
+#[derive(Debug, Default)]
+pub struct JobBacklogLine {
+    pub stream: JobBacklogStream,
+    pub line: String,
+}
+
+#[derive(Debug, Default)]
+pub struct JobBacklog {
+    pub target: String,
+    pub lines: Arc<RwLock<Vec<JobBacklogLine>>>,
+}
+
+impl JobBacklog {
+    pub fn push(&self, line: JobBacklogLine) {
+        self.lines.write().unwrap().push(line);
+    }
+    // pub fn extract(&self) -> Vec<JobBacklogLine> {
+    //     self.lines.read().unwrap()
+    // }
 }

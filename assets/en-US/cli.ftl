@@ -83,13 +83,13 @@ make-report-pass =
   Finished making: { $target }
 
 make-report-fail =
-  Failed make job: { $target }
+  Make recipie for target { $target } failed with exit code { $code }.
 
 make-backlog-start =
-  Dumping captured output of ‘make’:
+  Dumping captured output of ‘make’ for target { $target }:
 
 make-backlog-end =
-  End dump
+  End of dump.
 
 make-error-unknown-code =
   Make returned an action code CaSILE doesn't have a handler for.  The most
@@ -174,6 +174,15 @@ setup-warp-time =
 
 setup-warp-time-file =
   Rewound clock on { $path }
+
+is-setup-header =
+  { setup-header }
+
+is-setup-good =
+  { status-good }
+
+is-setup-bad =
+  { status-bad }
 
 status-header =
   Scanning project status
