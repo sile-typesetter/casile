@@ -1,9 +1,8 @@
 use crate::i18n::LocalText;
-use crate::tui::*;
+use crate::ui::*;
 use crate::*;
 
 use console::style;
-use indicatif::{ProgressBar, ProgressStyle};
 use regex::Regex;
 use std::collections::HashMap;
 use std::io::prelude::*;
@@ -13,9 +12,8 @@ use subprocess::{Exec, ExitStatus, Redirection};
 // FTL: help-subcommand-make
 /// Build specified target(s)
 pub fn run(target: Vec<String>) -> Result<()> {
-    let subcommand_status = SubcommandStatus::new("status-header", "status-good", "status-bad");
-    setup::is_setup(subcommand_status)?;
-    let subcommand_status = SubcommandStatus::new("make-header", "make-good", "make-bad");
+    setup::is_setup()?;
+    let subcommand_status = CASILEUI.new_subcommand("make");
     let mut makeflags: Vec<OsString> = Vec::new();
     let cpus = &num_cpus::get().to_string();
     makeflags.push(OsString::from(format!("--jobs={cpus}")));
@@ -96,7 +94,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
             "CASILE" => match fields[1] {
                 "PRE" => {
                     let target = fields[2].to_owned();
-                    let target_status = MakeTargetStatus::new(target.clone());
+                    let target_status = CASILEUI.new_target(target.clone());
                     target_statuses.insert(target, target_status);
                 }
                 "STDOUT" => {
@@ -182,19 +180,19 @@ pub fn run(target: Vec<String>) -> Result<()> {
                         || targets.contains(&"debug".into())
                         || targets.contains(&"-p".into())
                     {
-                        dump_backlog(&backlog)
+                        subcommand_status.dump(&backlog)
                     };
                     Ok(())
                 }
                 1 => {
-                    dump_backlog(&backlog);
+                    subcommand_status.dump(&backlog);
                     Err(Box::new(io::Error::new(
                         io::ErrorKind::InvalidInput,
                         LocalText::new("make-error-unfinished").fmt(),
                     )))
                 }
                 2 => {
-                    dump_backlog(&backlog);
+                    subcommand_status.dump(&backlog);
                     Err(Box::new(io::Error::new(
                         io::ErrorKind::InvalidInput,
                         LocalText::new("make-error-build").fmt(),
@@ -202,7 +200,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
                 }
                 3 => {
                     if !CONF.get_bool("verbose")? {
-                        dump_backlog(&backlog);
+                        subcommand_status.dump(&backlog);
                     }
                     Err(Box::new(io::Error::new(
                         io::ErrorKind::InvalidInput,
@@ -211,7 +209,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
                 }
                 137 => {
                     if !CONF.get_bool("verbose")? {
-                        dump_backlog(&backlog);
+                        subcommand_status.dump(&backlog);
                     }
                     Err(Box::new(io::Error::new(
                         io::ErrorKind::InvalidInput,
@@ -219,7 +217,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
                     )))
                 }
                 _ => {
-                    dump_backlog(&backlog);
+                    subcommand_status.dump(&backlog);
                     Err(Box::new(io::Error::new(
                         io::ErrorKind::InvalidInput,
                         LocalText::new("make-error-unknown").fmt(),
@@ -234,22 +232,4 @@ pub fn run(target: Vec<String>) -> Result<()> {
     };
     subcommand_status.end(ret.is_ok());
     Ok(ret?)
-}
-
-fn dump_backlog(backlog: &[String]) {
-    let bar = ProgressBar::new_spinner().with_style(ProgressStyle::with_template("{msg}").unwrap());
-    let bar = TUI.add(bar);
-    let mut dump = String::new();
-    let start = LocalText::new("make-backlog-start").fmt();
-    let start = format!("{} {start}\n", style(style("┄┄┄┄┄┄").cyan()));
-    dump.push_str(start.as_str());
-    for line in backlog.iter() {
-        dump.push_str(line.as_str());
-        dump.push('\n');
-    }
-    let end = LocalText::new("make-backlog-end").fmt();
-    let end = format!("{} {end}", style(style("┄┄┄┄┄").cyan()));
-    dump.push_str(end.as_str());
-    bar.set_message(dump);
-    bar.finish();
 }

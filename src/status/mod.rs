@@ -1,4 +1,4 @@
-use crate::tui::*;
+use crate::ui::*;
 use crate::*;
 
 use git2::{DescribeFormatOptions, DescribeOptions};
@@ -8,9 +8,11 @@ use std::{env, path};
 // FTL: help-subcommand-status
 /// Dump what we know about the repo
 pub fn run() -> Result<()> {
-    let subcommand_status = SubcommandStatus::new("status-header", "status-good", "status-bad");
+    setup::is_setup()?;
+    let subcommand_status = CASILEUI.new_subcommand("status");
     CONF.set_bool("verbose", true)?;
-    setup::is_setup(subcommand_status)?;
+    eprintln!("foo");
+    subcommand_status.end(false);
     Ok(())
 }
 
@@ -32,16 +34,16 @@ fn run_as() -> RunAsMode {
 /// Check to see if we're running in GitHub Actions
 pub fn is_gha() -> Result<bool> {
     let ret = env::var("GITHUB_ACTIONS").is_ok();
-    // let status = SetupCheck::start("setup-is-gha");
-    // (ret).then(|| status.pass());
+    let status = CASILEUI.new_check("setup-is-gha");
+    (ret).then(|| status.pass());
     Ok(ret)
 }
 
 /// Check to see if we're running in GitLab CI
 pub fn is_glc() -> Result<bool> {
     let ret = env::var("GITLAB_CI").is_ok();
-    // let status = SetupCheck::start("setup-is-glc");
-    // (ret).then(|| status.pass());
+    let status = CASILEUI.new_check("setup-is-glc");
+    (ret).then(|| status.pass());
     Ok(ret)
 }
 
