@@ -95,7 +95,8 @@ pub struct SubcommandHeaderMessages {
 
 impl SubcommandHeaderMessages {
     pub fn new(key: &str) -> Self {
-        let msg = LocalText::new(key).fmt().to_string();
+        let msg_key = format!("{key}-header");
+        let msg = LocalText::new(msg_key.as_str()).fmt().to_string();
         let good_key = format!("{key}-good");
         let good_msg = LocalText::new(good_key.as_str()).fmt();
         let bad_key = format!("{key}-bad");
