@@ -9,7 +9,7 @@ use std::{env, path};
 /// Dump what we know about the repo
 pub fn run() -> Result<()> {
     setup::is_setup()?;
-    let subcommand_status = CASILEUI.new_subcommand("status-header", "status-good", "status-bad");
+    let subcommand_status = CASILEUI.new_subcommand("status");
     CONF.set_bool("verbose", true)?;
     eprintln!("foo");
     subcommand_status.end(false);

@@ -13,7 +13,7 @@ use subprocess::{Exec, NullFile, Redirection};
 // FTL: help-subcommand-setup
 /// Setup a publishing project for use with CaSILE
 pub fn run() -> Result<()> {
-    let subcommand_status = CASILEUI.new_subcommand("setup-header", "setup-good", "setup_bad");
+    let subcommand_status = CASILEUI.new_subcommand("setup");
     let path = &CONF.get_string("path")?;
     let metadata = fs::metadata(path)?;
     let ret = match metadata.is_dir() {
@@ -42,7 +42,7 @@ pub fn run() -> Result<()> {
 
 /// Evaluate whether this project is properly configured
 pub fn is_setup() -> Result<bool> {
-    let subcommand_status = CASILEUI.new_subcommand("status-header", "status-good", "status-bad");
+    let subcommand_status = CASILEUI.new_subcommand("status");
     let results = Arc::new(RwLock::new(Vec::new()));
 
     // First round of tests, entirely independent

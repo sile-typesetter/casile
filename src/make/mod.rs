@@ -13,7 +13,7 @@ use subprocess::{Exec, ExitStatus, Redirection};
 /// Build specified target(s)
 pub fn run(target: Vec<String>) -> Result<()> {
     setup::is_setup()?;
-    let subcommand_status = CASILEUI.new_subcommand("make-header", "make-good", "make-bad");
+    let subcommand_status = CASILEUI.new_subcommand("make");
     let mut makeflags: Vec<OsString> = Vec::new();
     let cpus = &num_cpus::get().to_string();
     makeflags.push(OsString::from(format!("--jobs={cpus}")));

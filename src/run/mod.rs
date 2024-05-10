@@ -9,7 +9,7 @@ use subprocess::{Exec, Redirection};
 /// Run helper script inside CaSILE environment
 pub fn run(name: String, arguments: Vec<OsString>) -> Result<()> {
     setup::is_setup()?;
-    let subcommand_status = CASILEUI.new_subcommand("run-header", "run-good", "run-bad");
+    let subcommand_status = CASILEUI.new_subcommand("run");
     let cpus = &num_cpus::get().to_string();
     let mut process = Exec::cmd(format!("{CONFIGURE_DATADIR}/scripts/{name}")).args(&arguments);
     let gitname = status::get_gitname()?;

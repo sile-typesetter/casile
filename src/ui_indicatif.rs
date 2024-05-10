@@ -54,13 +54,8 @@ impl UserInterface for IndicatifInterface {
         let msg = LocalText::new("farewell").arg("duration", time).fmt();
         self.show(msg);
     }
-    fn new_subcommand(
-        &self,
-        key: &str,
-        good_key: &str,
-        bad_key: &str,
-    ) -> Box<dyn SubcommandStatus> {
-        Box::new(IndicatifSubcommandStatus::new(self, key, good_key, bad_key))
+    fn new_subcommand(&self, key: &str) -> Box<dyn SubcommandStatus> {
+        Box::new(IndicatifSubcommandStatus::new(self, key))
     }
     fn new_check(&self, key: &str) -> Box<dyn SetupCheck> {
         Box::new(IndicatifSetupCheck::new(self, key))
@@ -74,8 +69,7 @@ impl UserInterface for IndicatifInterface {
 pub struct IndicatifSubcommandStatus {
     progress: MultiProgress,
     bar: ProgressBar,
-    good_msg: String,
-    bad_msg: String,
+    messages: SubcommandHeaderMessages,
 }
 
 impl std::ops::Deref for IndicatifSubcommandStatus {
@@ -86,47 +80,37 @@ impl std::ops::Deref for IndicatifSubcommandStatus {
 }
 
 impl IndicatifSubcommandStatus {
-    pub fn new(
-        ui: &IndicatifInterface,
-        key: &str,
-        good_key: &str,
-        bad_key: &str,
-    ) -> IndicatifSubcommandStatus {
-        let msg = style(LocalText::new(key).fmt())
-            .yellow()
-            .bright()
-            .to_string();
+    pub fn new(ui: &IndicatifInterface, key: &str) -> IndicatifSubcommandStatus {
+        let messages = SubcommandHeaderMessages::new(key);
         let prefix = style("⟳").yellow().to_string();
         let bar = ProgressBar::new_spinner()
             .with_style(ProgressStyle::with_template("{prefix} {msg}").unwrap())
             .with_prefix(prefix);
         let bar = ui.add(bar);
+        let msg = style(messages.msg.to_owned()).yellow().bright().to_string();
         bar.set_message(msg);
-        let good_msg = style(LocalText::new(good_key).fmt())
-            .green()
-            .bright()
-            .to_string();
-        let bad_msg = style(LocalText::new(bad_key).fmt())
-            .red()
-            .bright()
-            .to_string();
         IndicatifSubcommandStatus {
             progress: ui.progress.clone(),
             bar,
-            good_msg,
-            bad_msg,
+            messages,
         }
     }
     pub fn pass(&self) {
         let prefix = style("✔").green().to_string();
         self.set_prefix(prefix);
-        let msg = self.good_msg.to_owned();
+        let msg = style(self.messages.good_msg.to_owned())
+            .green()
+            .bright()
+            .to_string();
         self.finish_with_message(msg);
     }
     pub fn fail(&self) {
         let prefix = style("✗").red().to_string();
         self.set_prefix(prefix);
-        let msg = self.bad_msg.to_owned();
+        let msg = style(self.messages.bad_msg.to_owned())
+            .red()
+            .bright()
+            .to_string();
         self.finish_with_message(msg);
     }
 }
