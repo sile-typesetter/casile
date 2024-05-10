@@ -2,7 +2,6 @@ use crate::i18n::LocalText;
 
 use crate::config::CONF;
 use crate::ui::*;
-use crate::VERSION;
 
 use console::style;
 use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressFinish, ProgressStyle};
@@ -11,6 +10,7 @@ use std::time::Instant;
 #[derive(Debug)]
 pub struct IndicatifInterface {
     progress: MultiProgress,
+    messages: UserInterfaceMessages,
     started: Instant,
 }
 
@@ -26,7 +26,12 @@ impl Default for IndicatifInterface {
         let progress = MultiProgress::new();
         progress.set_move_cursor(true);
         let started = Instant::now();
-        IndicatifInterface { progress, started }
+        let messages = UserInterfaceMessages::new();
+        Self {
+            progress,
+            messages,
+            started,
+        }
     }
 }
 
@@ -46,8 +51,8 @@ impl IndicatifInterface {
 
 impl UserInterface for IndicatifInterface {
     fn welcome(&self) {
-        let msg = LocalText::new("welcome").arg("version", *VERSION).fmt();
-        self.show(msg);
+        let msg = &self.messages.welcome;
+        self.show(msg.to_string());
     }
     fn farewell(&self) {
         let time = HumanDuration(self.started.elapsed());
@@ -80,7 +85,7 @@ impl std::ops::Deref for IndicatifSubcommandStatus {
 }
 
 impl IndicatifSubcommandStatus {
-    pub fn new(ui: &IndicatifInterface, key: &str) -> IndicatifSubcommandStatus {
+    pub fn new(ui: &IndicatifInterface, key: &str) -> Self {
         let messages = SubcommandHeaderMessages::new(key);
         let prefix = style("⟳").yellow().to_string();
         let bar = ProgressBar::new_spinner()
@@ -89,7 +94,7 @@ impl IndicatifSubcommandStatus {
         let bar = ui.add(bar);
         let msg = style(messages.msg.to_owned()).yellow().bright().to_string();
         bar.set_message(msg);
-        IndicatifSubcommandStatus {
+        Self {
             progress: ui.progress.clone(),
             bar,
             messages,
@@ -140,6 +145,45 @@ impl SubcommandStatus for IndicatifSubcommandStatus {
 }
 
 #[derive(Debug)]
+pub struct IndicatifSetupCheck(ProgressBar);
+
+impl std::ops::Deref for IndicatifSetupCheck {
+    type Target = ProgressBar;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl IndicatifSetupCheck {
+    pub fn new(ui: &IndicatifInterface, key: &str) -> Self {
+        let msg = LocalText::new(key).fmt();
+        let bar = if CONF.get_bool("debug").unwrap() || CONF.get_bool("verbose").unwrap() {
+            let no = style(LocalText::new("setup-false").fmt()).red().to_string();
+            let bar = ProgressBar::new_spinner()
+                .with_style(ProgressStyle::with_template("{msg}").unwrap())
+                .with_finish(ProgressFinish::AbandonWithMessage(
+                    format!("{msg} {no}").into(),
+                ));
+            ui.add(bar)
+        } else {
+            ProgressBar::hidden()
+        };
+        bar.set_message(msg);
+        Self(bar)
+    }
+}
+
+impl SetupCheck for IndicatifSetupCheck {
+    fn pass(&self) {
+        let msg = self.message();
+        let yes = style(LocalText::new("setup-true").fmt())
+            .green()
+            .to_string();
+        self.finish_with_message(format!("{msg} {yes}"))
+    }
+}
+
+#[derive(Debug)]
 pub struct IndicatifMakeTargetStatus {
     bar: ProgressBar,
     target: String,
@@ -153,7 +197,7 @@ impl std::ops::Deref for IndicatifMakeTargetStatus {
 }
 
 impl IndicatifMakeTargetStatus {
-    pub fn new(ui: &IndicatifInterface, mut target: String) -> IndicatifMakeTargetStatus {
+    pub fn new(ui: &IndicatifInterface, mut target: String) -> Self {
         // Withouth this, copying the string in the terminal as a word brings a U+2069 with it
         target.push(' ');
         let msg = style(
@@ -172,7 +216,7 @@ impl IndicatifMakeTargetStatus {
             .with_message(msg);
         let bar = ui.add(bar);
         bar.tick();
-        IndicatifMakeTargetStatus { bar, target }
+        Self { bar, target }
     }
 }
 
@@ -214,44 +258,5 @@ impl MakeTargetStatus for IndicatifMakeTargetStatus {
         .bright()
         .to_string();
         self.finish_with_message(msg);
-    }
-}
-
-#[derive(Debug)]
-pub struct IndicatifSetupCheck(ProgressBar);
-
-impl std::ops::Deref for IndicatifSetupCheck {
-    type Target = ProgressBar;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl IndicatifSetupCheck {
-    pub fn new(ui: &IndicatifInterface, key: &str) -> IndicatifSetupCheck {
-        let msg = LocalText::new(key).fmt();
-        let bar = if CONF.get_bool("debug").unwrap() || CONF.get_bool("verbose").unwrap() {
-            let no = style(LocalText::new("setup-false").fmt()).red().to_string();
-            let bar = ProgressBar::new_spinner()
-                .with_style(ProgressStyle::with_template("{msg}").unwrap())
-                .with_finish(ProgressFinish::AbandonWithMessage(
-                    format!("{msg} {no}").into(),
-                ));
-            ui.add(bar)
-        } else {
-            ProgressBar::hidden()
-        };
-        bar.set_message(msg);
-        IndicatifSetupCheck(bar)
-    }
-}
-
-impl SetupCheck for IndicatifSetupCheck {
-    fn pass(&self) {
-        let msg = self.message();
-        let yes = style(LocalText::new("setup-true").fmt())
-            .green()
-            .to_string();
-        self.finish_with_message(format!("{msg} {yes}"))
     }
 }

@@ -17,6 +17,7 @@ pub mod cli;
 pub mod config;
 pub mod i18n;
 pub mod ui;
+pub mod ui_ascii;
 pub mod ui_indicatif;
 
 // Subcommands

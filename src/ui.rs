@@ -1,5 +1,7 @@
 use crate::i18n::LocalText;
+use crate::ui_ascii::AsciiInterface;
 use crate::ui_indicatif::IndicatifInterface;
+use crate::VERSION;
 
 use console::user_attended;
 use std::str;
@@ -20,7 +22,7 @@ impl UISwitcher {
         if user_attended() {
             Box::<IndicatifInterface>::default()
         } else {
-            Box::<IndicatifInterface>::default()
+            Box::<AsciiInterface>::default()
         }
     }
 }
@@ -65,6 +67,23 @@ pub trait MakeTargetStatus: Send + Sync {
     fn stderr(&self, line: &str);
     fn pass(&self);
     fn fail(&self);
+}
+
+#[derive(Debug, Default)]
+pub struct UserInterfaceMessages {
+    pub welcome: String,
+    // pub farewell: String,
+}
+
+impl UserInterfaceMessages {
+    pub fn new() -> Self {
+        let welcome = LocalText::new("welcome").arg("version", *VERSION).fmt();
+        // let farewell = LocalText::new("farewell").arg("duration", time).fmt();
+        Self {
+            welcome,
+            // farewell,
+        }
+    }
 }
 
 #[derive(Debug)]
