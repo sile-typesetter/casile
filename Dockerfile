@@ -22,6 +22,14 @@ ARG RUNTIME_DEPS
 # Freshen all base system packages
 RUN pacman --needed --noconfirm -Syuq && yes | pacman -Sccq
 
+# Enable all supported system locales instead of nearly none so tooling like
+# `date` can output localized strings. By default Arch Docker images have
+# almost all locale data stripped out.
+RUN sed -i -e '/^NoExtract.*locale/d' /etc/pacman.conf
+RUN pacman --noconfirm -S glibc && yes | pacman -Sccq
+RUN cp /usr/share/i18n/SUPPORTED /etc/locale.gen
+RUN locale-gen
+
 # Install run-time dependecies
 RUN pacman --needed --noconfirm -Sq $RUNTIME_DEPS && yes | pacman -Sccq
 
@@ -61,8 +69,7 @@ ARG VERSION
 # Allow `su` with no root password so non-priv users can install dependencies
 RUN sed -i -e '/.so$/s/$/ nullok/' /etc/pam.d/su
 
-# Set system locale to something other than 'C' that resolves to a language
-RUN echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen && locale-gen
+# Set system locale to something other than 'C' that resolves to a real language
 ENV LANG=en_US.UTF-8
 
 # Make sure the current project volume can be manipulated inside Docker in
