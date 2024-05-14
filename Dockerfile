@@ -19,15 +19,20 @@ ARG DOCKER_HUB_CACHE=1
 
 ARG RUNTIME_DEPS
 
+# Enable system locales for everything we have localizations for so tools like
+# `date` will output matching localized strings. By default Arch Docker images
+# have almost all locale data stripped out. This also makes it easier to
+# rebuild custom Docker images with extra languages supported.
+RUN sed -i -e '/^NoExtract.*locale/d' /etc/pacman.conf
+
 # Freshen all base system packages
 RUN pacman --needed --noconfirm -Syuq && yes | pacman -Sccq
 
-# Enable all supported system locales instead of nearly none so tooling like
-# `date` can output localized strings. By default Arch Docker images have
-# almost all locale data stripped out.
-RUN sed -i -e '/^NoExtract.*locale/d' /etc/pacman.conf
-RUN pacman --noconfirm -S glibc && yes | pacman -Sccq
-RUN cp /usr/share/i18n/SUPPORTED /etc/locale.gen
+# Rebuild locale database after having enabled localization, added our
+# supported locales, and making sure glibc *at least* has been updated without
+# blocking locale files.
+RUN pacman --noconfirm -Sq glibc && yes | pacman -Sccq
+RUN grep -E '^(en|tr)_'  /usr/share/i18n/SUPPORTED > /etc/locale.gen
 RUN locale-gen
 
 # Install run-time dependecies
