@@ -181,6 +181,13 @@ impl SetupCheck for IndicatifSetupCheck {
             .to_string();
         finalize_bar(self.0.clone(), format!("{msg} {yes}"));
     }
+    fn fail(&self) {
+        let msg = self.message();
+        let no = style(LocalText::new("setup-false").fmt())
+            .red()
+            .to_string();
+        finalize_bar(self.0.clone(), format!("{msg} {no}"));
+    }
 }
 
 #[derive(Debug)]

@@ -84,7 +84,7 @@ pub fn is_setup() -> Result<bool> {
 pub fn is_repo() -> Result<bool> {
     let status = CASILEUI.new_check("setup-is-repo");
     let ret = get_repo().is_ok();
-    (ret).then(|| status.pass());
+    status.end(ret);
     Ok(ret)
 }
 
@@ -92,7 +92,7 @@ pub fn is_repo() -> Result<bool> {
 pub fn is_deep() -> Result<bool> {
     let status = CASILEUI.new_check("setup-is-deep");
     let ret = !get_repo()?.is_shallow();
-    (ret).then(|| status.pass());
+    status.end(ret);
     Ok(ret)
 }
 
@@ -103,7 +103,7 @@ pub fn is_not_casile_source() -> Result<bool> {
     let workdir = repo.workdir().unwrap();
     let testfile = workdir.join("make-shell.zsh.in");
     let ret = fs::File::open(testfile).is_err();
-    (ret).then(|| status.pass());
+    status.end(ret);
     Ok(ret)
 }
 
@@ -117,7 +117,7 @@ pub fn is_writable() -> Result<bool> {
     file.write_all(b"test")?;
     fs::remove_file(&testfile)?;
     let ret = true;
-    (ret).then(|| status.pass());
+    status.end(ret);
     Ok(ret)
 }
 
@@ -130,7 +130,7 @@ pub fn is_make_exectuable() -> Result<bool> {
         .stderr(NullFile)
         .join()
         .is_ok();
-    (ret).then(|| status.pass());
+    status.end(ret);
     Ok(ret)
 }
 
@@ -144,32 +144,35 @@ pub fn is_make_gnu() -> Result<bool> {
         .capture()?
         .stdout_str();
     let ret = out.starts_with("GNU Make 4.");
-    (ret).then(|| status.pass());
+    status.end(ret);
     Ok(ret)
 }
 
 fn regen_gitignore(repo: Repository) -> Result<()> {
-    let target = vec![String::from(".gitignore")];
-    make::run(target)?;
+    let targets = vec![String::from(".gitignore")];
+    make::run(targets)?;
     let path = path::Path::new(".gitignore");
     let mut index = repo.index()?;
     index.add_path(path)?;
     let oid = index.write_tree()?;
     match repo.status_file(path) {
         Ok(Status::CURRENT) => {
-            let text = LocalText::new("setup-gitignore-fresh").fmt();
-            eprintln!("{} {}", style("┠┄").cyan(), text);
+            let status = CASILEUI.new_check("setup-gitignore-fresh");
+            status.end(true);
             Ok(())
         }
         _ => {
-            let text = LocalText::new("setup-gitignore-committing").fmt();
-            eprintln!("{} {}", style("┠┄").cyan(), text);
+            let status = CASILEUI.new_check("setup-gitignore-committing");
             match commit(repo, oid, "Update .gitignore") {
                 Ok(_) => {
                     index.write()?;
+                    status.end(true);
                     Ok(())
                 }
-                Err(error) => Err(Box::new(error)),
+                Err(error) => {
+                    status.end(false);
+                    Err(Box::new(error))
+                }
             }
         }
     }

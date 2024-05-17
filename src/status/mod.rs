@@ -33,16 +33,16 @@ fn run_as() -> RunAsMode {
 /// Check to see if we're running in GitHub Actions
 pub fn is_gha() -> Result<bool> {
     let ret = env::var("GITHUB_ACTIONS").is_ok();
-    let status = CASILEUI.new_check("setup-is-gha");
-    (ret).then(|| status.pass());
+    let status = CASILEUI.new_check("status-is-gha");
+    status.end(ret);
     Ok(ret)
 }
 
 /// Check to see if we're running in GitLab CI
 pub fn is_glc() -> Result<bool> {
     let ret = env::var("GITLAB_CI").is_ok();
-    let status = CASILEUI.new_check("setup-is-glc");
-    (ret).then(|| status.pass());
+    let status = CASILEUI.new_check("status-is-glc");
+    status.end(ret);
     Ok(ret)
 }
 

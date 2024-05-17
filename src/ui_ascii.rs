@@ -66,16 +66,28 @@ impl SubcommandStatus for AsciiSubcommandStatus {
 }
 
 #[derive(Debug, Default)]
-pub struct AsciiSetupCheck {}
+pub struct AsciiSetupCheck {
+    message: String,
+}
 
 impl AsciiSetupCheck {
-    fn new(_ui: &AsciiInterface, _key: &str) -> Self {
-        Self {}
+    fn new(_ui: &AsciiInterface, key: &str) -> Self {
+        let message = LocalText::new(key).fmt();
+        Self { message }
     }
 }
 
 impl SetupCheck for AsciiSetupCheck {
-    fn pass(&self) {}
+    fn pass(&self) {
+        let msg = &self.message;
+        let yes = LocalText::new("setup-true").fmt();
+        println!("{msg} {yes}");
+    }
+    fn fail(&self) {
+        let msg = &self.message;
+        let no = LocalText::new("setup-false").fmt();
+        eprintln!("{msg} {no}");
+    }
 }
 
 #[derive(Debug, Default)]

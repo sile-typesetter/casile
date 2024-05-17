@@ -49,9 +49,6 @@ impl UserInterface for CASILEUI {
     fn new_subcommand(&self, key: &str) -> Box<dyn SubcommandStatus> {
         self.write().expect(ERROR_UI_WRITE).new_subcommand(key)
     }
-    // fn new_target(&self, target: String) -> Box<dyn JobStatus> {
-    //     self.write().expect(ERROR_UI_WRITE).new_target(target)
-    // }
 }
 
 pub trait SubcommandStatus: Send + Sync {
@@ -62,7 +59,15 @@ pub trait SubcommandStatus: Send + Sync {
 }
 
 pub trait SetupCheck: Send + Sync {
+    fn end(&self, ret: bool) {
+        if ret {
+            self.pass()
+        } else {
+            self.fail()
+        }
+    }
     fn pass(&self);
+    fn fail(&self);
 }
 
 pub trait JobStatus: Send + Sync {
