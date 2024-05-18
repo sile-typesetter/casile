@@ -49,8 +49,9 @@ impl Default for IndicatifInterface {
 impl IndicatifInterface {
     pub fn bar(&self) -> ProgressBar {
         let prefix = style("⛫").cyan().to_string();
+        let pstyle = ProgressStyle::with_template("{prefix} {msg}").unwrap();
         ProgressBar::new_spinner()
-            .with_style(ProgressStyle::with_template("{prefix} {msg}").unwrap())
+            .with_style(pstyle)
             .with_prefix(prefix)
     }
     pub fn show(&self, msg: String) {
@@ -96,8 +97,9 @@ impl IndicatifSubcommandStatus {
     pub fn new(ui: &IndicatifInterface, key: &str) -> Self {
         let messages = SubcommandHeaderMessages::new(key);
         let prefix = style("⟳").yellow().to_string();
+        let pstyle = ProgressStyle::with_template("{prefix} {msg}").unwrap();
         let bar = ProgressBar::new_spinner()
-            .with_style(ProgressStyle::with_template("{prefix} {msg}").unwrap())
+            .with_style(pstyle)
             .with_prefix(prefix);
         let bar = ui.add(bar);
         let msg = style(messages.msg.to_owned()).yellow().bright().to_string();
@@ -135,7 +137,7 @@ impl SubcommandStatus for IndicatifSubcommandStatus {
     }
     fn error(&mut self, msg: String) {
         self.bar.suspend(|| {
-            eprintln!("{msg}");
+            eprintln!("{}", style(msg).red().dim());
         });
     }
     fn new_target(&mut self, target: &String) {
@@ -206,12 +208,13 @@ impl std::ops::Deref for IndicatifJobStatus {
 
 impl IndicatifJobStatus {
     // pub fn new(ui: &IndicatifInterface, mut target: String) -> Self {
-    pub fn new(subcommand: &IndicatifSubcommandStatus, mut target: String) -> Self {
+    pub fn new(subcommand: &IndicatifSubcommandStatus, target: String) -> Self {
         // Withouth this, copying the string in the terminal as a word brings a U+2069 with it
-        target.push(' ');
+        let mut printable_target = target.clone();
+        printable_target.push(' ');
         let msg = style(
             LocalText::new("make-report-start")
-                .arg("target", style(target.clone()).white().bold())
+                .arg("target", style(printable_target).white().bold())
                 .fmt(),
         )
         .yellow()
@@ -239,7 +242,7 @@ impl JobStatus for IndicatifJobStatus {
         self.log.push(line);
     }
     fn must_dump(&self) -> bool {
-        self.target == "debug"
+        self.target.starts_with("debug")
     }
     fn dump(&self) {
         let start = LocalText::new("make-backlog-start")
@@ -249,7 +252,8 @@ impl JobStatus for IndicatifJobStatus {
         self.bar.println(start);
         let lines = self.log.lines.read().unwrap();
         for line in lines.iter() {
-            self.bar.println(line.line.as_str());
+            let msg = style(line.line.as_str()).dim().to_string();
+            self.bar.println(msg);
         }
         let end = LocalText::new("make-backlog-end").fmt();
         let end = format!("{} {end}", style(style("┄┄┄┄┄").cyan()));

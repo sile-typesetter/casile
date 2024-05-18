@@ -114,7 +114,7 @@ impl JobStatus for AsciiJobStatus {
         self.log.push(line);
     }
     fn must_dump(&self) -> bool {
-        self.target == "debug"
+        self.target.starts_with("debug")
     }
     fn dump(&self) {
         let lines = self.log.lines.read().unwrap();
