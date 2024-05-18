@@ -37,8 +37,8 @@ pub fn run(target: Vec<String>) -> Result<()> {
     if targets.is_empty() {
         targets.push(String::from("default"));
     }
-    let is_gha = status::is_gha()?;
-    let is_glc = status::is_glc()?;
+    let is_gha = status::status_is_gha()?;
+    let is_glc = status::status_is_glc()?;
     if is_gha {
         targets.push(String::from("_gha"));
     }

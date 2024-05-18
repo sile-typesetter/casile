@@ -3,7 +3,7 @@ use crate::*;
 
 use git2::{DescribeFormatOptions, DescribeOptions};
 use regex::Regex;
-use std::{env, path};
+use std::path;
 
 // FTL: help-subcommand-status
 /// Dump what we know about the repo
@@ -31,16 +31,16 @@ fn run_as() -> RunAsMode {
 }
 
 /// Check to see if we're running in GitHub Actions
-pub fn is_gha() -> Result<bool> {
-    let ret = env::var("GITHUB_ACTIONS").is_ok();
+pub fn status_is_gha() -> Result<bool> {
+    let ret = is_gha();
     let status = CASILEUI.new_check("status-is-gha");
     status.end(ret);
     Ok(ret)
 }
 
 /// Check to see if we're running in GitLab CI
-pub fn is_glc() -> Result<bool> {
-    let ret = env::var("GITLAB_CI").is_ok();
+pub fn status_is_glc() -> Result<bool> {
+    let ret = is_glc();
     let status = CASILEUI.new_check("status-is-glc");
     status.end(ret);
     Ok(ret)

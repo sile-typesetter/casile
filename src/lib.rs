@@ -11,7 +11,7 @@ use git2::{Oid, Repository, Signature};
 use i18n::LocalText;
 use regex::Regex;
 use std::ffi::OsStr;
-use std::{error, fmt, path, result, str};
+use std::{env, error, fmt, path, result, str};
 
 pub mod cli;
 pub mod config;
@@ -72,6 +72,16 @@ impl error::Error for Error {
 pub fn get_repo() -> Result<Repository> {
     let path = CONF.get_string("path")?;
     Ok(Repository::discover(path)?)
+}
+
+/// Check to see if we're running in GitHub Actions
+pub fn is_gha() -> bool {
+    env::var("GITHUB_ACTIONS").is_ok()
+}
+
+/// Check to see if we're running in GitLab CI
+pub fn is_glc() -> bool {
+    env::var("GITLAB_CI").is_ok()
 }
 
 pub fn commit(repo: Repository, oid: Oid, msg: &str) -> result::Result<Oid, git2::Error> {
