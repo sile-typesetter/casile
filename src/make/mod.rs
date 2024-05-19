@@ -5,6 +5,7 @@ use crate::*;
 use console::style;
 use regex::Regex;
 use std::io::prelude::*;
+use std::path::PathBuf;
 use std::{ffi::OsString, io};
 use subprocess::{Exec, ExitStatus, Redirection};
 
@@ -17,22 +18,20 @@ pub fn run(target: Vec<String>) -> Result<()> {
     let cpus = &num_cpus::get().to_string();
     makeflags.push(OsString::from(format!("--jobs={cpus}")));
     let mut makefiles: Vec<OsString> = Vec::new();
-    let rules = status::get_rules()?;
-    makefiles.push(OsString::from("-f"));
-    makefiles.push(OsString::from(format!(
-        "{}{}",
-        CONFIGURE_DATADIR, "/rules/casile.mk"
+    let mut rules = status::get_rules()?;
+    rules.insert(
+        0,
+        PathBuf::from(format!("{}/rules/casile.mk", CONFIGURE_DATADIR)),
+    );
+    rules.push(PathBuf::from(format!(
+        "{}/rules/rules.mk",
+        CONFIGURE_DATADIR
     )));
     for rule in rules {
         makefiles.push(OsString::from("-f"));
         let p = rule.into_os_string();
         makefiles.push(p);
     }
-    makefiles.push(OsString::from("-f"));
-    makefiles.push(OsString::from(format!(
-        "{}{}",
-        CONFIGURE_DATADIR, "/rules/rules.mk"
-    )));
     let mut targets: Vec<_> = target.into_iter().collect();
     if targets.is_empty() {
         targets.push(String::from("default"));

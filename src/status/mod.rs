@@ -82,13 +82,7 @@ pub fn get_gitname() -> Result<String> {
 pub fn get_rules() -> Result<Vec<path::PathBuf>> {
     let repo = get_repo()?;
     let root = repo.workdir().unwrap();
-    let files = vec![
-        "GNUMakefile",
-        "makefile",
-        "Makefile",
-        "rules.mk",
-        "casile.mk",
-    ];
+    let files = vec!["casile.mk", "rules.mk"];
     let mut rules = Vec::new();
     for file in &files {
         let p = root.join(file);
