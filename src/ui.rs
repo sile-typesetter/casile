@@ -51,10 +51,10 @@ pub struct UISwitcher {}
 
 impl UISwitcher {
     pub fn pick() -> Box<dyn UserInterface> {
-        if user_attended() {
-            Box::<IndicatifInterface>::default()
-        } else {
+        if !user_attended() {
             Box::<AsciiInterface>::default()
+        } else {
+            Box::<IndicatifInterface>::default()
         }
     }
 }

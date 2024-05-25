@@ -2,6 +2,7 @@ use crate::i18n::LocalText;
 use crate::ui::*;
 use crate::*;
 
+use console::style;
 use indicatif::HumanDuration;
 use std::time::Instant;
 
@@ -22,11 +23,13 @@ impl Default for AsciiInterface {
 impl UserInterface for AsciiInterface {
     fn welcome(&self) {
         let welcome = &self.messages.welcome;
+        let welcome = style(welcome).cyan();
         println!("{welcome}");
     }
     fn farewell(&self) {
         let time = HumanDuration(self.started.elapsed());
         let farewell = LocalText::new("farewell").arg("duration", time).fmt();
+        let farewell = style(farewell).cyan();
         println!("{farewell}");
     }
     fn new_check(&self, key: &str) -> Box<dyn SetupCheck> {
@@ -53,6 +56,7 @@ impl AsciiSubcommandStatus {
 impl SubcommandStatus for AsciiSubcommandStatus {
     fn end(&self, _status: bool) {}
     fn error(&mut self, msg: String) {
+        let msg = style(msg).red().dim();
         eprintln!("{msg}");
     }
     fn new_target(&mut self, target: MakeTarget) {
@@ -80,11 +84,13 @@ impl SetupCheck for AsciiSetupCheck {
     fn pass(&self) {
         let msg = &self.message;
         let yes = LocalText::new("setup-true").fmt();
+        let yes = style(yes).green();
         println!("{msg} {yes}");
     }
     fn fail(&self) {
         let msg = &self.message;
         let no = LocalText::new("setup-false").fmt();
+        let no = style(no).red();
         eprintln!("{msg} {no}");
     }
 }
@@ -97,9 +103,14 @@ pub struct AsciiJobStatus {
 
 impl AsciiJobStatus {
     fn new(target: MakeTarget) -> Self {
+        // Withouth this, copying the string in the terminal as a word brings a U+2069 with it
+        let mut printable_target: String = target.to_string();
+        printable_target.push(' ');
+        let printable_target = style(printable_target).white().bold();
         let msg = LocalText::new("make-report-start")
-            .arg("target", target.clone())
+            .arg("target", printable_target)
             .fmt();
+        let msg = style(msg).yellow().bright();
         println!("{msg}");
         Self {
             target,
@@ -120,27 +131,45 @@ impl JobStatus for AsciiJobStatus {
         let start = LocalText::new("make-backlog-start")
             .arg("target", self.target.clone())
             .fmt();
-        println!("----- {start}");
+        println!("{}{start}", style("----- ").cyan());
         for line in lines.iter() {
             match line.stream {
-                JobBacklogStream::StdOut => println!("{}", line.line),
-                JobBacklogStream::StdErr => eprintln!("{}", line.line),
+                JobBacklogStream::StdOut => {
+                    let line = style(line.line.clone()).dim();
+                    println!("{}", line);
+                }
+                JobBacklogStream::StdErr => {
+                    let line = style(line.line.clone()).dim();
+                    eprintln!("{}", line);
+                }
             }
         }
         let end = LocalText::new("make-backlog-end").fmt();
-        println!("----- {end}");
+        println!("{} {end}", style("----- ").cyan());
     }
     fn pass_msg(&self) {
+        // Withouth this, copying the string in the terminal as a word brings a U+2069 with it
+        let mut printable_target: String = self.target.to_string();
+        printable_target.push(' ');
+        let target = printable_target;
+        let target = style(target).white().bold();
         let msg = LocalText::new("make-report-pass")
-            .arg("target", &self.target)
+            .arg("target", target)
             .fmt();
+        let msg = style(msg).green().bright();
         println!("{msg}")
     }
     fn fail_msg(&self, code: u32) {
+        // Withouth this, copying the string in the terminal as a word brings a U+2069 with it
+        let mut printable_target: String = self.target.to_string();
+        printable_target.push(' ');
+        let target = printable_target;
+        let target = style(target).white().bold();
         let msg = LocalText::new("make-report-fail")
-            .arg("target", &self.target)
+            .arg("target", target)
             .arg("code", code)
             .fmt();
+        let msg = style(msg).red().bright();
         eprintln!("{msg}")
     }
 }
