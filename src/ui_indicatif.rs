@@ -5,7 +5,6 @@ use crate::*;
 
 use console::style;
 use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressStyle};
-use std::collections::HashMap;
 use std::time::Instant;
 
 fn finalize_bar(bar: ProgressBar, msg: String) {
@@ -83,7 +82,7 @@ pub struct IndicatifSubcommandStatus {
     progress: MultiProgress,
     bar: ProgressBar,
     messages: SubcommandHeaderMessages,
-    jobs: HashMap<MakeTarget, Box<dyn JobStatus>>,
+    jobs: JobMap,
 }
 
 impl std::ops::Deref for IndicatifSubcommandStatus {
@@ -108,7 +107,7 @@ impl IndicatifSubcommandStatus {
             progress: ui.progress.clone(),
             bar,
             messages,
-            jobs: HashMap::new(),
+            jobs: JobMap::new(),
         }
     }
     pub fn pass(&self) {

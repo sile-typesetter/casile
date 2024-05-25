@@ -3,7 +3,6 @@ use crate::ui::*;
 use crate::*;
 
 use indicatif::HumanDuration;
-use std::collections::HashMap;
 use std::time::Instant;
 
 #[derive(Debug)]
@@ -40,13 +39,13 @@ impl UserInterface for AsciiInterface {
 
 #[derive(Default)]
 pub struct AsciiSubcommandStatus {
-    jobs: HashMap<MakeTarget, Box<dyn JobStatus>>,
+    jobs: JobMap,
 }
 
 impl AsciiSubcommandStatus {
     fn new(_key: &str) -> Self {
         Self {
-            jobs: HashMap::new(),
+            jobs: JobMap::new(),
         }
     }
 }

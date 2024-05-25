@@ -1,5 +1,6 @@
 #![doc = include_str!("../README.md")]
 #![allow(clippy::trivial_regex)]
+#![allow(clippy::borrowed_box)]
 
 #[macro_use]
 extern crate lazy_static;

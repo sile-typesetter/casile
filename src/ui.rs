@@ -5,6 +5,7 @@ use crate::VERSION;
 use crate::*;
 
 use console::user_attended;
+use std::collections::HashMap;
 use std::str;
 use std::sync::Arc;
 use std::sync::RwLock;
@@ -15,6 +16,8 @@ lazy_static! {
     #[derive(Debug)]
     pub static ref CASILEUI: RwLock<Box<dyn UserInterface>> = RwLock::new(UISwitcher::pick());
 }
+
+pub type JobMap = HashMap<MakeTarget, Box<dyn JobStatus>>;
 
 #[derive(Debug, Clone, Default, Eq, Hash, PartialEq)]
 pub struct MakeTarget {
