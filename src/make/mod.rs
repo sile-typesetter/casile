@@ -154,7 +154,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
             },
             _ => {
                 subcommand_status.error(format!(
-                    "Error encountered outside of CaSILE wrapper: {:?}",
+                    "Output not captured by target wrapper: {:?}",
                     fields
                 ));
             }
