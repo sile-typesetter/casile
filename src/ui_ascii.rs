@@ -40,7 +40,7 @@ impl UserInterface for AsciiInterface {
 
 #[derive(Default)]
 pub struct AsciiSubcommandStatus {
-    jobs: HashMap<String, Box<dyn JobStatus>>,
+    jobs: HashMap<MakeTarget, Box<dyn JobStatus>>,
 }
 
 impl AsciiSubcommandStatus {
@@ -56,12 +56,12 @@ impl SubcommandStatus for AsciiSubcommandStatus {
     fn error(&mut self, msg: String) {
         eprintln!("{msg}");
     }
-    fn new_target(&mut self, target: &String) {
-        let target_status = Box::new(AsciiJobStatus::new(target));
-        self.jobs.insert(target.clone(), target_status);
+    fn new_target(&mut self, target: MakeTarget) {
+        let target_status = Box::new(AsciiJobStatus::new(target.clone()));
+        self.jobs.insert(target, target_status);
     }
-    fn get_target(&self, target: &String) -> Option<&Box<dyn JobStatus>> {
-        self.jobs.get(target)
+    fn get_target(&self, target: MakeTarget) -> Option<&Box<dyn JobStatus>> {
+        self.jobs.get(&target)
     }
 }
 
@@ -92,18 +92,18 @@ impl SetupCheck for AsciiSetupCheck {
 
 #[derive(Debug, Default)]
 pub struct AsciiJobStatus {
-    target: String,
+    target: MakeTarget,
     log: JobBacklog,
 }
 
 impl AsciiJobStatus {
-    fn new(target: &String) -> Self {
+    fn new(target: MakeTarget) -> Self {
         let msg = LocalText::new("make-report-start")
-            .arg("target", target)
+            .arg("target", target.clone())
             .fmt();
         println!("{msg}");
         Self {
-            target: target.clone(),
+            target,
             log: JobBacklog::default(),
         }
     }

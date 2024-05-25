@@ -16,6 +16,33 @@ lazy_static! {
     pub static ref CASILEUI: RwLock<Box<dyn UserInterface>> = RwLock::new(UISwitcher::pick());
 }
 
+#[derive(Debug, Clone, Default, Eq, Hash, PartialEq)]
+pub struct MakeTarget {
+    target: String,
+}
+
+impl MakeTarget {
+    pub fn new(target: &String) -> Self {
+        Self {
+            target: target.to_string(),
+        }
+    }
+}
+
+impl std::ops::Deref for MakeTarget {
+    type Target = String;
+    fn deref(&self) -> &Self::Target {
+        &self.target
+    }
+}
+
+impl fmt::Display for MakeTarget {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        fmt.write_str(self.target.as_str())?;
+        Ok(())
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct UISwitcher {}
 
@@ -53,9 +80,9 @@ impl UserInterface for CASILEUI {
 
 pub trait SubcommandStatus: Send + Sync {
     fn end(&self, status: bool);
-    fn error(&mut self, target: String);
-    fn new_target(&mut self, target: &String);
-    fn get_target(&self, target: &String) -> Option<&Box<dyn JobStatus>>;
+    fn error(&mut self, msg: String);
+    fn new_target(&mut self, target: MakeTarget);
+    fn get_target(&self, target: MakeTarget) -> Option<&Box<dyn JobStatus>>;
 }
 
 pub trait SetupCheck: Send + Sync {

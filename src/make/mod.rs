@@ -90,11 +90,13 @@ pub fn run(target: Vec<String>) -> Result<()> {
             "CASILE" => match fields[1] {
                 "PRE" => {
                     let target = fields[2].to_owned();
-                    subcommand_status.new_target(&target);
+                    let target = MakeTarget::new(&target);
+                    subcommand_status.new_target(target);
                 }
                 "STDOUT" => {
                     let target = fields[2].to_owned();
-                    let target_status = subcommand_status.get_target(&target);
+                    let target = MakeTarget::new(&target);
+                    let target_status = subcommand_status.get_target(target.clone());
                     match target_status {
                         Some(target_status) => {
                             target_status.stdout(fields[3]);
@@ -110,7 +112,8 @@ pub fn run(target: Vec<String>) -> Result<()> {
                 }
                 "STDERR" => {
                     let target = fields[2].to_owned();
-                    let target_status = subcommand_status.get_target(&target);
+                    let target = MakeTarget::new(&target);
+                    let target_status = subcommand_status.get_target(target.clone());
                     match target_status {
                         Some(target_status) => {
                             target_status.stderr(fields[3]);
@@ -126,7 +129,8 @@ pub fn run(target: Vec<String>) -> Result<()> {
                 }
                 "POST" => {
                     let target = fields[2].to_owned();
-                    let target_status = subcommand_status.get_target(&target);
+                    let target = MakeTarget::new(&target);
+                    let target_status = subcommand_status.get_target(target);
                     match target_status {
                         Some(target_status) => match fields[3] {
                             "0" => {

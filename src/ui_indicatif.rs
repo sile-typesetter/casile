@@ -83,7 +83,7 @@ pub struct IndicatifSubcommandStatus {
     progress: MultiProgress,
     bar: ProgressBar,
     messages: SubcommandHeaderMessages,
-    jobs: HashMap<String, Box<dyn JobStatus>>,
+    jobs: HashMap<MakeTarget, Box<dyn JobStatus>>,
 }
 
 impl std::ops::Deref for IndicatifSubcommandStatus {
@@ -140,12 +140,12 @@ impl SubcommandStatus for IndicatifSubcommandStatus {
             eprintln!("{}", style(msg).red().dim());
         });
     }
-    fn new_target(&mut self, target: &String) {
+    fn new_target(&mut self, target: MakeTarget) {
         let target_status = Box::new(IndicatifJobStatus::new(self, target.clone()));
-        self.jobs.insert(target.clone(), target_status);
+        self.jobs.insert(target, target_status);
     }
-    fn get_target(&self, target: &String) -> Option<&Box<dyn JobStatus>> {
-        self.jobs.get(target)
+    fn get_target(&self, target: MakeTarget) -> Option<&Box<dyn JobStatus>> {
+        self.jobs.get(&target)
     }
 }
 
@@ -193,7 +193,7 @@ impl SetupCheck for IndicatifSetupCheck {
 #[derive(Debug)]
 pub struct IndicatifJobStatus {
     bar: ProgressBar,
-    target: String,
+    target: MakeTarget,
     log: JobBacklog,
 }
 
@@ -206,9 +206,9 @@ impl std::ops::Deref for IndicatifJobStatus {
 
 impl IndicatifJobStatus {
     // pub fn new(ui: &IndicatifInterface, mut target: String) -> Self {
-    pub fn new(subcommand: &IndicatifSubcommandStatus, target: String) -> Self {
+    pub fn new(subcommand: &IndicatifSubcommandStatus, target: MakeTarget) -> Self {
         // Withouth this, copying the string in the terminal as a word brings a U+2069 with it
-        let mut printable_target = target.clone();
+        let mut printable_target: String = target.to_string();
         printable_target.push(' ');
         let msg = style(
             LocalText::new("make-report-start")
