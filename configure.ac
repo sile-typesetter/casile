@@ -112,6 +112,7 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
         AX_PROGVAR([docker])
         AX_PROGVAR([luacheck])
         AX_PROGVAR([ruff])
+        AX_PROGVAR([stylua])
         AX_PROGVAR([tr])
     ])
 ])

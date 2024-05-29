@@ -151,12 +151,12 @@ casile-%.md: CHANGELOG.md
 	$(SED) -e '/\.\.\.v$*/,/\.\.\.v/!d' $< | \
 		$(SED) -e '1,3d;N;$$!P;$$!D;$$d' > $@
 
-PHONY_DEVELOPER_TARGETS = lint luacheck checkmake ruff tagrelease release-preview release docker docker-dep-check docker-ghcr-to-hub docker-build-push
+PHONY_DEVELOPER_TARGETS = lint luacheck stylua checkmake ruff tagrelease release-preview release docker docker-dep-check docker-ghcr-to-hub docker-build-push
 .PHONY: $(PHONY_DEVELOPER_TARGETS)
 
 if DEVELOPER
 
-lint: luacheck checkmake ruff ruff-format
+lint: luacheck checkmake ruff ruff-format stylua
 
 luacheck:
 	$(LUACHECK) .
@@ -166,6 +166,9 @@ checkmake:
 
 ruff:
 	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(RUFF) check
+
+stylua:
+	$(STYLUA) --check --respect-ignores -g '*.lua' -g '*.lua.in' .
 
 ruff-format:
 	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(RUFF) format --check
