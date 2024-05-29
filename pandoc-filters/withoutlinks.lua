@@ -1,3 +1,3 @@
 Link = function (element)
-  return element.content
+   return element.content
 end

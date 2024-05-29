@@ -5,14 +5,14 @@ local locale = os.getenv("LANGUAGE") or "en"
 local style = os.getenv("STYLEGUIDE") or (locale == "en" and "gruber" or "")
 
 Pandoc = function (doc)
-  locale = pandoc.utils.stringify(doc.meta.language or locale)
-  style = pandoc.utils.stringify(doc.meta.styleguide or style)
-  return doc:walk {
-    Header = function (element)
-      local title = pandoc.utils.stringify(element.content)
-      local cased = decasify.titlecase(title, locale, style)
-      element.content = cased
-      return element
-    end
-  }
+   locale = pandoc.utils.stringify(doc.meta.language or locale)
+   style = pandoc.utils.stringify(doc.meta.styleguide or style)
+   return doc:walk({
+      Header = function (element)
+         local title = pandoc.utils.stringify(element.content)
+         local cased = decasify.titlecase(title, locale, style)
+         element.content = cased
+         return element
+      end,
+   })
 end
