@@ -5,16 +5,18 @@ package._name = "casile"
 
 local cldr = require("cldr")
 
+-- stylua: ignore start
 local isolateDropcapLetter = function (str)
    local lpeg = require("lpeg")
    local R, P, C, S = lpeg.R, lpeg.P, lpeg.C, lpeg.S
-   local letter = P("Ü") + P("Ö") + P("Ş") + P("Ç") + P("İ") + P("Â") + R("AZ") + R("09")
-   local lpunct = P("'") + P('"') + P("‘") + P("“")
-   local tpunct = P("'") + P('"') + P("’") + P("”") + P(".")
-   local whitespace = S("\r\n\f\t ")
-   local grp = whitespace ^ 0 * C(lpunct ^ 0 * letter * tpunct ^ 0) * C(P(1) ^ 1) * P(-1)
+   local letter = P"Ü" + P"Ö" + P"Ş" + P"Ç" + P"İ" + P"Â" + R"AZ" + R"09"
+   local lpunct = P"'" + P'"' + P"‘" + P"“"
+   local tpunct = P"'" + P'"' + P"’" + P"”" + P"."
+   local whitespace = S"\r\n\f\t "
+   local grp = whitespace^0 * C(lpunct^0 * letter * tpunct^0) * C(P(1)^1) * P(-1)
    return grp:match(str)
 end
+-- stylua: ignore end
 
 local originalTypeset
 
