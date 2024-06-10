@@ -42,7 +42,7 @@ function package._setupCrop (_, args)
    local papersize = SILE.documentState.paperSize
    local w = papersize[1] + (trim * (cropbinding and 2 or 2))
    local h = papersize[2] + (trim * 2)
-   SILE.documentState.paperSize = SILE.paperSizeParser(w .. "pt x " .. h .. "pt")
+   SILE.documentState.paperSize = SILE.papersize(w .. "pt x " .. h .. "pt")
    local page = SILE.getFrame("page")
    page:constrain("left", trim)
    page:constrain("right", page.constraints.right + trim)
