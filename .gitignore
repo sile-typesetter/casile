@@ -28,6 +28,7 @@ package-lock.json
 
 /Makefile
 Makefile.in
+Makefile-distfiles
 /ar-lib
 /mdate-sh
 /py-compile
