@@ -1,6 +1,34 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
+
+## [0.13.2](https://github.com/sile-typesetter/casile/compare/v0.13.1...v0.13.2) (2024-06-10)
+
+
+### New Features
+
+* **cli:** Add alternative plain interface to the CLI ([1753ad3](https://github.com/sile-typesetter/casile/commit/1753ad32e2b85a4fbd30186732ceaf77d5f2f00d))
+* **cli:** Don't hide intermediate output artifacts in verbose or debug modes ([b61a0f7](https://github.com/sile-typesetter/casile/commit/b61a0f71080e8e7aa77c8c36c4670235818f4c03))
+* **cli:** Gracefully handle errors with make outputting status for unwrapped jobs ([a58857a](https://github.com/sile-typesetter/casile/commit/a58857a5f87b3a9ea4d49ec9c295212c5ececc4a))
+* **cli:** Monkey-patch ZSH completions to include existing files as make targets ([eb73105](https://github.com/sile-typesetter/casile/commit/eb73105285ed5a1c1d2f5bcf5ed7cd8b52adc3f2))
+* **docker:** Enable data for all provided tools that support system locales ([d07d587](https://github.com/sile-typesetter/casile/commit/d07d58751e42ed9db0278e80668bee0b81b91453))
+* **docker:** Install sudo to let users install stuff in CI runners ([0bf89ae](https://github.com/sile-typesetter/casile/commit/0bf89aefc90405267c2ab593b9de753606b86ddb))
+* **rules:** Add dedicated format target for manifests ([969c4a5](https://github.com/sile-typesetter/casile/commit/969c4a51f1e0335a5e55d4bd9a6eec208d607b1b))
+* **rules:** Include cropped versions of PDFS in pdfs build by default ([9b74394](https://github.com/sile-typesetter/casile/commit/9b74394e4b33d112e243f25b8367e5a00d50cc11))
+
+
+### Bug Fixes
+
+* **build:** Get lunamark fork installed in packaging ([1aa0225](https://github.com/sile-typesetter/casile/commit/1aa0225c670ff1028a9b80a18eaf2f40fd4660ac))
+* **covers:** Put selectable text behind rendered covers ([2859958](https://github.com/sile-typesetter/casile/commit/28599582d25cd870850bbb9dd2e21d9a247fdc8d))
+* **docker:** Strip spaces from paths so minimalistic envs can't cause path issues ([baef98e](https://github.com/sile-typesetter/casile/commit/baef98e258c8104199db43db759cfff31767284a))
+* **functions:** Don't let requireSpace function force blank pages ([02fcb54](https://github.com/sile-typesetter/casile/commit/02fcb546497be24e4ba9d658f5e575c2c0aed2d8))
+* **layouts:** Correct square promotianals to not be a bound layout ([c394e99](https://github.com/sile-typesetter/casile/commit/c394e99132d2cc1b0446f55170ee8a8ffc8848a9))
+* **layouts:** Revamp pocket book layout matching a5trim usage ([c9b551f](https://github.com/sile-typesetter/casile/commit/c9b551f366dace119d117d82de675f58265c28da))
+* **layouts:** Set non-bound page formats to get regular covers not front-back ones ([5ec9c76](https://github.com/sile-typesetter/casile/commit/5ec9c76613a19afb286bc7372106881f830b5240))
+* **renderings:** Bring dark color support back to soft-cover crease emulator ([4b5ea00](https://github.com/sile-typesetter/casile/commit/4b5ea005bf3bfdd2d99a9d159d6513c9ebae6823))
+* **rules:** Fix mapping absolute paths to CWD to be Lua module specs ([5a5802e](https://github.com/sile-typesetter/casile/commit/5a5802e1c2b6e3c8e3d4cb4dd7c424b1efb93a4b))
+* **rules:** Work around PNG conversion issue in current ImageMagick ([a6408c3](https://github.com/sile-typesetter/casile/commit/a6408c364bb44b17931ac1011235293ff0a98c43))
 
 ### [0.13.1](https://github.com/sile-typesetter/casile/compare/v0.13.0...v0.13.1) (2024-03-23)
 
