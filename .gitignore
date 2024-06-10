@@ -13,6 +13,7 @@ rules/en-reversed.mk
 rules/tr-reversed.mk
 !scripts/*.in
 scripts/*
+*.asc
 
 ### Editor cruft ###
 
@@ -48,11 +49,11 @@ autom4te.cache
 /config.status
 /config.sub
 /configure
+/aminclude.am
 /configure.scan
 /depcomp
 build-aux/install-sh
 build-aux/missing
-build-aux/rust_boilerplate.mk
 /stamp-h1
 
 ### Python ###
