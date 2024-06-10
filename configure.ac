@@ -5,16 +5,24 @@ AC_CONFIG_MACRO_DIR([build-aux])
 AM_INIT_AUTOMAKE([foreign tar-pax dist-zstd dist-zip no-dist-gzip color-tests subdir-objects])
 AM_SILENT_RULES([yes])
 
-AX_GIT_VERSION
-AX_TRANSFORM_PACKAGE_NAME
+QUE_GIT_VERSION
+QUE_TRANSFORM_PACKAGE_NAME
+QUE_DEVELOPER_MODE
+QUE_DIST_CHECKSUMS
 
 # Build time deps
 AC_PROG_AWK
 AC_PROG_SED
-AX_PROGVAR([yarn])
-AX_PROGVAR([xargs])
+QUE_PROGVAR([yarn])
+QUE_PROGVAR([xargs])
 
-AX_RUST_BOILERPLATE
+QUE_RUST_BOILERPLATE
+QUE_DOCKER_BOILERPLATE
+
+AC_ARG_ENABLE([dependency-checks],                                                                                                                             │    │
+              AS_HELP_STRING([--disable-dependency-checks],                                                                                                          │    │
+                      [Disable build tooling dependency checks]))                                                                                                    │    │
+AM_CONDITIONAL([DEPENDENCY_CHECKS], [test "x$enable_dependency_checks" != "xno"])
 
 AC_ARG_WITH([luajit],
             AS_HELP_STRING([--without-luajit],
@@ -28,51 +36,51 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     AC_PROG_GREP
     AC_PROG_INSTALL
     AC_PROG_MKDIR_P
-    AX_PROGVAR([bc])
-    AX_PROGVAR([curl])
-    AX_PROGVAR([cut])
-    AX_PROGVAR([decasify])
-    AX_PROGVAR([deepl])
-    AX_PROGVAR([diff])
-    AX_PROGVAR([entr])
-    AX_PROGVAR([epubcheck])
-    AX_PROGVAR([fcconflist], [fc-conflist])
-    AX_PROGVAR([find])
-    AX_PROGVAR([flock])
-    AX_PROGVAR([git])
-    AX_PROGVAR([gitwarptime], [git-warp-time])
-    AX_PROGVAR([gs])
-    AX_PROGVAR([hostnamebin], [hostname])
-    AX_PROGVAR([inkscape])
-    AX_PROGVAR([jq])
-    AX_PROGVAR([kindlegen])
-    AX_PROGVAR([m4])
-    AX_PROGVAR([magick])
-    AX_PROGVAR([mdbook])
-    AX_PROGVAR([node])
-    AX_PROGVAR([pandoc])
-    AX_PROGVAR([pcregrep])
-    AX_PROGVAR([pdfbook2])
-    AX_PROGVAR([pdfinfo])
-    AX_PROGVAR([pdfjam])
-    AX_PROGVAR([pdftk])
-    AX_PROGVAR([pgrep])
-    AX_PROGVAR([podofobox])
-    AX_PROGVAR([povray])
-    AX_PROGVAR([sassc])
-    AX_PROGVAR([sile])
-    AX_PROGVAR([sort])
-    AX_PROGVAR([sponge])
-    AX_PROGVAR([sqlite3])
-    AX_PROGVAR([stat])
-    AX_PROGVAR([truncate])
-    AX_PROGVAR([wc])
-    AX_PROGVAR([xcf2png])
-    AX_PROGVAR([xvfbrun], [xvfb-run])
-    AX_PROGVAR([yq])
-    AX_PROGVAR([zint])
-    AX_PROGVAR([zola])
-    AX_PROGVAR([zsh])
+    QUE_PROGVAR([bc])
+    QUE_PROGVAR([curl])
+    QUE_PROGVAR([cut])
+    QUE_PROGVAR([decasify])
+    QUE_PROGVAR([deepl])
+    QUE_PROGVAR([diff])
+    QUE_PROGVAR([entr])
+    QUE_PROGVAR([epubcheck])
+    QUE_PROGVAR([fcconflist], [fc-conflist])
+    QUE_PROGVAR([find])
+    QUE_PROGVAR([flock])
+    QUE_PROGVAR([git])
+    QUE_PROGVAR([gitwarptime], [git-warp-time])
+    QUE_PROGVAR([gs])
+    QUE_PROGVAR([hostnamebin], [hostname])
+    QUE_PROGVAR([inkscape])
+    QUE_PROGVAR([jq])
+    QUE_PROGVAR([kindlegen])
+    QUE_PROGVAR([m4])
+    QUE_PROGVAR([magick])
+    QUE_PROGVAR([mdbook])
+    QUE_PROGVAR([node])
+    QUE_PROGVAR([pandoc])
+    QUE_PROGVAR([pcregrep])
+    QUE_PROGVAR([pdfbook2])
+    QUE_PROGVAR([pdfinfo])
+    QUE_PROGVAR([pdfjam])
+    QUE_PROGVAR([pdftk])
+    QUE_PROGVAR([pgrep])
+    QUE_PROGVAR([podofobox])
+    QUE_PROGVAR([povray])
+    QUE_PROGVAR([sassc])
+    QUE_PROGVAR([sile])
+    QUE_PROGVAR([sort])
+    QUE_PROGVAR([sponge])
+    QUE_PROGVAR([sqlite3])
+    QUE_PROGVAR([stat])
+    QUE_PROGVAR([truncate])
+    QUE_PROGVAR([wc])
+    QUE_PROGVAR([xcf2png])
+    QUE_PROGVAR([xvfbrun], [xvfb-run])
+    QUE_PROGVAR([yq])
+    QUE_PROGVAR([zint])
+    QUE_PROGVAR([zola])
+    QUE_PROGVAR([zsh])
 
     AC_MSG_CHECKING(whether pandoc has SILE Writer)
     AS_IF([$PANDOC --list-output-formats | $GREP -qx sile],[
@@ -107,19 +115,19 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     AX_FONT(Libertinus Sans)
 
     # Developer tooling deps
-    AM_COND_IF([DEVELOPER], [
-        AX_PROGVAR([checkmake])
-        AX_PROGVAR([docker])
-        AX_PROGVAR([luacheck])
-        AX_PROGVAR([ruff])
-        AX_PROGVAR([stylua])
-        AX_PROGVAR([tr])
+    AM_COND_IF([DEVELOPER_MODE], [
+        QUE_PROGVAR([checkmake])
+        QUE_PROGVAR([docker])
+        QUE_PROGVAR([luacheck])
+        QUE_PROGVAR([ruff])
+        QUE_PROGVAR([stylua])
+        QUE_PROGVAR([tr])
     ])
 ])
 
 # Avoid the need for configuring with the `--datarootdir=$(cd ..; pwd)` hack to
 # run from the source directory when developer mode is enabled.
-AM_COND_IF([DEVELOPER], [
+AM_COND_IF([DEVELOPER_MODE], [
     datarootdir="$(cd ..; pwd)"
 ])
 

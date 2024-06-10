@@ -1,6 +1,7 @@
 $(and $(word 2,$(MAKEFILE_LIST)),$(error This is not the makefile you should include in your project to run CaSILE, please use 'rules/casile.mk' instead.))
 
 ACLOCAL_AMFLAGS = -I build-aux
+AM_DISTCHECK_CONFIGURE_FLAGS = --enable-developer-mode
 
 .ONESHELL:
 .SECONDARY:
@@ -47,7 +48,16 @@ BUILT_SOURCES = Makefile-distfiles
 
 CLEANFILES =
 
-include $(top_srcdir)/build-aux/rust_boilerplate.mk
+DISTCLEANFILES = @AMINCLUDE@
+
+# A classical use of the autoconf-archive include macro would expand
+# INC_AMINCLUDE here, but the perl script that inlines include statements
+# runs before the automake that organizes logic and performs substitution.
+# Consequentially with a substitution here it becomes impossible to use
+# automake conditionals and substitutions in the included Makefile fragments.
+# By entering the expanded value directly we are ready in time for the inlining
+# functionality and hence can use conditionals in included makefile fragments.
+include $(top_srcdir)/aminclude.am
 
 Makefile-distfiles: $(wildcard .version .tarball-version)
 	$(SHELL) build-aux/list-dist-files.sh > $@
@@ -154,7 +164,7 @@ casile-%.md: CHANGELOG.md
 PHONY_DEVELOPER_TARGETS = lint luacheck stylua checkmake ruff tagrelease release-preview release docker docker-dep-check docker-ghcr-to-hub docker-build-push
 .PHONY: $(PHONY_DEVELOPER_TARGETS)
 
-if DEVELOPER
+if DEVELOPER_MODE
 
 lint: luacheck checkmake ruff ruff-format stylua
 
@@ -234,9 +244,9 @@ docker-build-push: docker
 	$(DOCKER) tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
 	$(docker_push)
 
-else
+else !DEVELOPER_MODE
 
 $(PHONY_DEVELOPER_TARGETS):
 	@: $(error "Please reconfigure using --enable-developer to use developer tooling")
 
-endif
+endif !DEVELOPER_MODE
