@@ -45,8 +45,8 @@ function class:_init (options)
          value = { 0, 0 },
          display = { "ORDINAL", "STRING" },
       }
-      SILE.settings:set("typesetter.underfulltolerance", SILE.length("6ex"))
-      SILE.settings:set("typesetter.overfulltolerance", SILE.length("0.2ex"))
+      SILE.settings:set("typesetter.underfulltolerance", SILE.types.length("6ex"))
+      SILE.settings:set("typesetter.overfulltolerance", SILE.types.length("0.2ex"))
       table.insert(SILE.input.preambles, function ()
          SILE.call("footnote:separator", {}, function ()
             SILE.call("rebox", { width = "6em", height = "2ex" }, function ()
@@ -56,9 +56,9 @@ function class:_init (options)
          end)
       end)
       SILE.settings:set("linespacing.method", "fit-font")
-      SILE.settings:set("linespacing.fit-font.extra-space", SILE.length("0.6ex plus 0.2ex minus 0.2ex"))
+      SILE.settings:set("linespacing.fit-font.extra-space", SILE.types.length("0.6ex plus 0.2ex minus 0.2ex"))
       SILE.settings:set("linebreak.hyphenPenalty", 300)
-      SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.length("0.7ex plus 0 minus 0")
+      SILE.scratch.insertions.classes.footnote.interInsertionSkip = SILE.types.length("0.7ex plus 0 minus 0")
       SILE.scratch.last_was_ref = false
       SILE.typesetter:registerPageEndHook(function ()
          SILE.scratch.last_was_ref = false

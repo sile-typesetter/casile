@@ -36,11 +36,11 @@ function package:registerCommands ()
    self:registerCommand("endnotes", function (_, _)
       local indent = "1.5em"
       SILE.settings:temporarily(function ()
-         SILE.settings:set("document.lskip", SILE.nodefactory.glue(indent))
+         SILE.settings:set("document.lskip", SILE.types.node.glue(indent))
          for i = 1, #SILE.scratch.endnotes do
             local counter, material = SILE.scratch.endnotes[i]()
             SILE.call("cabook:font:footnote", {}, function ()
-               SILE.typesetter:pushGlue({ width = -SILE.length(indent) })
+               SILE.typesetter:pushGlue({ width = -SILE.types.length(indent) })
                SILE.call("rebox", { width = indent }, function ()
                   SILE.call("endnote:counter", { value = counter })
                end)

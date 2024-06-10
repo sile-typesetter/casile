@@ -19,21 +19,21 @@ function package:registerCommands ()
 
    self:registerCommand("imprint", function (_, _)
       SILE.settings:temporarily(function ()
-         local imgUnit = SILE.length("1em")
-         SILE.settings:set("document.lskip", SILE.nodefactory.glue())
-         SILE.settings:set("document.rskip", SILE.nodefactory.glue())
-         SILE.settings:set("document.rskip", SILE.nodefactory.glue())
-         SILE.settings:set("document.parskip", SILE.nodefactory.vglue("1.2ex"))
+         local imgUnit = SILE.types.length("1em")
+         SILE.settings:set("document.lskip", SILE.types.node.glue())
+         SILE.settings:set("document.rskip", SILE.types.node.glue())
+         SILE.settings:set("document.rskip", SILE.types.node.glue())
+         SILE.settings:set("document.parskip", SILE.types.node.vglue("1.2ex"))
          SILE.call("nofolios")
          SILE.call("noindent")
          SILE.call("topfill")
          SILE.call("raggedright", {}, function ()
             SILE.call("imprint:font", {}, function ()
                SILE.settings:set("linespacing.method", "fixed")
-               SILE.settings:set("linespacing.fixed.baselinedistance", SILE.length("2.8ex plus 1pt minus 0.5pt"))
+               SILE.settings:set("linespacing.fixed.baselinedistance", SILE.types.length("2.8ex plus 1pt minus 0.5pt"))
 
                if CASILE.metadata.publisher and CASILE.layout ~= "app" then
-                  SILE.processMarkdown(SU.contentToString(CASILE.metadata.publisher))
+                  SILE.processMarkdown(SU.ast.contentToString(CASILE.metadata.publisher))
                   SILE.call("par")
                end
 
@@ -61,7 +61,7 @@ function package:registerCommands ()
                      -- luacheck: ignore qrimg
                      SILE.call("img", { src = qrimg, height = "5.8em" })
                      SILE.call("skip", { height = "-6.3em" })
-                     SILE.settings:set("document.lskip", SILE.nodefactory.glue({ width = imgUnit * 6.5 }))
+                     SILE.settings:set("document.lskip", SILE.types.node.glue({ width = imgUnit * 6.5 }))
                      if SILE.Commands["meta:identifiers"] then
                         SILE.call("meta:identifiers")
                      end

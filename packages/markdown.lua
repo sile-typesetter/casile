@@ -26,7 +26,7 @@ end
 
 function package:registerCommands ()
    self:registerCommand("processMarkdown", function (options, content)
-      local input = SU.contentToString(content)
+      local input = SU.ast.contentToString(content)
       SILE.processMarkdown(input, options.callback)
    end)
 

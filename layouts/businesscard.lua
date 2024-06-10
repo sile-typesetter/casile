@@ -13,8 +13,8 @@ return function (class)
       }
 
       class:loadPackage("crop", {
-         bleed = SILE.length("2.5mm").length,
-         trim = SILE.length("5mm").length,
+         bleed = SILE.types.length("2.5mm").length,
+         trim = SILE.types.length("5mm").length,
       })
 
       class:registerCommand("output-right-running-head", function () end)

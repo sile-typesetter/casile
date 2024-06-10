@@ -44,10 +44,10 @@ return function (class)
             return
          end
          SILE.typesetNaturally(SILE.getFrame("runningHead"), function ()
-            SILE.settings:set("current.parindent", SILE.nodefactory.glue())
-            SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue())
-            SILE.settings:set("document.lskip", SILE.nodefactory.glue())
-            SILE.settings:set("document.rskip", SILE.nodefactory.glue())
+            SILE.settings:set("current.parindent", SILE.types.node.glue())
+            SILE.settings:set("typesetter.parfillskip", SILE.types.node.glue())
+            SILE.settings:set("document.lskip", SILE.types.node.glue())
+            SILE.settings:set("document.rskip", SILE.types.node.glue())
             SILE.call("cabook:font:right-header", {}, function ()
                SILE.call("center", {}, function ()
                   SILE.call("meta:title")
@@ -88,7 +88,7 @@ return function (class)
          SILE.require("packages/background")
          SILE.call("background", { color = "#efe6bf" })
 
-         local inkColor = SILE.colorparser("#262d2c")
+         local inkColor = SILE.types.color("#262d2c")
          SILE.outputter:pushColor(inkColor)
       end
    end

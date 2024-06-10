@@ -3,7 +3,7 @@ local cabook = require("classes.cabook")
 local class = pl.class(cabook)
 class._name = "cabinding"
 
-local spineoffset = SILE.measurement(CASILE.spine):tonumber() / 2
+local spineoffset = SILE.types.measurement(CASILE.spine):tonumber() / 2
 
 local spreadFrameset = {
    front = {
@@ -93,7 +93,7 @@ function class:declareOptions ()
             self.defaultFrameset = posterFrameset
             SILE.documentState.paperSize = { parsed[1], parsed[2] }
          else
-            local spread = parsed[1] * 2 + SILE.measurement(CASILE.spine):tonumber()
+            local spread = parsed[1] * 2 + SILE.types.measurement(CASILE.spine):tonumber()
             SILE.documentState.paperSize = { spread, parsed[2] }
          end
          SILE.documentState.orgPaperSize = SILE.documentState.paperSize

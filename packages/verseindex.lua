@@ -72,7 +72,7 @@ function package:registerCommands ()
       -- Temporarily disable columns pending upstream bugfix
       -- https://github.com/sile-typesetter/sile/issues/891
       -- SILE.call("makecolumns", { gutter = "4%pw" })
-      SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue())
+      SILE.settings:set("typesetter.parfillskip", SILE.types.node.glue())
       inpair = pair
    end
 
@@ -136,8 +136,8 @@ function package:registerCommands ()
       local origleader = SILE.settings:get("linespacing.fixed.baselinedistance")
       local origparskip = SILE.settings:get("document.parskip")
       SILE.settings:set("linespacing.method", "fixed")
-      SILE.settings:set("linespacing.fixed.baselinedistance", SILE.length("1.1em"))
-      SILE.settings:set("document.parskip", SILE.nodefactory.vglue({}))
+      SILE.settings:set("linespacing.fixed.baselinedistance", SILE.types.length("1.1em"))
+      SILE.settings:set("document.parskip", SILE.types.node.vglue({}))
       local refshash = {}
       local lastbook = nil
       local seq = 1

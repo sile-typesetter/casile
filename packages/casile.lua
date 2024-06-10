@@ -21,7 +21,7 @@ end
 local originalTypeset
 
 local parseSize = function (size)
-   return SILE.length(size):absolute().length
+   return SILE.types.length(size):absolute().length
 end
 
 local loadonce = {}
@@ -137,7 +137,7 @@ function package:_init (_)
    SILE.registerUnit("%fmed", {
       relative = true,
       definition = function (value)
-         local med = (SILE.measurement("100%fw"):tonumber() + SILE.measurement("100%fh"):tonumber()) / 2
+         local med = (SILE.types.measurement("100%fw"):tonumber() + SILE.types.measurement("100%fh"):tonumber()) / 2
          return value / 100 * med
       end,
    })
