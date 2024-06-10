@@ -32,3 +32,16 @@ s#nodefactory\.hfillGlue#nodefactory.hfillglue()#g
 s#SILE\.length\.\(make\|new\|parse\)#SILE.types.length#g
 s#\bopen-page\b#open-spread#g
 s#\bSILE\.settings\.\b#SILE.settings:#g
+s#\bSILE.color\b#SILE.types.color#g
+s#\bSILE.colorparser\b#SILE.types.color#g
+s#\bSILE.length\b#SILE.types.length#g
+s#\bSILE.measurement\b#SILE.types.measurement#g
+s#\bSILE.nodefactory\b#SILE.types.node#g
+s#\bSILE.paperSizeParser\b#SILE.papersize#g
+s#\bSILE.units\b#SILE.types.unit#g
+s#\bSU.contentToString\b#SU.ast.contentToString#g
+s#\bSU.hasContent\b#SU.ast.hasContent#g
+s#\bSU.stripContentPos\b#SU.ast.stripContentPos#g
+s#\bSU.subContent\b#SU.ast.subContent#g
+s#\bSU.walkContent\b#SU.ast.walkContent#g
+s#\balignright\b#raggedleft#g
