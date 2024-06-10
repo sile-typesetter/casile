@@ -179,10 +179,10 @@ tagrelease:
 	test -z $$($(GIT) tag --points-at HEAD) || \
 	$(GIT) diff-index --quiet --cached HEAD && \
 	$(GIT) diff-files --quiet && \
-	$(YARN) run release $(and $(RELTYPE),--release-as $(RELTYPE))
+	$(YARN) run release --preMajor $(and $(RELTYPE),--release-as $(RELTYPE))
 
 release-preview:
-	$(YARN) run release --dry-run $(and $(RELTYPE),--release-as $(RELTYPE))
+	$(YARN) run release --preMajor --dry-run $(and $(RELTYPE),--release-as $(RELTYPE))
 
 release: tagrelease
 

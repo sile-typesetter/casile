@@ -5,8 +5,9 @@
   "main": "casile",
   "scripts": {
     "test": "make test",
-    "release": "standard-version",
-    "prepare": "husky install"
+    "lint": "make lint",
+    "release": "commit-and-tag-version",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -24,19 +25,19 @@
     "svg-modify": "^0.0.12"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.2",
-    "@commitlint/config-conventional": "^19.1",
-    "@commitlint/prompt": "^19.2",
-    "@iarna/toml": "2.2",
+    "@commitlint/cli": "^19.3",
+    "@commitlint/config-conventional": "^19.2",
+    "@commitlint/prompt": "^19.3",
+    "@iarna/toml": "^2.2",
     "commitizen": "^4.3",
-    "conventional-changelog-cli": "^4.1",
+    "conventional-changelog-cli": "^5.0",
     "eslint": "^8.57",
     "eslint-config-standard": "^17.1",
     "eslint-plugin-import": "^2.29",
     "eslint-plugin-node": "^11.1",
     "eslint-plugin-promise": "^6.1",
     "husky": "^9.0",
-    "standard-version": "^9.5",
+    "commit-and-tag-version": "^12.4",
     "yaml": "^2.4"
   },
   "config": {
@@ -44,7 +45,7 @@
       "path": "@commitlint/prompt"
     }
   },
-  "standard-version": {
+  "commit-and-tag-version": {
     "bumpFiles": [
       {
         "filename": "action.yml",
@@ -99,7 +100,6 @@
         "type": "test",
         "hidden": true
       }
-    ],
-    "preset": "conventionalcommits"
+    ]
   }
 }
