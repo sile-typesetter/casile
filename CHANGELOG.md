@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.13.3](https://github.com/sile-typesetter/casile/compare/v0.13.2...v0.13.3) (2024-06-10)
+
+
+### New Features
+
+* **build:** Overhaul autoconf with modular components from other projects ([e02c68d](https://github.com/sile-typesetter/casile/commit/e02c68d49c4d45495b87eca0059d45ecda591d3c))
+* **build:** Switch from XZ to ZST for release artifacts ([708bc9f](https://github.com/sile-typesetter/casile/commit/708bc9f9ba1df3e4950aef69a47455122ec4d320))
+* **utilities:** Add automatic upgrades for many things deprecated in SILE v0.15 ([69201cd](https://github.com/sile-typesetter/casile/commit/69201cdc285548d65f20f2ed0e1b379ebd7fdded))
+
 ## [0.13.2](https://github.com/sile-typesetter/casile/compare/v0.13.1...v0.13.2) (2024-06-10)
 
 
