@@ -36,4 +36,4 @@ jobs:
           body_path: casile-${{ env.VERSION }}.md
           files: |
             casile-${{ env.VERSION }}.zip
-            casile-${{ env.VERSION }}.tar.xz
+            casile-${{ env.VERSION }}.tar.zst
