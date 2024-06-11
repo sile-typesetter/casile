@@ -3,41 +3,38 @@ return function (class)
    class.options.papersize = 1920 / 192 .. "in x " .. 1080 / 192 .. "in"
 
    if class._name == "cabook" then
-      class:loadPackage(
-         "masters",
+      class:loadPackage("masters", {
          {
-            {
-               id = "right",
-               firstContentFrame = "content",
-               frames = {
-                  page = {
-                     left = "0",
-                     right = "100%pw",
-                     top = "0",
-                     bottom = "100%ph",
-                  },
-                  content = {
-                     left = "10%pw",
-                     right = "100%pw-10%pw",
-                     top = "bottom(runningHead)+1%ph",
-                     bottom = "top(footnotes)-1%ph",
-                  },
-                  runningHead = {
-                     left = "left(content)",
-                     right = "right(content)",
-                     top = "2%ph",
-                     bottom = "10%ph",
-                  },
-                  footnotes = {
-                     left = "left(content)",
-                     right = "right(content)",
-                     height = "0",
-                     bottom = "100%ph-3%ph",
-                  },
+            id = "right",
+            firstContentFrame = "content",
+            frames = {
+               page = {
+                  left = "0",
+                  right = "100%pw",
+                  top = "0",
+                  bottom = "100%ph",
+               },
+               content = {
+                  left = "10%pw",
+                  right = "100%pw-10%pw",
+                  top = "bottom(runningHead)+1%ph",
+                  bottom = "top(footnotes)-1%ph",
+               },
+               runningHead = {
+                  left = "left(content)",
+                  right = "right(content)",
+                  top = "2%ph",
+                  bottom = "10%ph",
+               },
+               footnotes = {
+                  left = "left(content)",
+                  right = "right(content)",
+                  height = "0",
+                  bottom = "100%ph-3%ph",
                },
             },
-         }
-      )
+         },
+      })
 
       class:registerCommand("output-right-running-head", function (_, _)
          if not SILE.scratch.headers.right then
