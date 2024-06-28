@@ -31,11 +31,11 @@
     "@iarna/toml": "^2.2",
     "commitizen": "^4.3",
     "conventional-changelog-cli": "^5.0",
-    "eslint": "^8.57",
+    "eslint": "^9.5",
     "eslint-config-standard": "^17.1",
     "eslint-plugin-import": "^2.29",
     "eslint-plugin-node": "^11.1",
-    "eslint-plugin-promise": "^6.1",
+    "eslint-plugin-promise": "^6.2",
     "husky": "^9.0",
     "commit-and-tag-version": "^12.4",
     "yaml": "^2.4"
