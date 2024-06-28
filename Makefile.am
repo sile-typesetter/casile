@@ -247,6 +247,6 @@ docker-build-push: docker
 else !DEVELOPER_MODE
 
 $(PHONY_DEVELOPER_TARGETS):
-	@: $(error "Please reconfigure using --enable-developer to use developer tooling")
+	@: $(error "Please reconfigure using --enable-developer-mode to use developer tooling")
 
 endif !DEVELOPER_MODE

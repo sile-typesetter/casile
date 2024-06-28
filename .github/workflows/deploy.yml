@@ -30,7 +30,7 @@ jobs:
           ./bootstrap.sh
           ./configure \
             --without-{bash,fish,zsh}-completion-dir \
-            --enable-developer \
+            --enable-developer-mode \
             --disable-dependency-checks \
             CURL=curl DOCKER=docker DIFF=diff TR=tr SORT=sort \
       - name: Publish Docker Image to GH Container Registry
