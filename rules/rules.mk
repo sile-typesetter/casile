@@ -152,7 +152,7 @@ PROJECTLUA := $(wildcard $(PROJECT).lua)
 LUALIBS +=
 
 # Add a place where project local fonts can live
-FONTDIRS += $(patsubst ./%,%,$(CASILEDIR)/fonts $(wildcard $(PROJECTDIR:./=.)/.fonts)))
+FONTDIRS += $(patsubst ./%,%,$(CASILEDIR)/fonts $(wildcard $(PROJECTDIR:./=.)/.fonts))
 
 FCCONFIG := $(BUILDDIR)/fontconfig.conf
 # BUILDDIR would otherwise get created by other rules anyway, but we're dodging race conditions
