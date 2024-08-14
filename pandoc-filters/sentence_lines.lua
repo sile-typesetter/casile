@@ -1,8 +1,18 @@
-local function sentence_lines (element)
-   local inlines = element.content
-   for i = 2, #inlines do
-      if inlines[i].t == "Space" and inlines[i - 1].t == "Str" and inlines[i - 1].text:match("[%.%!%?]%)?$") then
-         inlines[i] = pandoc.SoftBreak()
+-- Stuff we count as ending a sentence
+local eos = "%P.+[%.%!%?]+%)?$"
+
+local function wrap_sentences (element)
+   local content = element.content
+   for i = 2, #content do
+      local previous = content[i - 1]
+      local previous_stringly = pandoc.utils.stringify(previous.content and previous.content or previous)
+      if
+         content[i].t == "Space"
+         and previous_stringly:match(eos)
+         -- Don't break if the next character is a lower case
+         and not (content[i+1] and pandoc.utils.stringify(content[i+1]):match("^%l"))
+      then
+         content[i] = pandoc.SoftBreak()
       end
    end
    return element
@@ -14,10 +24,10 @@ return {
          return pandoc.Space()
       end,
    },
-   { Para = sentence_lines },
-   { Plain = sentence_lines },
-   { Emph = sentence_lines },
-   { BlockQuote = sentence_lines },
-   { Div = sentence_lines },
-   { Quoted = sentence_lines },
+   { Para = wrap_sentences },
+   { Plain = wrap_sentences },
+   { Emph = wrap_sentences },
+   { BlockQuote = wrap_sentences },
+   { Div = wrap_sentences },
+   { Quoted = wrap_sentences },
 }
