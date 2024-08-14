@@ -16,4 +16,8 @@ return {
    },
    { Para = sentence_lines },
    { Plain = sentence_lines },
+   { Emph = sentence_lines },
+   { BlockQuote = sentence_lines },
+   { Div = sentence_lines },
+   { Quoted = sentence_lines },
 }
