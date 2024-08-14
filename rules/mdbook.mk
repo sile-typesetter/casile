@@ -5,11 +5,11 @@ $(MDBOOKS): %.mdbook: $(BUILDDIR)/%.mdbook/src/SUMMARY.md $(BUILDDIR)/%.mdbook/b
 
 DISTDIRS += $(MDBOOKS)
 
-$(BUILDDIR)/%-mdbook.md: private PANDOCFILTERARGS = --wrap=none --to=commonmark_x-smart
+$(BUILDDIR)/%-mdbook.md: private PANDOCNORMALIZEARGS = --wrap=none --to=commonmark_x-smart
 $(BUILDDIR)/%-mdbook.md: private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/strip_for_mdbook.lua
 $(BUILDDIR)/%-mdbook.md: $(BUILDDIR)/%-$(_processed).md
 	$(PANDOC) \
-		$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) \
+		$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERSARGS) $(PANDOCNORMALIZEARGS) \
 		$(filter %.md,$^) -o $@
 
 $(BUILDDIR)/%.mdbook/src/SUMMARY.md: $(BUILDDIR)/%-mdbook.md

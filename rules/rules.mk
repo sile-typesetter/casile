@@ -181,10 +181,13 @@ endif
 SILEPATH += $(CASILEDIR)
 
 # Extra arguments to pass to Pandoc
-PANDOCARGS ?= --wrap=preserve --markdown-headings=atx --top-level-division=chapter
+PANDOCARGS ?= --top-level-division=chapter
+PANDOCARGS += --wrap=preserve
+PANDOCARGS += --markdown-headings=atx
 PANDOCARGS += --reference-location=section
+PANDOCNORMALIZEARGS ?= --from markdown-space_in_atx_header+ascii_identifiers+four_space_rule --to markdown-smart-four_space_rule
 PANDOCFILTERS ?=
-PANDOCFILTERARGS ?= --from markdown-space_in_atx_header+ascii_identifiers+four_space_rule --to markdown-smart-four_space_rule
+PANDOCFILTERARGS ?=
 
 # For when perl one-liners need Unicode compatibility
 PERLARGS ?= -Mutf8 -CS
@@ -519,7 +522,7 @@ SOURCESWITHEDITS := $(SOURCESWITHVERSES) $(SOURCESWITHOUTFOOTNOTES) $(SOURCESWIT
 $(SOURCESWITHEDITS): $$(call strip_edits,$$@)
 	: $(or $(filter %.md,$^),$(error No sources with expected edits defined))
 	$(PANDOC) \
-		$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) \
+		$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) $(PANDOCNORMALIZEARGS) \
 		$(filter %.md,$^) -o $@
 
 # Configure SILE arguments to include common Lua libraries
@@ -540,7 +543,7 @@ $(BUILDDIR)/%-$(_processed).md: %.md $$(wildcard $(PROJECT)*.md $$*-$(_chapters)
 		$(PERL) $(PERLARGS) -pne "s/(?<=[\)\}])'/’/g" | # Work around Pandoc bug, see https://github.com/jgm/pandoc/issues/5385
 		$(call criticToSile) |
 		$(PANDOC) \
-			$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) |
+			$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) $(PANDOCNORMALIZEARGS) |
 		$(call markdown_hook) > $@
 
 %-$(_booklet).pdf: $(BUILDDIR)/%-$(_spineless).pdf

@@ -184,7 +184,7 @@ normalize_files:
 			basename $${src} | $(PERL) -pne 's/-.*$$//' | read chapno
 			dirname $${src} | read dir
 			$(SED) -n '/^#/{s/ı/i/g;p}' $${src} |
-				$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) | read identifier
+				$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) $(PANDOCNORMALIZEARGS) | read identifier
 				target="$${dir}/$${chapno}-$${identifier}.md"
 				[[ $${src} == $${target} ]] || $(GIT) mv "$${src}" "$${target}"
 		done
