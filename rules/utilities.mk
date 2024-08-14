@@ -166,6 +166,10 @@ normalize_references: $(MARKDOWNSOURCES)
 .PHONY: normalize
 normalize: normalize_lua normalize_markdown normalize_references
 
+split_chapters: export TOPLEVELDIVISION := $(TOPLEVELDIVISION)
+split_chapters: export SECONDLEVELDIVISION := $(SECONDLEVELDIVISION)
+split_chapters: export SPLITLEVELS ?= 1
+split_chapters: export BUILDDIR := $(BUILDDIR)
 split_chapters:
 	$(if $(MARKDOWNSOURCES),,exit 0)
 	$(foreach SOURCE,$(MARKDOWNSOURCES),$(call split_chapters,$(SOURCE));)

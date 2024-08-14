@@ -180,8 +180,11 @@ export PATH := $(PUBLISHERDIRABS)/scripts:$(PATH)
 endif
 SILEPATH += $(CASILEDIR)
 
+TOPLEVELDIVISION ?= chapter
+SECONDLEVELDIVISION ?= section
+
 # Extra arguments to pass to Pandoc
-PANDOCARGS ?= --top-level-division=chapter
+PANDOCARGS ?= --top-level-division=$(TOPLEVELDIVISION)
 PANDOCARGS += --wrap=preserve
 PANDOCARGS += --markdown-headings=atx
 PANDOCARGS += --reference-location=section
