@@ -26,7 +26,7 @@ $(BUILDDIR)/%.zola/content/_index.md: $(BUILDDIR)/%.zola/content/manifest.json %
 	+++
 	template = "$(notdir $(lastword $^))"
 	[extra]
-	coverimg = "$(firstword $(filter $(call pattern_list,$*,$(LAYOUTS),-$(_3d)-$(_front).png),$^ $|) $*-epub-$(_poster).jpg)"
+	coverimg = "$(firstword $(filter $(call pattern_list,$*,$(LAYOUTS),$(_3d)-$(_front),.png),$^ $|) $*-epub-$(_poster).jpg)"
 	+++
 	FRONTMATTER
 	for mdbook in $(filter %.mdbook,$|); do

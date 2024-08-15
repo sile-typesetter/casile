@@ -117,7 +117,7 @@ $(BOOKSCENESINC): $(BUILDDIR)/%.inc: $$(geometryfile) $(BUILDDIR)/%-pov-$(_front
 		#declare HalfThick = BookThickness / 2;
 	EOF
 
-BOOKSCENES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(RENDERED),-$(_3d).pov))
+BOOKSCENES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(RENDERED),$(_3d),.pov))
 $(BOOKSCENES): $(BUILDDIR)/%-$(_3d).pov: $$(geometryfile) $(BUILDDIR)/%.inc
 	$(sourcegeometry)
 	cat <<- EOF > $@
@@ -130,9 +130,9 @@ $(BOOKSCENES): $(BUILDDIR)/%-$(_3d).pov: $$(geometryfile) $(BUILDDIR)/%.inc
 		#declare MaxPile = $(call scale,25,5);
 	EOF
 
-SERIESSCENES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(PROJECT),$(RENDERED),-$(_3d).pov))
+SERIESSCENES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(PROJECT),$(RENDERED),$(_3d),.pov))
 ifneq ($(strip $(SOURCES)),$(strip $(PROJECT)))
-$(SERIESSCENES): $(BUILDDIR)/$(PROJECT)-%-$(_3d).pov: $(BUILDDIR)/$(firstword $(EDITIONEDITSOURCES))-%-$(_3d).pov $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),-%.inc))
+$(SERIESSCENES): $(BUILDDIR)/$(PROJECT)-%-$(_3d).pov: $(BUILDDIR)/$(firstword $(EDITIONEDITSOURCES))-%-$(_3d).pov $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),%,.inc))
 	cat <<- EOF > $@
 		#include "$<"
 		#declare BookCount = $(words $(TARGETS));

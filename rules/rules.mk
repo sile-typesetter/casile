@@ -320,7 +320,7 @@ promotionals: $(call pattern_list,$(TARGETS),.promotionals)
 
 VIRTUALPROMOTIONALS := $(call pattern_list,$(SOURCES),.promotionals)
 .PHONY: $(VIRTUALPROMOTIONALS)
-$(VIRTUALPROMOTIONALS): %.promotionals: $(call pattern_list,$$*,$(PLACARDS),-$(_poster).jpg) $$*-icon.png
+$(VIRTUALPROMOTIONALS): %.promotionals: $(call pattern_list,$$*,$(PLACARDS),$(_poster),.jpg) $$*-icon.png
 
 # If a series, add some extra dependencies to convenience builds
 ifneq ($(words $(TARGETS)),1)
@@ -336,9 +336,9 @@ series_manifest: $(call pattern_list,$(PROJECT),manifest,.yml)
 series_promotionals: $(PROJECT)-epub-$(_poster)-$(_montage).jpg $(PROJECT)-$(_square)-$(_poster)-$(_montage).jpg
 
 .PHONY: series_renderings
-series_renderings: $(call pattern_list,$(PROJECT),$(RENDERED),-$(_3d)-$(_montage).jpg)
+series_renderings: $(call pattern_list,$(PROJECT),$(RENDERED),$(_3d),$(_montage),.jpg)
 
-$(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(SOURCES),%,-$(_poster).png) $(firstword $(SOURCES))-%-$(_print)-$(_geometry).sh
+$(PROJECT)-%-$(_poster)-$(_montage).png: $$(call pattern_list,$(SOURCES),%,$(_poster),.png) $(firstword $(SOURCES))-%-$(_print)-$(_geometry).sh
 	$(sourcegeometry)
 	$(MAGICK) montage \
 		$(MAGICKARGS) \
@@ -464,7 +464,7 @@ $(FULLSILS): private PANDOCFILTERS += --filter=$(CASILEDIR)/pandoc-filters/svg2p
 $(FULLSILS): private THISEDIT = $(call parse_edits,$@)
 $(FULLSILS): private PROCESSEDSOURCE = $(addprefix $(BUILDDIR)/,$(call pattern_list,$(call parse_bookid,$@),$(and $(THISEDIT),$(THISEDIT)-)$(_processed),.md))
 $(FULLSILS): $(BUILDDIR)/%.sil: $$(PROCESSEDSOURCE)
-$(FULLSILS): $(BUILDDIR)/%.sil: $$(call pattern_list,$$(call parse_bookid,$$@),-manifest.yml)
+$(FULLSILS): $(BUILDDIR)/%.sil: $$(call pattern_list,$$(call parse_bookid,$$@),manifest,.yml)
 $(FULLSILS): $(BUILDDIR)/%.sil: $$(addprefix $(BUILDDIR)/,$$(call pattern_list,$$(call parse_bookid,$$@),-$(_verses)-$(_sorted).json -url.png))
 $(FULLSILS): $(BUILDDIR)/%.sil: $(PANDOCTEMPLATE)
 $(FULLSILS): $(BUILDDIR)/%.sil: | $$(call onpaperlibs,$$@)
@@ -652,7 +652,7 @@ $(_issue).info:
 
 DISTFILES += $(_issue).info
 
-COVERBACKGROUNDS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_background).png))
+COVERBACKGROUNDS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(UNBOUNDLAYOUTS),$(_cover)-$(_background),.png))
 git_background = $(shell $(_ENV) $(GIT) ls-files -- $(call strip_layout,$1) 2> /dev/null)
 $(COVERBACKGROUNDS): $(BUILDDIR)/%-$(_cover)-$(_background).png: $$(call git_background,$$@) $$(geometryfile)
 	$(sourcegeometry)
@@ -680,7 +680,7 @@ $(BUILDDIR)/%-$(_poster).png: $(BUILDDIR)/%-$(_print)-$(_cover).png $$(geometryf
 		$(and $(filter epub,$(call parse_papersize,$@)),-resize 1000x1600^) \
 		$@
 
-COVERIMAGES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(UNBOUNDLAYOUTS),-$(_cover).png))
+COVERIMAGES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(UNBOUNDLAYOUTS),$(_cover),.png))
 $(COVERIMAGES): $(BUILDDIR)/%-$(_cover).png: $(BUILDDIR)/%-$(_cover)-$(_background).png $(BUILDDIR)/%-$(_cover)-$(_fragment).png $$(geometryfile)
 	$(sourcegeometry)
 	$(MAGICK) \
@@ -713,7 +713,7 @@ $(COVERIMAGES): $(BUILDDIR)/%-$(_cover).png: $(BUILDDIR)/%-$(_cover)-$(_backgrou
 
 DISTFILES += *-icon.png
 
-COVERPDFS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(UNBOUNDLAYOUTS),-$(_cover).pdf))
+COVERPDFS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(UNBOUNDLAYOUTS),$(_cover),.pdf))
 $(COVERPDFS): $(BUILDDIR)/%-$(_cover).pdf: $(BUILDDIR)/%-$(_cover).png $(BUILDDIR)/%-$(_cover)-$(_text).pdf $(FCCONFIG)
 	$(COVERS) || exit 0
 	text=$$(mktemp kapakXXXXXX.pdf)
@@ -730,7 +730,7 @@ $(COVERPDFS): $(BUILDDIR)/%-$(_cover).pdf: $(BUILDDIR)/%-$(_cover).png $(BUILDDI
 	$(PDFTK) $(filter %.pdf,$^) cat 1 output $$text
 	$(PDFTK) $$text stamp $$bg output $@
 
-BINDINGFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_text).pdf))
+BINDINGFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(BOUNDLAYOUTS),$(_binding)-$(_text),.pdf))
 $(BINDINGFRAGMENTS): .EXTRA_PREREQS = $(LUAINCLUDES)
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(CASILEDIR)/binding.xml $$(call parse_bookid,$$@)-manifest.yml
 $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf: $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@))
@@ -751,7 +751,7 @@ $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf:
 	export SILE_PATH="$(subst $( ),;,$(strip $(SILEPATH)))"
 	$(SILE) $(SILEFLAGS) $(call use_luas,$^ $| $*.lua) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
 
-FRONTFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_front).png))
+FRONTFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(BOUNDLAYOUTS),$(_binding)-$(_fragment)-$(_front),.png))
 $(FRONTFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_front).png: $(BUILDDIR)/%-$(_text).pdf | $$(geometryfile)
 	$(sourcegeometry)
 	$(MAGICK) \
@@ -765,7 +765,7 @@ $(FRONTFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_front).png: $(BUILDDIR)/%-$(_te
 		-compose Copy -layers Flatten +repage \
 		$@
 
-BACKFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_back).png))
+BACKFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(BOUNDLAYOUTS),$(_binding)-$(_fragment)-$(_back),.png))
 $(BACKFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_back).png: $(BUILDDIR)/%-$(_text).pdf | $$(geometryfile)
 	$(sourcegeometry)
 	$(MAGICK) \
@@ -779,7 +779,7 @@ $(BACKFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_back).png: $(BUILDDIR)/%-$(_text
 		-compose Copy -layers Flatten +repage \
 		$@
 
-SPINEFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(BOUNDLAYOUTS),-$(_binding)-$(_fragment)-$(_spine).png))
+SPINEFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(BOUNDLAYOUTS),$(_binding)-$(_fragment)-$(_spine),.png))
 $(SPINEFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_spine).png: $(BUILDDIR)/%-$(_text).pdf | $$(geometryfile)
 	$(sourcegeometry)
 	$(MAGICK) \
@@ -793,7 +793,7 @@ $(SPINEFRAGMENTS): $(BUILDDIR)/%-$(_fragment)-$(_spine).png: $(BUILDDIR)/%-$(_te
 		-compose Copy -layers Flatten +repage \
 		$@
 
-COVERFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_text).pdf))
+COVERFRAGMENTS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(UNBOUNDLAYOUTS),$(_cover)-$(_text),.pdf))
 $(COVERFRAGMENTS): .EXTRA_PREREQS = $(LUAINCLUDES)
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(CASILEDIR)/cover.xml $$(call parse_bookid,$$@)-manifest.yml
 $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf: $(PROJECTLUA) $$(TARGETLUAS_$$(call parse_bookid,$$@))
@@ -812,7 +812,7 @@ $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf:
 	export SILE_PATH="$(subst $( ),;,$(strip $(SILEPATH)))"
 	$(SILE) $(SILEFLAGS) $(call use_luas,$^ $| $*.lua) $< -o $@
 
-FRONTFRAGMENTIMAGES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(UNBOUNDLAYOUTS),-$(_cover)-$(_fragment).png))
+FRONTFRAGMENTIMAGES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(UNBOUNDLAYOUTS),$(_cover)-$(_fragment),.png))
 $(FRONTFRAGMENTIMAGES): $(BUILDDIR)/%-$(_fragment).png: $(BUILDDIR)/%-$(_text).pdf
 	$(MAGICK) \
 		$(MAGICKARGS) \
@@ -841,7 +841,7 @@ $(BUILDDIR)/publisher_logo-grey.svg: $(PUBLISHERLOGO) | $(BUILDDIR)
 	$(call skip_if_tracked,$@)
 	cp $< $@
 
-BINDINGIMAGES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(BOUNDLAYOUTS),-$(_binding).png))
+BINDINGIMAGES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(BOUNDLAYOUTS),$(_binding),.png))
 $(BINDINGIMAGES): $(BUILDDIR)/%-$(_binding).png: $$(addsuffix .png,$$(addprefix $$(basename $$@)-$(_fragment)-,$(_front) $(_back) $(_spine)))
 $(BINDINGIMAGES): $(BUILDDIR)/%-$(_binding).png: $(BUILDDIR)/$$(call parse_bookid,$$@)-$(_barcode).png
 $(BINDINGIMAGES): $(BUILDDIR)/%-$(_binding).png: $(BUILDDIR)/publisher_emblum.svg $(BUILDDIR)/publisher_emblum-grey.svg $(BUILDDIR)/publisher_logo.svg $(BUILDDIR)/publisher_logo-grey.svg
@@ -905,7 +905,7 @@ $(BUILDDIR)/%-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printco
 DISTFILES += *-$(_binding).pdf
 
 # Dial down trim/bleed for non-full-bleed output so we can use the same math
-UNBOUNDGEOMETRIES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(UNBOUNDLAYOUTS),-$(_geometry).sh))
+UNBOUNDGEOMETRIES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(UNBOUNDLAYOUTS),$(_geometry),.sh))
 $(UNBOUNDGEOMETRIES): private BLEED = $(NOBLEED)
 $(UNBOUNDGEOMETRIES): private TRIM = $(NOTRIM)
 
@@ -925,7 +925,7 @@ $(EMPTYGEOMETRIES): $(BUILDDIR)/$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml | 
 	$(SILE) $(SILEFLAGS) $(call use_luas,$^ $| $*.lua) --use packages.dumpframes\[outfile=$(basename $@).tof\] $< -o $@
 
 # Hard coded list instead of plain pattern because make is stupid: http://stackoverflow.com/q/41694704/313192
-GEOMETRIES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(ALLLAYOUTS),-$(_geometry).sh))
+GEOMETRIES := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(EDITIONEDITSOURCES),$(ALLLAYOUTS),$(_geometry),.sh))
 $(GEOMETRIES): $(BUILDDIR)/%-$(_geometry).sh: $$(call geometrybase,$$@) $$(call newgeometry,$$@)
 	$(ZSH) << 'EOF' # inception to break out of CaSILE’s make shell wrapper
 	export PS4=; set -x ; exec 2> $@ # black magic to output the finished math
@@ -1068,7 +1068,7 @@ VIRTUALSCREENS := $(call pattern_list,$(SOURCES),.$(_screen))
 .PHONY: $(VIRTUALSCREENS)
 $(VIRTUALSCREENS): %.$(_screen): %-$(_screen).pdf %-manifest.yml
 
-MANIFESTS := $(call pattern_list,$(SOURCES),-manifest.yml)
+MANIFESTS := $(call pattern_list,$(SOURCES),manifest,.yml)
 $(MANIFESTS): %-manifest.yml: $(CASILEDIR)/casile.yml $(METADATA) $(PROJECTYAML) $$(TARGETYAMLS_$$*)
 	# $(YQ) -M -e -s -y 'reduce .[] as $$item({}; . + $$item)' $(filter %.yml,$^) |
 	$(PERL) -MYAML::Merge::Simple=merge_files \
@@ -1086,12 +1086,12 @@ DISTFILES += $(MANIFESTS)
 $(BUILDDIR)/%-manifest.json: %-manifest.yml | $(BUILDDIR)
 	$(YQ) . $< > $@
 
-BIOHTMLS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),-bio.html))
+BIOHTMLS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),bio,.html))
 $(BIOHTMLS): $(BUILDDIR)/%-bio.html: %-manifest.yml
 	$(YQ) -r '.creator[0].about' $(filter %-manifest.yml,$^) |
 		$(PANDOC) -f markdown -t html | head -c -1 > $@
 
-DESHTMLS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),-description.html))
+DESHTMLS := $(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),description,.html))
 $(DESHTMLS): $(BUILDDIR)/%-description.html: %-manifest.yml
 	$(YQ) -r '.abstract' $(filter %-manifest.yml,$^) |
 		$(PANDOC) -f markdown -t html | head -c -1 > $@
