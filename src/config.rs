@@ -21,6 +21,7 @@ impl CONF {
             .set_default("quiet", false)?
             .set_default("verbose", false)?
             .set_default("language", crate::DEFAULT_LOCALE)?
+            .set_default("passthrough", false)?
             .set_default("project", "./")?;
         Ok(())
     }
@@ -59,6 +60,9 @@ impl CONF {
             self.set_bool("verbose", true)?;
         } else if args.quiet {
             self.set_bool("quiet", true)?;
+        }
+        if args.passthrough {
+            self.set_bool("passthrough", true)?;
         }
         if let Some(path) = &args.project.to_str() {
             self.set_str("project", path)?;

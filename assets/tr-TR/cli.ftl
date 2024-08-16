@@ -2,6 +2,9 @@ help-description =
   CaSILE avadanlığı için komut satırı arayüzü, SILE ve benzer
   sihirbazlığından faydılanan bir yayınlama işi akışı.
 
+help-flag-passthrough =
+  Tüm kullanıcı arayüzü çıktılarından vazgeçin ve sadece alt işlem çıktısını verin
+
 help-subcommand-run =
   CaSILE ortamı içinde yardımcı komut dosyasını çalıştırın
 

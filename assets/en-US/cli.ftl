@@ -15,6 +15,9 @@ help-flag-language =
 help-flag-quiet =
   Enable extra debug output from tooling
 
+help-flag-passthrough =
+  Eschew all UI output and just pass the subprocess output through
+
 # Currently hard coded, see clap issue #1880
 help-flag-verbose =
   Enable extra verbose output from tooling

@@ -29,7 +29,6 @@ pub fn run(name: String, arguments: Vec<OsString>) -> Result<()> {
         .cwd(workdir)
         .stderr(Redirection::Pipe)
         .stdout(Redirection::Pipe);
-    eprintln!("all the way to base whatsit");
     let mut popen = process.popen()?;
     let bufstdout = io::BufReader::new(popen.stdout.as_mut().unwrap());
     // let bufstderr = io::BufReader::new(popen.stderr.as_mut().unwrap());

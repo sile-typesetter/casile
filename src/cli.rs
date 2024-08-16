@@ -18,6 +18,11 @@ pub struct Cli {
     #[clap(short, long)]
     pub language: Option<String>,
 
+    // FTL: help-flag-passthrough
+    /// Eschew all UI output and just pass the subprocess output through
+    #[clap(short, long)]
+    pub passthrough: bool,
+
     // FTL: help-flag-project
     /// Set project root path
     #[clap(short = 'P', long, default_value = "./")]
