@@ -43,7 +43,7 @@ pub enum Commands {
     /// Build specified target(s) with ‘make’
     Make {
         // FTL: help-subcommand-make-target
-        /// Target as defined in CaSILE or project rules
+        /// Target(s) as defined by CaSILE in project rules
         target: Vec<String>,
     },
 
