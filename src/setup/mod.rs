@@ -14,8 +14,8 @@ use subprocess::{Exec, NullFile, Redirection};
 /// Setup a publishing project for use with CaSILE
 pub fn run() -> Result<()> {
     let subcommand_status = CASILEUI.new_subcommand("setup");
-    let path = &CONF.get_string("path")?;
-    let metadata = fs::metadata(path)?;
+    let project = &CONF.get_string("project")?;
+    let metadata = fs::metadata(project)?;
     let ret = match metadata.is_dir() {
         true => match is_repo()? {
             true => {

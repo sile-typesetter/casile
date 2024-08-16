@@ -21,7 +21,7 @@ pub fn run(name: String, arguments: Vec<OsString>) -> Result<()> {
         .env("CONTAINERIZED", status::is_container().to_string())
         .env("LANGUAGE", locale_to_language(CONF.get_string("language")?))
         .env("PROJECT", gitname)
-        .env("PROJECTDIR", CONF.get_string("path")?)
+        .env("PROJECTDIR", CONF.get_string("project")?)
         .env("PROJECTVERSION", git_version);
     let repo = get_repo()?;
     let workdir = repo.workdir().unwrap();

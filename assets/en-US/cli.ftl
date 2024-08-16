@@ -41,7 +41,7 @@ help-subcommand-setup =
   Setup a publishing project for use with CaSILE
 
 # Currently hard coded, see clap issue #1880
-help-subcommand-setup-path =
+help-subcommand-setup-project =
   Path to publishing project repository
 
 error-not-setup =
@@ -58,7 +58,7 @@ error-invalid-resources =
 error-no-remote =
   Git repository does not have a working remote named 'origin'.
 
-error-no-path =
+error-no-project =
   Cannot parse directory path.
 
 welcome =

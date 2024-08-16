@@ -63,7 +63,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
         .env("CONTAINERIZED", status::is_container().to_string())
         .env("LANGUAGE", locale_to_language(CONF.get_string("language")?))
         .env("PROJECT", gitname)
-        .env("PROJECTDIR", CONF.get_string("path")?)
+        .env("PROJECTDIR", CONF.get_string("project")?)
         .env("PROJECTVERSION", git_version);
     if CONF.get_bool("debug")? {
         // || targets.contains(&"-p".into())

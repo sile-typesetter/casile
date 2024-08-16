@@ -71,8 +71,8 @@ impl error::Error for Error {
 
 /// Get repository object
 pub fn get_repo() -> Result<Repository> {
-    let path = CONF.get_string("path")?;
-    Ok(Repository::discover(path)?)
+    let project = CONF.get_string("project")?;
+    Ok(Repository::discover(project)?)
 }
 
 /// Check to see if we're running in GitHub Actions

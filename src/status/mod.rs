@@ -66,16 +66,16 @@ pub fn get_gitname() -> Result<String> {
             .as_str();
         Ok(String::from(name))
     }
-    fn path() -> Result<String> {
-        let path = &CONF.get_string("path")?;
-        let file = path::Path::new(path)
+    fn project() -> Result<String> {
+        let project = &CONF.get_string("project")?;
+        let file = path::Path::new(project)
             .file_name()
-            .ok_or_else(|| Error::new("error-no-path"))?
+            .ok_or_else(|| Error::new("error-no-project"))?
             .to_str();
         Ok(file.unwrap().to_string())
     }
     let default = Ok(String::from("casile"));
-    origin().or_else(|_| path().or(default))
+    origin().or_else(|_| project().or(default))
 }
 
 /// Scan for existing makefiles with CaSILE rules

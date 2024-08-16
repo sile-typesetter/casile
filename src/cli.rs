@@ -18,10 +18,10 @@ pub struct Cli {
     #[clap(short, long)]
     pub language: Option<String>,
 
-    // FTL: help-flag-path
+    // FTL: help-flag-project
     /// Set project root path
-    #[clap(short, long, default_value = "./")]
-    pub path: path::PathBuf,
+    #[clap(short = 'P', long, default_value = "./")]
+    pub project: path::PathBuf,
 
     // FTL: help-flag-quiet
     /// Discard all non-error output messages
