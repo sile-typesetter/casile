@@ -147,7 +147,7 @@ normalize_markdown: $(MARKDOWNSOURCES)
 	$(call munge,$(filter %.md,$^),figure_dash.pl,Convert hyphens between numbers to figure dashes)
 	$(call munge,$(filter %.md,$^),italic_reorder.pl,Fixup italics around names and parethesised translations)
 	#(call munge,$(filter %.md,$^),apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
-	$(call munge,$(filter %.md,$^),$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(subst -smart,+smart,$(PANDOCFILTERARGS)) $(cleanupcriticmarkfrompandoc),Normalize and tidy Markdown syntax using Pandoc)
+	$(call munge,$(filter %.md,$^),$(PANDOC) $(PANDOCARGS) $(NORMALIZATIONARGS) $(PANDOCFILTERS) $(subst -smart,+smart,$(PANDOCFILTERARGS)) $(cleanupcriticmarkfrompandoc),Normalize and tidy Markdown syntax using Pandoc)
 	$(call munge,$(filter %.md,$^),reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
 
 normalize_markdown: normalize_markdown_$(LANGUAGE)
