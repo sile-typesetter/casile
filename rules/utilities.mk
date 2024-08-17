@@ -166,26 +166,6 @@ normalize_references: $(MARKDOWNSOURCES)
 .PHONY: normalize
 normalize: normalize_lua normalize_markdown normalize_references
 
-.PHONY: normalize_files
-normalize_files: private PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/titlecase_titles.lua
-normalize_files: private PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/chapterid.lua
-normalize_files:
-	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
-	$(if $(MARKDOWNSOURCES),,exit 0)
-	echo $(MARKDOWNSOURCES) |
-		$(PERL) -pne 's/ /\n/g' |
-		$(PCREGREP) "$(PROJECTDIR)/($(subst $(space),|,$(strip $(SOURCES))))-.*/" |
-		while read src; do
-			$(GIT) diff-files --quiet -- $${src} || exit 1 # die if this file has uncommitted changes
-			basename $${src} | $(PERL) -pne 's/-.*$$//' | read chapno
-			dirname $${src} | read dir
-			$(SED) -n '/^#/{s/ı/i/g;p}' $${src} |
-				$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) $(PANDOCNORMALIZEARGS) | read identifier
-				target="$${dir}/$${chapno}-$${identifier}.md"
-				[[ $${src} == $${target} ]] || $(GIT) mv "$${src}" "$${target}"
-		done
-	$(GIT) diff-index --quiet --cached HEAD || $(GIT) commit -m "[auto] Normalize filenames based on chapter ids"
-
 watch:
 	$(GIT) ls-files --recurse-submodules |
 		$(ENTR) $(ENTRFLAGS) make DRAFT=true LAZY=true $(WATCHARGS)

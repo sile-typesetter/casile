@@ -72,4 +72,6 @@ for file in $files; do
 done
 
 track $bookid.md
-commit 'Split file up into chapters and sections'
+commit "Split $bookid up into chapters and sections"
+
+${0:a:h}/normalize_files.zsh $bookid
