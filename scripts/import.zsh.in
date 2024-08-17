@@ -17,7 +17,9 @@ test -f $input
 pandoc_args=(
 	--wrap=none
 	--markdown-headings=atx
-	--to=markdown
+	--to=markdown-yaml_metadata_block
+	--lua-filter=${0:a:h}/../pandoc-filters/mark-parts.lua
+	--lua-filter=${0:a:h}/../pandoc-filters/mark-epigraphs.lua
 )
 
 function import_scrivener-mmd () {
