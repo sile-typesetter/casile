@@ -22,7 +22,8 @@ impl CONF {
             .set_default("verbose", false)?
             .set_default("language", crate::DEFAULT_LOCALE)?
             .set_default("passthrough", false)?
-            .set_default("project", "./")?;
+            .set_default("project", "./")?
+            .set_default("builddir", ".casile")?;
         Ok(())
     }
 

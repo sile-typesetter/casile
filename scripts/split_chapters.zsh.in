@@ -12,6 +12,7 @@ section_no=0
 of=$md
 files=()
 
+mkdir $BUILDDIR
 src=$(mktemp $BUILDDIR/splitXXXXXX.md)
 trap 'rm -rf $src' EXIT SIGHUP SIGTERM
 

@@ -15,6 +15,7 @@ pub fn run(name: String, arguments: Vec<OsString>) -> Result<()> {
     let gitname = status::get_gitname()?;
     let git_version = status::get_git_version();
     process = process
+        .env("BUILDDIR", CONF.get_string("builddir")?)
         .env("CASILE_CLI", "true")
         .env("CASILE_JOBS", cpus)
         .env("CASILEDIR", CONFIGURE_DATADIR)

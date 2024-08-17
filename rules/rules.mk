@@ -162,9 +162,6 @@ export FONTCONFIG_FILE := $(shell $(_ENV) test -d "$(BUILDDIR)" || $(MKDIR_P) "$
 # setpriv (which we do in Docker), so just keep it all local.
 export MAGICK_TEMPORARY_PATH := $(shell $(_ENV) test -d "$(BUILDDIR)" || $(MKDIR_P) "$(BUILDDIR)" && cd "$(BUILDDIR)" && pwd)
 
-# For the benefit of scritps and other contexts outside of this Makefile scope...
-export CASILE_BUILDDIR := $(realpath $(BUILDDIR))
-
 # Extensible list of files for git to ignore
 IGNORES += $(PROJECTCONFIGS)
 IGNORES += $(BUILDDIR)
