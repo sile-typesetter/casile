@@ -67,6 +67,7 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     QUE_PROGVAR([pgrep])
     QUE_PROGVAR([podofobox])
     QUE_PROGVAR([povray])
+    QUE_PROGVAR([rg])
     QUE_PROGVAR([sassc])
     QUE_PROGVAR([sile])
     QUE_PROGVAR([sort])
