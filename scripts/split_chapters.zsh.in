@@ -1,51 +1,59 @@
 #!@ZSH@
 set -e
-set -x
 
-md=$1
-base=${md/.md}
+source "${0:a:h}/functions.zsh"
+
+alias pandoc="@PANDOC@"
+alias sponge="@SPONGE@"
+alias sed="@SED@"
+alias mkdir="@MKDIR_P@"
+
+splitlevels=$1
+test -n $splitlevels
+
+bookid=$2
+test -n $bookid
 
 # TODO: actually support --top-level=part where parts are another level of splits
 part_no=0
 chapter_no=0
 section_no=0
-of=$md
+of=$bookid.md
 files=()
 
 mkdir $BUILDDIR
 src=$(mktemp $BUILDDIR/splitXXXXXX.md)
 trap 'rm -rf $src' EXIT SIGHUP SIGTERM
 
-mv $md $src
-truncate -s0 $md
+mv $bookid.md $src
+truncate -s0 $bookid.md
 
-@PANDOC@ $src --markdown-headings=atx --wrap=none --to=markdown --reference-location=document |
+pandoc $src --markdown-headings=atx --wrap=none --to=markdown --reference-location=document |
 while read -r line; do
 	# Stop processing if we've hit footnotes
 	[[ $line =~ "^\[\^1\]: .*" ]] && break
 
 	# Check for headers
 	if [[ $line =~ '^\\part\{.*\}$' ]]; then
-		of=$md
+		of=$bookid.md
 	elif [[ $line =~ "^#+ .*" ]]; then
 		if [[ $line =~ "^# " ]]; then
 			section_no=0
 			[[ $line =~ ".*unnumbered.*" ]] || let chapter_no=$chapter_no+1
-			dir=${base}-${TOPLEVELDIVISION}s
-			@MKDIR_P@ $dir
+			dir=${bookid}-chapters
+			mkdir $dir
 			of=$dir/$(printf %03d $chapter_no).md
 			files+=($of)
-			>> $md <<< "esyscmd([[loadchapters.zsh \"$of\"]])"$'\n'
-		elif [[ $line =~ "^## " ]] && [[ $SPLITLEVELS -le 2 ]] then
+			>> $bookid.md <<< "esyscmd([[loadchapters.zsh \"$of\"]])"$'\n'
+		elif [[ $line =~ "^## " ]] && [[ $splitlevels -le 2 ]] then
 			[[ $line =~ ".*unnumbered.*" ]] || let section_no=$section_no+1
-			dir=${base}-${TOPLEVELDIVISION}s/$(printf %03d $chapter_no)-${SECONDLEVELDIVISION}s/
-			@MKDIR_P@ $dir
+			dir=${bookid}-chapters/$(printf %03d $chapter_no)-sections/
+			mkdir $dir
 			of=$dir/$(printf %03d $section_no).md
 			files+=($of)
-			>> $md <<< "esyscmd([[loadchapters.zsh \"$of\"]])"$'\n'
-		elif [[ $SPLITLEVELS -ge 3 ]] then
-			echo "Unsupported 3 level split" >2
-			exit 1
+			>> $bookid.md <<< "esyscmd([[loadchapters.zsh \"$of\"]])"$'\n'
+		elif [[ $splitlevels -ge 3 ]] then
+			flunk 'Unsupported 3 level split'
 		fi
 	fi
 
@@ -53,14 +61,15 @@ while read -r line; do
 done
 
 # Truncate source to just footnotes
-@SED@ -i -n -e '/^\[\^1\]: /,$p' $src
+sed -i -n -e '/^\[\^1\]: /,$p' $src
 
 # Put footnotes in all files, renumber, and generally cleanup
 for file in $files; do
 	>> $file < $src
-	@PANDOC@ $file --markdown-headings=atx --wrap=none --to=markdown |
-		@SPONGE@ $file
-	@GIT@ add $file
+	pandoc $file --markdown-headings=atx --wrap=none --to=markdown |
+		sponge $file
+	track $file
 done
 
-@GIT@ add $md
+track $bookid.md
+commit 'Split file up into chapters and sections'

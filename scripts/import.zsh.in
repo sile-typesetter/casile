@@ -40,3 +40,5 @@ import_${format} $bookid $input
 
 untrack $input
 commit "Import $format source as $bookid"
+
+${0:a:h}/split_chapters.zsh 2 $bookid
