@@ -1,0 +1,46 @@
+alias git="@GIT@"
+
+function flunk () {
+	echo "Error: $@" >2
+	exit 1
+}
+
+function require_pristine_project () {
+	# disallow anything already staged
+	git diff-index --quiet --cached HEAD ||
+		flunk 'Staging not clean'
+	# disallow any unstaged working dir changes
+	git diff-files --quiet -- .untracked $=1 ||
+		flunk 'Unstaged working dir changes present'
+}
+
+function track () {
+	git add $=@
+}
+
+function untrack () {
+	git rm -rf --ignore-unmatch .untracked $=@
+}
+
+function commit () {
+	git diff-index --quiet --cached HEAD ||
+		git commit -m "[auto] $@"
+}
+
+function remove_extant_bookid () {
+	: ${bookid=$1}
+	test -n bookid
+	setopt -o nullglob
+	require_pristine_project ${bookid}*
+	untrack ${bookid}.* $bookid-*/**
+	commit "Clear existing sources for $bookid"
+}
+
+function normalize_scrivener_mmd () {
+	sed -E 's/^\\#\\#\\#$/----/' |
+		sed -E 's/^\*:::/::: */' |
+		sed -E 's/^::: (\*)? ?.verse/::: verse\n\1/' |
+		sed -E 's/ ?:::(\*)?$/\1\n:::/g' |
+		sed -E 's/^\.[  ]\*[  ]\.[  ]\./*.../' |
+		sed -E 's/\.[  ]\.[  ]\./.../'
+}

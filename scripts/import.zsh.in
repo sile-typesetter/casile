@@ -1,0 +1,42 @@
+#!@ZSH@
+set -e
+
+setopt -o nullglob
+
+source "${0:a:h}/functions.zsh"
+
+: ${bookid:=$1}
+test -n bookid
+
+: ${format:=$2}
+test -n format
+
+: ${input:=$3}
+test -f $input
+
+pandoc_args=(
+	--wrap=none
+	--markdown-headings=atx
+	--to=markdown
+)
+
+function import_scrivener-mmd () {
+	alias sed="@SED@"
+	alias pandoc="@PANDOC@"
+	: ${bookid:=$1}
+	: ${input:=$2}
+	cat $input |
+		normalize_scrivener_mmd |
+		pandoc ${pandoc_args[@]} -o $bookid.md
+	track $bookid.md
+}
+
+remove_extant_bookid $bookid
+
+track "$input"
+commit 'Track file submitted for import (temporarily)'
+
+import_${format} $bookid $input
+
+untrack $input
+commit "Import $format source as $bookid"
