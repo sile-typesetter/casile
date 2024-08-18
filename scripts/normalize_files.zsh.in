@@ -1,7 +1,7 @@
 #!@ZSH@
 set -e
 
-source "${0:a:h}/functions.zsh"
+source "$CASILEDIR/scripts/functions.zsh"
 
 alias git="@GIT@"
 alias pandoc="@PANDOC@"
@@ -13,14 +13,14 @@ test -n bookid
 require_pristine_project ${bookid}*
 
 pandoc_args=(
-	--lua-filter=${0:a:h}/../pandoc-filters/chapterid.lua
+	--lua-filter="$CASILEDIR/pandoc-filters/chapterid.lua"
 )
 
 # TODO: do we need turkish filename hacks back?
 # $(SED) -n '/^#/{s/ı/i/g;p}' |
 
 # TODO: finish and use related files finder?
-# ${0:a:h}/list_related_files.zsh $bookid |
+# $CASILEDIR/scripts/list_related_files.zsh $bookid |
 
 git ls-files "$bookid-*/*.md" |
 	xargs rg --files-without-match loadchapters.zsh |
