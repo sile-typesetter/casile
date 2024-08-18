@@ -66,7 +66,7 @@ sed -i -n -e '/^\[\^1\]: /,$p' $src
 # Put footnotes in all files, renumber, and generally cleanup
 for file in $files; do
 	>> $file < $src
-	pandoc $file --markdown-headings=atx --wrap=none --to=markdown |
+	normalize_pandoc < $file |
 		sponge $file
 	track $file
 done
