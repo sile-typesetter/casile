@@ -1,0 +1,22 @@
+#!@ZSH@
+set -e
+
+source "$CASILEDIR/scripts/functions.zsh"
+
+: ${CASILE-:casile}
+alias casile="$CASILE"
+
+bookid=$1
+test -n $bookid
+
+processed="$BUILDDIR/$bookid-processed.md"
+casile make -- $processed
+remove_extant_bookid $bookid
+
+# Restore meta-data just (maybe) nuked
+git checkout HEAD^ -- $bookid.yml
+git commit --amend --no-edit
+
+mv $processed $bookid.md
+track $bookid.md
+commit "Flatten $bookid source structure into single file"
