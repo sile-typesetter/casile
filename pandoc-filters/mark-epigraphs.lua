@@ -1,6 +1,6 @@
 local after_header
 
-local function blocks (blocks)
+local function mark_epigraph_blocks (blocks)
    for i, block in ipairs(blocks) do
       if block.t == "Header" and block.level <= 2 then
          after_header = true
@@ -17,5 +17,5 @@ end
 
 return {
    traverse = "topdown",
-   { Blocks = blocks }
+   { Blocks = mark_epigraph_blocks },
 }

@@ -178,7 +178,7 @@ ruff:
 	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(RUFF) check
 
 stylua:
-	$(STYLUA) --check --respect-ignores -g '*.lua' -g '*.lua.in' .
+	$(STYLUA) --check --respect-ignores -g '!lua-libraries*' -g '!lua_modules/*' -g '*.lua' -g '*.lua.in' .
 
 ruff-format:
 	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(RUFF) format --check

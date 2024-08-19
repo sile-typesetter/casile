@@ -10,7 +10,7 @@ local function wrap_sentences (element)
          content[i].t == "Space"
          and previous_stringly:match(eos)
          -- Don't break if the next character is a lower case
-         and not (content[i+1] and pandoc.utils.stringify(content[i+1]):match("^%l"))
+         and not (content[i + 1] and pandoc.utils.stringify(content[i + 1]):match("^%l"))
       then
          content[i] = pandoc.SoftBreak()
       end
