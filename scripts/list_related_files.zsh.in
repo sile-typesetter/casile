@@ -15,11 +15,13 @@ case $cmd in
         ;;
     mds)
         alias git="@GIT@"
-        # Separate commands to set our own sort priority
-        git ls-files "$PROJECT.md" ||:
-        git ls-files "$PROJECT-*.md" ||:
-        git ls-files "$bookid.md" ||:
-        git ls-files "$bookid-**.md" ||:
+        alias sed="@SED@"
+        alias sort="@SORT@"
+        # wrangle our own sorting so NNN.md comes before NNN-foo/bar.md
+        git ls-files "$PROJECT.md" "$PROJECT-*.md" "$bookid.md" "$bookid-**.md" |
+            sed -E 's/\.md$/,md/' |
+            LANG=c sort -n |
+            sed -E 's/,md$/.md/'
         exit 0
         ;;
   srcid)
