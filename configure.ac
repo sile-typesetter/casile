@@ -59,6 +59,7 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     QUE_PROGVAR([mdbook])
     QUE_PROGVAR([node])
     QUE_PROGVAR([pandoc])
+    QUE_PROGVAR([parallel])
     QUE_PROGVAR([pcregrep])
     QUE_PROGVAR([pdfbook2])
     QUE_PROGVAR([pdfinfo])
