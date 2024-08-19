@@ -25,8 +25,7 @@ pub struct Cli {
 
     // FTL: help-flag-project
     /// Set project root path
-    #[clap(short = 'P', long, default_value = "./")]
-    #[clap(name = "FILE", value_hint = clap::ValueHint::DirPath)]
+    #[clap(short = 'P', long, default_value = "./", value_hint = clap::ValueHint::DirPath)]
     pub project: path::PathBuf,
 
     // FTL: help-flag-quiet
@@ -50,7 +49,7 @@ pub enum Commands {
     Make {
         // FTL: help-subcommand-make-target
         /// Target(s) as defined by CaSILE in project rules
-        #[clap(name = "FILE", value_hint = clap::ValueHint::AnyPath)]
+        #[clap(value_hint = clap::ValueHint::AnyPath)]
         target: Vec<String>,
     },
 
@@ -59,11 +58,12 @@ pub enum Commands {
     Run {
         // FTL: help-subcommand-run-name
         /// Run script name as supplied by CaSILE, toolkit, or project
-        #[clap(name = "FILE", value_hint = clap::ValueHint::CommandName)]
+        #[clap(value_hint = clap::ValueHint::CommandName)]
         name: String,
 
         // FTL: help-subcommand-run-arguments
         /// Arguments to pass to script being run
+        #[clap(value_hint = clap::ValueHint::Unknown)]
         arguments: Vec<OsString>,
     },
 
