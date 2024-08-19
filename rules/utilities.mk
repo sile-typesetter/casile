@@ -141,13 +141,14 @@ normalize_lua: $(LUASOURCES)
 
 .PHONY: normalize_markdown
 normalize_markdown: private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/titlecase_titles.lua
+normalize_markdown: private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/sentence_lines.lua
 normalize_markdown: $(MARKDOWNSOURCES)
 	$(call munge,$(filter %.md,$^),msword_escapes.pl,Fixup bad MS word typing habits that Pandoc tries to preserve)
 	$(call munge,$(filter %.md,$^),lazy_quotes.pl,Replace lazy double single quotes with real doubles)
 	$(call munge,$(filter %.md,$^),figure_dash.pl,Convert hyphens between numbers to figure dashes)
 	$(call munge,$(filter %.md,$^),italic_reorder.pl,Fixup italics around names and parethesised translations)
 	#(call munge,$(filter %.md,$^),apostrophize_names.pl,Use apostrophes when adding suffixes to proper names)
-	$(call munge,$(filter %.md,$^),$(PANDOC) $(PANDOCARGS) $(NORMALIZATIONARGS) $(PANDOCFILTERS) $(subst -smart,+smart,$(PANDOCFILTERARGS)) $(cleanupcriticmarkfrompandoc),Normalize and tidy Markdown syntax using Pandoc)
+	$(call munge,$(filter %.md,$^),$(PANDOC) $(PANDOCARGS) $(PANDOCNORMALIZEARGS) $(PANDOCFILTERS) $(subst -smart,+smart,$(PANDOCFILTERARGS)) $(cleanupcriticmarkfrompandoc),Normalize and tidy Markdown syntax using Pandoc)
 	$(call munge,$(filter %.md,$^),reorder_punctuation.pl,Cleanup punctuation mark order such as footnote markers)
 
 normalize_markdown: normalize_markdown_$(LANGUAGE)
@@ -165,34 +166,6 @@ normalize_references: $(MARKDOWNSOURCES)
 
 .PHONY: normalize
 normalize: normalize_lua normalize_markdown normalize_references
-
-split_chapters: export TOPLEVELDIVISION := $(TOPLEVELDIVISION)
-split_chapters: export SECONDLEVELDIVISION := $(SECONDLEVELDIVISION)
-split_chapters: export SPLITLEVELS ?= 1
-split_chapters: export BUILDDIR := $(BUILDDIR)
-split_chapters:
-	$(if $(MARKDOWNSOURCES),,exit 0)
-	$(foreach SOURCE,$(MARKDOWNSOURCES),$(call split_chapters,$(SOURCE));)
-
-.PHONY: normalize_files
-normalize_files: private PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/titlecase_titles.lua
-normalize_files: private PANDOCFILTERS = --lua-filter=$(CASILEDIR)/pandoc-filters/chapterid.lua
-normalize_files:
-	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
-	$(if $(MARKDOWNSOURCES),,exit 0)
-	echo $(MARKDOWNSOURCES) |
-		$(PERL) -pne 's/ /\n/g' |
-		$(PCREGREP) "$(PROJECTDIR)/($(subst $(space),|,$(strip $(SOURCES))))-.*/" |
-		while read src; do
-			$(GIT) diff-files --quiet -- $${src} || exit 1 # die if this file has uncommitted changes
-			basename $${src} | $(PERL) -pne 's/-.*$$//' | read chapno
-			dirname $${src} | read dir
-			$(SED) -n '/^#/{s/ı/i/g;p}' $${src} |
-				$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) $(PANDOCNORMALIZEARGS) | read identifier
-				target="$${dir}/$${chapno}-$${identifier}.md"
-				[[ $${src} == $${target} ]] || $(GIT) mv "$${src}" "$${target}"
-		done
-	$(GIT) diff-index --quiet --cached HEAD || $(GIT) commit -m "[auto] Normalize filenames based on chapter ids"
 
 watch:
 	$(GIT) ls-files --recurse-submodules |

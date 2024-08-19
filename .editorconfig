@@ -9,6 +9,10 @@ trim_trailing_whitespace = true
 [*.1]
 trim_trailing_whitespace = false
 
+[{*.zsh,*.zsh.in}]
+indent_style = tab
+indent_size = 4
+
 [{Makefile*,*.mk,*.mk.in}]
 indent_style = tab
 indent_size = 4

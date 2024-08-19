@@ -1,0 +1,32 @@
+#!@ZSH@
+set -e
+
+source "$CASILEDIR/scripts/functions.zsh"
+
+alias git="@GIT@"
+alias pandoc="@PANDOC@"
+alias rg="@RG@"
+
+: ${bookid:=$1}
+test -n bookid
+
+require_pristine_project ${bookid}*
+
+pandoc_args=(
+	--lua-filter="$CASILEDIR/pandoc-filters/chapterid.lua"
+)
+
+# TODO: do we need turkish filename hacks back?
+# $(SED) -n '/^#/{s/ı/i/g;p}' |
+
+$CASILEDIR/scripts/list_related_files.zsh mds $bookid |
+	xargs rg --files-without-match loadchapters.zsh |
+	while read file; do
+		basename $file | IFS='[-.]' read no _
+		dirname $file | read dir
+		rg -m1 '^#' $file | pandoc ${pandoc_args[@]} | read identifier
+		[[ $identifier == nil ]] && continue
+		git mv -k "$file" "$dir/$no-$identifier.md"
+	done
+
+commit "Normalize $bookid filenames based on heading ids"

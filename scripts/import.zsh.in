@@ -1,0 +1,44 @@
+#!@ZSH@
+set -e
+
+setopt -o nullglob
+
+source "$CASILEDIR/scripts/functions.zsh"
+
+: ${bookid:=$1}
+test -n bookid
+
+: ${format:=$2}
+test -n format
+
+: ${input:=$3}
+test -f $input
+
+function import_scrivener-mmd () {
+	pandoc_args=(
+		--to=markdown-yaml_metadata_block
+		--lua-filter="$CASILEDIR/pandoc-filters/mark-parts.lua"
+		--lua-filter="$CASILEDIR/pandoc-filters/mark-epigraphs.lua"
+	)
+	alias sed="@SED@"
+	alias pandoc="@PANDOC@"
+	: ${bookid:=$1}
+	: ${input:=$2}
+	cat $input |
+		normalize_scrivener_mmd |
+		pandoc ${pandoc_args[@]} |
+		normalize_pandoc > $bookid.md
+	track $bookid.md
+}
+
+remove_extant_bookid $bookid
+
+track "$input"
+commit 'Track file submitted for import (temporarily)'
+
+import_${format} $bookid $input
+
+untrack $input
+commit "Import $format source as $bookid"
+
+"$CASILEDIR/scripts/split_chapters.zsh" 3 $bookid

@@ -22,11 +22,17 @@ impl Default for AsciiInterface {
 
 impl UserInterface for AsciiInterface {
     fn welcome(&self) {
+        if CONF.get_bool("passthrough").unwrap() {
+            return;
+        }
         let welcome = &self.messages.welcome;
         let welcome = style(welcome).cyan();
         println!("{welcome}");
     }
     fn farewell(&self) {
+        if CONF.get_bool("passthrough").unwrap() {
+            return;
+        }
         let time = HumanDuration(self.started.elapsed());
         let farewell = LocalText::new("farewell").arg("duration", time).fmt();
         let farewell = style(farewell).cyan();
@@ -56,6 +62,9 @@ impl AsciiSubcommandStatus {
 impl SubcommandStatus for AsciiSubcommandStatus {
     fn end(&self, _status: bool) {}
     fn error(&mut self, msg: String) {
+        if CONF.get_bool("passthrough").unwrap() {
+            return;
+        }
         let msg = style(msg).red().dim();
         eprintln!("{msg}");
     }
@@ -82,12 +91,18 @@ impl AsciiSetupCheck {
 
 impl SetupCheck for AsciiSetupCheck {
     fn pass(&self) {
+        if CONF.get_bool("passthrough").unwrap() {
+            return;
+        }
         let msg = &self.message;
         let yes = LocalText::new("setup-true").fmt();
         let yes = style(yes).green();
         println!("{msg} {yes}");
     }
     fn fail(&self) {
+        if CONF.get_bool("passthrough").unwrap() {
+            return;
+        }
         let msg = &self.message;
         let no = LocalText::new("setup-false").fmt();
         let no = style(no).red();
@@ -103,15 +118,18 @@ pub struct AsciiJobStatus {
 
 impl AsciiJobStatus {
     fn new(target: MakeTarget) -> Self {
-        // Withouth this, copying the string in the terminal as a word brings a U+2069 with it
-        let mut printable_target: String = target.to_string();
-        printable_target.push(' ');
-        let printable_target = style(printable_target).white().bold();
-        let msg = LocalText::new("make-report-start")
-            .arg("target", printable_target)
-            .fmt();
-        let msg = style(msg).yellow().bright();
-        println!("{msg}");
+        if !CONF.get_bool("passthrough").unwrap() {
+            // Without this, copying the string in the terminal as a word brings a U+2069 with it
+            // c.f. https://github.com/XAMPPRocky/fluent-templates/issues/72
+            let mut printable_target: String = target.to_string();
+            printable_target.push(' ');
+            let printable_target = style(printable_target).white().bold();
+            let msg = LocalText::new("make-report-start")
+                .arg("target", printable_target)
+                .fmt();
+            let msg = style(msg).yellow().bright();
+            println!("{msg}");
+        }
         Self {
             target,
             log: JobBacklog::default(),
@@ -127,11 +145,13 @@ impl JobStatus for AsciiJobStatus {
         self.target.starts_with("debug")
     }
     fn dump(&self) {
+        if !CONF.get_bool("passthrough").unwrap() {
+            let start = LocalText::new("make-backlog-start")
+                .arg("target", self.target.clone())
+                .fmt();
+            println!("{}{start}", style("----- ").cyan());
+        }
         let lines = self.log.lines.read().unwrap();
-        let start = LocalText::new("make-backlog-start")
-            .arg("target", self.target.clone())
-            .fmt();
-        println!("{}{start}", style("----- ").cyan());
         for line in lines.iter() {
             match line.stream {
                 JobBacklogStream::StdOut => {
@@ -144,11 +164,17 @@ impl JobStatus for AsciiJobStatus {
                 }
             }
         }
-        let end = LocalText::new("make-backlog-end").fmt();
-        println!("{} {end}", style("----- ").cyan());
+        if !CONF.get_bool("passthrough").unwrap() {
+            let end = LocalText::new("make-backlog-end").fmt();
+            println!("{} {end}", style("----- ").cyan());
+        }
     }
     fn pass_msg(&self) {
-        // Withouth this, copying the string in the terminal as a word brings a U+2069 with it
+        if CONF.get_bool("passthrough").unwrap() {
+            return;
+        }
+        // Without this, copying the string in the terminal as a word brings a U+2069 with it
+        // c.f. https://github.com/XAMPPRocky/fluent-templates/issues/72
         let mut printable_target: String = self.target.to_string();
         printable_target.push(' ');
         let target = printable_target;
@@ -160,6 +186,9 @@ impl JobStatus for AsciiJobStatus {
         println!("{msg}")
     }
     fn fail_msg(&self, code: u32) {
+        if CONF.get_bool("passthrough").unwrap() {
+            return;
+        }
         // Withouth this, copying the string in the terminal as a word brings a U+2069 with it
         let mut printable_target: String = self.target.to_string();
         printable_target.push(' ');

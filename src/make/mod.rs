@@ -57,13 +57,14 @@ pub fn run(target: Vec<String>) -> Result<()> {
     let gitname = status::get_gitname()?;
     let git_version = status::get_git_version();
     process = process
+        .env("BUILDDIR", CONF.get_string("builddir")?)
         .env("CASILE_CLI", "true")
         .env("CASILE_JOBS", cpus)
         .env("CASILEDIR", CONFIGURE_DATADIR)
         .env("CONTAINERIZED", status::is_container().to_string())
         .env("LANGUAGE", locale_to_language(CONF.get_string("language")?))
         .env("PROJECT", gitname)
-        .env("PROJECTDIR", CONF.get_string("path")?)
+        .env("PROJECTDIR", CONF.get_string("project")?)
         .env("PROJECTVERSION", git_version);
     if CONF.get_bool("debug")? {
         // || targets.contains(&"-p".into())

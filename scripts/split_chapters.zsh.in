@@ -1,65 +1,79 @@
 #!@ZSH@
 set -e
-set -x
 
-md=$1
-base=${md/.md}
+source "$CASILEDIR/scripts/functions.zsh"
 
-# TODO: actually support --top-level=part where parts are another level of splits
+alias pandoc="@PANDOC@"
+alias sed="@SED@"
+alias mkdir="@MKDIR_P@"
+alias parallel="@PARALLEL@"
+
+splitlevels=$1
+test -n $splitlevels
+
+bookid=$2
+test -n $bookid
+
+# TODO: restore support for top level being chapters instead of parts
 part_no=0
 chapter_no=0
 section_no=0
-of=$md
+of=$bookid.md
 files=()
 
+mkdir $BUILDDIR
 src=$(mktemp $BUILDDIR/splitXXXXXX.md)
 trap 'rm -rf $src' EXIT SIGHUP SIGTERM
 
-mv $md $src
-truncate -s0 $md
+mv $bookid.md $src
+truncate -s0 $bookid.md
 
-@PANDOC@ $src --markdown-headings=atx --wrap=none --to=markdown --reference-location=document |
+pandoc $src --markdown-headings=atx --wrap=none --to=markdown --reference-location=document |
 while read -r line; do
 	# Stop processing if we've hit footnotes
 	[[ $line =~ "^\[\^1\]: .*" ]] && break
 
 	# Check for headers
-	if [[ $line =~ '^\\part\{.*\}$' ]]; then
-		of=$md
-	elif [[ $line =~ "^#+ .*" ]]; then
-		if [[ $line =~ "^# " ]]; then
+	if [[ $line =~ "^#+ .*" ]] || [[ $line =~ '^\\part\{.*\}$' ]]; then
+		if [[ $line =~ '^\\part\{.*\}$' ]] && [[ $splitlevels -ge 1 ]]; then
+			chapter_no=0
+			section_no=0
+			let part_no=$part_no+1
+			dir=${bookid}-parts
+			mkdir $dir
+			of=$dir/$(printf %03d $part_no).md
+		elif [[ $line =~ "^# " ]] && [[ $splitlevels -ge 2 ]]; then
 			section_no=0
 			[[ $line =~ ".*unnumbered.*" ]] || let chapter_no=$chapter_no+1
-			dir=${base}-${TOPLEVELDIVISION}s
-			@MKDIR_P@ $dir
+			dir=${bookid}-parts/$(printf %03d $part_no)-chapters
+			mkdir $dir
 			of=$dir/$(printf %03d $chapter_no).md
-			files+=($of)
-			>> $md <<< "esyscmd([[loadchapters.zsh \"$of\"]])"$'\n'
-		elif [[ $line =~ "^## " ]] && [[ $SPLITLEVELS -le 2 ]] then
+		elif [[ $line =~ "^## " ]] && [[ $splitlevels -ge 3 ]]; then
 			[[ $line =~ ".*unnumbered.*" ]] || let section_no=$section_no+1
-			dir=${base}-${TOPLEVELDIVISION}s/$(printf %03d $chapter_no)-${SECONDLEVELDIVISION}s/
-			@MKDIR_P@ $dir
+			dir=${bookid}-parts/$(printf %03d $part_no)-chapters/$(printf %03d $chapter_no)-sections
+			mkdir $dir
 			of=$dir/$(printf %03d $section_no).md
-			files+=($of)
-			>> $md <<< "esyscmd([[loadchapters.zsh \"$of\"]])"$'\n'
-		elif [[ $SPLITLEVELS -ge 3 ]] then
-			echo "Unsupported 3 level split" >2
-			exit 1
+		elif [[ $splitlevels -ge 3 ]] then
+			flunk 'Unsupported 3 level split'
 		fi
+		files+=($of)
 	fi
 
 	>> $of <<< "$line"
 done
 
 # Truncate source to just footnotes
-@SED@ -i -n -e '/^\[\^1\]: /,$p' $src
+sed -i -n -e '/^\[\^1\]: /,$p' $src
 
 # Put footnotes in all files, renumber, and generally cleanup
-for file in $files; do
-	>> $file < $src
-	@PANDOC@ $file --markdown-headings=atx --wrap=none --to=markdown |
-		@SPONGE@ $file
-	@GIT@ add $file
-done
+function cleanup_split () {
+	alias sponge="@SPONGE@"
+	normalize_pandoc < $1 < $src | sponge $1
+}
+F=$(functions cleanup_split normalize_pandoc)
+parallel @ZSH@ -c "$F; src=$src; cleanup_split" ::: ${files[@]}
 
-@GIT@ add $md
+track $bookid.md ${files[@]}
+commit "Split $bookid up into chapters and sections"
+
+"$CASILEDIR/scripts/normalize_files.zsh" $bookid

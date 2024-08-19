@@ -2,7 +2,7 @@ deepl/%.md: $(BUILDDIR)/deepl/%.docx
 	mkdir -p $(@D)
 	$(PANDOC) \
 		$(PANDOCARGS) \
-		$(PANDOCFILTERS) \
+		$(PANDOCFILTERS) $(PANDOCFILTERARGS) \
 		$^ -o $@
 
 targetlang = $(notdir $(abspath $(dir $1)))

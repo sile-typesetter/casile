@@ -162,9 +162,6 @@ export FONTCONFIG_FILE := $(shell $(_ENV) test -d "$(BUILDDIR)" || $(MKDIR_P) "$
 # setpriv (which we do in Docker), so just keep it all local.
 export MAGICK_TEMPORARY_PATH := $(shell $(_ENV) test -d "$(BUILDDIR)" || $(MKDIR_P) "$(BUILDDIR)" && cd "$(BUILDDIR)" && pwd)
 
-# For the benefit of scritps and other contexts outside of this Makefile scope...
-export CASILE_BUILDDIR := $(realpath $(BUILDDIR))
-
 # Extensible list of files for git to ignore
 IGNORES += $(PROJECTCONFIGS)
 IGNORES += $(BUILDDIR)
@@ -180,15 +177,16 @@ export PATH := $(PUBLISHERDIRABS)/scripts:$(PATH)
 endif
 SILEPATH += $(CASILEDIR)
 
-TOPLEVELDIVISION ?= chapter
-SECONDLEVELDIVISION ?= section
+DIVISIONS ?= part chapter section
 
 # Extra arguments to pass to Pandoc
-PANDOCARGS ?= --top-level-division=$(TOPLEVELDIVISION)
-PANDOCARGS += --wrap=preserve
-PANDOCARGS += --markdown-headings=atx
-PANDOCARGS += --reference-location=section
-PANDOCNORMALIZEARGS ?= --from markdown-space_in_atx_header+ascii_identifiers+four_space_rule --to markdown-smart-four_space_rule
+PANDOCARGS ?=
+PANDOCARGS += --top-level-division=$(firstword $(DIVISIONS))
+PANDOCARGS += --reference-location=$(lastword $(DIVISIONS))
+PANDOCNORMALIZEARGS ?=
+PANDOCNORMALIZEARGS += --wrap=preserve
+PANDOCNORMALIZEARGS += --from markdown-space_in_atx_header+ascii_identifiers+four_space_rule
+PANDOCNORMALIZEARGS += --to markdown-smart-four_space_rule
 PANDOCFILTERS ?=
 PANDOCFILTERARGS ?=
 
@@ -533,12 +531,17 @@ SILEFLAGS += $(call use_luas,$(LUAINCLUDES))
 
 preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(PROJECTMACRO) $(TARGETMACROS_$1)
 
-$(BUILDDIR)/%-$(_processed).md: %.md $$(wildcard $(PROJECT)*.md $$*-$(_chapters)/*.md) $$(call preprocess_macros,$$*) | $(BUILDDIR) figures
+$(BUILDDIR)/%-$(_processed).md: %.md $$(shell $(_ENV) list_related_files.zsh mds $$*) $$(call preprocess_macros,$$*) | $(BUILDDIR) figures
 	if $(HIGHLIGHT_DIFF) && $(if $(PARENT),true,false); then
 		export FILTERS="$(filter %.m4,$^)"
 		branch2criticmark.zsh $(PARENT) $<
-	else
+	elif $(RG) -qw loadchapters $<; then
+		# For books using the old M4 macros to load chapters, only process the first dependency
 		$(M4) $(filter %.m4,$^) $<
+	else
+		# For books using the new related files finder, load all md files except the first dependency
+		# Add blank lines between files so headers aren't eaten, c.f. https://unix.stackexchange.com/a/628651/1925
+		$(M4) $(filter %.m4,$^) =($(SED) -s -e '$${p;g;}' $(filter %.md,$(wordlist 2,9999,$^)))
 	fi |
 		renumber_footnotes.pl |
 		$(and $(HEAD),head -n$(HEAD) |) \
@@ -1031,10 +1034,11 @@ include $(CASILEDIR)/rules/zola.mk
 
 ODTS := $(call pattern_list,$(SOURCES),.odt)
 ODTS += $(and $(EDITS),$(call pattern_list,$(SOURCES),$(EDITS),.odt))
+$(ODTS): private PANDOCARGS += --top-level-division
 $(ODTS): %.odt: $(BUILDDIR)/%-$(_processed).md $$(call parse_bookid,$$*)-manifest.yml
 	$(PANDOC) \
 		$(PANDOCARGS) \
-		$(PANDOCFILTERS) \
+		$(PANDOCFILTERS) $(PANDOCFILTERARGS) \
 		$(filter %-manifest.yml,$^) \
 		$(filter %-$(_processed).md,$^) -o $@
 
@@ -1045,7 +1049,7 @@ DOCXS += $(and $(EDITS),$(call pattern_list,$(SOURCES),$(EDITS),.docx))
 $(DOCXS): %.docx: $(BUILDDIR)/%-$(_processed).md $$(call parse_bookid,$$*)-manifest.yml
 	$(PANDOC) \
 		$(PANDOCARGS) \
-		$(PANDOCFILTERS) \
+		$(PANDOCFILTERS) $(PANDOCFILTERARGS) \
 		$(filter %-manifest.yml,$^) \
 		$(filter %-$(_processed).md,$^) -o $@
 
@@ -1057,7 +1061,7 @@ $(HTMLS): PANDOCARGS += --standalone --reference-location=document
 $(HTMLS): %.html: $(BUILDDIR)/%-$(_processed).md $$(call parse_bookid,$$*)-manifest.yml
 	$(PANDOC) \
 		$(PANDOCARGS) \
-		$(PANDOCFILTERS) \
+		$(PANDOCFILTERS) $(PANDOCFILTERARGS) \
 		$(filter %-manifest.yml,$^) \
 		$(filter %-$(_processed).md,$^) -o $@
 

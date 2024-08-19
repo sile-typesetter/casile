@@ -1,0 +1,62 @@
+function flunk () {
+	echo "Error: $@" >2
+	exit 1
+}
+
+function require_pristine_project () {
+	alias git="@GIT@"
+	# disallow anything already staged
+	git diff-index --quiet --cached HEAD ||
+		flunk 'Staging not clean'
+	# disallow any unstaged working dir changes
+	git diff-files --quiet -- .untracked $=1 ||
+		flunk 'Unstaged working dir changes present'
+}
+
+function track () {
+	alias git="@GIT@"
+	git add $=@
+}
+
+function untrack () {
+	alias git="@GIT@"
+	git rm -rf --ignore-unmatch .untracked $=@
+}
+
+function commit () {
+	alias git="@GIT@"
+	git diff-index --quiet --cached HEAD ||
+		git commit -m "[auto] $@"
+}
+
+function remove_extant_bookid () {
+	: ${bookid=$1}
+	test -n bookid
+	setopt -o nullglob
+	require_pristine_project ${bookid}*
+	untrack ${bookid}.* $bookid-*/**
+	commit "Clear existing sources for $bookid"
+}
+
+function normalize_scrivener_mmd () {
+	alias sed="@SED@"
+	sed -E 's/^\\#\\#\\#$/----/' |
+		sed -E 's/^\*:::/::: */' |
+		sed -E 's/^::: (\*)? ?.verse/::: verse\n\1/' |
+		sed -E 's/ ?:::(\*)?$/\1\n:::/g' |
+		sed -E 's/^\.[  ]\*[  ]\.[  ]\./*.../' |
+		sed -E 's/\.[  ]\.[  ]\./.../'
+}
+
+function normalize_pandoc () {
+	alias pandoc="@PANDOC@"
+	pandoc_args=(
+		--wrap=preserve
+		--markdown-headings=atx
+		--from markdown-space_in_atx_header+ascii_identifiers+four_space_rule
+		--lua-filter="$CASILEDIR/pandoc-filters/titlecase_titles.lua"
+		--lua-filter="$CASILEDIR/pandoc-filters/sentence_lines.lua"
+		--to=markdown-smart-four_space_rule
+	)
+	pandoc ${pandoc_args[@]}
+}
