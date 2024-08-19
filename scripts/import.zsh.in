@@ -1,6 +1,8 @@
 #!@ZSH@
 set -e
 
+alias git="@GIT@"
+
 setopt -o nullglob
 
 source "$CASILEDIR/scripts/functions.zsh"
@@ -32,6 +34,10 @@ function import_scrivener-mmd () {
 }
 
 remove_extant_bookid $bookid
+
+# Restore meta-data just (maybe) nuked
+git checkout HEAD^ -- $bookid.yml
+git commit --amend --no-edit
 
 track "$input"
 commit 'Track file submitted for import (temporarily)'
