@@ -27,7 +27,7 @@ fn output_is_localized() -> Result<()> {
 #[test]
 fn setup_path_exists() -> Result<()> {
     let mut cmd = Command::cargo_bin(BIN_NAME)?;
-    cmd.arg("-p").arg("not_a_dir").arg("setup");
+    cmd.arg("-P").arg("not_a_dir").arg("setup");
     cmd.assert()
         .failure()
         .stderr(predicate::str::contains("No such file or directory"));
