@@ -177,15 +177,16 @@ export PATH := $(PUBLISHERDIRABS)/scripts:$(PATH)
 endif
 SILEPATH += $(CASILEDIR)
 
-TOPLEVELDIVISION ?= chapter
-SECONDLEVELDIVISION ?= section
+DIVISIONS ?= part chapter section
 
 # Extra arguments to pass to Pandoc
-PANDOCARGS ?= --top-level-division=$(TOPLEVELDIVISION)
-PANDOCARGS += --wrap=preserve
-PANDOCARGS += --markdown-headings=atx
-PANDOCARGS += --reference-location=section
-PANDOCNORMALIZEARGS ?= --from markdown-space_in_atx_header+ascii_identifiers+four_space_rule --to markdown-smart-four_space_rule
+PANDOCARGS ?=
+PANDOCARGS += --top-level-division=$(firstword $(DIVISIONS))
+PANDOCARGS += --reference-location=$(lastword $(DIVISIONS))
+PANDOCNORMALIZEARGS ?=
+PANDOCNORMALIZEARGS += --wrap=preserve
+PANDOCNORMALIZEARGS += --from markdown-space_in_atx_header+ascii_identifiers+four_space_rule
+PANDOCNORMALIZEARGS += --to markdown-smart-four_space_rule
 PANDOCFILTERS ?=
 PANDOCFILTERARGS ?=
 
@@ -1033,10 +1034,11 @@ include $(CASILEDIR)/rules/zola.mk
 
 ODTS := $(call pattern_list,$(SOURCES),.odt)
 ODTS += $(and $(EDITS),$(call pattern_list,$(SOURCES),$(EDITS),.odt))
+$(ODTS): private PANDOCARGS += --top-level-division
 $(ODTS): %.odt: $(BUILDDIR)/%-$(_processed).md $$(call parse_bookid,$$*)-manifest.yml
 	$(PANDOC) \
 		$(PANDOCARGS) \
-		$(PANDOCFILTERS) \
+		$(PANDOCFILTERS) $(PANDOCFILTERARGS) \
 		$(filter %-manifest.yml,$^) \
 		$(filter %-$(_processed).md,$^) -o $@
 
@@ -1047,7 +1049,7 @@ DOCXS += $(and $(EDITS),$(call pattern_list,$(SOURCES),$(EDITS),.docx))
 $(DOCXS): %.docx: $(BUILDDIR)/%-$(_processed).md $$(call parse_bookid,$$*)-manifest.yml
 	$(PANDOC) \
 		$(PANDOCARGS) \
-		$(PANDOCFILTERS) \
+		$(PANDOCFILTERS) $(PANDOCFILTERARGS) \
 		$(filter %-manifest.yml,$^) \
 		$(filter %-$(_processed).md,$^) -o $@
 
@@ -1059,7 +1061,7 @@ $(HTMLS): PANDOCARGS += --standalone --reference-location=document
 $(HTMLS): %.html: $(BUILDDIR)/%-$(_processed).md $$(call parse_bookid,$$*)-manifest.yml
 	$(PANDOC) \
 		$(PANDOCARGS) \
-		$(PANDOCFILTERS) \
+		$(PANDOCFILTERS) $(PANDOCFILTERARGS) \
 		$(filter %-manifest.yml,$^) \
 		$(filter %-$(_processed).md,$^) -o $@
 
