@@ -186,7 +186,7 @@ PANDOCARGS += --reference-location=$(lastword $(DIVISIONS))
 PANDOCNORMALIZEARGS ?=
 PANDOCNORMALIZEARGS += --wrap=preserve
 PANDOCNORMALIZEARGS += --from markdown-space_in_atx_header+ascii_identifiers+four_space_rule
-PANDOCNORMALIZEARGS += --to markdown-smart-four_space_rule
+PANDOCNORMALIZEARGS += --to markdown+smart-four_space_rule
 PANDOCFILTERS ?=
 PANDOCFILTERARGS ?=
 

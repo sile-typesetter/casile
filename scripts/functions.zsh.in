@@ -56,7 +56,7 @@ function normalize_pandoc () {
 		--from markdown-space_in_atx_header+ascii_identifiers+four_space_rule
 		--lua-filter="$CASILEDIR/pandoc-filters/titlecase_titles.lua"
 		--lua-filter="$CASILEDIR/pandoc-filters/sentence_lines.lua"
-		--to=markdown-smart-four_space_rule
+		--to=markdown+smart-four_space_rule
 	)
 	pandoc ${pandoc_args[@]}
 }
