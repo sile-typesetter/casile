@@ -16,7 +16,7 @@ fluent = "0.16"
 fluent-fallback = "0.7"
 fluent-langneg = "0.13"
 futures = "0.3"
-itertools = "0.12"
+itertools = "0.13"
 lazy_static = "1.4"
 num_cpus = "1.16"
 rayon = "1.10"
@@ -36,11 +36,11 @@ unic-langid-impl = "0.9"
   features = [ "derive", "wrap_help" ]
 
   [dependencies.git2]
-  version = "0.18"
+  version = "0.19"
   default-features = false
 
   [dependencies.git-warp-time]
-  version = "0.7"
+  version = "0.8"
   default-features = false
 
   [dependencies.indicatif]
