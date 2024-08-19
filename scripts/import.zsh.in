@@ -41,4 +41,4 @@ import_${format} $bookid $input
 untrack $input
 commit "Import $format source as $bookid"
 
-"$CASILEDIR/scripts/split_chapters.zsh" 2 $bookid
+"$CASILEDIR/scripts/split_chapters.zsh" 3 $bookid

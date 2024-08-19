@@ -530,12 +530,17 @@ SILEFLAGS += $(call use_luas,$(LUAINCLUDES))
 
 preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(PROJECTMACRO) $(TARGETMACROS_$1)
 
-$(BUILDDIR)/%-$(_processed).md: %.md $$(wildcard $(PROJECT)*.md $$*-$(_chapters)/*.md) $$(call preprocess_macros,$$*) | $(BUILDDIR) figures
+$(BUILDDIR)/%-$(_processed).md: %.md $$(shell $(_ENV) list_related_files.zsh mds $$*) $$(call preprocess_macros,$$*) | $(BUILDDIR) figures
 	if $(HIGHLIGHT_DIFF) && $(if $(PARENT),true,false); then
 		export FILTERS="$(filter %.m4,$^)"
 		branch2criticmark.zsh $(PARENT) $<
-	else
+	elif $(RG) -qw loadchapters $<; then
+		# For books using the old M4 macros to load chapters, only process the first dependency
 		$(M4) $(filter %.m4,$^) $<
+	else
+		# For books using the new related files finder, load all md files except the first dependency
+		# Add blank lines between files so headers aren't eaten, c.f. https://unix.stackexchange.com/a/628651/1925
+		$(M4) $(filter %.m4,$^) =($(SED) -s -e '$${p;g;}' $(filter %.md,$(wordlist 2,9999,$^)))
 	fi |
 		renumber_footnotes.pl |
 		$(and $(HEAD),head -n$(HEAD) |) \

@@ -19,18 +19,14 @@ pandoc_args=(
 # TODO: do we need turkish filename hacks back?
 # $(SED) -n '/^#/{s/ı/i/g;p}' |
 
-# TODO: finish and use related files finder?
-# $CASILEDIR/scripts/list_related_files.zsh $bookid |
-
-git ls-files "$bookid-*/*.md" |
+$CASILEDIR/scripts/list_related_files.zsh mds $bookid |
 	xargs rg --files-without-match loadchapters.zsh |
 	while read file; do
 		basename $file | IFS='[-.]' read no _
 		dirname $file | read dir
 		rg -m1 '^#' $file | pandoc ${pandoc_args[@]} | read identifier
+		[[ $identifier == nil ]] && continue
 		git mv -k "$file" "$dir/$no-$identifier.md"
 	done
-
-echo done
 
 commit "Normalize $bookid filenames based on heading ids"

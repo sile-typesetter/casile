@@ -2,24 +2,34 @@
 set -e
 
 cmd=$1
-base=${2/.md}
+bookid=${2/.md}
 
-value() {
-  echo $@
-  exit 0
+function value () {
+    echo $@
+    exit 0
 }
 
 case $cmd in
-  meta)
-    value $base.yml
-    ;;
+    meta)
+        value $bookid.yml
+        ;;
+    mds)
+        alias git="@GIT@"
+        # Separate commands to set our own sort priority
+        git ls-files "$PROJECT.md" ||:
+        git ls-files "$PROJECT-*.md" ||:
+        git ls-files "$bookid.md" ||:
+        git ls-files "$bookid-**.md" ||:
+        exit 0
+        ;;
   srcid)
-    $0 meta $2 | read meta
-    if [[ -f $meta ]] && yq -e 'has("source")' $meta >/dev/null; then
-      yq -r '[.source[] | select(.type == "bookid")][0].text' $meta | read bookid
-      value $bookid
-    fi
-    ;;
+      alias yq="@YQ@"
+      $0 meta $2 | read meta
+      if [[ -f $meta ]] && yq -e 'has("source")' $meta >/dev/null; then
+          yq -r '[.source[] | select(.type == "bookid")][0].text' $meta | read bookid
+          value $bookid
+      fi
+      ;;
 esac
 
 exit 1
