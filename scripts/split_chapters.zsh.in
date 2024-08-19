@@ -6,6 +6,7 @@ source "$CASILEDIR/scripts/functions.zsh"
 alias pandoc="@PANDOC@"
 alias sed="@SED@"
 alias mkdir="@MKDIR_P@"
+alias parallel="@PARALLEL@"
 
 splitlevels=$1
 test -n $splitlevels
@@ -65,14 +66,14 @@ done
 sed -i -n -e '/^\[\^1\]: /,$p' $src
 
 # Put footnotes in all files, renumber, and generally cleanup
-for file in $files; do
-	>> $file < $src
-	normalize_pandoc < $file |
-		sponge $file
-	track $file
-done
+function cleanup_split () {
+	alias sponge="@SPONGE@"
+	normalize_pandoc < $1 < $src | sponge $1
+}
+F=$(functions cleanup_split normalize_pandoc)
+parallel @ZSH@ -c "$F; src=$src; cleanup_split" ::: ${files[@]}
 
-track $bookid.md
+track $bookid.md ${files[@]}
 commit "Split $bookid up into chapters and sections"
 
 "$CASILEDIR/scripts/normalize_files.zsh" $bookid
