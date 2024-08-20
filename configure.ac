@@ -13,8 +13,10 @@ QUE_DIST_CHECKSUMS
 # Build time deps
 AC_PROG_AWK
 AC_PROG_SED
-QUE_PROGVAR([yarn])
+QUE_PROGVAR([find])
+QUE_PROGVAR([sort])
 QUE_PROGVAR([xargs])
+QUE_PROGVAR([yarn])
 
 QUE_RUST_BOILERPLATE
 QUE_DOCKER_BOILERPLATE
@@ -45,7 +47,6 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     QUE_PROGVAR([entr])
     QUE_PROGVAR([epubcheck])
     QUE_PROGVAR([fcconflist], [fc-conflist])
-    QUE_PROGVAR([find])
     QUE_PROGVAR([flock])
     QUE_PROGVAR([git])
     QUE_PROGVAR([gitwarptime], [git-warp-time])
@@ -71,7 +72,6 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     QUE_PROGVAR([rg])
     QUE_PROGVAR([sassc])
     QUE_PROGVAR([sile])
-    QUE_PROGVAR([sort])
     QUE_PROGVAR([sponge])
     QUE_PROGVAR([sqlite3])
     QUE_PROGVAR([stat])
@@ -133,6 +133,7 @@ AM_COND_IF([DEVELOPER_MODE], [
     datarootdir="$(cd ..; pwd)"
 ])
 
+AC_CONFIG_FILES([build-aux/list-distfiles.sh], [chmod +x build-aux/list-distfiles.sh])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([rules/casile.mk])
 AC_CONFIG_FILES([make-shell.zsh], [chmod +x make-shell.zsh])

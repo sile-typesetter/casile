@@ -1,0 +1,62 @@
+#!@SHELL@
+set -e
+
+alias find="${FIND:-@FIND@}"
+alias grep="${GREP:-@GREP@}"
+alias sed="${SED:-@SED@}"
+alias sort="${SORT:-@SORT@}"
+alias xargs="${XARGS:-@XARGS@}"
+
+finder () {
+    test -d "$1" || return 0
+    find "$@" -type f | am_list
+}
+
+am_list () {
+    sed -e 's#^\./##' | sort -bdi | xargs printf ' \\\n\t%s'
+}
+
+printf '%s =' LUALIBRARIES
+finder lua-libraries -name '*.lua'
+
+printf '\n\n%s =' POVDATA
+finder . -name '*.pov'
+
+printf '\n\n%s =' XMLDATA
+finder . -maxdepth 1 -name '*.xml'
+
+printf '\n\n%s =' SILDATA
+finder . -maxdepth 1 -name '*.sil'
+
+printf '\n\n%s =' SVGDATA
+finder . -maxdepth 1 -name '*.svg'
+
+printf '\n\n%s =' NAMESDATA
+finder . -maxdepth 1 -name 'names.*.txt'
+
+printf '\n\n%s =' SEDDATA
+finder . -maxdepth 1 -name '*.sed'
+
+printf '\n\n%s =' VIMDATA
+finder . -maxdepth 1 -name '*.vim'
+
+printf '\n\n%s =' SCRIPTSSCRIPTS
+finder scripts -maxdepth 1 -name '*.in' | sed -e 's/\.in//'
+
+printf '\n\n%s =' FONTSDATA
+finder fonts -maxdepth 1 -name '*.otf' -or -name '*.ttf'
+
+printf '\n\n%s =' PANDOCFILTERS
+finder pandoc-filters -maxdepth 1 -name '*.lua' -or -name '*.py'
+
+printf '\n\n%s =' SILECLASSFILES
+finder classes -maxdepth 1 -name '*.lua'
+
+printf '\n\n%s =' SILEPACKAGEFILES
+finder packages -maxdepth 1 -name '*.lua'
+
+printf '\n\n%s =' SILELAYOUTFILES
+finder layouts -maxdepth 1 -name '*.lua'
+
+printf '\n\n%s =' ASSETDATA
+finder assets -name 'casile.ftl'

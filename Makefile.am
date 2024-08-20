@@ -18,7 +18,7 @@ pkgdatadir = $(datadir)
 # of the race condition it creates) we actually keep it from being flattened and
 # hence evaluated when we want it to be. Since the file always exists (see
 # BUILT_SOURCES and EXTRA_DIST) this doesn't induce a race.
-include $(wildcard Makefile-distfiles)
+include $(wildcard $(top_srcdir)/Makefile-distfiles)
 
 lang_key_files = rules/en.mk rules/tr.mk
 reverse_lang_key_files = $(patsubst %.mk,%-reversed.mk,$(lang_key_files))
@@ -38,8 +38,7 @@ bin_PROGRAMS = casile
 casile_SOURCES = src/main.rs $(_casile_libs) $(_casile_modules) $(_casile_assets)
 EXTRA_casile_SOURCES = tests/cli.rs
 EXTRA_DIST = package.json yarn.lock requirements.txt
-EXTRA_DIST += Makefile-distfiles
-EXTRA_DIST += build-aux/action-updater.js build-aux/cargo-updater.js build-aux/git-version-gen build-aux/list-dist-files.sh
+EXTRA_DIST += build-aux/action-updater.js build-aux/cargo-updater.js build-aux/git-version-gen
 EXTRA_DIST += Dockerfile build-aux/bootstrap-docker.sh build-aux/docker-fontconfig.conf hooks/build
 
 BUILT_SOURCES = Makefile-distfiles
@@ -58,46 +57,30 @@ DISTCLEANFILES = @AMINCLUDE@
 include $(top_srcdir)/aminclude.am
 
 Makefile-distfiles: $(wildcard .version .tarball-version)
-	$(SHELL) build-aux/list-dist-files.sh > $@
+	$(SHELL) build-aux/list-distfiles.sh > $@
 
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
 luadir = $(datadir)
-dist_lua_DATA = \
-	readmeta.lua
+dist_lua_DATA = readmeta.lua
 
 povdir = $(datadir)
-dist_pov_DATA = \
-	back.pov \
-	book.pov \
-	front.pov \
-	montage.pov \
-	pile.pov
+dist_pov_DATA = $(POVDATA)
 
 xmldir = $(datadir)
-dist_xml_DATA = \
-	binding.xml \
-	cover.xml \
-	geometry.xml
+dist_xml_DATA = $(XMLDATA)
 
 sildir = $(datadir)
-dist_sil_DATA = \
-	a5kesme.sil \
-	template.sil
+dist_sil_DATA = $(SILDATA)
 
 svgdir = $(datadir)
-dist_svg_DATA = \
-	binding.svg \
-	emblum.svg \
-	logo.svg
+dist_svg_DATA = $(SVGDATA)
 
 m4dir = $(datadir)
-dist_m4_DATA = \
-	casile.m4
+dist_m4_DATA = casile.m4
 
 yamldir = $(datadir)
-dist_yaml_DATA = \
-	casile.yml
+dist_yaml_DATA = casile.yml
 
 templatesdir = $(datadir)
 dist_templates_DATA = \
@@ -108,141 +91,36 @@ dist_templates_DATA = \
 	zola_style.sass
 
 namesdir = $(datadir)
-dist_names_DATA = \
-	names.en.txt \
-	names.la.txt \
-	names.part.txt \
-	names.tr.txt \
-	names.und.txt \
-	names.xx.txt
+dist_names_DATA = $(NAMESDATA)
 
 seddir = $(datadir)
-dist_sed_DATA = \
-	upgrade-lua.sed \
-	upgrade-make.sed \
-	upgrade-markdown.sed \
-	upgrade-yaml.sed
+dist_sed_DATA = $(SEDDATA)
 
 vimdir = $(datadir)
-dist_vim_DATA = \
-	citation_audit.vim \
-	quotation_audit.vim
+dist_vim_DATA = $(VIMDATA)
 
-dist_data_DATA = \
-	functions.zsh
+dist_data_DATA = functions.zsh
 
 scriptsdir = $(datadir)/scripts
-dist_scripts_SCRIPTS = \
-	scripts/branch2criticmark.zsh \
-	scripts/cover_title.py \
-	scripts/diff2marked.zsh \
-	scripts/extract_references.js \
-	scripts/figure_dash.pl \
-	scripts/flatten_chapters.zsh \
-	scripts/functions.zsh \
-	scripts/import.zsh \
-	scripts/isbn_format.py \
-	scripts/italic_reorder.pl \
-	scripts/lazy_quotes.pl \
-	scripts/link_verses.js \
-	scripts/list_related_files.zsh \
-	scripts/loadchapters.zsh \
-	scripts/msword_escapes.pl \
-	scripts/normalize_files.zsh \
-	scripts/normalize_references.js \
-	scripts/ordinal_spaces.pl \
-	scripts/renumber_footnotes.pl \
-	scripts/reorder_punctuation.pl \
-	scripts/series_sort.lua \
-	scripts/smart_quotes.pl \
-	scripts/split_chapters.zsh \
-	scripts/split_mdbook_src.zsh \
-	scripts/stats.zsh \
-	scripts/toc2breaks.lua \
-	scripts/unicode_symbols.pl \
-	scripts/worklog.zsh
+dist_scripts_SCRIPTS = $(SCRIPTSSCRIPTS)
 
 fontsdir = $(datadir)/fonts
-dist_fonts_DATA = \
-	fonts/Almendra-Bold.otf \
-	fonts/Almendra-BoldItalic.otf \
-	fonts/Almendra-Italic.otf \
-	fonts/Almendra-Regular.otf \
-	fonts/AlmendraDisplay-Regular.otf \
-	fonts/AlmendraSC-Bold.otf \
-	fonts/AlmendraSC-BoldItalic.otf \
-	fonts/AlmendraSC-Italic.otf \
-	fonts/AlmendraSC-Regular.otf \
-	fonts/FeFlow2.otf \
-	fonts/NexaRustExtras-Free.otf \
-	fonts/NexaRustHandmade-Extended-Free.otf \
-	fonts/NexaRustSans-Black-Free.otf \
-	fonts/NexaRustScriptL-0-Free.otf \
-	fonts/NexaRustSlab-BlackShadow01-Free.otf \
-	fonts/Nymphette.ttf \
-	fonts/PrintersOrnamentsOne.ttf
+dist_fonts_DATA = $(FONTSDATA)
 
 filtersdir = $(datadir)/pandoc-filters
-dist_filters_DATA = \
-	pandoc-filters/chapterid.lua \
-	pandoc-filters/epubclean.lua \
-	pandoc-filters/mark-epigraphs.lua \
-	pandoc-filters/mark-parts.lua \
-	pandoc-filters/strip_for_mdbook.lua \
-	pandoc-filters/titlecase_titles.lua \
-	pandoc-filters/svg2pdf.py \
-	pandoc-filters/withoutfootnotes.lua \
-	pandoc-filters/withoutheadinglinks.lua \
-	pandoc-filters/withoutlinks.lua \
-	pandoc-filters/withverses.lua
+dist_filters_DATA = $(PANDOCFILTERS)
 
 classesdir = $(datadir)/classes
-dist_classes_DATA = \
-	classes/cabook.lua \
-	classes/cabinding.lua \
-	classes/cageometry.lua
+dist_classes_DATA = $(SILECLASSFILES)
 
 packagesdir = $(datadir)/packages
-dist_packages_DATA = \
-	packages/cabook-block-styles.lua \
-	packages/cabook-commands.lua \
-	packages/cabook-inline-styles.lua \
-	packages/calists.lua \
-	packages/casile.lua \
-	packages/covers.lua \
-	packages/crop.lua \
-	packages/dumpframes.lua \
-	packages/endnotes.lua \
-	packages/imprint.lua \
-	packages/markdown.lua \
-	packages/verseindex.lua
+dist_packages_DATA = $(SILEPACKAGEFILES)
 
 layoutsdir = $(datadir)/layouts
-dist_layouts_DATA = \
-	layouts/a4.lua \
-	layouts/a4ciltli.lua \
-	layouts/a5trim.lua \
-	layouts/a6.lua \
-	layouts/a6trim.lua \
-	layouts/a7.lua \
-	layouts/a7kart.lua \
-	layouts/a7trimkart.lua \
-	layouts/app.lua \
-	layouts/banner.lua \
-	layouts/businesscard.lua \
-	layouts/cep.lua \
-	layouts/ekran.lua \
-	layouts/epub.lua \
-	layouts/halfletter.lua \
-	layouts/octavo.lua \
-	layouts/royaloctavo.lua \
-	layouts/square.lua \
-	layouts/wide.lua
+dist_layouts_DATA = $(SILELAYOUTFILES)
 
 assetsdir = $(datadir)
-nobase_dist_assets_DATA = \
-	assets/en-US/casile.ftl \
-	assets/tr-TR/casile.ftl
+nobase_dist_assets_DATA = $(ASSETDATA)
 
 CLEANFILES += $(bin_PROGRAMS) $(dist_scripts_SCRIPTS)
 
