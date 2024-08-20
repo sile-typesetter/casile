@@ -63,61 +63,186 @@ Makefile-distfiles: $(wildcard .version .tarball-version)
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
 luadir = $(datadir)
-dist_lua_DATA = readmeta.lua
+dist_lua_DATA = \
+	readmeta.lua
 
 povdir = $(datadir)
-dist_pov_DATA = back.pov book.pov front.pov montage.pov pile.pov
+dist_pov_DATA = \
+	back.pov \
+	book.pov \
+	front.pov \
+	montage.pov \
+	pile.pov
 
 xmldir = $(datadir)
-dist_xml_DATA = binding.xml cover.xml geometry.xml
+dist_xml_DATA = \
+	binding.xml \
+	cover.xml \
+	geometry.xml
 
 sildir = $(datadir)
-dist_sil_DATA = a5kesme.sil template.sil
+dist_sil_DATA = \
+	a5kesme.sil \
+	template.sil
 
 svgdir = $(datadir)
-dist_svg_DATA = binding.svg emblum.svg logo.svg
+dist_svg_DATA = \
+	binding.svg \
+	emblum.svg \
+	logo.svg
 
 m4dir = $(datadir)
-dist_m4_DATA = casile.m4
+dist_m4_DATA = \
+	casile.m4
 
 yamldir = $(datadir)
-dist_yaml_DATA = casile.yml
+dist_yaml_DATA = \
+	casile.yml
 
 templatesdir = $(datadir)
-dist_templates_DATA = editorconfig gitlab-ci.yml zola_series.html zola_book.html zola_style.sass
+dist_templates_DATA = \
+	editorconfig \
+	gitlab-ci.yml \
+	zola_book.html \
+	zola_series.html \
+	zola_style.sass
 
 namesdir = $(datadir)
-dist_names_DATA = names.en.txt names.la.txt names.part.txt names.tr.txt names.und.txt names.xx.txt
+dist_names_DATA = \
+	names.en.txt \
+	names.la.txt \
+	names.part.txt \
+	names.tr.txt \
+	names.und.txt \
+	names.xx.txt
 
 seddir = $(datadir)
-dist_sed_DATA = upgrade-lua.sed upgrade-make.sed upgrade-markdown.sed upgrade-yaml.sed
+dist_sed_DATA = \
+	upgrade-lua.sed \
+	upgrade-make.sed \
+	upgrade-markdown.sed \
+	upgrade-yaml.sed
 
 vimdir = $(datadir)
-dist_vim_DATA = citation_audit.vim quotation_audit.vim
+dist_vim_DATA = \
+	citation_audit.vim \
+	quotation_audit.vim
 
-dist_data_DATA = functions.zsh
+dist_data_DATA = \
+	functions.zsh
 
 scriptsdir = $(datadir)/scripts
-dist_scripts_SCRIPTS = scripts/branch2criticmark.zsh scripts/cover_title.py scripts/diff2marked.zsh scripts/extract_references.js scripts/figure_dash.pl scripts/flatten_chapters.zsh scripts/functions.zsh scripts/import.zsh scripts/isbn_format.py scripts/italic_reorder.pl scripts/lazy_quotes.pl scripts/link_verses.js scripts/list_related_files.zsh scripts/loadchapters.zsh scripts/msword_escapes.pl scripts/normalize_files.zsh scripts/normalize_references.js scripts/ordinal_spaces.pl scripts/renumber_footnotes.pl scripts/reorder_punctuation.pl scripts/series_sort.lua scripts/smart_quotes.pl scripts/split_chapters.zsh scripts/split_mdbook_src.zsh scripts/stats.zsh scripts/toc2breaks.lua scripts/unicode_symbols.pl scripts/worklog.zsh
+dist_scripts_SCRIPTS = \
+	scripts/branch2criticmark.zsh \
+	scripts/cover_title.py \
+	scripts/diff2marked.zsh \
+	scripts/extract_references.js \
+	scripts/figure_dash.pl \
+	scripts/flatten_chapters.zsh \
+	scripts/functions.zsh \
+	scripts/import.zsh \
+	scripts/isbn_format.py \
+	scripts/italic_reorder.pl \
+	scripts/lazy_quotes.pl \
+	scripts/link_verses.js \
+	scripts/list_related_files.zsh \
+	scripts/loadchapters.zsh \
+	scripts/msword_escapes.pl \
+	scripts/normalize_files.zsh \
+	scripts/normalize_references.js \
+	scripts/ordinal_spaces.pl \
+	scripts/renumber_footnotes.pl \
+	scripts/reorder_punctuation.pl \
+	scripts/series_sort.lua \
+	scripts/smart_quotes.pl \
+	scripts/split_chapters.zsh \
+	scripts/split_mdbook_src.zsh \
+	scripts/stats.zsh \
+	scripts/toc2breaks.lua \
+	scripts/unicode_symbols.pl \
+	scripts/worklog.zsh
 
 fontsdir = $(datadir)/fonts
-dist_fonts_DATA = fonts/Almendra-Bold.otf fonts/Almendra-BoldItalic.otf fonts/Almendra-Italic.otf fonts/Almendra-Regular.otf fonts/AlmendraDisplay-Regular.otf fonts/AlmendraSC-Bold.otf fonts/AlmendraSC-BoldItalic.otf fonts/AlmendraSC-Italic.otf fonts/AlmendraSC-Regular.otf fonts/FeFlow2.otf fonts/NexaRustExtras-Free.otf fonts/NexaRustHandmade-Extended-Free.otf fonts/NexaRustSans-Black-Free.otf fonts/NexaRustScriptL-0-Free.otf fonts/NexaRustSlab-BlackShadow01-Free.otf fonts/Nymphette.ttf fonts/PrintersOrnamentsOne.ttf
+dist_fonts_DATA = \
+	fonts/Almendra-Bold.otf \
+	fonts/Almendra-BoldItalic.otf \
+	fonts/Almendra-Italic.otf \
+	fonts/Almendra-Regular.otf \
+	fonts/AlmendraDisplay-Regular.otf \
+	fonts/AlmendraSC-Bold.otf \
+	fonts/AlmendraSC-BoldItalic.otf \
+	fonts/AlmendraSC-Italic.otf \
+	fonts/AlmendraSC-Regular.otf \
+	fonts/FeFlow2.otf \
+	fonts/NexaRustExtras-Free.otf \
+	fonts/NexaRustHandmade-Extended-Free.otf \
+	fonts/NexaRustSans-Black-Free.otf \
+	fonts/NexaRustScriptL-0-Free.otf \
+	fonts/NexaRustSlab-BlackShadow01-Free.otf \
+	fonts/Nymphette.ttf \
+	fonts/PrintersOrnamentsOne.ttf
 
 filtersdir = $(datadir)/pandoc-filters
-dist_filters_DATA = pandoc-filters/chapterid.lua pandoc-filters/epubclean.lua pandoc-filters/mark-epigraphs.lua pandoc-filters/mark-parts.lua pandoc-filters/strip_for_mdbook.lua pandoc-filters/titlecase_titles.lua pandoc-filters/svg2pdf.py pandoc-filters/withoutfootnotes.lua pandoc-filters/withoutheadinglinks.lua pandoc-filters/withoutlinks.lua pandoc-filters/withverses.lua
+dist_filters_DATA = \
+	pandoc-filters/chapterid.lua \
+	pandoc-filters/epubclean.lua \
+	pandoc-filters/mark-epigraphs.lua \
+	pandoc-filters/mark-parts.lua \
+	pandoc-filters/strip_for_mdbook.lua \
+	pandoc-filters/titlecase_titles.lua \
+	pandoc-filters/svg2pdf.py \
+	pandoc-filters/withoutfootnotes.lua \
+	pandoc-filters/withoutheadinglinks.lua \
+	pandoc-filters/withoutlinks.lua \
+	pandoc-filters/withverses.lua
 
 classesdir = $(datadir)/classes
-dist_classes_DATA = classes/cabook.lua classes/cabinding.lua classes/cageometry.lua
+dist_classes_DATA = \
+	classes/cabook.lua \
+	classes/cabinding.lua \
+	classes/cageometry.lua
 
 packagesdir = $(datadir)/packages
-dist_packages_DATA = packages/casile.lua packages/covers.lua packages/crop.lua packages/dumpframes.lua packages/endnotes.lua packages/imprint.lua packages/calists.lua packages/markdown.lua packages/verseindex.lua
-dist_packages_DATA += packages/cabook-commands.lua packages/cabook-inline-styles.lua packages/cabook-block-styles.lua
+dist_packages_DATA = \
+	packages/cabook-block-styles.lua \
+	packages/cabook-commands.lua \
+	packages/cabook-inline-styles.lua \
+	packages/calists.lua \
+	packages/casile.lua \
+	packages/covers.lua \
+	packages/crop.lua \
+	packages/dumpframes.lua \
+	packages/endnotes.lua \
+	packages/imprint.lua \
+	packages/markdown.lua \
+	packages/verseindex.lua
 
 layoutsdir = $(datadir)/layouts
-dist_layouts_DATA = layouts/a4.lua layouts/a4ciltli.lua layouts/a5trim.lua layouts/a6.lua layouts/a6trim.lua layouts/a7.lua layouts/a7kart.lua layouts/a7trimkart.lua layouts/app.lua layouts/banner.lua layouts/businesscard.lua layouts/cep.lua layouts/ekran.lua layouts/epub.lua layouts/halfletter.lua layouts/octavo.lua layouts/royaloctavo.lua layouts/square.lua layouts/wide.lua
+dist_layouts_DATA = \
+	layouts/a4.lua \
+	layouts/a4ciltli.lua \
+	layouts/a5trim.lua \
+	layouts/a6.lua \
+	layouts/a6trim.lua \
+	layouts/a7.lua \
+	layouts/a7kart.lua \
+	layouts/a7trimkart.lua \
+	layouts/app.lua \
+	layouts/banner.lua \
+	layouts/businesscard.lua \
+	layouts/cep.lua \
+	layouts/ekran.lua \
+	layouts/epub.lua \
+	layouts/halfletter.lua \
+	layouts/octavo.lua \
+	layouts/royaloctavo.lua \
+	layouts/square.lua \
+	layouts/wide.lua
 
 assetsdir = $(datadir)
-nobase_dist_assets_DATA = assets/en-US/casile.ftl assets/tr-TR/casile.ftl
+nobase_dist_assets_DATA = \
+	assets/en-US/casile.ftl \
+	assets/tr-TR/casile.ftl
 
 CLEANFILES += $(bin_PROGRAMS) $(dist_scripts_SCRIPTS)
 
@@ -159,7 +284,9 @@ casile-%.md: CHANGELOG.md
 	$(SED) -e '/\.\.\.v$*/,/\.\.\.v/!d' $< | \
 		$(SED) -e '1,3d;N;$$!P;$$!D;$$d' > $@
 
-PHONY_DEVELOPER_TARGETS = lint luacheck stylua checkmake ruff tagrelease release-preview release docker docker-dep-check docker-ghcr-to-hub docker-build-push
+PHONY_DEVELOPER_TARGETS  = lint luacheck stylua checkmake ruff
+PHONY_DEVELOPER_TARGETS += tagrelease release-preview release
+PHONY_DEVELOPER_TARGETS += docker docker-dep-check docker-ghcr-to-hub docker-build-push
 .PHONY: $(PHONY_DEVELOPER_TARGETS)
 
 if DEVELOPER_MODE

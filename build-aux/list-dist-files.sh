@@ -3,8 +3,8 @@ set -e
 
 finder () {
     test -d "$1" || return 0
-    /usr/bin/find "$@" -type f | sort -bdi | xargs printf ' %s'
+    /usr/bin/find "$@" -type f | sort -bdi | xargs printf ' \\\n\t%s'
 }
 
-printf '\n%s' "LUALIBRARIES ="
+printf '\n%s' 'LUALIBRARIES ='
 finder lua-libraries -name '*.lua'
