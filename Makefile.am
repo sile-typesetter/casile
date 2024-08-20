@@ -1,5 +1,3 @@
-$(and $(word 2,$(MAKEFILE_LIST)),$(error This is not the makefile you should include in your project to run CaSILE, please use 'rules/casile.mk' instead.))
-
 ACLOCAL_AMFLAGS = -I build-aux
 AM_DISTCHECK_CONFIGURE_FLAGS = --enable-developer-mode
 
