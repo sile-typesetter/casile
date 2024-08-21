@@ -29,6 +29,7 @@ _ekran := ekran
 _end := son
 _epub := epub
 _even := cift
+_flattened := duzlestirilmis
 _fragment := fragman
 _front := on
 _geometry := ebatlar

@@ -26,6 +26,7 @@ _ekran := ekran
 _end := end
 _epub := epub
 _even := even
+_flattened := flattened
 _fragment := fragment
 _front := front
 _geometry := geometry

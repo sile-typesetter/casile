@@ -8,15 +8,15 @@ alias casile="${CASILE-:casile}"
 bookid=$1
 test -n $bookid
 
-awk '/^_processed/ { print $3 }' $CASILEDIR/rules/$LANGUAGE.mk | read _processed
-processed="$BUILDDIR/$bookid-$_processed.md"
-casile make -- $processed
+awk '/^_flattened/ { print $3 }' $CASILEDIR/rules/$LANGUAGE.mk | read _flattened
+flattened="$BUILDDIR/$bookid-$_flattened.md"
+casile make -- $flattened
 remove_extant_bookid $bookid
 
 # Restore meta-data just (maybe) nuked
 git checkout HEAD^ -- $bookid.yml
 git commit --amend --no-edit
 
-mv $processed $bookid.md
+mv $flattened $bookid.md
 track $bookid.md
 commit "Flatten $bookid source structure into single file"

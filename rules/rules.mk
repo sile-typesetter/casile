@@ -538,7 +538,10 @@ SILEFLAGS += $(call use_luas,$(LUAINCLUDES))
 
 preprocess_macros = $(CASILEDIR)/casile.m4 $(M4MACROS) $(PROJECTMACRO) $(TARGETMACROS_$1)
 
-$(BUILDDIR)/%-$(_processed).md: %.md $$(shell $(_ENV) list_related_files.zsh mds $$*) $$(call preprocess_macros,$$*) | $(BUILDDIR) figures
+# Work around Pandoc bug, see https://github.com/jgm/pandoc/issues/5385
+pandoc_bug_1385 := $(PERL) $(PERLARGS) -pne "s/(?<=[\)\}])'/’/g"
+
+$(BUILDDIR)/%-$(_flattened).md: %.md $$(shell $(_ENV) list_related_files.zsh mds $$*) $(CASILEDIR)/casile.m4 | $(BUILDDIR)
 	if $(HIGHLIGHT_DIFF) && $(if $(PARENT),true,false); then
 		export FILTERS="$(filter %.m4,$^)"
 		branch2criticmark.zsh $(PARENT) $<
@@ -552,11 +555,15 @@ $(BUILDDIR)/%-$(_processed).md: %.md $$(shell $(_ENV) list_related_files.zsh mds
 	fi |
 		renumber_footnotes.pl |
 		$(and $(HEAD),head -n$(HEAD) |) \
+		$(pandoc_bug_1385) |
+		$(PANDOC) $(PANDOCARGS) $(PANDOCNORMALIZEARGS) > $@
+
+$(BUILDDIR)/%-$(_processed).md: $(BUILDDIR)/%-$(_flattened).md $$(call preprocess_macros,$$*) | figures
+	$(M4) $(filter %.m4,$^) $< |
 		$(call link_verses) |
-		$(PERL) $(PERLARGS) -pne "s/(?<=[\)\}])'/’/g" | # Work around Pandoc bug, see https://github.com/jgm/pandoc/issues/5385
+		$(pandoc_bug_1385) |
 		$(call criticToSile) |
-		$(PANDOC) \
-			$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) $(PANDOCNORMALIZEARGS) |
+		$(PANDOC) $(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) $(PANDOCNORMALIZEARGS) |
 		$(call markdown_hook) > $@
 
 %-$(_booklet).pdf: $(BUILDDIR)/%-$(_spineless).pdf
