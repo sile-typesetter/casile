@@ -8,7 +8,8 @@ alias casile="${CASILE-:casile}"
 bookid=$1
 test -n $bookid
 
-processed="$BUILDDIR/$bookid-processed.md"
+awk '/^_processed/ { print $3 }' $CASILEDIR/rules/$LANGUAGE.mk | read _processed
+processed="$BUILDDIR/$bookid-$_processed.md"
 casile make -- $processed
 remove_extant_bookid $bookid
 
