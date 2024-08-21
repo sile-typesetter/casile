@@ -9,7 +9,7 @@ MAKEFLAGS += --warn-undefined-variables
 
 .SUFFIXES:
 
-# Don't drop intermediate artifacts (saves rebulid time and aids debugging)
+# Don't drop intermediate artifacts (saves rebuild time and aids debugging)
 .SECONDARY:
 .PRECIOUS: %
 .DELETE_ON_ERROR:
@@ -34,7 +34,7 @@ endif
 # in our $(shell) wrapper environment...
 .SHELLFLAGS += _WRAPTARGET=true
 
-# Differentiate shells used to run recipies vs. shell wrapper function
+# Differentiate shells used to run recipes vs. shell wrapper function
 # See https://stackoverflow.com/q/65553367/313192
 _ENV := _WRAPTARGET=false
 

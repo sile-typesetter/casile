@@ -295,7 +295,7 @@ endef
 define split_chapters ?=
 	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged
 	$(GIT) diff-files --quiet -- $1 || exit 1 # die if this file has uncommitted changes
-	$(GREP) -q 'esyscmd.*\.md' $1 && exit 1 # skip if the source is aready a compilation
+	$(GREP) -q 'esyscmd.*\.md' $1 && exit 1 # skip if the source is already a compilation
 	split_chapters.zsh $1
 	$(GIT) diff-index --quiet --cached HEAD || $(GIT) commit -m "[auto] Split $1 into one file per chapter"
 endef

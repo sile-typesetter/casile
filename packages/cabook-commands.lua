@@ -6,7 +6,7 @@ package._name = "cabook-commands"
 -- luacheck: ignore loadstring
 local loadstring = loadstring or load
 
--- Calculate height of current output queue withouth taking into account any
+-- Calculate height of current output queue without taking into account any
 -- stretch or shrink.
 local precalcheight = function ()
    local totalHeight = SILE.types.measurement()

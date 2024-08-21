@@ -35,7 +35,7 @@ RUN pacman --noconfirm -Sq glibc && yes | pacman -Sccq
 RUN grep -E '^(en|tr)_'  /usr/share/i18n/SUPPORTED > /etc/locale.gen
 RUN locale-gen
 
-# Install run-time dependecies
+# Install run-time dependencies
 RUN pacman --needed --noconfirm -Sq $RUNTIME_DEPS && yes | pacman -Sccq
 
 RUN chsh -s /usr/bin/zsh && echo 'autoload -U zmv' >> /etc/zsh/zprofile
@@ -45,7 +45,7 @@ FROM base AS builder
 
 ARG BUILD_DEPS
 
-# Install build time dependecies
+# Install build time dependencies
 RUN pacman --needed --noconfirm -Sq $BUILD_DEPS && yes | pacman -Sccq
 
 # Set at build time, forces Docker’s layer caching to reset at this point

@@ -112,14 +112,14 @@ impl<'a> LocalText<'a> {
         }
     }
 
-    /// Format and return a string for the given key and args using the prefered locale fallback
+    /// Format and return a string for the given key and args using the preferred locale fallback
     /// stack as negotiated at runtime.
     pub fn fmt(&self) -> String {
         let locales = LOCALES
             .read()
             .expect("Unable to read negotiated locale list")
             .clone();
-        let bundled_resources = EmbededBundleManager {};
+        let bundled_resources = EmbeddedBundleManager {};
         let scan_resources: Vec<ResourceId> = FTL_RESOURCES
             .iter()
             .map(|s| ResourceId::new(s.to_string(), ResourceType::Required))
@@ -180,9 +180,9 @@ impl Stream for BundleIter {
     }
 }
 
-struct EmbededBundleManager {}
+struct EmbeddedBundleManager {}
 
-impl BundleGenerator for EmbededBundleManager {
+impl BundleGenerator for EmbeddedBundleManager {
     type Resource = FluentResource;
     type LocalesIter = IntoIter<LanguageIdentifier>;
     type Iter = BundleIter;
@@ -215,7 +215,7 @@ pub fn normalize_lang(input: &str) -> String {
 /// Scan our embedded assets for what recognisable locale data we have on hand
 // https://github.com/projectfluent/fluent-rs/blob/c9e45651/fluent-resmgr/examples/simple-resmgr.rs#L35
 pub fn list_available_locales() -> Locales {
-    let mut embeded = vec![];
+    let mut embedded = vec![];
     for asset in Asset::iter() {
         let asset_name = asset.to_string();
         let mut components = Path::new(&asset_name).components();
@@ -231,14 +231,14 @@ pub fn list_available_locales() -> Locales {
                         .iter()
                         .any(|v| v == &part.to_str().unwrap())
                     {
-                        embeded.push(langid);
+                        embedded.push(langid);
                     }
                 }
             }
         }
     }
-    embeded.dedup();
-    Locales(embeded)
+    embedded.dedup();
+    Locales(embedded)
 }
 
 #[cfg(test)]

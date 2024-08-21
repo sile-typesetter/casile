@@ -189,7 +189,7 @@ impl JobStatus for AsciiJobStatus {
         if CONF.get_bool("passthrough").unwrap() {
             return;
         }
-        // Withouth this, copying the string in the terminal as a word brings a U+2069 with it
+        // Without this, copying the string in the terminal as a word brings a U+2069 with it
         let mut printable_target: String = self.target.to_string();
         printable_target.push(' ');
         let target = printable_target;

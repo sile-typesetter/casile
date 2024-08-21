@@ -458,7 +458,7 @@ To override the defaults set them in your project’s `casile.mk`
     FORMATS = pdf epub mobi odt docx app
     ```
 
-    Note this only affects the formats that get built by default from the `default` or `all` targets, you can still build individual resources in any format manually withouth them being listed here.
+    Note this only affects the formats that get built by default from the `default` or `all` targets, you can still build individual resources in any format manually without them being listed here.
 
 * `BLEED` sets the bleed margin for press resources in mm.
 
@@ -531,7 +531,7 @@ You _may_ set them in your rules file such as `casile.mk` but they would typical
     Override with `casile make -- STATSMONTHS=2 stats`.
 
 
-* `DEBUG` enables extra output from various programs showing whats going on durring a build.
+* `DEBUG` enables extra output from various programs showing whats going on during a build.
 
     Defaults to false, set to true to enable.
 
@@ -593,7 +593,7 @@ You _may_ set them in your rules file such as `casile.mk` but they would typical
 
 #### Hooks
 
-These are functions that can be defined in your project’s `Makefile` to add additionaly funtionality at various points in the process.
+These are functions that can be defined in your project’s `Makefile` to add additionally functionality at various points in the process.
 You make use either single or multiline syntax as desired, but note the input, output, and variables passed will be the same either way.
 On the other hand each hook has its own usage so note the context it runs in.
 

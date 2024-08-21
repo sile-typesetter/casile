@@ -87,15 +87,15 @@ pub fn is_glc() -> bool {
 
 pub fn commit(repo: Repository, oid: Oid, msg: &str) -> result::Result<Oid, git2::Error> {
     let prefix = "[casile]";
-    let commiter = repo.signature()?;
-    let author = Signature::now("CaSILE", commiter.email().unwrap())?;
+    let committer = repo.signature()?;
+    let author = Signature::now("CaSILE", committer.email().unwrap())?;
     let parent = repo.head()?.peel_to_commit()?;
     let tree = repo.find_tree(oid)?;
     let parents = [&parent];
     repo.commit(
         Some("HEAD"),
         &author,
-        &commiter,
+        &committer,
         &[prefix, msg].join(" "),
         &tree,
         &parents,

@@ -74,7 +74,7 @@ make-header =
   Building target(s) using ‘make’.
 
 make-good =
-  All target(s) sucessfully made.
+  All target(s) successfully made.
 
 make-bad =
   Unable to finish making some or all target(s).
@@ -86,7 +86,7 @@ make-report-pass =
   Finished making: { $target }
 
 make-report-fail =
-  Make recipie for target { $target } failed with exit code { $code }.
+  Make recipe for target { $target } failed with exit code { $code }.
 
 make-backlog-start =
   Dumping captured output of ‘make’ for target { $target }:
@@ -128,7 +128,7 @@ run-good =
   Script successfully run.
 
 run-bad =
-  Script did not run sucessfully.
+  Script did not run successfully.
 
 setup-header =
   Configuring repository for use with CaSILE.
@@ -173,7 +173,7 @@ setup-short-shas =
   Setting default length of short SHA hashes in repository
 
 setup-warp-time =
-  Reseting version tracked file timestamps to last affecting commit
+  Resetting version tracked file timestamps to last affecting commit
 
 setup-warp-time-file =
   Rewound clock on { $path }

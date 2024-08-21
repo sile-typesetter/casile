@@ -28,7 +28,7 @@ local spreadFrameset = {
       rotate = 90,
       next = "scratch",
    },
-   scratch = { -- controling overflow is hard
+   scratch = { -- controlling overflow is hard
       left = "left(page)",
       top = "bottom(page)",
       width = 0,
@@ -44,7 +44,7 @@ local posterFrameset = {
       bottom = "bottom(page)",
       next = "scratch",
    },
-   scratch = { -- controling overflow is hard
+   scratch = { -- controlling overflow is hard
       left = "left(page)",
       top = "bottom(page)",
       width = 0,
