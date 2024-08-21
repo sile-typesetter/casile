@@ -2,26 +2,31 @@
 
 CASILEDIR=$(cd "$(dirname $0)/../" && pwd)
 
+alias git="${GIT:-@GIT@}"
+alias m4="${M4:-@M4@}"
+alias perl="${PERL:-@PERL@}"
+alias sed="${SED:-@SED@}"
+
 BRANCH=${1}
 FILE=${2}
 WT=$(mktemp -d -u worktree-diff.XXXXXX)
 
 trap 'rm -rf ${WT}' EXIT SIGHUP SIGTERM
 
-@GIT@ worktree prune > /dev/null
-@GIT@ worktree add --detach ${WT} ${BRANCH} > /dev/null
+git worktree prune > /dev/null
+git worktree add --detach ${WT} ${BRANCH} > /dev/null
 
-@M4@ ${FILTERS} ${WT}/${FILE} | @GIT@ hash-object --stdin -w | read A
-@M4@ ${FILTERS} ${FILE} | @GIT@ hash-object --stdin -w | read B
+m4 ${FILTERS} ${WT}/${FILE} | git hash-object --stdin -w | read A
+m4 ${FILTERS} ${FILE} | git hash-object --stdin -w | read B
 
-if @GIT@ diff ${A}..${B} --quiet; then
-    @GIT@ show ${B}
+if git diff ${A}..${B} --quiet; then
+    git show ${B}
 else
-    @GIT@ diff --no-color --word-diff -U99999 ${A}..${B} |
-        @SED@ -e '1,5d' |
-            @PERL@ -pn \
+    git diff --no-color --word-diff -U99999 ${A}..${B} |
+        sed -e '1,5d' |
+            perl -pn \
                 -e 's/\[-[^\]]*?-\]\{\+([^\}]*?==.*?)\+\}/\1/g' |
-            @SED@ \
+            sed \
                 -e 's/\[-/{--/g' -e 's/-\]/--}/g' \
                 -e 's/{+/{++/g' -e 's/+}/++}/g'
 fi

@@ -41,6 +41,7 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     QUE_PROGVAR([bc])
     QUE_PROGVAR([curl])
     QUE_PROGVAR([cut])
+    QUE_PROGVAR([date])
     QUE_PROGVAR([decasify])
     QUE_PROGVAR([deepl])
     QUE_PROGVAR([diff])

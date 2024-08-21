@@ -4,7 +4,7 @@ function flunk () {
 }
 
 function require_pristine_project () {
-	alias git="@GIT@"
+	alias git="${GIT:-@GIT@}"
 	# disallow anything already staged
 	git diff-index --quiet --cached HEAD ||
 		flunk 'Staging not clean'
@@ -14,17 +14,17 @@ function require_pristine_project () {
 }
 
 function track () {
-	alias git="@GIT@"
+	alias git="${GIT:-@GIT@}"
 	git add $=@
 }
 
 function untrack () {
-	alias git="@GIT@"
+	alias git="${GIT:-@GIT@}"
 	git rm -rf --ignore-unmatch .untracked $=@
 }
 
 function commit () {
-	alias git="@GIT@"
+	alias git="${GIT:-@GIT@}"
 	git diff-index --quiet --cached HEAD ||
 		git commit -m "[auto] $@"
 }
@@ -39,7 +39,7 @@ function remove_extant_bookid () {
 }
 
 function normalize_scrivener_mmd () {
-	alias sed="@SED@"
+	alias sed="${SED:-@SED@}"
 	sed -E 's/^\\#\\#\\#$/----/' |
 		sed -E 's/^\*:::/::: */' |
 		sed -E 's/^::: (\*)? ?.verse/::: verse\n\1/' |
@@ -49,7 +49,7 @@ function normalize_scrivener_mmd () {
 }
 
 function normalize_pandoc () {
-	alias pandoc="@PANDOC@"
+	alias pandoc="${PANDOC:-@PANDOC@}"
 	pandoc_args=(
 		--wrap=preserve
 		--markdown-headings=atx

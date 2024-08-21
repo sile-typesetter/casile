@@ -3,10 +3,10 @@ set -e
 
 source "$CASILEDIR/scripts/functions.zsh"
 
-alias pandoc="@PANDOC@"
-alias sed="@SED@"
-alias mkdir="@MKDIR_P@"
-alias parallel="@PARALLEL@"
+alias pandoc="${PANDOC:-@PANDOC@}"
+alias sed="${SED:-@SED@}"
+alias mkdir="${MKDIR_P:-@MKDIR_P@}"
+alias parallel="${PARALLEL:-@PARALLEL@}"
 
 splitlevels=$1
 test -n $splitlevels
@@ -67,7 +67,7 @@ sed -i -n -e '/^\[\^1\]: /,$p' $src
 
 # Put footnotes in all files, renumber, and generally cleanup
 function cleanup_split () {
-	alias sponge="@SPONGE@"
+	alias sponge="${SPONGE:-@SPONGE@}"
 	normalize_pandoc < $1 < $src | sponge $1
 }
 F=$(functions cleanup_split normalize_pandoc)

@@ -3,8 +3,7 @@ set -e
 
 source "$CASILEDIR/scripts/functions.zsh"
 
-: ${CASILE-:casile}
-alias casile="$CASILE"
+alias casile="${CASILE-:casile}"
 
 bookid=$1
 test -n $bookid

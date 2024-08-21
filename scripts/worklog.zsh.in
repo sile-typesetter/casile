@@ -5,38 +5,48 @@ CASILEDIR=$(cd "$(dirname $0)/../" && pwd)
 . ${CASILEDIR}/functions.zsh
 
 function gitcommits () {
-	@GIT@ rev-list --no-merges --reverse HEAD
+	alias git="${GIT:-@GIT@}"
+	git rev-list --no-merges --reverse HEAD
 }
 
 function gitmodified () {
-	@GIT@ diff-tree --root --no-commit-id -r $@ |
-		@GREP@ -E '100755|100644|100664' |
-		@AWK@ '{print $6}' |
-		@GREP@ -vE '^\.|makefile'
+	alias awk="${AWK:-@AWK@}"
+	alias git="${GIT:-@GIT@}"
+	alias grep="${GREP:-@GREP@}"
+	git diff-tree --root --no-commit-id -r $@ |
+		grep -E '100755|100644|100664' |
+		awk '{print $6}' |
+		grep -vE '^\.|makefile'
 }
 
 function gitadded () {
-	@GIT@ diff --word-diff-regex=. $@ | addedchars | countchars
+	alias git="${GIT:-@GIT@}"
+	git diff --word-diff-regex=. $@ | addedchars | countchars
 }
 
 function gitremoved () {
-	@GIT@ diff --word-diff-regex=. $@ | removedchars | countchars
+	alias git="${GIT:-@GIT@}"
+	git diff --word-diff-regex=. $@ | removedchars | countchars
 }
 
 function addedchars () {
-	@PERL@ -ne 'print $1 while /((?<=\{\+).+?(?=\+\}))/g'
+	alias perl="${PERL:-@PERL@}"
+	perl -ne 'print $1 while /((?<=\{\+).+?(?=\+\}))/g'
 }
 
 function removedchars () {
-	@PERL@ -ne 'print $1 while /((?<=\[\-).+?(?=\-\]))/g'
+	alias perl="${PERL:-@PERL@}"
+	perl -ne 'print $1 while /((?<=\[\-).+?(?=\-\]))/g'
 }
 
 function gitattr () {
-	@GIT@ log --no-walk --format=$@
+	alias git="${GIT:-@GIT@}"
+	git log --no-walk --format=$@
 }
 
 function gitparent () {
-	@GIT@ rev-parse --revs-only $1^ | read newparent
+	alias git="${GIT:-@GIT@}"
+	git rev-parse --revs-only $1^ | read newparent
 	test -z $newparent && echo 4b825dc642cb6eb9a060e54bf8d69288fbee4904 || echo $newparent
 }
 

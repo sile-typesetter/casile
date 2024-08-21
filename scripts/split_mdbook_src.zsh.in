@@ -4,6 +4,9 @@ set -e
 src=$1
 dir=$2
 
+alias pandoc="${PANDOC:-@PANDOC@}"
+alias perl="${PERL:-@PERL@}"
+
 echo -e "# Summary\n\n"
 
 i=0
@@ -19,7 +22,7 @@ while read line; do
   unset title slug
   # Check for chapter header
   if [[ $line =~ "^##? " ]]; then
-    @PANDOC@ --to=plain-smart <<< "$line" |
+    pandoc --to=plain-smart <<< "$line" |
       read title
     if [[ $line =~ "^# " ]]; then
       [[ $line =~ "\.unnumbered\b" ]] || let i=$i+1
@@ -30,8 +33,8 @@ while read line; do
       echo -n "    "
     fi
     # https://github.com/jgm/pandoc/issues/8003
-    @PANDOC@ -f markdown+ascii_identifiers -t markdown-auto_identifiers <<< "# ${title//ı/i}" |
-      @PERL@ -pne 's/^.*{.*#([-\w]+).*}/\1/' |
+    pandoc -f markdown+ascii_identifiers -t markdown-auto_identifiers <<< "# ${title//ı/i}" |
+      perl -pne 's/^.*{.*#([-\w]+).*}/\1/' |
       read slug
     test -n "$slug"
     of="$(printf %02d $i)${j:+$(printf .%03d $j)}-$slug.md"
@@ -39,7 +42,7 @@ while read line; do
     [[ $line =~ "\.unnumbered\b" ]] || echo -n "- "
     echo "[$title](./$of)"
     # Strip attrs we *used* via commonmark_x for our own use from markup going to mdbook
-    @PANDOC@ --to=commonmark-smart <<< "$line" |
+    pandoc --to=commonmark-smart <<< "$line" |
       read line
   fi
   >> $dir/$of <<< $line

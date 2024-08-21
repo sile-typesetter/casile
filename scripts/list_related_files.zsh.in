@@ -14,9 +14,9 @@ case $cmd in
         value $bookid.yml
         ;;
     mds)
-        alias git="@GIT@"
-        alias sed="@SED@"
-        alias sort="@SORT@"
+        alias git="${GIT:-@GIT@}"
+        alias sed="${SED:-@SED@}"
+        alias sort="${SORT:-@SORT@}"
         # wrangle our own sorting so NNN.md comes before NNN-foo/bar.md
         git ls-files "$PROJECT.md" "$PROJECT-*.md" "$bookid.md" "$bookid-**.md" |
             sed -E 's/\.md$/,md/' |
@@ -25,7 +25,7 @@ case $cmd in
         exit 0
         ;;
   srcid)
-      alias yq="@YQ@"
+      alias yq="${YQ:-@YQ@}"
       $0 meta $2 | read meta
       if [[ -f $meta ]] && yq -e 'has("source")' $meta >/dev/null; then
           yq -r '[.source[] | select(.type == "bookid")][0].text' $meta | read bookid

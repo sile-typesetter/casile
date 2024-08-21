@@ -1176,7 +1176,7 @@ $(BUILDDIR)/repository-worklog.sqlite: $(BUILDDIR)/repository-lastcommit.ts
 WORKLOGFIELDS := sha AS 'Commit', date AS 'Date', file AS 'Filename', added AS 'Added', removed AS 'Removed'
 
 $(BUILDDIR)/repository-worklog.md: $(BUILDDIR)/repository-worklog.sqlite force
-	now="$$(LANG=en_US date +%c)"
+	now="$$(LANG=en_US $(DATE) +%c)"
 	ver="$(call versioninfo,$(PROJECT))"
 	export IFS='|'
 	$(SQLITE3) $< "SELECT DISTINCT(author) FROM commits" |
@@ -1186,7 +1186,7 @@ $(BUILDDIR)/repository-worklog.md: $(BUILDDIR)/repository-worklog.sqlite force
 					$(SQLITE3) $< "SELECT SUM(added+ -removed) FROM commits WHERE author='$${author}' and strftime('%Y-%m', date)='$${month}'" | read netadded
 					[[ $${netadded} -ge 1 ]] || continue
 					echo "# Worklog for $${author}"
-					echo "## $$(LANG=en_US date +'%B %Y' -d $${month}-01)"
+					echo "## $$(LANG=en_US $(DATE) +'%B %Y' -d $${month}-01)"
 					echo
 					echo "Report Generated on $${now} from repository $${ver}."
 					echo

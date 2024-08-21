@@ -3,9 +3,9 @@ set -e
 
 source "$CASILEDIR/scripts/functions.zsh"
 
-alias git="@GIT@"
-alias pandoc="@PANDOC@"
-alias rg="@RG@"
+alias git="${GIT:-@GIT@}"
+alias pandoc="${PANDOC:-@PANDOC@}"
+alias rg="${RG:-@RG@}"
 
 : ${bookid:=$1}
 test -n bookid

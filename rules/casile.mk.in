@@ -49,6 +49,7 @@ BC ?= @BC@
 CMP ?= @CMP@
 CURL ?= @CURL@
 CUT ?= @CUT@
+DATE ?= @DATE@
 DECASIFY ?= @DECASIFY@
 DEEPL ?= @DEEPL@
 DIFF ?= @DIFF@
