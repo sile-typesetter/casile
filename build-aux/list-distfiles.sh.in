@@ -13,7 +13,9 @@ finder () {
 }
 
 am_list () {
-    sed -e 's#^\./##' | sort -bdi | xargs printf ' \\\n\t%s'
+    sed -e 's#^\./##' -e 's/\.in//' |
+        sort -bdi |
+        xargs printf ' \\\n\t%s'
 }
 
 printf '%s =' LUALIBRARIES
@@ -41,10 +43,10 @@ printf '\n\n%s =' VIMDATA
 finder . -maxdepth 1 -name '*.vim'
 
 printf '\n\n%s =' DATALIBLIBS
-finder lib -maxdepth 1 -name '*.in' | sed -e 's/\.in//'
+finder lib -maxdepth 1 -name '*.in' -or -name '*.lua'
 
 printf '\n\n%s =' SCRIPTSSCRIPTS
-finder scripts -maxdepth 1 -name '*.in' | sed -e 's/\.in//'
+finder scripts -maxdepth 1 -name '*.in'
 
 printf '\n\n%s =' FONTSDATA
 finder fonts -maxdepth 1 -name '*.otf' -or -name '*.ttf'

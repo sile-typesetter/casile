@@ -1,10 +1,10 @@
 \begin[$if(papersize)$papersize=$papersize$,$endif$class=$documentclass$$if(classoptions)$,$classoptions$$endif$]{document}
 \begin{lua}
 $if(metadatafile)$
-CASILE.metadata = require("readmeta").load("$metadatafile$")
+CASILE.metadata = require("lib.readmeta").load("$metadatafile$")
 $endif$
 $if(versesfile)$
-CASILE.verses = require("readmeta").load("$versesfile$")
+CASILE.verses = require("lib.readmeta").load("$versesfile$")
 $endif$
 \end{lua}
 $if(lang)$

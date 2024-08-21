@@ -751,7 +751,7 @@ $(BINDINGFRAGMENTS): $(BUILDDIR)/%-$(_binding)-$(_text).pdf:
 	cat <<- EOF > $(BUILDDIR)/$*.lua
 		CASILE.versioninfo = "$(call versioninfo,$@)"
 		local metadatafile = "$(filter %-manifest.yml,$^)"
-		CASILE.metadata = require("readmeta").load(metadatafile)
+		CASILE.metadata = require("lib.readmeta").load(metadatafile)
 		CASILE.layout = "$(or $(__$(call parse_papersize,$@)),$(call parse_papersize,$@))"
 		CASILE.binding = "$(or $(__$(call parse_binding,$@)),$(call parse_binding,$@))"
 		CASILE.language = "$(LANGUAGE)"
@@ -813,7 +813,7 @@ $(COVERFRAGMENTS): $(BUILDDIR)/%-$(_text).pdf:
 	cat <<- EOF > $(BUILDDIR)/$*.lua
 		CASILE.versioninfo = "$(call versioninfo,$@)"
 		local metadatafile = "$(filter %-manifest.yml,$^)"
-		CASILE.metadata = require("readmeta").load(metadatafile)
+		CASILE.metadata = require("lib.readmeta").load(metadatafile)
 		CASILE.layout = "$(or $(__$(call parse_papersize,$@)),$(call parse_papersize,$@))"
 		CASILE.binding = "$(or $(__$(call parse_binding,$@)),$(call parse_binding,$@))"
 		CASILE.language = "$(LANGUAGE)"

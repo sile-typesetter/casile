@@ -60,9 +60,6 @@ Makefile-distfiles: $(wildcard .version .tarball-version)
 
 # use :read !git ls-files <pattern> to repopulate <pattern>_DATA vars
 
-luadir = $(datadir)
-dist_lua_DATA = readmeta.lua
-
 povdir = $(datadir)
 dist_pov_DATA = $(POVDATA)
 
