@@ -927,7 +927,7 @@ $(EMPTYGEOMETRIES): $(BUILDDIR)/$(_geometry)-%.pdf: $(CASILEDIR)/geometry.xml | 
 	cat <<- EOF > $(BUILDDIR)/$*.lua
 		CASILE.versioninfo = "$(call versioninfo,$@)"
 		CASILE.layout = "$(or $(__$(call parse_papersize,$@)),$(call parse_papersize,$@))"
-		CASILE.binding = "$(or $(__$(call parse_binding,$@)),$(call parse_binding,$@))"
+		CASILE.binding = $(if $(call parse_binding,$@),"$(or $(__$(call parse_binding,$@)),$(call parse_binding,$@))",nil)
 		CASILE.language = "$(LANGUAGE)"
 		return { _name = "$*", type = "casile" }
 	EOF
