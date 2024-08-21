@@ -43,7 +43,10 @@ printf '\n\n%s =' VIMDATA
 finder . -maxdepth 1 -name '*.vim'
 
 printf '\n\n%s =' DATALIBLIBS
-finder lib -maxdepth 1 -name '*.in' -or -name '*.lua'
+finder lib -maxdepth 1 -not -executable -name '*.in' -or -not -executable -name '*.lua'
+
+printf '\n\n%s =' SCRIPTLIBLIBS
+finder lib -maxdepth 1 -executable -name '*.in'
 
 printf '\n\n%s =' SCRIPTSSCRIPTS
 finder scripts -maxdepth 1 -name '*.in'

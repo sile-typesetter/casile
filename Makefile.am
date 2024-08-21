@@ -98,6 +98,9 @@ dist_vim_DATA = $(VIMDATA)
 datalibdir = $(datadir)/lib
 dist_datalib_DATA = $(DATALIBLIBS)
 
+scriptlibdir = $(datadir)/lib
+dist_scriptlib_SCRIPTS = $(SCRIPTLIBLIBS)
+
 scriptsdir = $(datadir)/scripts
 dist_scripts_SCRIPTS = $(SCRIPTSSCRIPTS)
 

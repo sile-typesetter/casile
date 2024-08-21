@@ -139,7 +139,7 @@ AC_CONFIG_FILES([build-aux/list-distfiles.sh], [chmod +x build-aux/list-distfile
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([rules/casile.mk])
 AC_CONFIG_FILES([lib/make-shell.zsh], [chmod +x lib/make-shell.zsh])
-AC_CONFIG_FILES([lib/functions.zsh], [chmod +x lib/functions.zsh])
+AC_CONFIG_FILES([lib/functions.zsh])
 AC_CONFIG_FILES([lib/casile-entry.zsh], [chmod +x lib/casile-entry.zsh])
 
 AC_DEFUN([CASILE_SCRIPT], [AC_CONFIG_FILES([scripts/$1], [chmod +x scripts/$1])])
