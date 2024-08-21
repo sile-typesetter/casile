@@ -3,6 +3,18 @@ function flunk () {
 	exit 1
 }
 
+function countchars () {
+	alias perl="${PERL:-@PERL@}"
+	alias wc="${WC:-@WC@}"
+    perl -pne 's/\s//g' | wc -c
+}
+
+function countwords () {
+	alias perl="${PERL:-@PERL@}"
+	alias wc="${WC:-@WC@}"
+    perl -pne 's/[^\s\w]//g' | wc -w
+}
+
 function require_pristine_project () {
 	alias git="${GIT:-@GIT@}"
 	# disallow anything already staged

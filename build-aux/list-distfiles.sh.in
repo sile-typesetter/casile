@@ -40,6 +40,9 @@ finder . -maxdepth 1 -name '*.sed'
 printf '\n\n%s =' VIMDATA
 finder . -maxdepth 1 -name '*.vim'
 
+printf '\n\n%s =' DATALIBLIBS
+finder lib -maxdepth 1 -name '*.in' | sed -e 's/\.in//'
+
 printf '\n\n%s =' SCRIPTSSCRIPTS
 finder scripts -maxdepth 1 -name '*.in' | sed -e 's/\.in//'
 

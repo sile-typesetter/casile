@@ -9,7 +9,7 @@ basename="$1"
 : ${2:=2}
 let months=$2-1
 
-. ${CASILEDIR}/functions.zsh
+source ${CASILEDIR}/lib/functions.zsh
 
 function list_sources () {
 	alias git="${GIT:-@GIT@}"

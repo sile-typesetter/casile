@@ -2,7 +2,7 @@
 
 CASILEDIR=$(cd "$(dirname $0)/../" && pwd)
 
-. ${CASILEDIR}/functions.zsh
+source ${CASILEDIR}/lib/functions.zsh
 
 function gitcommits () {
 	alias git="${GIT:-@GIT@}"

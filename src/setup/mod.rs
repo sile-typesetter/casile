@@ -101,7 +101,7 @@ pub fn is_not_casile_source() -> Result<bool> {
     let status = CASILEUI.new_check("setup-is-not-casile");
     let repo = get_repo()?;
     let workdir = repo.workdir().unwrap();
-    let testfile = workdir.join("make-shell.zsh.in");
+    let testfile = workdir.join("Makefile.am");
     let ret = fs::File::open(testfile).is_err();
     status.end(ret);
     Ok(ret)

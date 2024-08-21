@@ -1,7 +1,7 @@
 #!@ZSH@
 set -e
 
-source "$CASILEDIR/scripts/functions.zsh"
+source "$CASILEDIR/lib/functions.zsh"
 
 alias pandoc="${PANDOC:-@PANDOC@}"
 alias sed="${SED:-@SED@}"

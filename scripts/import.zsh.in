@@ -5,7 +5,7 @@ alias git="${GIT:-@GIT@}"
 
 setopt -o nullglob
 
-source "$CASILEDIR/scripts/functions.zsh"
+source "$CASILEDIR/lib/functions.zsh"
 
 : ${bookid:=$1}
 test -n bookid

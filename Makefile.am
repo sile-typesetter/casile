@@ -23,7 +23,6 @@ include $(wildcard $(top_srcdir)/Makefile-distfiles)
 lang_key_files = rules/en.mk rules/tr.mk
 reverse_lang_key_files = $(patsubst %.mk,%-reversed.mk,$(lang_key_files))
 
-pkgdata_SCRIPTS = make-shell.zsh
 dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE.md
 dist_man_MANS =
@@ -99,7 +98,8 @@ dist_sed_DATA = $(SEDDATA)
 vimdir = $(datadir)
 dist_vim_DATA = $(VIMDATA)
 
-dist_data_DATA = functions.zsh
+datalibdir = $(datadir)/lib
+dist_datalib_DATA = $(DATALIBLIBS)
 
 scriptsdir = $(datadir)/scripts
 dist_scripts_SCRIPTS = $(SCRIPTSSCRIPTS)

@@ -20,7 +20,7 @@ $(error Use of CaSILE rule file inclusion outside of the CLI is deprecated!)
 endif
 
 # Run complete recipes in wrapper script that facilitates clean CLI output
-SHELL := $(CASILEDIR)/make-shell.zsh
+SHELL := $(CASILEDIR)/lib/make-shell.zsh
 
 .SHELLFLAGS = -w
 

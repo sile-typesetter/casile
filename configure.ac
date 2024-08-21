@@ -137,19 +137,19 @@ AM_COND_IF([DEVELOPER_MODE], [
 AC_CONFIG_FILES([build-aux/list-distfiles.sh], [chmod +x build-aux/list-distfiles.sh])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([rules/casile.mk])
-AC_CONFIG_FILES([make-shell.zsh], [chmod +x make-shell.zsh])
+AC_CONFIG_FILES([lib/make-shell.zsh], [chmod +x lib/make-shell.zsh])
+AC_CONFIG_FILES([lib/functions.zsh], [chmod +x lib/functions.zsh])
+AC_CONFIG_FILES([lib/casile-entry.zsh], [chmod +x lib/casile-entry.zsh])
 
 AC_DEFUN([CASILE_SCRIPT], [AC_CONFIG_FILES([scripts/$1], [chmod +x scripts/$1])])
 
 # cd scripts; git ls-files '*.in' | sed -e 's/\.in$//'
 CASILE_SCRIPT([branch2criticmark.zsh])
-CASILE_SCRIPT([casile-entry.zsh])
 CASILE_SCRIPT([cover_title.py])
 CASILE_SCRIPT([diff2marked.zsh])
 CASILE_SCRIPT([extract_references.js])
 CASILE_SCRIPT([figure_dash.pl])
 CASILE_SCRIPT([flatten_chapters.zsh])
-CASILE_SCRIPT([functions.zsh])
 CASILE_SCRIPT([import.zsh])
 CASILE_SCRIPT([isbn_format.py])
 CASILE_SCRIPT([italic_reorder.pl])

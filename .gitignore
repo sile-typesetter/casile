@@ -7,10 +7,11 @@ completions/*
 .version
 .version-prev
 .tarball-version
-make-shell.zsh
 rules/casile.mk
 rules/en-reversed.mk
 rules/tr-reversed.mk
+!lib/*.in
+lib/*
 !scripts/*.in
 scripts/*
 *.asc
