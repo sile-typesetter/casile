@@ -283,6 +283,10 @@ VIRTUALMANIFESTS := $(call pattern_list,$(SOURCES),.manifest)
 .PHONY: $(VIRTUALMANIFESTS)
 $(VIRTUALMANIFESTS): %.manifest: %-manifest.yml
 
+.PHONY: manifest manifests
+manifest: manifests
+manifests: $(VIRTUALMANIFESTS)
+
 VIRTUALPDFS := $(call pattern_list,$(SOURCES),.pdfs)
 VIRTUALEDITPDFS := $(and $(EDITS),$(call pattern_list,$(SOURCES),$(EDITS),.pdfs))
 .PHONY: $(VIRTUALPDFS) $(VIRTUALEDITPDFS)
@@ -320,11 +324,14 @@ VIRTUALPROMOTIONALS := $(call pattern_list,$(SOURCES),.promotionals)
 .PHONY: $(VIRTUALPROMOTIONALS)
 $(VIRTUALPROMOTIONALS): %.promotionals: $(call pattern_list,$$*,$(PLACARDS),$(_poster),.jpg) $$*-icon.png
 
+.PHONY: manifests
+manifests:
+
 # If a series, add some extra dependencies to convenience builds
 ifneq ($(words $(TARGETS)),1)
 promotionals: series_promotionals
 renderings: series_renderings
-manifest: series_manifest
+manifests: series_manifest
 endif
 
 .PHONY: series_manifest
