@@ -77,3 +77,24 @@ predicates = "3.1"
 
 [profile.release]
 lto = true
+
+[package.metadata.typos.default]
+locale = "en-us"
+extend-ignore-identifiers-re = [
+  "Heros"
+]
+
+[package.metadata.typos.default.extend-words]
+
+[package.metadata.typos.files]
+ignore-hidden = false
+extend-exclude = [
+  "/.git",
+  "CHANGELOG.md",
+  "build-aux/ax*",
+  "lua-libraries/*",
+  "names.*.txt",
+  "rules/en.mk",
+  "rules/tr.mk",
+  "upgrade*.sed",
+]

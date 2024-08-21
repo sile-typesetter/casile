@@ -125,6 +125,7 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
         QUE_PROGVAR([ruff])
         QUE_PROGVAR([stylua])
         QUE_PROGVAR([tr])
+        QUE_PROGVAR([typos])
     ])
 ])
 
