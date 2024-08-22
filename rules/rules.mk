@@ -551,7 +551,7 @@ $(BUILDDIR)/%-$(_flattened).md: %.md $$(shell $(_ENV) list_related_files.zsh mds
 	else
 		# For books using the new related files finder, load all md files except the first dependency
 		# Add blank lines between files so headers aren't eaten, c.f. https://unix.stackexchange.com/a/628651/1925
-		$(M4) $(filter %.m4,$^) =($(SED) -s -e '$${p;g;}' $(filter %.md,$(wordlist 2,9999,$^)))
+		$(M4) $(filter %.m4,$^) =($(SED) -s -e '$${p;g;}' $(or $(filter %.md,$(wordlist 2,9999,$^)),$<))
 	fi |
 		renumber_footnotes.pl |
 		$(and $(HEAD),head -n$(HEAD) |) \
