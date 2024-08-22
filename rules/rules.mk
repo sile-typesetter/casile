@@ -177,7 +177,7 @@ export PATH := $(PUBLISHERDIRABS)/scripts:$(PATH)
 endif
 SILEPATH += $(CASILEDIR)
 
-DIVISIONS ?= part chapter section
+DIVISIONS ?= chapter section
 
 # Extra arguments to pass to Pandoc
 PANDOCARGS ?=
