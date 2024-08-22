@@ -1,16 +1,41 @@
+local locale = os.getenv("LANGUAGE") or "en"
+
 -- Stuff we count as ending a sentence
 local eos = "%P.+[%.%!%?]+%)?$"
+
+local tr_non_terminal = {
+   ["bkz."] = true,
+   ["(bkz."] = true,
+   ["krş."] = true,
+   ["(krş."] = true,
+   ["örn."] = true,
+   ["(örn."] = true,
+   ["ör."] = true,
+   ["(ör."] = true,
+}
+
+local function is_tr_exception (previous, next)
+   if tr_non_terminal[previous] then return true end
+   -- Dates
+   if previous:match("M%.?Ö%.$") and next:match("^%d") then return true end
+   if previous:match("M%.?S%.$") and next:match("^%d") then return true end
+   -- Roman numeral ordinals
+   if previous:match("[IVXLCDM]+%.$") then return true end
+end
 
 local function wrap_sentences (element)
    local content = element.content
    for i = 2, #content do
       local previous = content[i - 1]
       local previous_stringly = pandoc.utils.stringify(previous.content and previous.content or previous)
+      local next = content[i + 1]
+      local next_stringly = next and pandoc.utils.stringify(next.content and next.content or next)
       if
          content[i].t == "Space"
          and previous_stringly:match(eos)
          -- Don't break if the next character is a lower case
-         and not (content[i + 1] and pandoc.utils.stringify(content[i + 1]):match("^%l"))
+         and not (next and next_stringly:match("^%l"))
+         and not (locale == "tr" and is_tr_exception(previous_stringly, next_stringly))
       then
          content[i] = pandoc.SoftBreak()
       end
@@ -18,7 +43,14 @@ local function wrap_sentences (element)
    return element
 end
 
+local function extract_locale (doc)
+   locale = pandoc.utils.stringify(doc.meta.language or locale)
+   return doc
+end
+
 return {
+   traverse = "topdown",
+   { Pandoc = extract_locale },
    {
       SoftBreak = function ()
          return pandoc.Space()
