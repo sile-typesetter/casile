@@ -4,14 +4,23 @@ local locale = os.getenv("LANGUAGE") or "en"
 local eos = "%P.+[%.%!%?]+%)?$"
 
 local tr_non_terminal = {
+   ["Bkz."] = true,
    ["bkz."] = true,
    ["(bkz."] = true,
+   ["Krş."] = true,
    ["krş."] = true,
    ["(krş."] = true,
+   ["Örn."] = true,
    ["örn."] = true,
    ["(örn."] = true,
+   ["Ör."] = true,
    ["ör."] = true,
    ["(ör."] = true,
+   ["Ç.N."] = true,
+   ["Ç.n."] = true,
+   ["ç.n."] = true,
+   ["ÇN."] = true,
+   ["çn."] = true,
 }
 
 local en_non_terminal = {
