@@ -55,6 +55,7 @@ autom4te.cache
 /depcomp
 build-aux/install-sh
 build-aux/missing
+build-aux/list-distfiles.sh
 /stamp-h1
 
 ### Python ###
