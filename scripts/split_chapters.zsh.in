@@ -71,7 +71,7 @@ function cleanup_split () {
 	normalize_pandoc < $1 < $src | sponge $1
 }
 F=$(functions cleanup_split normalize_pandoc)
-parallel @ZSH@ -c "$F; src=$src; cleanup_split" ::: ${files[@]}
+parallel $ZSH -c "$F; src=$src; cleanup_split" ::: ${files[@]}
 
 track $bookid.md ${files[@]}
 commit "Split $bookid up into chapters and sections"
