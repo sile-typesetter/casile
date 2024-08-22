@@ -14,6 +14,15 @@ local tr_non_terminal = {
    ["(ör."] = true,
 }
 
+local en_non_terminal = {
+   ["i.e."] = true,
+   ["(i.e."] = true,
+   ["c.f."] = true,
+   ["(c.f."] = true,
+   ["e.g."] = true,
+   ["(e.g."] = true,
+}
+
 local function is_tr_exception (previous, next)
    if tr_non_terminal[previous] then return true end
    -- Dates
@@ -21,6 +30,12 @@ local function is_tr_exception (previous, next)
    if previous:match("M%.?S%.$") and next:match("^%d") then return true end
    -- Roman numeral ordinals
    if previous:match("[IVXLCDM]+%.$") then return true end
+end
+
+local function is_en_exception (previous, next)
+   if tr_non_terminal[previous] then return true end
+   -- Verse refs, e.g. Gen. 16
+   if previous:match("^%u%P+%.$") and next:match("^%d") then return true end
 end
 
 local function wrap_sentences (element)
@@ -35,6 +50,7 @@ local function wrap_sentences (element)
          and previous_stringly:match(eos)
          -- Don't break if the next character is a lower case
          and not (next and next_stringly:match("^%l"))
+         and not (locale == "en" and is_en_exception(previous_stringly, next_stringly))
          and not (locale == "tr" and is_tr_exception(previous_stringly, next_stringly))
       then
          content[i] = pandoc.SoftBreak()
