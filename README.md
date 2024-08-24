@@ -496,7 +496,7 @@ To override the defaults set them in your project’s `casile.mk`
 #### Build time settings
 
 These settings are usually not changed except at run time.
-You _may_ set them in your rules file such as `casile.mk` but they would typically be set as environment variables or on the command line to get other-than-default behaviour for a specific build.
+You _may_ set them in your rules file such as `casile.mk` but they would typically be set as environment variables or on the command line to get other-than-default behavior for a specific build.
 
 * `DRAFT` enables draft mode builds for faster testing.
 

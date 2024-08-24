@@ -81,7 +81,8 @@ lto = true
 [package.metadata.typos.default]
 locale = "en-us"
 extend-ignore-identifiers-re = [
-  "Heros"
+  "Heros",
+  "[Cc]alibre",
 ]
 
 [package.metadata.typos.default.extend-words]

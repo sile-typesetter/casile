@@ -212,7 +212,7 @@ pub fn normalize_lang(input: &str) -> String {
     re.replace(input, "").to_string()
 }
 
-/// Scan our embedded assets for what recognisable locale data we have on hand
+/// Scan our embedded assets for what recognizable locale data we have on hand
 // https://github.com/projectfluent/fluent-rs/blob/c9e45651/fluent-resmgr/examples/simple-resmgr.rs#L35
 pub fn list_available_locales() -> Locales {
     let mut embedded = vec![];
