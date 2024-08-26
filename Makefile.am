@@ -162,7 +162,7 @@ casile-%.md: CHANGELOG.md
 	$(SED) -e '/\.\.\.v$*/,/\.\.\.v/!d' $< | \
 		$(SED) -e '1,3d;N;$$!P;$$!D;$$d' > $@
 
-PHONY_DEVELOPER_TARGETS  = lint luacheck stylua checkmake ruff
+PHONY_DEVELOPER_TARGETS  = lint luacheck stylua checkmake ruff ruff-format
 PHONY_DEVELOPER_TARGETS += tagrelease release-preview release
 PHONY_DEVELOPER_TARGETS += docker docker-dep-check docker-ghcr-to-hub docker-build-push
 .PHONY: $(PHONY_DEVELOPER_TARGETS)
@@ -225,26 +225,9 @@ CLEANFILES += .aur_deps
 		$(GREP) -v 'so.$$' | \
 		$(SORT) > $@
 
-define docker_push =
-	test -z "$(DOCKER_PAT)" || \
-		$(DOCKER) login https://$(DOCKER_REGISTRY) -u $(DOCKER_USERNAME) -p $(DOCKER_PAT)
-		$(DOCKER) push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
-	if [[ "$(DOCKER_TAG)" == v*.*.* ]]; then \
-		tag=$(DOCKER_TAG) ; \
-		$(DOCKER) tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):latest ; \
-		$(DOCKER) tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$${tag//.*} ; \
-		$(DOCKER) push $(DOCKER_REGISTRY)/$(DOCKER_REPO):latest ; \
-		$(DOCKER) push $(DOCKER_REGISTRY)/$(DOCKER_REPO):$${tag//.*} ; \
-	fi
-endef
-
 docker-ghcr-to-hub:
 	$(DOCKER) pull $(GHCR_REGISTRY)/$(GHCR_REPO):$(DOCKER_TAG)
 	$(DOCKER) tag  $(GHCR_REGISTRY)/$(GHCR_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
-	$(docker_push)
-
-docker-build-push: docker
-	$(DOCKER) tag $(DOCKER_REPO):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(DOCKER_TAG)
 	$(docker_push)
 
 else !DEVELOPER_MODE
