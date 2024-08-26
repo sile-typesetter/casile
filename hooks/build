@@ -15,7 +15,7 @@ RUNTIME_DEPS='bc bcprov curl decasify entr epubcheck fontconfig ghostscript git 
 ' perl perl-yaml perl-yaml-merge-simple'\
 ' python python-isbnlib python-deepl python-pandocfilters python-pantable python-ruamel-yaml python-usfm2osis-cw-git'\
 ' xcftools xorg-server-xvfb'
-BUILD_DEPS='base-devel autoconf-archive cargo clang mold node-prune yarn'
+BUILD_DEPS='base-devel cargo clang mold node-prune yarn'
 
 : "${DOCKER_BUILDKIT:=1}"
 export DOCKER_BUILDKIT
