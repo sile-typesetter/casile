@@ -12,6 +12,7 @@ QUE_DIST_CHECKSUMS
 
 # Build time deps
 AC_PROG_AWK
+AC_PROG_GREP
 AC_PROG_SED
 QUE_PROGVAR([find])
 QUE_PROGVAR([sort])
@@ -35,7 +36,6 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
 
     # Run time deps
     AC_PROG_EGREP
-    AC_PROG_GREP
     AC_PROG_INSTALL
     AC_PROG_MKDIR_P
     QUE_PROGVAR([bc])
