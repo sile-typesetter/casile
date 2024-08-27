@@ -1,10 +1,15 @@
-std = "lua54"
+std = "lua54+sile"
+
+max_line_length = false
+
 include_files = {
    "**/*.lua",
+   "**/*.lua.in",
    "*.rockspec",
    ".busted",
    ".luacheckrc",
 }
+
 exclude_files = {
    "casile-*",
    "lua_modules",
@@ -13,9 +18,11 @@ exclude_files = {
    ".luarocks",
    ".install",
 }
+
 files["spec"] = {
    std = "+busted",
 }
+
 files["pandoc-filters"] = {
    globals = {
       "Block",
@@ -28,12 +35,3 @@ files["pandoc-filters"] = {
    },
    ignore = { "4.2" },
 }
-globals = {
-   "SILE",
-   "SU",
-   "luautf8",
-   "pl",
-   "fluent",
-   "CASILE",
-}
-max_line_length = false
