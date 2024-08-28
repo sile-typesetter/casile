@@ -35,3 +35,11 @@ files["pandoc-filters"] = {
    },
    ignore = { "4.2" },
 }
+
+files["lib"] = {
+   globals = {
+      "lpeg",
+      "pandoc",
+      "Reader"
+   }
+}
