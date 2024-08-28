@@ -42,7 +42,7 @@ local function is_tr_exception (previous, next)
 end
 
 local function is_en_exception (previous, next)
-   if tr_non_terminal[previous] then return true end
+   if en_non_terminal[previous] then return true end
    -- Dates (reverse from most common order, but other way harder to match without negatives)
    if previous:match("A%.?D%.$") and next:match("^%d") then return true end
    if previous:match("B%.?C%.$") and next:match("^%d") then return true end
