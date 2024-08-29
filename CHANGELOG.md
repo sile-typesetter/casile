@@ -2,6 +2,65 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.14.0](https://github.com/sile-typesetter/casile/compare/v0.13.4...v0.14.0) (2024-08-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* **scripts:** Books with split source files are now compiled
+automatically without the loadchapters macro shenanigans. This requires
+the sources to be sortable and any interleaved content needs to be in
+sequential files.
+* **rules:** The $(BUILDDIR) vaiable used in many make targets can
+no longer by set by make rules, it must be set via the builddir option
+via YAML configs or ENV vars. This makes it easier to use in scripts
+that may not run as a child process of make.
+* **cli:** Rename 'path' argument to 'project'
+
+### New Features
+
+* **cli:** Add passthrough mode to interface ([3bc8b08](https://github.com/sile-typesetter/casile/commit/3bc8b08bdf3f971be5066096ab2f42776d04721f))
+* **cli:** Add type hints for autocompletion of some args ([801f566](https://github.com/sile-typesetter/casile/commit/801f56699e5cbf4f184c1af57ab1862cf03cd24e))
+* **filters:** Add filter to format Markdown with line-per-sentence ([48ec935](https://github.com/sile-typesetter/casile/commit/48ec93589441d4305e9ef30dc618bb85ff258f9b))
+* **filters:** Add some English language smarts to sentence wrapper ([8d4001b](https://github.com/sile-typesetter/casile/commit/8d4001ba74e7a724e700e2068838b7d731f22434))
+* **filters:** Add Turkish language smarts to sentence wrapper, closes [#170](https://github.com/sile-typesetter/casile/issues/170) ([af4a32e](https://github.com/sile-typesetter/casile/commit/af4a32e155c799224892101f053c82441f4050e0))
+* **filters:** Catch English dates as exception to sentence filter ([3b222aa](https://github.com/sile-typesetter/casile/commit/3b222aa779fd9789b5467dfb55d2722b342c29fb))
+* **filters:** Catch sentance-leading abreviations in Turkish so footnotes don't wrap ([9c6ad26](https://github.com/sile-typesetter/casile/commit/9c6ad26599d2f3e594c126aba0e0022a7e1d4a7a))
+* **filters:** Extend sentence wrapping to catch quotations ([e031a7d](https://github.com/sile-typesetter/casile/commit/e031a7d565ad8886f5c0005e567a601f015eeacb))
+* **filters:** Extend sentence wrapping to more block types ([6f8df04](https://github.com/sile-typesetter/casile/commit/6f8df04d037aabb91b3f3fce412c522266dd75e0))
+* **import:** Add Lua filter for reading unformatted text ([f2dfc14](https://github.com/sile-typesetter/casile/commit/f2dfc1478e212f181027cf351653e6742019610d)), closes [/github.com/jgm/pandoc/issues/6393#issuecomment-962694810](https://github.com/sile-typesetter//github.com/jgm/pandoc/issues/6393/issues/issuecomment-962694810)
+* **import:** Add part and rough epigraph handling ([22c2631](https://github.com/sile-typesetter/casile/commit/22c263144d07576071f9de3293a50be8b0e7b7ee))
+* **import:** Add script for importing other formats ([da48c14](https://github.com/sile-typesetter/casile/commit/da48c144d6c06d9fb9134e9d44e41b80012afdef))
+* **rules:** Add intermediate processing for easy access to flattened markdown ([993f5b4](https://github.com/sile-typesetter/casile/commit/993f5b40588ec636fc6b353994f10e5a59fb389e))
+* **rules:** Start wrapping paragraphs by sentence in normalization by default ([9cde697](https://github.com/sile-typesetter/casile/commit/9cde6978466da2bfbb10e8d782ae7a735d98f653))
+* **scripts:** Add script to flatted split files into single source ([66fb87c](https://github.com/sile-typesetter/casile/commit/66fb87c87fd18c3535634d132ea277ade0486f2a))
+* **scripts:** Allow override of dependencies at runtime as well as build time ([3279586](https://github.com/sile-typesetter/casile/commit/3279586e0e8df840da8bdd614788f297a20958ba))
+* **utilities:** Support splitting documents into sections ([05fedb4](https://github.com/sile-typesetter/casile/commit/05fedb43bcb54acb7b7ed61ff5c9e02a604eeeca))
+
+
+### Bug Fixes
+
+* **build:** Drop duplicate targets supplied by reusable include ([18331d5](https://github.com/sile-typesetter/casile/commit/18331d5687d5416d692b9b894c28778400a1ad40))
+* **build:** Note grep is a build-time dependency, not just runtime ([d1f2035](https://github.com/sile-typesetter/casile/commit/d1f20350dc78826a4f05b27628281f042c8ee2d8))
+* **cli:** Avoid Unicode direction isolation marks in CLI output ([5ea0038](https://github.com/sile-typesetter/casile/commit/5ea0038cf899c1ba4bac10a5949742625e67e550))
+* **cli:** Cleanup help message to be more accurate ([54787eb](https://github.com/sile-typesetter/casile/commit/54787eb3015d608b185ca073aa54c9caed305449))
+* **filters:** Separate pandoc filter arguments from normalization arguments ([c17ae03](https://github.com/sile-typesetter/casile/commit/c17ae039fbddb85404f0dd9d78f58c91ff2144ff))
+* **i18n:** Add missing translation for paper size names ([664cf32](https://github.com/sile-typesetter/casile/commit/664cf32fcc62ceda69dfae1b6be9c556699dcbbe))
+* **rules:** Correct parse error in font search directory handling ([819edb5](https://github.com/sile-typesetter/casile/commit/819edb5cb7c080f193431ab6478d5a898d6e962b))
+* **rules:** Unscramble project-wide manifest creation targets ([78faebe](https://github.com/sile-typesetter/casile/commit/78faebe66bff13c26b4e14e3ca7f69a8509b844e))
+
+
+### Changes
+
+* **cli:** Rename 'path' argument to 'project' ([190a3c9](https://github.com/sile-typesetter/casile/commit/190a3c942490a02281dc3ec6d8e21a709833c60f))
+* **rules:** Drop BUILDDIR as a make variable and make it a config option ([69bdbea](https://github.com/sile-typesetter/casile/commit/69bdbeab65786ec0346ba59cbcee7b9386d55f78))
+* **scripts:** Redo split chapter file loading ([7f3401b](https://github.com/sile-typesetter/casile/commit/7f3401b896bebfa2af2063ebdb2ec959f0d80b73))
+
+
+### Optimizations
+
+* **import:** Use parallel to multi-thread normalizing lots of files ([4691d1f](https://github.com/sile-typesetter/casile/commit/4691d1ffdf2c2ecd3958d1dcdce1be6947a8aa3d))
+
 ## [0.13.4](https://github.com/sile-typesetter/casile/compare/v0.13.3...v0.13.4) (2024-06-28)
 
 
