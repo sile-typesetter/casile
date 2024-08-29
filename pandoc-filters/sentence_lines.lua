@@ -33,23 +33,43 @@ local en_non_terminal = {
 }
 
 local function is_tr_exception (previous, next)
-   if tr_non_terminal[previous] then return true end
+   if tr_non_terminal[previous] then
+      return true
+   end
    -- Dates
-   if previous:match("M%.?Ö%.$") and next:match("^%d") then return true end
-   if previous:match("M%.?S%.$") and next:match("^%d") then return true end
+   if previous:match("M%.?Ö%.$") and next:match("^%d") then
+      return true
+   end
+   if previous:match("M%.?S%.$") and next:match("^%d") then
+      return true
+   end
    -- Roman numeral ordinals
-   if previous:match("[IVXLCDM]+%.$") then return true end
+   if previous:match("[IVXLCDM]+%.$") then
+      return true
+   end
 end
 
 local function is_en_exception (previous, next)
-   if en_non_terminal[previous] then return true end
+   if en_non_terminal[previous] then
+      return true
+   end
    -- Dates (reverse from most common order, but other way harder to match without negatives)
-   if previous:match("A%.?D%.$") and next:match("^%d") then return true end
-   if previous:match("B%.?C%.$") and next:match("^%d") then return true end
-   if previous:match("C%.?E%.$") and next:match("^%d") then return true end
-   if previous:match("B%.?C%.?E%.$") and next:match("^%d") then return true end
+   if previous:match("A%.?D%.$") and next:match("^%d") then
+      return true
+   end
+   if previous:match("B%.?C%.$") and next:match("^%d") then
+      return true
+   end
+   if previous:match("C%.?E%.$") and next:match("^%d") then
+      return true
+   end
+   if previous:match("B%.?C%.?E%.$") and next:match("^%d") then
+      return true
+   end
    -- Verse refs, e.g. Gen. 16
-   if previous:match("^%u%P+%.$") and next:match("^%d") then return true end
+   if previous:match("^%u%P+%.$") and next:match("^%d") then
+      return true
+   end
 end
 
 local function wrap_sentences (element)
