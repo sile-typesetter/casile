@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.14.1](https://github.com/sile-typesetter/casile/compare/v0.14.0...v0.14.1) (2024-08-31)
+
+
+### New Features
+
+* **utilities:** Add utility function to simplify adding toolkits to projects ([23aadc7](https://github.com/sile-typesetter/casile/commit/23aadc7beda69185774bec09f3c7866d06679dd1))
+
+
+### Bug Fixes
+
+* **build:** Avoid the perceived need for an extra automake cycle in dist tarball ([43814e9](https://github.com/sile-typesetter/casile/commit/43814e9e96cc011efaa362c5cc2a3252b447ee8a))
+* **rules:** Fix project-local font directory handling ([098ad34](https://github.com/sile-typesetter/casile/commit/098ad34b51c49d678a704ed71f0bcbcd231e54b8))
+
 ## [0.14.0](https://github.com/sile-typesetter/casile/compare/v0.13.4...v0.14.0) (2024-08-29)
 
 
