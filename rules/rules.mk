@@ -152,6 +152,7 @@ PROJECTLUA := $(wildcard $(PROJECT).lua)
 LUALIBS +=
 
 # Add a place where project local fonts can live
+FONTDIRS ?=
 FONTDIRS += $(patsubst ./%,%,$(CASILEDIR)/fonts $(wildcard $(PROJECTDIR:./=.)/.fonts))
 
 FCCONFIG := $(BUILDDIR)/fontconfig.conf
@@ -508,7 +509,7 @@ $(FCCONFIG): | $(BUILDDIR)
 		<?xml version="1.0"?>
 		<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
 		<fontconfig>$(foreach DIR,$(FONTDIRS),
-			<dir>$(shell $(_ENV) cd "$(shell $(_ENV) dirname $(DIR))" && pwd)</dir>)
+			<dir>$(shell $(_ENV) cd "$(DIR)" && pwd)</dir>)
 			<include ignore_missing="no">$(FCDEFAULT)</include>
 		</fontconfig>
 	EOF
