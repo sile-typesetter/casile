@@ -84,6 +84,8 @@ define addtopub ?=
 	$(require_pubdir)
 endef
 
+toolkitdir ?= $(eval 1?=)$(eval _THISDIR := $(patsubst ./%,%,$(shell $(_ENV) cd "$(or $(1),$(shell $(_ENV) dirname $(lastword $(MAKEFILE_LIST))))" && pwd)))$(eval PUBLISHERDIR ?= $(_THISDIR))$(eval _THISABS := $(realpath $(patsubst ./%,%,$(_THISDIR))))$(eval PUBLISHERDIRABS ?= $(_THISABS))$(eval SILEPATH += $(_THISABS))$(eval export PATH := $(_THISABS)/scripts:$(PATH))$(_THISDIR)
+
 # If building in draft mode, scale resolutions down for quick builds
 define scale ?=
 $(eval 2?=)$(strip $(shell $(_ENV) $(DRAFT) && echo $(if $2,$2,"($1 + $(SCALE) - 1) / $(SCALE)" | $(BC)) || echo $1))

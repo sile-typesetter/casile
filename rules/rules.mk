@@ -171,11 +171,6 @@ IGNORES += $(DISTFILES) $(DISTDIRS)
 # Tell SILE to look here for stuff before its internal stuff, but still keep anything the user set before run
 SILEPATH ?= $(and $(SILE_PATH),$(subst ;,$( ),$(SILE_PATH)))
 SILEPATH += $(BUILDDIR)
-ifneq ($(PUBLISHERDIR),$(CASILEDIR))
-PUBLISHERDIRABS := $(realpath $(patsubst ./%,%,$(PUBLISHERDIR)))
-SILEPATH += $(PUBLISHERDIRABS)
-export PATH := $(PUBLISHERDIRABS)/scripts:$(PATH)
-endif
 SILEPATH += $(CASILEDIR)
 
 DIVISIONS ?= chapter section
