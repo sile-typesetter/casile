@@ -13,7 +13,7 @@ require_pubdir = $(error Using obsolete PUBDIR mechanism, please update project 
 
 # Assorted utility functions for juggling information about books
 mockupbase = $(if $(filter $(MOCKUPSOURCES),$(call parse_bookid,$1)),$(subst $(call parse_bookid,$1),$(MOCKUPBASE),$1),$1)
-pagecount = $(shell $(_ENV) $(PDFINFO) $(call mockupbase,$1) | $(AWK) '$$1 == "Pages:" {printf "%.0f", $$2 * $(MOCKUPFACTOR)}' || echo 0)
+pagecount = $(shell $(_ENV) $(PDFINFO) $(call mockupbase,$1) 2>/dev/null | $(AWK) '$$1 == "Pages:" {printf "%.0f", $$2 * $(MOCKUPFACTOR)}' || echo 0)
 pagew = $(shell $(_ENV) $(PDFINFO) $(call mockupbase,$1) | $(AWK) '$$1$$2 == "Pagesize:" {print $$3}' || echo 0)
 pageh = $(shell $(_ENV) $(PDFINFO) $(call mockupbase,$1) | $(AWK) '$$1$$2 == "Pagesize:" {print $$5}' || echo 0)
 spinemm = $(shell $(_ENV) echo "$(call pagecount,$1) * $(PAPERWEIGHT) / 1000 + 1 " | $(BC))
