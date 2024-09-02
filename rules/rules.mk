@@ -358,14 +358,16 @@ figures: $(FIGURES)
 
 PROJECTCONFIGS += .editorconfig
 .editorconfig: $(CASILEDIR)/editorconfig
-	$(call skip_if_tracked,$@)
 	cp $< $@
 
 PROJECTCONFIGS += .gitignore
 .gitignore: $(lastword $(MAKEFILE_LIST))
-	$(call skip_if_tracked,$@)
 	echo '$(IGNORES)' |
 		$(SED) -e 's/ /\n/g' > $@
+
+PROJECTCONFIGS += .luarc.json
+.luarc.json: $(CASILEDIR)/luarc.json
+	cp $< $@
 
 .gitattributes: $(lastword $(MAKEFILE_LIST))
 	$(GIT) diff-index --quiet --cached HEAD || exit 1 # die if anything already staged

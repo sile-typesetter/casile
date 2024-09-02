@@ -82,6 +82,7 @@ templatesdir = $(datadir)
 dist_templates_DATA = \
 	editorconfig \
 	gitlab-ci.yml \
+	luarc.json \
 	zola_book.html \
 	zola_series.html \
 	zola_style.sass
@@ -128,6 +129,9 @@ CARGO_FEATURE_ARGS = --all-features
 
 %-reversed.mk: %.mk
 	$(AWK) -F' := ' '/^_/ { gsub(/_/, "", $$1); print "__" $$2 " := " $$1 }' < $< > $@
+
+luarc.json: .luarc.json
+	cp $< $@
 
 .PHONY: clean-embedded-assets
 clean-embedded-assets:
