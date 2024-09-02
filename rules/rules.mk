@@ -365,6 +365,10 @@ PROJECTCONFIGS += .gitignore
 	echo '$(IGNORES)' |
 		$(SED) -e 's/ /\n/g' > $@
 
+PROJECTCONFIGS += .luacheckrc
+.luacheckrc: $(CASILEDIR)/luacheckrc
+	cp $< $@
+
 PROJECTCONFIGS += .luarc.json
 .luarc.json: $(CASILEDIR)/luarc.json
 	cp $< $@

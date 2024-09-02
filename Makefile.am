@@ -82,6 +82,7 @@ templatesdir = $(datadir)
 dist_templates_DATA = \
 	editorconfig \
 	gitlab-ci.yml \
+	luacheckrc \
 	luarc.json \
 	zola_book.html \
 	zola_series.html \

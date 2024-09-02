@@ -149,7 +149,7 @@ pub fn is_make_gnu() -> Result<bool> {
 }
 
 fn regen_dotfiles(repo: Repository) -> Result<()> {
-    let targets = vec![".editorconfig", ".gitignore", ".luarc.json"];
+    let targets = vec![".editorconfig", ".gitignore", ".luacheckrc", ".luarc.json"];
     let make_targets: Vec<String> = targets.iter().map(|&x| x.into()).collect();
     make::run(make_targets)?;
     let mut index = repo.index()?;
