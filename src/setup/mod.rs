@@ -149,30 +149,34 @@ pub fn is_make_gnu() -> Result<bool> {
 }
 
 fn regen_dotfiles(repo: Repository) -> Result<()> {
-    let targets = vec![String::from(".gitignore")];
-    make::run(targets)?;
-    let path = path::Path::new(".gitignore");
+    let targets = vec![".editorconfig", ".gitignore"];
+    let make_targets: Vec<String> = targets.iter().map(|&x| x.into()).collect();
+    make::run(make_targets)?;
     let mut index = repo.index()?;
-    index.add_path(path)?;
+    targets.iter().for_each(|&target| {
+        let path = path::Path::new(target);
+        index.add_path(path).unwrap();
+    });
     let oid = index.write_tree()?;
-    match repo.status_file(path) {
-        Ok(Status::CURRENT) => {
-            let status = CASILEUI.new_check("setup-dotfiles-fresh");
-            status.end(true);
-            Ok(())
-        }
-        _ => {
-            let status = CASILEUI.new_check("setup-dotfiles-committing");
-            match commit(repo, oid, "Refresh dotfiles") {
-                Ok(_) => {
-                    index.write()?;
-                    status.end(true);
-                    Ok(())
-                }
-                Err(error) => {
-                    status.end(false);
-                    Err(Box::new(error))
-                }
+    let fresh = targets.iter().fold(true, |acc, &target| {
+        let path = path::Path::new(target);
+        acc && repo.status_file(path) == Ok(Status::CURRENT)
+    });
+    if fresh {
+        let status = CASILEUI.new_check("setup-dotfiles-fresh");
+        status.end(true);
+        Ok(())
+    } else {
+        let status = CASILEUI.new_check("setup-dotfiles-committing");
+        match commit(repo, oid, "Refresh dotfiles") {
+            Ok(_) => {
+                index.write()?;
+                status.end(true);
+                Ok(())
+            }
+            Err(error) => {
+                status.end(false);
+                Err(Box::new(error))
             }
         }
     }
