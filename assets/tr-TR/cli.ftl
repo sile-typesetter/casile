@@ -86,6 +86,15 @@ setup-is-make-executable =
 setup-is-make-gnu =
   Sistemin ‘make’i, desteklenen GNU Make sürümü müdür?
 
+setup-dotfiles-committing =
+  Güncellenmiş proje dotfile dosyaları işleniyor
+
+setup-dotfiles-fresh =
+  Mevcut proje dotfile dosyaları güncel
+
+setup-short-shas =
+  Depodaki kısa SHA karmalarının varsayılan uzunluğunu ayarlanıyor
+
 setup-warp-time =
   İzlenen dosyaların son etkileme zamanı, etkilenen son işleme döndürülüyor
 

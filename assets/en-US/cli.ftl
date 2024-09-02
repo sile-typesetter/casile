@@ -163,11 +163,11 @@ setup-is-make-executable =
 setup-is-make-gnu =
   Is the system’s ‘make’ a supported version of GNU Make?
 
-setup-gitignore-committing =
-  Committing updated .gitignore file
+setup-dotfiles-committing =
+  Committing updated project dotfiles
 
-setup-gitignore-fresh =
-  Existing .gitignore file is up to date
+setup-dotfiles-fresh =
+  Existing project dotfiles file is up to date
 
 setup-short-shas =
   Setting default length of short SHA hashes in repository

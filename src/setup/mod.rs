@@ -19,7 +19,7 @@ pub fn run() -> Result<()> {
     let ret = match metadata.is_dir() {
         true => match is_repo()? {
             true => {
-                regen_gitignore(get_repo()?)?;
+                regen_dotfiles(get_repo()?)?;
                 configure_short_shas(get_repo()?)?;
                 if is_deep()? {
                     warp_time(get_repo()?)?;
@@ -148,7 +148,7 @@ pub fn is_make_gnu() -> Result<bool> {
     Ok(ret)
 }
 
-fn regen_gitignore(repo: Repository) -> Result<()> {
+fn regen_dotfiles(repo: Repository) -> Result<()> {
     let targets = vec![String::from(".gitignore")];
     make::run(targets)?;
     let path = path::Path::new(".gitignore");
@@ -157,13 +157,13 @@ fn regen_gitignore(repo: Repository) -> Result<()> {
     let oid = index.write_tree()?;
     match repo.status_file(path) {
         Ok(Status::CURRENT) => {
-            let status = CASILEUI.new_check("setup-gitignore-fresh");
+            let status = CASILEUI.new_check("setup-dotfiles-fresh");
             status.end(true);
             Ok(())
         }
         _ => {
-            let status = CASILEUI.new_check("setup-gitignore-committing");
-            match commit(repo, oid, "Update .gitignore") {
+            let status = CASILEUI.new_check("setup-dotfiles-committing");
+            match commit(repo, oid, "Refresh dotfiles") {
                 Ok(_) => {
                     index.write()?;
                     status.end(true);
