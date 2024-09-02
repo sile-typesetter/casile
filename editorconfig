@@ -3,10 +3,30 @@ root = true
 [*]
 end_of_line = lf
 insert_final_newline = true
-indent_style = space
-indent_size = 2
+charset = utf-8
+trim_trailing_whitespace = true
 
-[makefile*]
+[{*.lua,.luacheckrc}]
+indent_style = space
+indent_size = 3
+max_line_length = 120
+
+# StyLua keys
+collapse_simple_statement = never
+space_after_functions = definitions
+
+# EmmyLuaCodeStyle keys
+continuation_indent = 6
+quote_style = double,
+call_arg_parentheses = keep,
+trailing_table_separator = always,
+align_call_args = true,
+end_statement_with_semicolon = same_line
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.mk]
 indent_style = tab
 indent_size = 4
 
