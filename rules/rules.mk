@@ -1050,7 +1050,6 @@ include $(CASILEDIR)/rules/zola.mk
 
 ODTS := $(call pattern_list,$(SOURCES),.odt)
 ODTS += $(and $(EDITS),$(call pattern_list,$(SOURCES),$(EDITS),.odt))
-$(ODTS): private PANDOCARGS += --top-level-division
 $(ODTS): %.odt: $(BUILDDIR)/%-$(_processed).md $$(call parse_bookid,$$*)-manifest.yml
 	$(PANDOC) \
 		$(PANDOCARGS) \
