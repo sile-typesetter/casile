@@ -9,7 +9,7 @@ $(BUILDDIR)/%-mdbook.md: private PANDOCNORMALIZEARGS = --wrap=none --to=commonma
 $(BUILDDIR)/%-mdbook.md: private PANDOCFILTERS += --lua-filter=$(CASILEDIR)/pandoc-filters/strip_for_mdbook.lua
 $(BUILDDIR)/%-mdbook.md: $(BUILDDIR)/%-$(_processed).md
 	$(PANDOC) \
-		$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERSARGS) $(PANDOCNORMALIZEARGS) \
+		$(PANDOCARGS) $(PANDOCFILTERS) $(PANDOCFILTERARGS) $(PANDOCNORMALIZEARGS) \
 		$(filter %.md,$^) -o $@
 
 $(BUILDDIR)/%.mdbook/src/SUMMARY.md: $(BUILDDIR)/%-mdbook.md
