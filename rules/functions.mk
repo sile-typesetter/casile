@@ -35,7 +35,7 @@ strip_edits = $(foreach WORD,$1,$(filter-out $(WORD),$(foreach EDIT,$(EDITS),$(s
 parse_bookid = $(firstword $(subst -, ,$(basename $(notdir $1))))
 series_sort = $(shell $(_ENV) SORTORDER=$(SORTORDER) TARGETS="$(TARGETS)" series_sort.lua $1)
 metainfo = $(shell $(_ENV) $(YQ) -r '$1' < $(PROJECTYAML))
-isbntouid = $(call cachevar,$1,uuid,$(basename $(notdir $(shell $(_ENV) $(GREP) -l $1 $(YAMLSOURCES)))))
+isbntouid = $(call cachevar,$1,uid,$(basename $(notdir $(shell $(_ENV) $(GREP) -l $1 $(YAMLSOURCES)))))
 isbnmask = $(call cachevar,$1,mask,$(shell $(_ENV) $(PYTHON) -c "import isbnlib; print(isbnlib.mask('$1'))"))
 ebookisbn = $(call cachevar,$1,ebook,$(or $(shell $(_ENV) $(YQ) -r '.identifier[]? | select(.key == "ebook"    ).text' $1.yml),$(call printisbn,$1)))
 printisbn = $(call cachevar,$1,print,$(shell $(_ENV) $(YQ) -r '.identifier[]? | select(.key == "paperback").text' $1.yml))
