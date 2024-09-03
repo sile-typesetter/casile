@@ -12,7 +12,20 @@ DISTFILES += $(EPUBS)
 
 $(BUILDDIR)/%-epub-metadata.yml: $$(call parse_bookid,$$*)-manifest.yml %-epub-$(_poster).jpg | $(BUILDDIR)
 	echo '---' > $@
-	$(YQ) -M -e -y '{title: [ { type: "main", text: .title  }, { type: "subtitle", text: .subtitle } ], creator: .creator, contributor: .contributor, identifier: .identifier, date: .date | last | .text, published: .date | first | .text, lang: .lang, description: .abstract, rights: .rights, publisher: .publisher, source: (if .source then (try (.source[]? | map(select(.type == "title"))[0].text) // null) else null end), "cover-image": "$(filter %.jpg,$^)" }' < $< >> $@
+	$(YQ) -M -e -y \
+		'{	title: [ { type: "main", text: .title  }, { type: "subtitle", text: (.subtitle // empty) } ],
+			creator: .creator,
+			contributor: .contributor,
+			identifier: .identifier,
+			date: .date | last | .text,
+			published: .date | first | .text,
+			lang: .lang,
+			description: .abstract,
+			rights: .rights,
+			publisher: .publisher,
+			source: (if .source then (try (.source? | map(select(.type == "title"))[0].text) // empty) else empty end),
+			"cover-image": "$(filter %.jpg,$^)"
+		}' < $< >> $@
 	echo '...' >> $@
 
 MOBIS := $(call pattern_list,$(EDITIONEDITSOURCES),.mobi)
@@ -80,7 +93,7 @@ $(ISBNMETADATAS): $(BUILDDIR)/%_playbooks.json: $$(call pattern_list,$$(call isb
 			[   "ISBN:$*",
 				(if $$isbncount >= 2 and $$format == "paperback" then "No" else "Yes" end),
 				.title,
-				.subtitle,
+				(.subtitle // empty),
 				(if $$format == "paperback" then "Paperback" else "Digital" end),
 				(if $$isbncount >= 2 then (.identifier[] | select(.key != $$format and .scheme == "ISBN-13") |
 					(if .key == "ebook" then "ISBN:"+.text+" [Digital, Electronic version available as]" else "ISBN:"+.text+" [Paperback, Epublication based on]" end)) else "" end),
