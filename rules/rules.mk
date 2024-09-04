@@ -31,7 +31,7 @@ SOURCES_DEF := $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(no
 SOURCES ?= $(SOURCES_DEF)
 TARGETS ?= $(SOURCES)
 
-ISBNS := $(and $(YAMLSOURCES),$(shell $(_ENV) $(YQ) -M -e -r '.identifier[]? | select(.scheme == "ISBN-13").text' $(YAMLSOURCES)))
+ISBNS := $(and $(YAMLSOURCES),$(shell $(_ENV) $(YQ) -M -e -r '.identifier[]? | select(.scheme == "ISBN-13").text|tostring' $(YAMLSOURCES)))
 
 # List of targets that don't have content but should be rendered anyway
 MOCKUPSOURCES ?=

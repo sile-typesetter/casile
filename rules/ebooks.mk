@@ -89,7 +89,7 @@ $(ISBNMETADATAS): $(BUILDDIR)/%_playbooks.json: $$(call pattern_list,$$(call isb
 			(.lang | sub("tr"; "tur") | sub("en"; "eng")) as $$lang |
 			(.date[] | select(."file-as" == "1\\. Basım").text | strptime("%Y-%m") | strftime("D:%Y-%m-01")) as $$date |
 			([.creator[], .contributor[] | select (.role == "author").text + " [Author]", select (.role == "editor").text + " [Editor]", select (.role == "trl").text + " [Translator]"] | join("; ")) as $$contributors |
-			(.identifier[] | select(.text == "$*").key) as $$format |
+			(.identifier[] | select((.text|tostring) == "$*").key) as $$format |
 			[   "ISBN:$*",
 				(if $$isbncount >= 2 and $$format == "paperback" then "No" else "Yes" end),
 				.title,

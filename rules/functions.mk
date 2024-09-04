@@ -37,8 +37,8 @@ series_sort = $(shell $(_ENV) SORTORDER=$(SORTORDER) TARGETS="$(TARGETS)" series
 metainfo = $(shell $(_ENV) $(YQ) -r '$1' < $(PROJECTYAML))
 isbntouid = $(call cachevar,$1,uid,$(basename $(notdir $(shell $(_ENV) $(GREP) -l $1 $(YAMLSOURCES)))))
 isbnmask = $(call cachevar,$1,mask,$(shell $(_ENV) $(PYTHON) -c "import isbnlib; print(isbnlib.mask('$1'))"))
-ebookisbn = $(call cachevar,$1,ebook,$(or $(shell $(_ENV) $(YQ) -r '.identifier[]? | select(.key == "ebook"    ).text' $1.yml),$(call printisbn,$1)))
-printisbn = $(call cachevar,$1,print,$(shell $(_ENV) $(YQ) -r '.identifier[]? | select(.key == "paperback").text' $1.yml))
+ebookisbn = $(call cachevar,$1,ebook,$(or $(shell $(_ENV) $(YQ) -r '.identifier[]? | select(.key == "ebook"    ).text|tostring' $1.yml),$(call printisbn,$1)))
+printisbn = $(call cachevar,$1,print,$(shell $(_ENV) $(YQ) -r '.identifier[]? | select(.key == "paperback").text|tostring' $1.yml))
 ebooktoprint = $(call cachevar,$1,ep,$(call printisbn,$(call isbntouid,$1)))
 
 # Utility to modify recursive variables, see http://stackoverflow.com/a/36863261/313192
