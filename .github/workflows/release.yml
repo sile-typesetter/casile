@@ -5,6 +5,10 @@ on:
     tags:
       - v*.*.*
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
   ghrelase:
@@ -14,26 +18,32 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
       - name: Setup system dependencies
         run: |
           sudo apt-get install clang mold
+      - name: Setup ‘cargo’
+        uses: actions-rs/toolchain@v1
       - name: Configure
         run: |
-          echo "VERSION=${GITHUB_REF#refs/*/v}" >> $GITHUB_ENV
-          echo "${GITHUB_REF#refs/*/v}" > .tarball-version
           ./bootstrap.sh
           ./configure \
             --enable-developer-mode \
-            --without-{bash,fish,zsh}-completion-dir \
-            --disable-dependency-checks
+            LUACHECK=false STYLUA=false TYPOS=cat
+          echo "VERSION=$(./build-aux/git-version-gen .tarball-version)" >> $GITHUB_ENV
+          echo "MAKEFLAGS=-j$(nproc) -Otarget" >> $GITHUB_ENV
       - name: Build source package
         run: |
           make dist
-      - name: Publish Release
-        uses: softprops/action-gh-release@v1
+      - name: Release
+        uses: softprops/action-gh-release@v2
         if: github.repository == 'sile-typesetter/casile' && startsWith(github.ref, 'refs/tags/v')
         with:
           body_path: casile-${{ env.VERSION }}.md
           files: |
             casile-${{ env.VERSION }}.zip
             casile-${{ env.VERSION }}.tar.zst
+            casile-${{ env.VERSION }}.sha256.txt
