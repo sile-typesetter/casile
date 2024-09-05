@@ -165,9 +165,10 @@ dist: casile-$(VERSION).md
 
 casile-%.md: CHANGELOG.md
 	$(SED) -e '/\.\.\.v$*/,/\.\.\.v/!d' $< | \
-		$(SED) -e '1,3d;N;$$!P;$$!D;$$d' > $@
+		$(SED) -e '1,3d;N;$$!P;$$!D;$$d' | \
+	$(or $(filter cat,$(TYPOS)),$(TYPOS) --write-changes -) > $@
 
-PHONY_DEVELOPER_TARGETS  = lint luacheck stylua checkmake ruff ruff-format
+PHONY_DEVELOPER_TARGETS  = checkmake lint luacheck ruff ruff-format stylua typos
 PHONY_DEVELOPER_TARGETS += tagrelease release-preview release
 PHONY_DEVELOPER_TARGETS += docker docker-dep-check docker-ghcr-to-hub docker-build-push
 .PHONY: $(PHONY_DEVELOPER_TARGETS)
@@ -185,11 +186,14 @@ checkmake:
 ruff:
 	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(RUFF) check
 
+ruff-format:
+	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(RUFF) format --check
+
 stylua:
 	$(STYLUA) --check --respect-ignores -g '!lua-libraries*' -g '!lua_modules/*' -g '*.lua' -g '*.lua.in' .
 
-ruff-format:
-	$(GIT) ls-files '*.py' '*.py.in' | $(XARGS) $(RUFF) format --check
+typos:
+	$(TYPOS) .
 
 RELTYPE ?=
 
@@ -217,18 +221,20 @@ docker: Dockerfile hooks/build .version
 docker-dep-check: .docker_deps .aur_deps
 	$(DIFF) -u $^
 
-CLEANFILES += .docker_deps
 .docker_deps: hooks/build
 	$(SHELL) -c 'source <($(SED) -nE "/^(RUN|'"'"')/{s/.*=/echo /;p}" $<)' | \
 		$(TR) ' ' '\n' | \
 		$(SORT) > $@
 
-CLEANFILES += .aur_deps
+CLEANFILES += .docker_deps
+
 .aur_deps:
 	$(CURL) -Ls 'https://aur.archlinux.org/cgit/aur.git/plain/.SRCINFO?h=casile-git' | \
 		$(SED) -nE '/\bdepends =/{s/.*= //;p}' | \
-		$(GREP) -v 'so.$$' | \
+		$(GREP) -vxE '(lua-.*|.*\.so|git|glibc)' | \
 		$(SORT) > $@
+
+CLEANFILES += .aur_deps
 
 docker-ghcr-to-hub:
 	$(DOCKER) pull $(GHCR_REGISTRY)/$(GHCR_REPO):$(DOCKER_TAG)

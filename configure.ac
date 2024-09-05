@@ -5,16 +5,19 @@ AC_CONFIG_MACRO_DIR([build-aux])
 AM_INIT_AUTOMAKE([foreign tar-pax dist-zstd dist-zip no-dist-gzip color-tests subdir-objects])
 AM_SILENT_RULES([yes])
 
+# Load up re-usable m4 bits shared across Caleb's projects
 QUE_GIT_VERSION
 QUE_TRANSFORM_PACKAGE_NAME
 QUE_DEVELOPER_MODE
 QUE_DIST_CHECKSUMS
 
-# Build time deps
+# Check for and set variables for tooling used during our build process
 AC_PROG_AWK
 AC_PROG_GREP
 AC_PROG_SED
+QUE_PROGVAR([cmp])
 QUE_PROGVAR([find])
+QUE_PROGVAR([jq])
 QUE_PROGVAR([sort])
 QUE_PROGVAR([xargs])
 QUE_PROGVAR([yarn])
@@ -22,9 +25,9 @@ QUE_PROGVAR([yarn])
 QUE_RUST_BOILERPLATE
 QUE_DOCKER_BOILERPLATE
 
-AC_ARG_ENABLE([dependency-checks],                                                                                                                             │    │
-              AS_HELP_STRING([--disable-dependency-checks],                                                                                                          │    │
-                      [Disable build tooling dependency checks]))                                                                                                    │    │
+AC_ARG_ENABLE([dependency-checks],
+              AS_HELP_STRING([--disable-dependency-checks],
+                      [Disable build tooling dependency checks]))
 AM_CONDITIONAL([DEPENDENCY_CHECKS], [test "x$enable_dependency_checks" != "xno"])
 
 AC_ARG_WITH([luajit],
@@ -54,8 +57,8 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     QUE_PROGVAR([gs])
     QUE_PROGVAR([hostnamebin], [hostname])
     QUE_PROGVAR([inkscape])
-    QUE_PROGVAR([jq])
     QUE_PROGVAR([kindlegen])
+    QUE_PROGVAR([luarocks])
     QUE_PROGVAR([m4])
     QUE_PROGVAR([magick])
     QUE_PROGVAR([mdbook])
@@ -117,20 +120,19 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     AX_FONT(Libertinus Serif Display)
     AX_FONT(Libertinus Sans)
 
-    # Developer tooling deps
-    AM_COND_IF([DEVELOPER_MODE], [
-        QUE_PROGVAR([checkmake])
-        QUE_PROGVAR([docker])
-        QUE_PROGVAR([luacheck])
-        QUE_PROGVAR([ruff])
-        QUE_PROGVAR([stylua])
-        QUE_PROGVAR([tr])
-        QUE_PROGVAR([typos])
-    ])
 ])
 
-# Avoid the need for configuring with the `--datarootdir=$(cd ..; pwd)` hack to
-# run from the source directory when developer mode is enabled.
+AM_COND_IF([DEVELOPER_MODE], [
+    QUE_PROGVAR([checkmake])
+    QUE_PROGVAR([luacheck])
+    QUE_PROGVAR([ruff])
+    QUE_PROGVAR([stylua])
+    QUE_PROGVAR([tr])
+    QUE_PROGVAR([typos])
+])
+
+# Avoid the need for `--datarootdir=$(cd ..; pwd)` to run directly from
+# an uninstalled build in the source directory
 AM_COND_IF([DEVELOPER_MODE], [
     datarootdir="$(cd ..; pwd)"
 ])
