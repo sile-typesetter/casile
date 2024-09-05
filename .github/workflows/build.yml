@@ -1,9 +1,6 @@
-name: Release
+name: Build
 
-on:
-  push:
-    tags:
-      - v*.*.*
+on: [ push, pull_request ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -11,10 +8,11 @@ concurrency:
 
 jobs:
 
-  ghrelase:
+  build-ubuntu:
     strategy:
       fail-fast: false
     runs-on: ubuntu-22.04
+    name: Build Ubuntu
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,9 +20,10 @@ jobs:
           fetch-depth: 0
       - name: Cache Rust
         uses: Swatinem/rust-cache@v2
-      - name: Setup system dependencies
+      - name: Install system dependencies
         run: |
-          sudo apt-get install clang mold
+          sudo apt-get update
+          sudo apt-get install clang jq libarchive-tools mold luarocks
       - name: Setup ‘cargo’
         uses: actions-rs/toolchain@v1
       - name: Configure
@@ -32,12 +31,26 @@ jobs:
           ./bootstrap.sh
           ./configure \
             --enable-developer-mode \
-            LUACHECK=false STYLUA=false TYPOS=cat
+            --disable-dependency-checks \
+            CHECKMAKE=false \
+            LUACHECK=false \
+            RUFF=false \
+            STYLUA=false \
+            TYPOS=cat
           echo "VERSION=$(./build-aux/git-version-gen .tarball-version)" >> $GITHUB_ENV
           echo "MAKEFLAGS=-j$(nproc) -Otarget" >> $GITHUB_ENV
-      - name: Build source package
+      - name: Make
+        run: |
+          make
+      - name: Package
         run: |
           make dist
+      - name: Upload source dist artifact
+        if: ${{ ! startsWith(github.ref, 'refs/tags/v') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sile-${{ env.VERSION }}
+          path: sile-${{ env.VERSION }}.zip
       - name: Release
         uses: softprops/action-gh-release@v2
         if: github.repository == 'sile-typesetter/casile' && startsWith(github.ref, 'refs/tags/v')
