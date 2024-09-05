@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.14.2](https://github.com/sile-typesetter/casile/compare/v0.14.1...v0.14.2) (2024-09-05)
+
+
+### New Features
+
+* **cli:** Setup editorconfig on project setup ([43cfac4](https://github.com/sile-typesetter/casile/commit/43cfac4f18d38e3436fa2f5bca1d18de7c50dec8))
+* **cli:** Setup Lua LSP config in project setup ([c3f8304](https://github.com/sile-typesetter/casile/commit/c3f8304f0315c72e5b9d4e332d1f97112a0c4ec5))
+* **cli:** Setup Luacheck config in project setup ([e03b1f0](https://github.com/sile-typesetter/casile/commit/e03b1f0adb0c3566360dfe1769f40c8c635aab10))
+
+
+### Bug Fixes
+
+* **ebooks:** Fix Google Play Books metadata generation with empty sources and subtitles ([2fa6798](https://github.com/sile-typesetter/casile/commit/2fa6798ae169f20ca62fab61b2830529b7ae454e))
+* **ebooks:** Fix handling of ISBN input as number or text ([d10ee84](https://github.com/sile-typesetter/casile/commit/d10ee842cff1bdcea7b87bb15856eb22500f3823))
+* **layouts:** Fixup halfletter frameset in new class design ([a6ac22d](https://github.com/sile-typesetter/casile/commit/a6ac22d6b737845a72f23095211537cc8a174496))
+* **layouts:** Fixup octavo and royaloctavo framesets in new class design ([63a0098](https://github.com/sile-typesetter/casile/commit/63a0098df9155dc4fbc1c6a47879f8c32476aa12))
+* **mdbook:** Correctly apply pandoc filter arguments ([3cf8f89](https://github.com/sile-typesetter/casile/commit/3cf8f89de4ca9dfe1f479005fb62c91d425115eb))
+* **rules:** Fixup argument errors when exporting to odt ([c6b70cd](https://github.com/sile-typesetter/casile/commit/c6b70cd023082508177aefe819e11ec344e84632))
+
 ## [0.14.1](https://github.com/sile-typesetter/casile/compare/v0.14.0...v0.14.1) (2024-08-31)
 
 
