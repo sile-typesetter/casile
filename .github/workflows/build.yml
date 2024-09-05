@@ -23,7 +23,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install clang jq libarchive-tools mold luarocks
+          sudo apt-get install clang libarchive-tools mold luarocks
       - name: Setup ‘cargo’
         uses: actions-rs/toolchain@v1
       - name: Configure
@@ -32,11 +32,7 @@ jobs:
           ./configure \
             --enable-developer-mode \
             --disable-dependency-checks \
-            CHECKMAKE=false \
-            LUACHECK=false \
-            RUFF=false \
-            STYLUA=false \
-            TYPOS=cat
+            CHECKMAKE=false LUACHECK=false RUFF=false STYLUA=false TYPOS=cat
           echo "VERSION=$(./build-aux/git-version-gen .tarball-version)" >> $GITHUB_ENV
           echo "MAKEFLAGS=-j$(nproc) -Otarget" >> $GITHUB_ENV
       - name: Make
