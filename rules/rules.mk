@@ -181,8 +181,8 @@ PANDOCARGS += --top-level-division=$(firstword $(DIVISIONS))
 PANDOCARGS += --reference-location=$(lastword $(DIVISIONS))
 PANDOCNORMALIZEARGS ?=
 PANDOCNORMALIZEARGS += --wrap=preserve
-PANDOCNORMALIZEARGS += --from markdown-space_in_atx_header+ascii_identifiers+four_space_rule
-PANDOCNORMALIZEARGS += --to markdown+smart-four_space_rule
+PANDOCNORMALIZEARGS += --from markdown-space_in_atx_header+ascii_identifiers+four_space_rule-auto_identifiers
+PANDOCNORMALIZEARGS += --to markdown+smart-four_space_rule+auto_identifiers
 PANDOCFILTERS ?=
 PANDOCFILTERARGS ?=
 
