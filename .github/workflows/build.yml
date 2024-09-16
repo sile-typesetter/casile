@@ -45,8 +45,8 @@ jobs:
         if: ${{ ! startsWith(github.ref, 'refs/tags/v') }}
         uses: actions/upload-artifact@v4
         with:
-          name: sile-${{ env.VERSION }}
-          path: sile-${{ env.VERSION }}.zip
+          name: casile-${{ env.VERSION }}
+          path: casile-${{ env.VERSION }}.zip
       - name: Release
         uses: softprops/action-gh-release@v2
         if: github.repository == 'sile-typesetter/casile' && startsWith(github.ref, 'refs/tags/v')
