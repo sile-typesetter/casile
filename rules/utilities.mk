@@ -93,9 +93,10 @@ force:;
 
 .PHONY: _gha
 _gha:
-	echo "::set-output name=DISTDIR::$(DISTDIR)"
-	echo "::set-output name=PROJECT::$(PROJECT)"
-	echo "::set-output name=VERSION::$(call versioninfo,$(PROJECT))"
+	exec >> $${GITHUB_OUTPUT:-/dev/stdout}
+	echo "DISTDIR=$(DISTDIR)"
+	echo "PROJECT=$(PROJECT)"
+	echo "VERSION=$(call versioninfo,$(PROJECT))"
 
 .PHONY: _glc
 _glc: $(CI_JOB_NAME_SLUG).env
