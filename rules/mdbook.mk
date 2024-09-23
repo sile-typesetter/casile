@@ -20,6 +20,6 @@ $(BUILDDIR)/%.mdbook/book.toml: $$(call parse_bookid,$$*)-manifest.yml
 	$(MKDIR_P) $(@D)
 	$(YQ) -t '{"book": {
 			"title": .title,
-			"author": (try (.creator[] | select(.role == "author") | .text) catch ""),
+			"author": (try ([ .creator[] | select(.role == "author") | .text ] | join(", ")) catch ""),
 			"language": .lang
 		}}' $< > $@
