@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.14.3](https://github.com/sile-typesetter/casile/compare/v0.14.2...v0.14.3) (2024-09-23)
+
+
+### Bug Fixes
+
+* **action:** Work around GH's Action marketplace syntax quoting shell args ([b82591f](https://github.com/sile-typesetter/casile/commit/b82591fc450dc7540b2ab070a2bfda3d0d368e1c))
+* **rules:** Update method of passing GitHub CI variables to current API ([dfb4b3d](https://github.com/sile-typesetter/casile/commit/dfb4b3d16220d7eaec6687a7df825ab3985e78ad))
+
 ## [0.14.2](https://github.com/sile-typesetter/casile/compare/v0.14.1...v0.14.2) (2024-09-05)
 
 
