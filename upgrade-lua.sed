@@ -31,7 +31,7 @@ s#nodefactory\.zeroVglue#nodefactory.zerovglue()#g
 s#nodefactory\.hfillGlue#nodefactory.hfillglue()#g
 s#SILE\.length\.\(make\|new\|parse\)#SILE.types.length#g
 s#\bopen-page\b#open-spread#g
-s#\bSILE\.settings\.\b#SILE.settings:#g
+s#\bSILE\.settings\.\(pushState\|popState\|declare\|reset\|toplevelState\|get\|set\|temporarily\|wrap\)\b#SILE.settings:\1#g
 s#\bSILE.color\b#SILE.types.color#g
 s#\bSILE.colorparser\b#SILE.types.color#g
 s#\bSILE.length\b#SILE.types.length#g
