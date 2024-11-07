@@ -16,13 +16,15 @@ test -n format
 : ${input:=$3}
 test -f $input
 
+pandoc_args=(
+	--to=markdown-yaml_metadata_block
+)
+
 function import_scrivener-mmd () {
-	pandoc_args=(
-		--to=markdown-yaml_metadata_block
+	pandoc_args+=(
 		--lua-filter="$CASILEDIR/pandoc-filters/mark-parts.lua"
 		--lua-filter="$CASILEDIR/pandoc-filters/mark-epigraphs.lua"
 	)
-	alias sed="${SED:-@SED@}"
 	alias pandoc="${PANDOC:-@PANDOC@}"
 	: ${bookid:=$1}
 	: ${input:=$2}
@@ -30,7 +32,6 @@ function import_scrivener-mmd () {
 		normalize_scrivener_mmd |
 		pandoc ${pandoc_args[@]} |
 		normalize_pandoc > $bookid.md
-	track $bookid.md
 }
 
 remove_extant_bookid $bookid
@@ -43,6 +44,7 @@ track "$input"
 commit 'Track file submitted for import (temporarily)'
 
 import_${format} $bookid $input
+track $bookid.md
 
 untrack $input
 commit "Import $format source as $bookid"
