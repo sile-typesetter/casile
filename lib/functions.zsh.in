@@ -60,6 +60,11 @@ function normalize_scrivener_mmd () {
 		sed -E 's/\.[  ]\.[  ]\./.../'
 }
 
+function normalize_docx () {
+	alias sed="${SED:-@SED@}"
+	cat -
+}
+
 function normalize_pandoc () {
 	alias pandoc="${PANDOC:-@PANDOC@}"
 	pandoc_args=(

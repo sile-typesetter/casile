@@ -34,6 +34,14 @@ function import_scrivener-mmd () {
 		normalize_pandoc > $bookid.md
 }
 
+function import_docx () {
+	alias pandoc="${PANDOC:-@PANDOC@}"
+	: ${bookid:=$1}
+	: ${input:=$2}
+	pandoc $input ${pandoc_args[@]} |
+		normalize_pandoc > $bookid.md
+}
+
 remove_extant_bookid $bookid
 
 # Restore meta-data just (maybe) nuked
