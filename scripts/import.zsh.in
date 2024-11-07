@@ -17,7 +17,7 @@ test -n format
 test -f $input
 
 pandoc_args=(
-	--to=markdown-yaml_metadata_block
+	--to=markdown-yaml_metadata_block-smart
 )
 
 function import_scrivener-mmd () {
@@ -35,6 +35,10 @@ function import_scrivener-mmd () {
 }
 
 function import_docx () {
+	pandoc_args+=(
+		--from=docx-gfm_auto_identifiers-ascii_identifiers-empty_paragraphs
+		--lua-filter="$CASILEDIR/pandoc-filters/guess-headings.lua"
+	)
 	alias pandoc="${PANDOC:-@PANDOC@}"
 	: ${bookid:=$1}
 	: ${input:=$2}
