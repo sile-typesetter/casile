@@ -38,6 +38,7 @@ function import_docx () {
 	pandoc_args+=(
 		--from=docx-gfm_auto_identifiers-ascii_identifiers-empty_paragraphs
 		--lua-filter="$CASILEDIR/pandoc-filters/guess-headings.lua"
+		--lua-filter="$CASILEDIR/pandoc-filters/unitalicize-blockquotes.lua"
 	)
 	alias pandoc="${PANDOC:-@PANDOC@}"
 	: ${bookid:=$1}
