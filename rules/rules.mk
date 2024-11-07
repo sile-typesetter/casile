@@ -242,7 +242,7 @@ BRANCH := $(subst refs/heads/,,$(or $(CI_COMMIT_REF_NAME),$(GITHUB_HEAD_REF),$(G
 TAG := $(or $(CI_COMMIT_TAG),$(shell $(_ENV) $(GIT) describe --tags --exact-match 2>/dev/null))
 ALLTAGS := $(strip $(CI_COMMIT_TAG) $(shell $(_ENV) $(GIT) tag --points-at HEAD | $(XARGS) echo))
 PARENT := $(shell $(_ENV) $(GIT) merge-base $(or $(CI_MERGE_REQUEST_SOURCE_BRANCH_NAME),$(GITHUB_BASE_REF),master) $(BRANCH) 2>/dev/null)
-HEAD ?=
+HEAD ?= +0
 
 # Add mock-ups to sources
 ifeq ($(strip $(MOCKUPS)),true)
@@ -556,7 +556,7 @@ $(BUILDDIR)/%-$(_flattened).md: %.md $$(shell $(_ENV) list_related_files.zsh mds
 		$(M4) $(filter %.m4,$^) =($(SED) -s -e '$${p;g;}' $(or $(filter %.md,$(wordlist 2,9999,$^)),$<))
 	fi |
 		renumber_footnotes.pl |
-		$(and $(HEAD),head -n$(HEAD) |) \
+		tac | tail --lines=$(HEAD) | tac |
 		$(pandoc_bug_1385) |
 		$(PANDOC) $(PANDOCARGS) $(PANDOCNORMALIZEARGS) > $@
 
@@ -1220,7 +1220,7 @@ repository-worklog.pdf: $(BUILDDIR)/repository-worklog.md
 		$< -o $@
 
 $(BUILDDIR)/%-$(_verses).json: $(BUILDDIR)/%-$(_processed).md
-	$(if $(HEAD),head -n$(HEAD),cat) $< |
+	tac $< | tail --lines=$(HEAD) | tac |
 		extract_references.js > $@
 
 $(BUILDDIR)/%-$(_verses)-$(_sorted).json: $(BUILDDIR)/%-$(_verses).json
