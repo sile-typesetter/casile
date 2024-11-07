@@ -67,7 +67,7 @@ local function is_en_exception (previous, next)
       return true
    end
    -- Verse refs, e.g. Gen. 16
-   if previous:match("^%u%P+%.$") and next:match("^%d") then
+   if previous:match("^%(?%d?[İÇŞ%u]%P+%.$") and next:match("^%d") then
       return true
    end
 end
