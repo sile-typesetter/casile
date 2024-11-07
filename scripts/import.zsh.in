@@ -37,7 +37,7 @@ function import_scrivener-mmd () {
 remove_extant_bookid $bookid
 
 # Restore meta-data just (maybe) nuked
-git checkout HEAD^ -- $bookid.yml
+git checkout HEAD^ -- $bookid.yml $bookid.lua
 git commit --amend --no-edit
 
 track "$input"
