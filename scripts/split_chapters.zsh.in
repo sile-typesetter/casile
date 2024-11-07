@@ -3,10 +3,11 @@ set -e
 
 source "$CASILEDIR/lib/functions.zsh"
 
-alias pandoc="${PANDOC:-@PANDOC@}"
-alias sed="${SED:-@SED@}"
-alias mkdir="${MKDIR_P:-@MKDIR_P@}"
-alias parallel="${PARALLEL:-@PARALLEL@}"
+alias pandoc="${PANDOC:=@PANDOC@}"
+alias sed="${SED:=@SED@}"
+alias mkdir="${MKDIR_P:=@MKDIR_P@}"
+alias parallel="${PARALLEL:=@PARALLEL@}"
+alias zsh="${ZSH:=@ZSH@}"
 
 splitlevels=$1
 test -n $splitlevels
