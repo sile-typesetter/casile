@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.14.4](https://github.com/sile-typesetter/casile/compare/v0.14.3...v0.14.4) (2024-11-14)
+
+
+### New Features
+
+* **docker:** Build image with SILE v0.15.6 from upstream Arch Linux ([719e330](https://github.com/sile-typesetter/casile/commit/719e330ccefc1fd5d207182b6951fe8e12a4daab))
+* **import:** Add filter to guess headings from docx input ([f0aa6d7](https://github.com/sile-typesetter/casile/commit/f0aa6d75cf981729742ac2c292f51fbfb957ed3b))
+* **import:** Assume italicized blockquotes are redundant inline formatting ([55a86ee](https://github.com/sile-typesetter/casile/commit/55a86ee79c62827e6269c81269eb8099f849feec))
+* **import:** Setup DOCX import path ([5491eb0](https://github.com/sile-typesetter/casile/commit/5491eb0c7e9fed0fa3a1572fbde6074d9c9818d6))
+* **packages:** Provide SILE decasify package ([12efab6](https://github.com/sile-typesetter/casile/commit/12efab6fae05f909187b74a9502cde5413653f5b))
+
+
+### Bug Fixes
+
+* **filters:** Keep TR verse abbreviations from wrapping sentences ([df925a1](https://github.com/sile-typesetter/casile/commit/df925a13f27785761f12f2ed62a1b10da25045bb))
+* **import:** Don't nuke styling code when re-importing text ([bdd24e8](https://github.com/sile-typesetter/casile/commit/bdd24e8cd9507926260319641f2c4c5b4897e1c1))
+* **mdbook:** Handle generation of mdbook when book has more than 1 primary author ([718fab2](https://github.com/sile-typesetter/casile/commit/718fab2c56e837eb9a975228757096354445f318))
+* **rules:** Use tail instead of head to not truncate pipeline ([aa4c4a3](https://github.com/sile-typesetter/casile/commit/aa4c4a3a661ce957f0d0a54a84252e855c1e98f4))
+* **scripts:** Make sure GNU parallel inherits full path of shell ([840cbd5](https://github.com/sile-typesetter/casile/commit/840cbd5b796eeb1d27e36ec90cd0748f4c773768))
+* **utilities:** Avoid false positives upgrading SILE settings API stuff ([a4dd7b0](https://github.com/sile-typesetter/casile/commit/a4dd7b0638e93a6cace052d913916787a6a20a54))
+
 ## [0.14.3](https://github.com/sile-typesetter/casile/compare/v0.14.2...v0.14.3) (2024-09-23)
 
 
