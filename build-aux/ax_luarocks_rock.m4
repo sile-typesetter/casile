@@ -43,7 +43,7 @@ AC_DEFUN([AX_LUAROCKS_ROCK], [
 
         pushdef([ROCK],$1)
         AC_MSG_CHECKING(whether LuaRock ROCK is installed)
-        AS_IF(["$LUAROCKS" show ROCK > /dev/null],[
+        AS_IF(["$LUAROCKS" --lua-version 5.1 show ROCK > /dev/null],[
                 AC_MSG_RESULT(yes)
         ], [
                 AX_PROG_LUA([5.1], [], [], [], always)
