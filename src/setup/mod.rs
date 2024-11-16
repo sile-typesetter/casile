@@ -187,17 +187,14 @@ fn warp_time(repo: Repository) -> Result<()> {
     let text = LocalText::new("setup-warp-time").fmt();
     eprintln!("{} {}", style("┠┄").cyan(), text);
     let files = reset_mtimes(repo, opts)?;
-    match CONF.get_bool("verbose")? {
-        true => {
-            for file in files.iter() {
-                let path = file.clone().into_os_string().into_string().unwrap();
-                let text = LocalText::new("setup-warp-time-file")
-                    .arg("path", style(path).white().bold())
-                    .fmt();
-                eprintln!("{} {}", style("┠┄").cyan(), text);
-            }
+    if CONF.get_bool("verbose")? {
+        for file in files.iter() {
+            let path = file.clone().into_os_string().into_string().unwrap();
+            let text = LocalText::new("setup-warp-time-file")
+                .arg("path", style(path).white().bold())
+                .fmt();
+            eprintln!("{} {}", style("┠┄").cyan(), text);
         }
-        false => {}
     }
     Ok(())
 }
