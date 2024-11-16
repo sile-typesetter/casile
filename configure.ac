@@ -95,13 +95,14 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
         AC_MSG_FAILURE([pandoc must have sile writer support])
     ])
 
-    AX_PROG_LUA(5.1, [], [], AC_MSG_ERROR([lua interpreter is required]), always)
+    # We actually need both 5.1 and 5.4 for most of these, but for now assume this is good enough
+    AX_PROG_LUA(5.1, [], [], AC_MSG_ERROR([lua interpreter matching SILE's version is required]), always)
     AX_LUAROCKS_ROCK(cldr)
     AX_LUAROCKS_ROCK(cosmo)
     AX_LUAROCKS_ROCK(decasify)
     AX_LUAROCKS_ROCK(fluent)
     AX_LUAROCKS_ROCK(lpeg)
-    AX_LUAROCKS_ROCK(lua-utf8)
+    AX_LUAROCKS_ROCK(luautf8)
     AX_LUAROCKS_ROCK(yaml)
 
     AX_LUAROCKS_ROCK(decasify.sile)
