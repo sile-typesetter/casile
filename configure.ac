@@ -104,6 +104,8 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     AX_LUAROCKS_ROCK(lua-utf8)
     AX_LUAROCKS_ROCK(yaml)
 
+    AX_LUAROCKS_ROCK(decasify.sile)
+
     AC_PATH_PROG([PERL], [perl])
     AX_PROG_PERL_VERSION([5], [], AC_MSG_ERROR([perl interpreter is required]))
     AX_PERL_MODULE_VERSION([YAML 1.30], [], AC_MSG_ERROR(Need Perl YAML module))
