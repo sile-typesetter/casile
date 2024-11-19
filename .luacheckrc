@@ -40,6 +40,6 @@ files["lib"] = {
    globals = {
       "lpeg",
       "pandoc",
-      "Reader"
-   }
+      "Reader",
+   },
 }
