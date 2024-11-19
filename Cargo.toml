@@ -10,23 +10,8 @@ repository = "https://github.com/sile-typesetter/casile"
 license = "AGPL-3.0"
 build = "build-aux/build.rs"
 
-[package.metadata.typos.default]
-locale = "en-us"
-extend-ignore-identifiers-re = [ "Heros", "[Cc]alibre" ]
-extend-words = { }
-
-[package.metadata.typos.files]
-ignore-hidden = false
-extend-exclude = [
-  "/.git",
-  "CHANGELOG.md",
-  "build-aux/ax*",
-  "lua-libraries/*",
-  "names.*.txt",
-  "rules/en.mk",
-  "rules/tr.mk",
-  "upgrade*.sed"
-]
+[profile.release]
+lto = true
 
 [dependencies]
 console = "0.15"
@@ -44,35 +29,35 @@ subprocess = "0.2"
 unic-langid = "0.9"
 unic-langid-impl = "0.9"
 
-  [dependencies.config]
-  version = "0.14"
-  default-features = false
-  features = [ "yaml" ]
+[dependencies.config]
+version = "0.14"
+default-features = false
+features = [ "yaml" ]
 
-  [dependencies.clap]
-  version = "4.5"
-  features = [ "derive", "wrap_help" ]
+[dependencies.clap]
+version = "4.5"
+features = [ "derive", "wrap_help" ]
 
-  [dependencies.git2]
-  version = "0.19"
-  default-features = false
+[dependencies.git2]
+version = "0.19"
+default-features = false
 
-  [dependencies.git-warp-time]
-  version = "0.8"
-  default-features = false
+[dependencies.git-warp-time]
+version = "0.8"
+default-features = false
 
-  [dependencies.indicatif]
-  version = "0.17"
-  features = [ "improved_unicode", "rayon" ]
+[dependencies.indicatif]
+version = "0.17"
+features = [ "improved_unicode", "rayon" ]
 
-  [dependencies.Inflector]
-  version = "0.11"
-  default-features = false
+[dependencies.Inflector]
+version = "0.11"
+default-features = false
 
-  [dependencies.regex]
-  version = "1.10"
-  default-features = false
-  features = [ "std" ]
+[dependencies.regex]
+version = "1.10"
+default-features = false
+features = [ "std" ]
 
 [build-dependencies.clap_mangen]
 version = "0.2"
@@ -93,5 +78,20 @@ features = [ "build", "cargo", "rustc" ]
 assert_cmd = "2.0"
 predicates = "3.1"
 
-[profile.release]
-lto = true
+[package.metadata.typos.default]
+locale = "en-us"
+extend-ignore-identifiers-re = [ "Heros", "[Cc]alibre" ]
+extend-words = { }
+
+[package.metadata.typos.files]
+ignore-hidden = false
+extend-exclude = [
+  "/.git",
+  "CHANGELOG.md",
+  "build-aux/ax*",
+  "lua-libraries/*",
+  "names.*.txt",
+  "rules/en.mk",
+  "rules/tr.mk",
+  "upgrade*.sed"
+]
