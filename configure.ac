@@ -132,6 +132,7 @@ AM_COND_IF([DEVELOPER_MODE], [
     QUE_PROGVAR([ruff])
     QUE_PROGVAR([stylua])
     QUE_PROGVAR([tr])
+    QUE_PROGVAR([taplo])
     QUE_PROGVAR([typos])
 ])
 
