@@ -25,20 +25,20 @@
     "svg-modify": "^0.0.12"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.3",
-    "@commitlint/config-conventional": "^19.2",
-    "@commitlint/prompt": "^19.3",
+    "@commitlint/cli": "^19.6",
+    "@commitlint/config-conventional": "^19.6",
+    "@commitlint/prompt": "^19.6",
     "@iarna/toml": "^2.2",
     "commitizen": "^4.3",
     "conventional-changelog-cli": "^5.0",
-    "eslint": "^9.5",
+    "eslint": "^9.15",
     "eslint-config-standard": "^17.1",
-    "eslint-plugin-import": "^2.29",
+    "eslint-plugin-import": "^2.31",
     "eslint-plugin-node": "^11.1",
-    "eslint-plugin-promise": "^6.2",
-    "husky": "^9.0",
-    "commit-and-tag-version": "^12.4",
-    "yaml": "^2.4"
+    "eslint-plugin-promise": "^7.1",
+    "husky": "^9.1",
+    "commit-and-tag-version": "^12.5",
+    "yaml": "^2.6"
   },
   "config": {
     "commitizen": {
