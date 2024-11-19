@@ -3,7 +3,7 @@ use clap_complete::generator::generate_to;
 use clap_complete::shells::{Bash, Elvish, Fish, PowerShell, Zsh};
 use clap_mangen::Man;
 use std::{collections, env, fs};
-use vergen::EmitBuilder;
+use vergen_gix::{CargoBuilder, Emitter, GixBuilder, RustcBuilder};
 
 include!("../src/cli.rs");
 
@@ -13,14 +13,22 @@ fn main() {
             println!("cargo:rerun-if-changed={dependency}");
         }
     }
-    let mut builder = EmitBuilder::builder();
+    let mut builder = Emitter::default();
+    builder
+        .add_instructions(&CargoBuilder::all_cargo().unwrap())
+        .unwrap();
     // If passed a version from automake, use that instead of vergen's formatting
     if let Ok(val) = env::var("VERSION_FROM_AUTOTOOLS") {
-        println!("cargo:rustc-env=VERGEN_GIT_DESCRIBE={val}")
+        println!("cargo:rustc-env=VERGEN_GIT_DESCRIBE={val}");
+        builder
+            .add_instructions(&RustcBuilder::all_rustc().unwrap())
+            .unwrap();
     } else {
-        builder = *builder.git_describe(true, true, None);
+        builder
+            .add_instructions(&GixBuilder::all_git().unwrap())
+            .unwrap();
     };
-    builder.emit().expect("Unable to generate the cargo keys!");
+    builder.emit().unwrap();
     pass_on_configure_details();
     generate_manpage();
     generate_shell_completions();
