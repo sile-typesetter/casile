@@ -30,11 +30,6 @@ AC_ARG_ENABLE([dependency-checks],
                       [Disable build tooling dependency checks]))
 AM_CONDITIONAL([DEPENDENCY_CHECKS], [test "x$enable_dependency_checks" != "xno"])
 
-AC_ARG_WITH([luajit],
-            AS_HELP_STRING([--without-luajit],
-                           [Prefer LuaJIT over PUC Lua, even if the latter is newer]))
-AM_CONDITIONAL([LUAJIT], [test "x$with_luajit" != "xno"])
-
 AM_COND_IF([DEPENDENCY_CHECKS], [
 
     # Run time deps
@@ -97,16 +92,16 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
 
     # We actually need both 5.1 and 5.4 for most of these, but for now assume this is good enough
     AX_PROG_LUA(5.1, [], [], AC_MSG_ERROR([lua interpreter matching SILE's version is required]), always)
-    AX_LUAROCKS_ROCK(cldr)
-    AX_LUAROCKS_ROCK(cosmo)
-    AX_LUAROCKS_ROCK(decasify)
-    AX_LUAROCKS_ROCK(fluent)
-    AX_LUAROCKS_ROCK(lpeg)
-    AX_LUAROCKS_ROCK(luautf8)
-    AX_LUAROCKS_ROCK(yaml)
+    AX_LUA_MODULE(cldr)
+    AX_LUA_MODULE(cosmo)
+    AX_LUA_MODULE(decasify)
+    AX_LUA_MODULE(fluent)
+    AX_LUA_MODULE(lpeg)
+    AX_LUA_MODULE(luautf8, lua-utf8)
+    AX_LUA_MODULE(yaml)
 
-    AX_LUAROCKS_ROCK(decasify.sile)
-    AX_LUAROCKS_ROCK(ptable.sile)
+    AX_LUA_MODULE(decasify.sile)
+    AX_LUA_MODULE(ptable.sile)
 
     AC_PATH_PROG([PERL], [perl])
     AX_PROG_PERL_VERSION([5], [], AC_MSG_ERROR([perl interpreter is required]))
