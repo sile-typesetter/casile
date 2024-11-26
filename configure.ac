@@ -91,7 +91,7 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
     ])
 
     # We actually need both 5.1 and 5.4 for most of these, but for now assume this is good enough
-    AX_PROG_LUA(5.1, [], [], AC_MSG_ERROR([lua interpreter matching SILE's version is required]), always)
+    AX_PROG_LUA(5.1, [], [], AC_MSG_ERROR([lua interpreter matching SILE's version is required]), [always])
     AX_LUA_MODULE(cldr)
     AX_LUA_MODULE(cosmo)
     AX_LUA_MODULE(decasify)
