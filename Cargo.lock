@@ -207,7 +207,7 @@ dependencies = [
 
 [[package]]
 name = "casile"
-version = "0.14.4"
+version = "0.14.5"
 dependencies = [
  "Inflector",
  "assert_cmd",

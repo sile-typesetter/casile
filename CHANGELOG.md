@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.14.5](https://github.com/sile-typesetter/casile/compare/v0.14.4...v0.14.5) (2024-11-26)
+
+
+### New Features
+
+* **deps:** Make @Omikhleia's ptable package available by default ([0c3ebb7](https://github.com/sile-typesetter/casile/commit/0c3ebb7cefa7927b9138930951ced992f7a2b610))
+* **docker:** Build image with SILE v0.15.7 from upstream Arch Linux ([f6b123b](https://github.com/sile-typesetter/casile/commit/f6b123be74ca019135c72df8cf40fce838f1d700))
+
 ## [0.14.4](https://github.com/sile-typesetter/casile/compare/v0.14.3...v0.14.4) (2024-11-14)
 
 
