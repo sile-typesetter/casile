@@ -32,7 +32,7 @@ jobs:
           ./configure \
             --enable-developer-mode \
             --disable-dependency-checks \
-            CHECKMAKE=false LUACHECK=false RUFF=false STYLUA=false TYPOS=cat
+            CARGOSETVERSION=false CHECKMAKE=false LUACHECK=false RUFF=false STYLUA=false TAPLO=false TYPOS=cat
           echo "VERSION=$(./build-aux/git-version-gen .tarball-version)" >> $GITHUB_ENV
           echo "MAKEFLAGS=-j$(nproc) -Otarget" >> $GITHUB_ENV
       - name: Make

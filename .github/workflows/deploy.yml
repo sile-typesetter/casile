@@ -31,7 +31,7 @@ jobs:
           ./configure \
             --enable-developer-mode \
             --disable-dependency-checks \
-            CHECKMAKE=false LUACHECK=false RUFF=false STYLUA=false TYPOS=false
+            CARGOSETVERSION=false CHECKMAKE=false LUACHECK=false RUFF=false STYLUA=false TAPLO=false TYPOS=false
       - name: Publish Docker Image to GH Container Registry
         run: |
           make docker-build-push
