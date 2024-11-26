@@ -21,10 +21,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install clang mold
       - name: Configure
         run: |
           ./bootstrap.sh
