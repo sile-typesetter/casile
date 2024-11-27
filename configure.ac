@@ -125,7 +125,7 @@ AM_COND_IF([DEPENDENCY_CHECKS], [
 
 ])
 
-AM_COND_IF([DEVELOPER_MODE], [
+AM_COND_IF([DEVELOPER_TOOLS], [
     QUE_PROGVAR([cargosetversion], [cargo-set-version])
     QUE_PROGVAR([checkmake])
     QUE_PROGVAR([luacheck])
