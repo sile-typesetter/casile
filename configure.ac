@@ -30,6 +30,10 @@ AC_ARG_ENABLE([dependency-checks],
                       [Disable build tooling dependency checks]))
 AM_CONDITIONAL([DEPENDENCY_CHECKS], [test "x$enable_dependency_checks" != "xno"])
 
+# Assume true unless later checks prove otherwise, allows our checks for Lua to
+# be run conditionally and hence skipped for e.g. docker only build pipelines.
+AM_CONDITIONAL([LUAJIT], [true])
+
 AM_COND_IF([DEPENDENCY_CHECKS], [
 
     # Run time deps
