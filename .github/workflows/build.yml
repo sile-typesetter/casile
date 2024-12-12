@@ -31,8 +31,9 @@ jobs:
           ./bootstrap.sh
           ./configure \
             --enable-developer-mode \
+            --without-developer-tools \
             --disable-dependency-checks \
-            CARGOSETVERSION=false CHECKMAKE=false LUACHECK=false RUFF=false STYLUA=false TAPLO=false TYPOS=cat
+            TYPOS=cat
           echo "VERSION=$(./build-aux/git-version-gen .tarball-version)" >> $GITHUB_ENV
           echo "MAKEFLAGS=-j$(nproc) -Otarget" >> $GITHUB_ENV
       - name: Make

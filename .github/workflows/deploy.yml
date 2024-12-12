@@ -26,8 +26,9 @@ jobs:
           ./bootstrap.sh
           ./configure \
             --enable-developer-mode \
-            --disable-dependency-checks \
-            CARGOSETVERSION=false CHECKMAKE=false LUACHECK=false RUFF=false STYLUA=false TAPLO=false TYPOS=false
+              DOCKER=$(which docker) \
+            --without-developer-tools \
+            --disable-dependency-checks
       - name: Publish Docker Image to GH Container Registry
         run: |
           make docker-build-push
