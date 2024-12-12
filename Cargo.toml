@@ -1,6 +1,6 @@
 [package]
 name = "casile"
-version = "0.14.5"
+version = "0.14.6"
 authors = ["Caleb Maclennan <caleb@alerque.com>"]
 edition = "2021"
 rust-version = "1.75.0"

@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.14.6](https://github.com/sile-typesetter/casile/compare/v0.14.5...v0.14.6) (2024-12-12)
+
+
+### New Features
+
+* **docker:** Build image with SILE v0.15.8 from upstream Arch Linux ([9d6ffd9](https://github.com/sile-typesetter/casile/commit/9d6ffd9b13f4ebf68577821bc006cf4e2de8dfb3))
+
+
+### Bug Fixes
+
+* **build:** Don't expect Lua if we're not using it ([5ada61d](https://github.com/sile-typesetter/casile/commit/5ada61d8ed15e0c8a1258089323e5fe471beb728))
+* **build:** Fix typo in autoconf macro, actually depend on lua dep checks ([ff173e8](https://github.com/sile-typesetter/casile/commit/ff173e8ea42186d94394320cdc143b6fc3e7998b))
+* **build:** Put developer tool checks behind related conditional ([40e05c6](https://github.com/sile-typesetter/casile/commit/40e05c6434cc117c209f5ba9b55dc2ca7c27f05d))
+* **build:** Work around macros hoisting outside of conditional ([2d4ffd6](https://github.com/sile-typesetter/casile/commit/2d4ffd69157a2aa7819e789eb6c000892128f29a))
+* **i18n:** Sync forked loadLanguage() from SILE v0.15.7 ([dd872ab](https://github.com/sile-typesetter/casile/commit/dd872ab3cae753df3baef8d52279eb91340aa345))
+
 ## [0.14.5](https://github.com/sile-typesetter/casile/compare/v0.14.4...v0.14.5) (2024-11-26)
 
 
