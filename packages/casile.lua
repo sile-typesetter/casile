@@ -24,8 +24,6 @@ local parseSize = function (size)
    return SILE.types.length(size):absolute().length
 end
 
-local loadonce = {}
-
 function package:_init (_)
    base._init(self)
 
@@ -171,10 +169,10 @@ function package:_init (_)
    SILE.languageSupport.loadLanguage = function (language)
       language = language or SILE.settings:get("document.language")
       language = cldr.locales[language] and language or "und"
-      if loadonce[language] then
+      if SILE.scratch.loaded_languages[language] then
          return
       end
-      loadonce[language] = true
+      SILE.scratch.loaded_languages[language] = true
       local langresource = string.format("languages.%s", language)
       local gotlang, lang = pcall(require, langresource)
       if not gotlang then
@@ -185,8 +183,12 @@ function package:_init (_)
             )
          )
       end
-      local ftlresource = string.format("i18n.%s", language)
+      local ftlresource = string.format("languages.%s.messages", language)
       SU.debug("fluent", "Loading FTL resource", ftlresource, "into locale", language)
+      -- This needs to be set so that we load localizations into the right bundle,
+      -- but this breaks the sync enabled by the hook in the document.language
+      -- setting, so we want to set it back when we're done.
+      local original_language = fluent:get_locale()
       fluent:set_locale(language)
       local gotftl, ftl = pcall(require, ftlresource)
       local ftlresource2 = string.format("assets.%s-%s.casile", language, string.upper(language))
@@ -203,6 +205,7 @@ function package:_init (_)
       if type(lang) == "table" and lang.init then
          lang.init()
       end
+      fluent:set_locale(original_language)
    end
 end
 
