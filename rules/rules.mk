@@ -504,7 +504,7 @@ $(BUILDDIR)/casile.lua: | $(BUILDDIR)
 		return { _name = "casile", type = "casile" }
 	EOF
 
-$(FCCONFIG): FCDEFAULT ?= $(shell $(_ENV) env -u FONTCONFIG_FILE $(FCCONFLIST) | $(AWK) -F'[ :]' '/Default configuration file/ { print $$2 }')
+$(FCCONFIG): FCDEFAULT ?= $(shell $(_ENV) env -u FONTCONFIG_FILE $(FC_CONFLIST) | $(AWK) -F'[ :]' '/Default configuration file/ { print $$2 }')
 $(FCCONFIG): | $(BUILDDIR)
 	cat <<- EOF > $@
 		<?xml version="1.0"?>
@@ -914,7 +914,7 @@ $(BUILDDIR)/%-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printco
 	$(sourcegeometry)
 	env HOME=$(BUILDDIR) \
 		$(and $(CASILE_SINGLEXVFBJOB),$(FLOCK) $(BUILDDIR)/lock-xvfb) \
-		$(XVFBRUN) -d $(INKSCAPE) $< \
+		$(XVFB_RUN) -d $(INKSCAPE) $< \
 		--batch-process \
 		--export-dpi=$${hidpi} \
 		--export-area-page \

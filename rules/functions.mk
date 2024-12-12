@@ -93,7 +93,7 @@ endef
 
 define time_warp ?=
 	cd $1
-	$(GITWARPTIME)
+	$(GIT_WARP_TIME)
 endef
 
 define versioninfo ?=
