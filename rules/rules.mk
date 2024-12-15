@@ -469,6 +469,7 @@ FULLSILS += $(and $(EDITS),$(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCE
 FULLSILS += $(and $(EDITIONS),$(EDITS),$(addprefix $(BUILDDIR)/,$(call pattern_list,$(SOURCES),$(EDITIONS),$(EDITS),$(REALLAYOUTS),.sil)))
 $(FULLSILS): private PANDOCFILTERS += --filter=$(CASILEDIR)/pandoc-filters/svg2pdf.py
 $(FULLSILS): private THISEDIT = $(call parse_edits,$@)
+$(FULLSILS): private PANDOCARGS += --wrap=preserve
 $(FULLSILS): private PROCESSEDSOURCE = $(addprefix $(BUILDDIR)/,$(call pattern_list,$(call parse_bookid,$@),$(and $(THISEDIT),$(THISEDIT)-)$(_processed),.md))
 $(FULLSILS): $(BUILDDIR)/%.sil: $$(PROCESSEDSOURCE)
 $(FULLSILS): $(BUILDDIR)/%.sil: $$(call pattern_list,$$(call parse_bookid,$$@),manifest,.yml)
