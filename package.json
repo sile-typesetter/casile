@@ -1,6 +1,6 @@
 {
   "name": "casile",
-  "version": "0.14.6",
+  "version": "0.14.7",
   "description": "The CaSILE toolkit, a book publishing workflow employing SILE and other wizardry",
   "main": "casile",
   "scripts": {
