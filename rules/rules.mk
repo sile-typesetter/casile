@@ -906,7 +906,7 @@ $(BUILDDIR)/%-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printco
 			s#HHH#$${pagehpm}#g;
 			s#BLEED#$${bleedpm}#g;
 			s#TRIM#$${trimpm}#g;
-			s#CROP#$${trimmm}mm#g;
+			s#GUIDE#$${guidepm}#g;
 			s#CW#$${pagewpm}#g;
 			s#SW#$${spinepm}#g;
 		" $< > $@
@@ -918,8 +918,7 @@ $(BUILDDIR)/%-$(_binding).svg: $(CASILEDIR)/binding.svg $$(basename $$@)-printco
 		$(XVFB_RUN) -d $(INKSCAPE) $< \
 		--batch-process \
 		--export-dpi=$${hidpi} \
-		--export-area-page \
-		--export-margin=$${trimmm} \
+		--export-area-drawing \
 		-o $@
 
 DISTFILES += *-$(_binding).pdf
@@ -959,6 +958,9 @@ $(GEOMETRIES): $(BUILDDIR)/%-$(_geometry).sh: $$(call geometrybase,$$@) $$(call 
 	trimpx=$(call mmtopx,$(TRIM))
 	trimpm=$(call mmtopm,$(TRIM))
 	trimpt=$(call mmtopt,$(TRIM))
+	guidemm=$$(($$trimmm-$$bleedmm))
+	guidepx=$$(($$trimpx-$$bleedpx))
+	guidepm=$$(($$trimpm-$$bleedpm))
 	$(shell $(_ENV) $(MAGICK) identify -density $(HIDPI) -format '
 			pagewmm=%[fx:round(w/$(HIDPI)*25.399986)]
 			pagewpx=%[fx:w]

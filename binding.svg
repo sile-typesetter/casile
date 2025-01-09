@@ -11,12 +11,6 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink">
-  <sodipodi:namedview>
-      <inkscape:page
-        bleed="CROP"
-        margin="CROP"
-        />
-  </sodipodi:namedview>
   <image
       id="cilt"
       absref="IMG"
@@ -27,7 +21,6 @@
       style="image-rendering:optimizeQuality"
       x="-BLEED"
       y="-BLEED"
-      bleed="CROP"
       />
   <text id="versioninfo"
     x="BLEED"
@@ -39,73 +32,73 @@
     <path
         style="fill:none;stroke:#000000;stroke-width:0.25"
         id="cropTL1"
-        d="M 0,0 v -TRIM"
+        d="M 0,0 v -GUIDE"
         transform="translate(0 -BLEED)"
         />
     <path
         style="fill:none;stroke:#000000;stroke-width:0.25"
         id="cropTL2"
-        d="M 0,0 h -TRIM"
+        d="M 0,0 h -GUIDE"
         transform="translate(-BLEED 0)"
         />
     <path
         style="fill:none;stroke:#000000;stroke-width:0.25"
         id="cropTR1"
-        d="M WWW,0 v -TRIM"
+        d="M WWW,0 v -GUIDE"
         transform="translate(0 -BLEED)"
         />
     <path
         style="fill:none;stroke:#000000;stroke-width:0.25"
         id="cropTR2"
-        d="M WWW,0 h TRIM"
+        d="M WWW,0 h GUIDE"
         transform="translate(BLEED 0)"
         />
     <path
         style="fill:none;stroke:#000000;stroke-width:0.25"
         id="cropBL1"
-        d="M 0,HHH v TRIM"
+        d="M 0,HHH v GUIDE"
         transform="translate(0 BLEED)"
         />
     <path
         style="fill:none;stroke:#000000;stroke-width:0.25"
         id="cropBL2"
-        d="M 0,HHH h -TRIM"
+        d="M 0,HHH h -GUIDE"
         transform="translate(-BLEED 0)"
         />
     <path
         style="fill:none;stroke:#000000;stroke-width:0.25"
         id="cropBR1"
-        d="m WWW,HHH v TRIM"
+        d="m WWW,HHH v GUIDE"
         transform="translate(0 BLEED)"
         />
     <path
         style="fill:none;stroke:#000000;stroke-width:0.25"
         id="cropBR2"
-        d="m WWW,HHH h TRIM"
+        d="m WWW,HHH h GUIDE"
         transform="translate(BLEED 0)"
         />
     <path
         style="fill:none;stroke:#000000;stroke-width:0.25"
         id="cropTL2"
-        d="M CW,0 v -TRIM"
+        d="M CW,0 v -GUIDE"
         transform="translate(0 -BLEED)"
         />
     <path
         style="fill:none;stroke:#000000;stroke-width:0.25"
         id="cropTL2"
-        d="M CW,0 v -TRIM"
+        d="M CW,0 v -GUIDE"
         transform="translate(SW -BLEED)"
         />
     <path
         style="fill:none;stroke:#000000;stroke-width:0.25"
         id="cropTL2"
-        d="M CW,HHH v TRIM"
+        d="M CW,HHH v GUIDE"
         transform="translate(0 BLEED)"
         />
     <path
         style="fill:none;stroke:#000000;stroke-width:0.25"
         id="cropTL2"
-        d="M CW,HHH v TRIM"
+        d="M CW,HHH v GUIDE"
         transform="translate(SW BLEED)"
         />
   </g>
