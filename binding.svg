@@ -4,11 +4,18 @@
    width="CANVASX"
    height="CANVASY"
    viewBox="0 0 WWW HHH"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
    id="svg"
-   version="1.1" >
+   version="1.1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink">
   <sodipodi:namedview>
-      <inkscape:page bleed="CROP" />
+      <inkscape:page
+        bleed="CROP"
+        margin="CROP"
+        />
   </sodipodi:namedview>
   <image
       id="cilt"
