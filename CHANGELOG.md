@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.14.8](https://github.com/sile-typesetter/casile/compare/v0.14.7...v0.14.8) (2025-01-25)
+
+
+### New Features
+
+* **deps:** Update git2 crate to enable build against libgit2-1.9 ([7f51dd8](https://github.com/sile-typesetter/casile/commit/7f51dd8c8266313fcf1177c10d082a5e3de40512))
+
+
+### Bug Fixes
+
+* **covers:** Generate bindings with guides at final bounding size, dodge Inkscape bugs ([b44b865](https://github.com/sile-typesetter/casile/commit/b44b865f18c4f83e241ba6d4818bca64ef5ef285))
+
 ## [0.14.7](https://github.com/sile-typesetter/casile/compare/v0.14.6...v0.14.7) (2025-01-04)
 
 
