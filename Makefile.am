@@ -175,7 +175,7 @@ PHONY_DEVELOPER_TARGETS += docker docker-dep-check docker-ghcr-to-hub docker-bui
 
 if DEVELOPER_MODE
 
-lint: luacheck checkmake ruff ruff-format stylua
+lint: luacheck checkmake ruff ruff-format stylua typos
 
 luacheck:
 	$(LUACHECK) .
