@@ -25,13 +25,13 @@
     "svg-modify": "^0.0.12"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.6",
-    "@commitlint/config-conventional": "^19.6",
-    "@commitlint/prompt": "^19.7",
+    "@commitlint/cli": "^19.8",
+    "@commitlint/config-conventional": "^19.8",
+    "@commitlint/prompt": "^19.8",
     "@iarna/toml": "^2.2",
     "commitizen": "^4.3",
     "conventional-changelog-cli": "^5.0",
-    "eslint": "^9.19",
+    "eslint": "^9.22",
     "eslint-config-standard": "^17.1",
     "eslint-plugin-import": "^2.31",
     "eslint-plugin-node": "^11.1",
