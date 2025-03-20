@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.14.9](https://github.com/sile-typesetter/casile/compare/v0.14.8...v0.14.9) (2025-03-20)
+
+
+### New Features
+
+* **docker:** Build image with SILE v0.15.10 from upstream Arch Linux ([18f4b83](https://github.com/sile-typesetter/casile/commit/18f4b83e8ed6b9047a0d017753a1ea8c2decdd2a))
+
 ## [0.14.8](https://github.com/sile-typesetter/casile/compare/v0.14.7...v0.14.8) (2025-01-25)
 
 
