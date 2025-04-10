@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.14.11](https://github.com/sile-typesetter/casile/compare/v0.14.10...v0.14.11) (2025-04-10)
+
 ## [0.14.10](https://github.com/sile-typesetter/casile/compare/v0.14.9...v0.14.10) (2025-04-10)
 
 
