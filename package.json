@@ -31,7 +31,7 @@
     "@iarna/toml": "^2.2",
     "commitizen": "^4.3",
     "conventional-changelog-cli": "^5.0",
-    "eslint": "^9.22",
+    "eslint": "^9.24",
     "eslint-config-standard": "^17.1",
     "eslint-plugin-import": "^2.31",
     "eslint-plugin-node": "^11.1",
