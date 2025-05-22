@@ -154,7 +154,7 @@ impl IndicatifSubcommandStatus {
 
 impl SubcommandStatus for IndicatifSubcommandStatus {
     fn end(&self, status: bool) {
-        (status).then(|| self.pass()).unwrap_or_else(|| self.fail());
+        if status { self.pass() } else { self.fail() };
     }
     fn error(&mut self, msg: String) {
         if CONF.get_bool("passthrough").unwrap() {

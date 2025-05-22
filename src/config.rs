@@ -31,7 +31,7 @@ impl CONF {
     pub fn merge_env(&self) -> Result<()> {
         let mut config = self.write().expect(ERROR_CONFIG_WRITE);
         if let Some(lang) = env::var_os("LANG") {
-            if lang.len() > 0 && env::var_os("CASILE_LANGUAGE").is_none() {
+            if !lang.is_empty() && env::var_os("CASILE_LANGUAGE").is_none() {
                 env::set_var("CASILE_LANGUAGE", lang)
             }
         }
