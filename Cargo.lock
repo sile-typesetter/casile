@@ -231,7 +231,7 @@ dependencies = [
  "rayon",
  "regex",
  "rust-embed",
- "rustc-hash 1.1.0",
+ "rustc-hash",
  "subprocess",
  "unic-langid",
  "unic-langid-impl",
@@ -622,7 +622,7 @@ dependencies = [
  "fluent-syntax",
  "intl-memoizer",
  "intl_pluralrules",
- "rustc-hash 2.1.1",
+ "rustc-hash",
  "self_cell",
  "smallvec",
  "unic-langid",
@@ -640,7 +640,7 @@ dependencies = [
  "futures",
  "once_cell",
  "pin-cell",
- "rustc-hash 2.1.1",
+ "rustc-hash",
  "unic-langid",
 ]
 
@@ -2050,12 +2050,6 @@ dependencies = [
 
 [[package]]
 name = "rustc-hash"
-version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "08d43f7aa6b08d49f382cde6a7982047c3426db949b1424bc4b7ec9ae12c6ce2"
-
-[[package]]
-name = "rustc-hash"
 version = "2.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "357703d41365b4b27c590e3ed91eabb1b663f07c4c084095e60cbed4362dff0d"
@@ -2413,7 +2407,7 @@ version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cb30dbbd9036155e74adad6812e9898d03ec374946234fbcebd5dfc7b9187b90"
 dependencies = [
- "rustc-hash 2.1.1",
+ "rustc-hash",
 ]
 
 [[package]]
