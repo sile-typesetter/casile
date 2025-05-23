@@ -15,7 +15,7 @@ lto = true
 
 [dependencies]
 console = "0.15"
-fluent = "0.16"
+fluent = "0.17"
 fluent-fallback = "0.7"
 fluent-langneg = "0.13"
 futures = "0.3"
