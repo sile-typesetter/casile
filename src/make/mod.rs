@@ -81,12 +81,14 @@ pub fn run(target: Vec<String>) -> Result<()> {
     process = process.cwd(workdir);
     let process = process.stderr(Redirection::Merge).stdout(Redirection::Pipe);
     let mut popen = process.popen()?;
-    let buf = io::BufReader::new(popen.stdout.as_mut().unwrap());
+    let mut buf = io::BufReader::new(popen.stdout.as_mut().unwrap());
     let seps = Regex::new(r"").unwrap();
-    for line in buf.lines() {
-        let text: &str =
-            &line.unwrap_or_else(|_| String::from("INVALID UTF-8 FROM CHILD PROCESS STREAM"));
-        let fields: Vec<&str> = seps.splitn(text, 4).collect();
+    let mut line = Vec::new();
+    while buf.read_until(b'\n', &mut line).unwrap_or(0) > 0 {
+        // Lossy because LaTeX's xindy package is throwing a broken UTF-8 prefix at us
+        let text = String::from_utf8_lossy(&line).into_owned();
+        let text = text.trim_end_matches(|c| c == '\n' || c == '\r');
+        let fields: Vec<&str> = seps.splitn(&text, 4).collect();
         match fields[0] {
             "CASILE" => match fields[1] {
                 "PRE" => {
@@ -160,6 +162,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
                 ));
             }
         }
+        line.clear();
     }
     let status = popen.wait();
     let ret = match status {
