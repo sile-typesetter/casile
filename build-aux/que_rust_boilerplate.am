@@ -2,9 +2,9 @@ export VERSION_FROM_AUTOTOOLS = v$(VERSION)
 
 @PACKAGE_VAR@_SOURCES += Cargo.toml build-aux/build.rs
 EXTRA_@PACKAGE_VAR@_SOURCES += Cargo.lock .version
-dist_man_MANS += @PACKAGE_NAME@.1
+nodist_man_MANS += @PACKAGE_NAME@.1
 
-CLEANFILES += $(bin_PROGRAMS) $(BUILT_SOURCES) $(dist_man_MANS)
+CLEANFILES += $(bin_PROGRAMS) $(BUILT_SOURCES) $(nodist_man_MANS)
 
 CARGO_RELEASE_ARGS =
 if !DEBUG_RELEASE
@@ -54,20 +54,19 @@ $(COMPLETIONS_OUT_DIR)/_$(TRANSFORMED_PACKAGE_NAME).ps1: $(CARGO_BIN) | $(COMPLE
 $(COMPLETIONS_OUT_DIR)/_$(TRANSFORMED_PACKAGE_NAME): $(CARGO_BIN) | $(COMPLETIONS_OUT_DIR)
 	$(INSTALL) -m644 $$(cat $(_RUST_OUT))/$(COMPLETIONS_OUT_DIR)/_$(PACKAGE_NAME) $@
 
-$(_RUST_OUT) $(CARGO_BIN): $(@PACKAGE_VAR@_SOURCES) $(EXTRA_@PACKAGE_VAR@_SOURCES)
+$(_RUST_OUT) $(CARGO_BIN): $(@PACKAGE_VAR@_SOURCES) $(nodist_@PACKAGE_VAR@_SOURCES) $(EXTRA_@PACKAGE_VAR@_SOURCES)
 	set -e
 	export AUTOTOOLS_DEPENDENCIES="$^"
-	$(CARGO_ENV) $(CARGO) build $(CARGO_VERBOSE) $(CARGO_FEATURE_ARGS) $(CARGO_RELEASE_ARGS)
-	$(CARGO_ENV) $(CARGO) build --quiet --message-format=json $(CARGO_FEATURE_ARGS) $(CARGO_RELEASE_ARGS) | \
+	$(CARGO_ENV) $(CARGO) build $(CARGO_VERBOSE) --target $(CARGO_TARGET_TRIPLE) $(CARGO_FEATURE_ARGS) $(CARGO_RELEASE_ARGS)
+	$(CARGO_ENV) $(CARGO) build  --target $(CARGO_TARGET_TRIPLE) --quiet --message-format=json $(CARGO_FEATURE_ARGS) $(CARGO_RELEASE_ARGS) | \
 		$(JQ) -sr 'map(select(.reason == "build-script-executed")) | last | .out_dir' > $(_RUST_OUT)
 
-RUST_DEVELOPER_TARGETS = cargo-test clippy rustfmt
+RUST_DEVELOPER_TARGETS = cargo-test clippy cargo-deny rustfmt cargo-vendor
 .PHONY: $(RUST_DEVELOPER_TARGETS)
 
 if DEVELOPER_MODE
 
-test: cargo-test
-lint: rustfmt clippy
+lint: rustfmt clippy cargo-deny
 clean-local: clean-cargo
 check-local: cargo-test
 
@@ -77,11 +76,17 @@ rustfmt:
 clippy:
 	$(CARGO_ENV) $(CARGO) $(CARGO_VERBOSE) clippy $(CARGO_FEATURE_ARGS) -- -D warnings
 
+cargo-deny:
+	$(CARGO_ENV) $(CARGO) deny check all
+
 clean-cargo:
 	$(CARGO_ENV) $(CARGO) $(CARGO_VERBOSE) clean
 
 cargo-test: $(PACKAGE_NAME)$(EXEEXT)
 	$(CARGO_ENV) $(CARGO) $(CARGO_VERBOSE) test $(CARGO_FEATURE_ARGS) --locked
+
+cargo-vendor:
+	$(CARGO_ENV) $(CARGO) vendor --locked
 
 else !DEVELOPER_MODE
 

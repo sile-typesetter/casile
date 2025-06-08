@@ -25,7 +25,7 @@ reverse_lang_key_files = $(patsubst %.mk,%-reversed.mk,$(lang_key_files))
 
 dist_doc_DATA = README.md CHANGELOG.md
 dist_license_DATA = LICENSE.md
-dist_man_MANS =
+nodist_man_MANS =
 nobase_data_DATA = rules/casile.mk $(reverse_lang_key_files)
 nobase_dist_data_DATA = rules/rules.mk rules/functions.mk rules/translation.mk rules/utilities.mk $(lang_key_files)
 nobase_dist_data_DATA += rules/ebooks.mk rules/mdbook.mk rules/renderings.mk rules/zola.mk
