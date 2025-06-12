@@ -82,7 +82,7 @@ pub fn run(target: Vec<String>) -> Result<()> {
     let process = process.stderr(Redirection::Merge).stdout(Redirection::Pipe);
     let mut popen = process.popen()?;
     let mut buf = io::BufReader::new(popen.stdout.as_mut().unwrap());
-    let seps = Regex::new(r"").unwrap();
+    let seps = Regex::new(r"\x1C").unwrap(); // U+001C File Separator character
     let mut line = Vec::new();
     while buf.read_until(b'\n', &mut line).unwrap_or(0) > 0 {
         // Lossy because LaTeX's xindy package is throwing a broken UTF-8 prefix at us
