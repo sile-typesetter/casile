@@ -285,22 +285,25 @@ impl JobStatus for IndicatifJobStatus {
             .arg("target", self.target.to_string())
             .fmt();
         let start = format!("{} {start}", style(style("┄┄┄┄┄").cyan()));
-        self.bar.println(start);
+        let end = LocalText::new("make-backlog-end").fmt();
+        let end = format!("{} {end}", style(style("┄┄┄┄┄").cyan()));
         let was_hidden = self.bar.is_hidden();
         if was_hidden {
             self.bar.set_draw_target(ProgressDrawTarget::stdout());
         }
-        let lines = self.log.lines.read().unwrap();
-        for line in lines.iter() {
-            let msg = style(line.line.as_str()).dim().to_string();
-            self.bar.println(msg);
-        }
+        self.bar.suspend(|| {
+            println!("{}", start);
+            let lines = self.log.lines.read().unwrap();
+            for line in lines.iter() {
+                let msg = line.line.as_str();
+                let msg = style(msg).dim().to_string();
+                println!("{}", msg);
+            }
+            println!("{}", end);
+        });
         if was_hidden {
             self.bar.set_draw_target(ProgressDrawTarget::hidden());
         }
-        let end = LocalText::new("make-backlog-end").fmt();
-        let end = format!("{} {end}", style(style("┄┄┄┄┄").cyan()));
-        self.bar.println(end);
     }
     fn pass_msg(&self) {
         let target = self.target.to_string();
