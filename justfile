@@ -53,5 +53,3 @@ post-release semver: keys
     gh release download --clobber v{{ semver }}
     ls casile-{{ semver }}.{zip,tar.zst} casile-vendored-crates-{{ semver }}.tar.zst | xargs -n1 gpg -a --detach-sign
     gh release upload v{{ semver }} sile*-{{ semver }}.asc
-
-# vim: set ft=just
