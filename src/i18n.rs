@@ -85,7 +85,7 @@ pub struct LocalText<'a> {
 
 impl<'a> LocalText<'a> {
     /// Make a new localizable text placeholder for a Fluent key with no args
-    pub fn new(key: &str) -> LocalText {
+    pub fn new(key: &str) -> LocalText<'_> {
         LocalText {
             key: String::from(key),
             args: None,
