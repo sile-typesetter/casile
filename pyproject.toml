@@ -1,0 +1,6 @@
+[project]
+name = "casile"
+dynamic = ["version"]
+
+[tool.ruff]
+extend-select = ["I"]
