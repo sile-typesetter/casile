@@ -87,8 +87,8 @@ pub fn run(target: Vec<String>) -> Result<()> {
     while buf.read_until(b'\n', &mut line).unwrap_or(0) > 0 {
         // Lossy because LaTeX's xindy package is throwing a broken UTF-8 prefix at us
         let text = String::from_utf8_lossy(&line).into_owned();
-        let text = text.trim_end_matches(|c| c == '\n' || c == '\r');
-        let fields: Vec<&str> = seps.splitn(&text, 4).collect();
+        let text = text.trim_end_matches(['\n', '\r']);
+        let fields: Vec<&str> = seps.splitn(text, 4).collect();
         match fields[0] {
             "CASILE" => match fields[1] {
                 "PRE" => {
