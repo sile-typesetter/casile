@@ -6,10 +6,11 @@ Modified to use make at build time
 """
 
 import mimetypes
-import subprocess
 import os
+import subprocess
 import sys
-from pandocfilters import toJSONFilter, Image
+
+from pandocfilters import Image, toJSONFilter
 
 fmt_to_option = {
     "sile": "pdf",

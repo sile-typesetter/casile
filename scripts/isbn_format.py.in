@@ -1,8 +1,9 @@
 #!@PYTHON@
 
 import sys
-from ruamel.yaml import YAML
+
 import isbnlib
+from ruamel.yaml import YAML
 
 yaml = YAML(typ="safe", pure=True)
 

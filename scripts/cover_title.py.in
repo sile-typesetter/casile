@@ -1,9 +1,10 @@
 #!@PYTHON@
 
-import sys
 import os
-import ruamel.yaml as yaml
 import re
+import sys
+
+import ruamel.yaml as yaml
 
 file = sys.argv[1]
 metafile = re.sub("-.*$", ".yml", file)
