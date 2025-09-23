@@ -24,6 +24,8 @@ perfect:
 restyle:
 	git ls-files '*.lua' '*.lua.in' '*.rockspec.in' .busted .luacov .luacheckrc build-aux/config.ld | xargs stylua --respect-ignores
 	git ls-files '*.rs' '*.rs.in' | xargs rustfmt --edition 2021 --config skip_children=true
+	git ls-files '*.py' '*.py.in' | xargs ruff check --fix
+	git ls-files '*.py' '*.py.in' | xargs ruff format
 	git ls-files '*.toml' | xargs taplo format
 
 [private]
