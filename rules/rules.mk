@@ -92,7 +92,7 @@ EDITIONEDITSOURCES := $(subst #,,$(EDITIONEDITSOURCES))
 
 # Categorize supported outputs
 PAPERSIZES := $(call localize,$(subst layouts/,,$(notdir $(basename $(wildcard $(CASILEDIR)/layouts/*.lua)))))
-BINDINGS = $(call localize,print paperback hardcover coil stapled)
+BINDINGS ?= $(call localize,print paperback hardcover coil stapled)
 DISPLAYS := $(_app) $(_screen)
 PLACARDS := $(_square) $(_wide) $(_banner) epub
 
