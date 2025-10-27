@@ -37,6 +37,10 @@ local process_recipe() {
       exec > >(report_stdout) 2> >(report_stderr)
       eval "$@"
       set +x
+      # Shenanigans to force close the process substitutions and give them enough time to have flushed...
+      # Without this the whole wrapper process is closing before the Rust process has finished iterating its output.
+      exec >/dev/null 2>/dev/null
+      sleep 0.05
     )
   } always {
     post_hook $target $?
