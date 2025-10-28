@@ -23,7 +23,7 @@ export PROJECT := $(PROJECT)
 
 MARKDOWNSOURCES := $(patsubst ./%,%,$(call find,*.md))
 LUASOURCES := $(patsubst ./%,%,$(call find,*.lua))
-MAKESOURCES := $(patsubst ./%,%,$(call find,[Mm]akefile*))
+MAKESOURCES := $(patsubst ./%,%,$(call find,[Mm]akefile)) $(patsubst ./%,%,$(call find,*.mk))
 YAMLSOURCES := $(patsubst ./%,%,$(call find,*.yml))
 
 # Find stuff that could be built based on what has matching YAML and a MD components
