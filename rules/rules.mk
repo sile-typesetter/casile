@@ -86,7 +86,7 @@ EDITIONS ?=
 # So we don't have to iterate through this as much
 EDITIONEDITSOURCES := $(SOURCES)
 EDITIONEDITSOURCES += $(and $(EDITIONS),$(call pattern_list,$(SOURCES),$(EDITIONS),#))
-EDITIONEDITSOURCES += $(and $(EDITS),$(call pattern_list,$(SOURCES),$(EDITS),# ))
+EDITIONEDITSOURCES += $(and $(EDITS),$(call pattern_list,$(SOURCES),$(EDITS),#))
 EDITIONEDITSOURCES += $(and $(EDITIONS),$(EDITS),$(call pattern_list,$(SOURCES),$(EDITIONS),$(EDITS),#))
 EDITIONEDITSOURCES := $(subst #,,$(EDITIONEDITSOURCES))
 
