@@ -10,6 +10,9 @@ on:
       - latest
       - v*
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
 
   ghcr:
