@@ -36,7 +36,7 @@ features = ["yaml"]
 
 [dependencies.clap]
 version = "4.5"
-features = ["derive", "wrap_help"]
+features = ["color", "derive", "wrap_help"]
 
 [dependencies.git2]
 version = "0.20"
