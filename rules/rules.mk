@@ -98,7 +98,7 @@ BINDINGS ?= $(call localize,print paperback hardcover coil stapled)
 DISPLAYS := $(_app) $(_screen)
 PLACARDS := $(_square) $(_wide) $(_banner) epub
 
-FAKEPAPERSIZES := $(DISPLAYS) $(PLACARDS)
+FAKEPAPERSIZES := $(filter $(DISPLAYS) $(PLACARDS),$(PAPERSIZES))
 REALPAPERSIZES := $(filter-out $(FAKEPAPERSIZES),$(PAPERSIZES))
 FAKELAYOUTS := $(call pattern_list,$(PLACARDS),-$(_print))
 REALLAYOUTS := $(call pattern_list,$(REALPAPERSIZES),$(foreach BINDING,$(BINDINGS),-$(BINDING))) $(call pattern_list,$(DISPLAYS),-$(_print))
