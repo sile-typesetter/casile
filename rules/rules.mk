@@ -25,7 +25,7 @@ MARKDOWNSOURCES := $(patsubst ./%,%,$(call find,*.md))
 LUASOURCES := $(patsubst ./%,%,$(call find,*.lua))
 MAKESOURCES := $(patsubst ./%,%,$(call find,[Mm]akefile)) $(patsubst ./%,%,$(call find,*.mk))
 YAMLSOURCES := $(patsubst ./%,%,$(call find,*.yml)) $(patsubst ./%,%,$(call find,*.yaml))
-METASOURCES := $(shell $(_ENV) $(RG) -lFxe --- $(MARKDOWNSOURCES))
+METASOURCES := $(and $(MARKDOWNSOURCES),$(shell $(_ENV) $(RG) -lFxe --- $(MARKDOWNSOURCES)))
 
 # Find stuff that could be built based on what has matching YAML and a MD components
 SOURCES_DEF := $(filter $(basename $(notdir $(MARKDOWNSOURCES))),$(basename $(notdir $(YAMLSOURCES) $(METASOURCES))))
