@@ -1,4 +1,4 @@
-#!@ZSH@
+#!@ZSH@ -f
 
 set -o nomatch
 set -o pipefail
